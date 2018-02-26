@@ -6,9 +6,9 @@ It offers modules for:
  * Timeline view to provide a quick overview of changes
  * Planning Chapters as a Node System of Quests
  * Planning Quests as a Node System of Tasks
- * Planning Npcs and there different values
+ * Planning Npcs and their different values
  * Planning dialogs of Npcs as Node System of dialog branches
- * Planning Items and there different values
+ * Planning Items and their different values
  * Wiki component with tight integration into the other modules
  * Map component to position Quest marker, Npcs, Items, Wiki pages and map changes
  * Tracking your implementation status and showing changed values after change to already implemented object
