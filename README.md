@@ -23,7 +23,7 @@ Please refer to the [wiki for deployment details](/steffendx/GoNorth/wiki/Deploy
 GoNorth provides a module for planning the different chapters of your game and the branching story.
 For this it provides a node system which allows you to connect the different quests and their possible outcomes together:
 
-![Chapter planning](TeaserImages/Aika.png)
+![Chapter planning](/steffendx/GoNorth/master/TeaserImages/Aika.PNG)
 
 A similiar node system can be created for the different quests.  
 Each quest will show the connections to Maps, Wiki pages and other objects to provide a view on the big picture while planning the quest.  
@@ -32,7 +32,7 @@ More details can be found [in the wiki](/steffendx/GoNorth/wiki/Aika).
 ### Npc and Item Planning (Kortisto and Styr)
 The web application provides functionality for planning Npcs and Items with flexible values. You can create templates and then create new Npcs or Items based on these templates:
 
-![Npc planning](TeaserImages/Kortisto.png)
+![Npc planning](/steffendx/GoNorth/master/TeaserImages/Kortisto.PNG)
 
 Each object will display the different maps in which the Npc or Item is marked, the Wiki Pages in which its mentioned and all other connections. This way the user has a good overview what he or she has to consider when building the character or item.  
 More details can be found in the wiki for [npcs](/steffendx/GoNorth/wiki/Kortisto) and [items](/steffendx/GoNorth/wiki/Styr).
@@ -40,7 +40,7 @@ More details can be found in the wiki for [npcs](/steffendx/GoNorth/wiki/Kortist
 ### Dialog Planning (Tale)
 Using the dialog planning module a user can create the branching dialogs for the different game characters as a node system:
 
-![Npc planning](TeaserImages/Tale.png)
+![Npc planning](/steffendx/GoNorth/master/TeaserImages/Tale.PNG)
 
 GoNorth provides different dialog nodes for player or npc lines, player choices, conditions or actions.  
 It is planned to implement a script export for these node systems.  
@@ -49,7 +49,7 @@ More details can be found [in the wiki](/steffendx/GoNorth/wiki/Tale).
 ### Wiki Component (Kirja)
 Kirja is the wiki component of GoNorth. Apart from allowing the user to write wiki pages it also features a tight integration into the other systems:
 
-![Npc planning](TeaserImages/Kirja.png)
+![Npc planning](/steffendx/GoNorth/master/TeaserImages/Kirja.PNG)
 
 Kirja also allows the users to attach additional planning files.  
 More details can be found [in the wiki](/steffendx/GoNorth/wiki/Kirja).
@@ -57,7 +57,7 @@ More details can be found [in the wiki](/steffendx/GoNorth/wiki/Kirja).
 ### Map Planning (Karta)
 A user can upload a high resolution map image to GoNorth which will then be transformed into an interactive map similiar to Google Maps. On this map a user can mark the position of Quest Markers, Npcs, Items, Wiki Pages and Map Changes:
 
-![Npc planning](TeaserImages/Karta.png)
+![Npc planning](/steffendx/GoNorth/master/TeaserImages/Karta.PNG)
 
 Each marker provides brief informations about the different objects and allow the users to jump of the detail page.  
 More details can be found [in the wiki](/steffendx/GoNorth/wiki/Karta).
@@ -65,7 +65,7 @@ More details can be found [in the wiki](/steffendx/GoNorth/wiki/Karta).
 ## Implementation Status Tracking
 GoNorth allows you to mark objects as implemented once they are integrated into your game. If a user changes relevant values of theses objects afterwards GoNorth will reset the implemented flag and show you which values where changed:
 
-![Npc planning](TeaserImages/ImplementationStatus.png)
+![Npc planning](/steffendx/GoNorth/master/TeaserImages/ImplementationStatus.PNG)
 
 This way its much easier to keep track of the integration progress and not forget changes.  
 More details can be found [in the wiki](/steffendx/GoNorth/wiki/Implementation-Status-Tracking).
@@ -73,7 +73,7 @@ More details can be found [in the wiki](/steffendx/GoNorth/wiki/Implementation-S
 ## Task Management
 A simple Kanban Board is integrated into GoNorth:
 
-![Npc planning](TeaserImages/Task.png)
+![Npc planning](/steffendx/GoNorth/master/TeaserImages/Task.PNG)
 
 More details can be found [in the wiki](/steffendx/GoNorth/wiki/Task-Management).
 
