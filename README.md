@@ -15,7 +15,7 @@ It offers modules for:
  * Simple Task Tracker
 
 ## Deployment
-Please refer to the [wiki for deployment details](/steffendx/GoNorth/wiki/Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?tabs=aspnetcore2x).
+Please refer to the [wiki for deployment details](https://github.com/steffendx/GoNorth/wiki/Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?tabs=aspnetcore2x).
 
 ## Brief Overview
 
@@ -23,59 +23,59 @@ Please refer to the [wiki for deployment details](/steffendx/GoNorth/wiki/Deploy
 GoNorth provides a module for planning the different chapters of your game and the branching story.
 For this it provides a node system which allows you to connect the different quests and their possible outcomes together:
 
-![Chapter planning](/steffendx/GoNorth/master/TeaserImages/Aika.PNG)
+![Chapter planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Aika.PNG?raw=true)
 
 A similiar node system can be created for the different quests.  
 Each quest will show the connections to Maps, Wiki pages and other objects to provide a view on the big picture while planning the quest.  
-More details can be found [in the wiki](/steffendx/GoNorth/wiki/Aika).
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Aika).
 
 ### Npc and Item Planning (Kortisto and Styr)
 The web application provides functionality for planning Npcs and Items with flexible values. You can create templates and then create new Npcs or Items based on these templates:
 
-![Npc planning](/steffendx/GoNorth/master/TeaserImages/Kortisto.PNG)
+![Npc planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Kortisto.PNG?raw=true)
 
 Each object will display the different maps in which the Npc or Item is marked, the Wiki Pages in which its mentioned and all other connections. This way the user has a good overview what he or she has to consider when building the character or item.  
-More details can be found in the wiki for [npcs](/steffendx/GoNorth/wiki/Kortisto) and [items](/steffendx/GoNorth/wiki/Styr).
+More details can be found in the wiki for [npcs](https://github.com/steffendx/GoNorth/wiki/Kortisto) and [items](https://github.com/steffendx/GoNorth/wiki/Styr).
 
 ### Dialog Planning (Tale)
 Using the dialog planning module a user can create the branching dialogs for the different game characters as a node system:
 
-![Npc planning](/steffendx/GoNorth/master/TeaserImages/Tale.PNG)
+![Dialog planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Tale.PNG?raw=true)
 
 GoNorth provides different dialog nodes for player or npc lines, player choices, conditions or actions.  
 It is planned to implement a script export for these node systems.  
-More details can be found [in the wiki](/steffendx/GoNorth/wiki/Tale).
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Tale).
 
 ### Wiki Component (Kirja)
 Kirja is the wiki component of GoNorth. Apart from allowing the user to write wiki pages it also features a tight integration into the other systems:
 
-![Npc planning](/steffendx/GoNorth/master/TeaserImages/Kirja.PNG)
+![Wiki](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Kirja.PNG?raw=true)
 
 Kirja also allows the users to attach additional planning files.  
-More details can be found [in the wiki](/steffendx/GoNorth/wiki/Kirja).
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Kirja).
 
 ### Map Planning (Karta)
 A user can upload a high resolution map image to GoNorth which will then be transformed into an interactive map similiar to Google Maps. On this map a user can mark the position of Quest Markers, Npcs, Items, Wiki Pages and Map Changes:
 
-![Npc planning](/steffendx/GoNorth/master/TeaserImages/Karta.PNG)
+![Map planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Karta.PNG?raw=true)
 
 Each marker provides brief informations about the different objects and allow the users to jump of the detail page.  
-More details can be found [in the wiki](/steffendx/GoNorth/wiki/Karta).
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Karta).
 
 ## Implementation Status Tracking
 GoNorth allows you to mark objects as implemented once they are integrated into your game. If a user changes relevant values of theses objects afterwards GoNorth will reset the implemented flag and show you which values where changed:
 
-![Npc planning](/steffendx/GoNorth/master/TeaserImages/ImplementationStatus.PNG)
+![Implementation Status Tracking](https://github.com/steffendx/GoNorth/master/TeaserImages/ImplementationStatus.PNG?raw=true)
 
 This way its much easier to keep track of the integration progress and not forget changes.  
-More details can be found [in the wiki](/steffendx/GoNorth/wiki/Implementation-Status-Tracking).
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Implementation-Status-Tracking).
 
 ## Task Management
 A simple Kanban Board is integrated into GoNorth:
 
-![Npc planning](/steffendx/GoNorth/master/TeaserImages/Task.PNG)
+![Task Management](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Task.PNG?raw=true)
 
-More details can be found [in the wiki](/steffendx/GoNorth/wiki/Task-Management).
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Task-Management).
 
 ## Technology
 GoNorth is implemented using .Net Core for the backend. Since .Net Core provides cross-plattform support you can host the portal on Windows, Linux and Mac OS.  
