@@ -130,9 +130,9 @@
     "sourceMap": false
   },
   {
-    "outputFileName": "wwwroot/js/Administration/projectManagement.viewmodel.min.js",
+    "outputFileName": "wwwroot/js/Administration/projectManagement.ViewModel.min.js",
     "inputFiles": [
-      "wwwroot/js/Administration/projectManagement.viewmodel.js"
+      "wwwroot/js/Administration/projectManagement.ViewModel.js"
     ],
     "minify": {
       "enabled": true,
@@ -419,7 +419,7 @@
       "wwwroot/js/Aika/shared/chapterDetailNodeHelper.js",
       "wwwroot/js/Aika/shared/finishNode.js",
       "wwwroot/js/Aika/shared/startNode.js",
-      "wwwroot/js/Aika/shared/allDOneNode.js",
+      "wwwroot/js/Aika/shared/allDoneNode.js",
 
       "wwwroot/js/Aika/chapterDetail/questNode.js",
       "wwwroot/js/Aika/chapterDetail/chapterDetailNode.js",
