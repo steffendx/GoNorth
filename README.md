@@ -65,7 +65,7 @@ More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wik
 ## Implementation Status Tracking
 GoNorth allows you to mark objects as implemented once they are integrated into your game. If a user changes relevant values of theses objects afterwards GoNorth will reset the implemented flag and show you which values where changed:
 
-![Implementation Status Tracking](https://github.com/steffendx/GoNorth/master/TeaserImages/ImplementationStatus.PNG?raw=true)
+![Implementation Status Tracking](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/ImplementationStatus.PNG?raw=true)
 
 This way its much easier to keep track of the integration progress and not forget changes.  
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Implementation-Status-Tracking).
