@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:Master" id="1" x="11" y="8" measuredWidth="194" measuredHeight="43" layoutParams="anchor-left|anchor-top">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h2.%20Heading"/>
+    <overrides>
+      <widgets ref="5" text="Please sign in"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="2" x="11" y="56" measuredWidth="300" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top">
+    <screen xsi:type="model:WidgetGroup" href="../Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="300" text="~Email address~"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="3" x="11" y="93" measuredWidth="300" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top">
+    <screen xsi:type="model:WidgetGroup" href="../Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="300" text="~Password~"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="4" x="11" y="136" measuredWidth="119" measuredHeight="25" layoutParams="anchor-left|anchor-top">
+    <screen xsi:type="model:WidgetGroup" href="../Forms.screen#Checkbox"/>
+    <overrides>
+      <widgets ref="18" text="Remember me"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="5" x="11" y="176" measuredWidth="300" measuredHeight="45" layoutParams="anchor-left,anchor-right|anchor-bottom">
+    <screen xsi:type="model:WidgetGroup" href="../Buttons.screen#Button%20Block"/>
+    <overrides>
+      <widgets ref="47" width="300" text="Sign in">
+        <attributes key="background" value="#428bca"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

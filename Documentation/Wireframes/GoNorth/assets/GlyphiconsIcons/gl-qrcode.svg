@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e039 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="qrcode" d="M500 900h100v-100h-100v-100h-400v-100h-100v600h500v-300zM1200 700h-200v-100h200v-200h-300v300h-200v300h-100v200h600v-500zM100 1100v-300h300v300h-300zM800 1100v-300h300v300h-300zM300 900h-100v100h100v-100zM1000 900h-100v100h100v-100zM300 500h200v-500 h-500v500h200v100h100v-100zM800 300h200v-100h-100v-100h-200v100h-100v100h100v200h-200v100h300v-300zM100 400v-300h300v300h-300zM300 200h-100v100h100v-100zM1200 200h-100v100h100v-100zM700 0h-100v100h100v-100zM1200 0h-300v100h300v-100z" />
+</g>
+</svg>	

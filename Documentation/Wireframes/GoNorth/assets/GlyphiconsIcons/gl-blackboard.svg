@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e218 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="blackboard" d="M150 1100h900q21 0 35.5 -14.5t14.5 -35.5v-500q0 -21 -14.5 -35.5t-35.5 -14.5h-900q-21 0 -35.5 14.5t-14.5 35.5v500q0 21 14.5 35.5t35.5 14.5zM125 400h950q10 0 17.5 -7.5t7.5 -17.5v-50q0 -10 -7.5 -17.5t-17.5 -7.5h-283l224 -224q13 -13 13 -31.5t-13 -32 t-31.5 -13.5t-31.5 13l-88 88h-524l-87 -88q-13 -13 -32 -13t-32 13.5t-13 32t13 31.5l224 224h-289q-10 0 -17.5 7.5t-7.5 17.5v50q0 10 7.5 17.5t17.5 7.5zM541 300l-100 -100h324l-100 100h-124z" />
+</g>
+</svg>	

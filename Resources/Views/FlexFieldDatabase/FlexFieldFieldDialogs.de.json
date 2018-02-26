@@ -1,0 +1,16 @@
+{
+    "EditField": "Feld editieren",
+    "AddField": "Feld hinzufügen",
+    "Name": "Name",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheField": "Bist du sicher das das Feld gelöscht werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+    
+    "FieldScriptSetting": "Feld Scripteinstellungen",
+    "DontExportToScript": "Nicht in Script exportieren",
+    "AdditionalScriptNames": "Zusätzliche Skriptnamen (Komma getrennt)"
+}

@@ -1,0 +1,301 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.TaskManagementViewModels
+
+@inject IViewLocalizer Localizer
+
+@model TaskBoardViewModel
+
+@{
+    ViewData["Title"] = @Localizer["Tasks"];
+}
+
+<div id="gn-taskBoardContainer">
+    <!-- Task Group / Task Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showTaskDialog">
+        <div class="modal-dialog gn-taskDialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" data-bind="text: taskDialogTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+                        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+                    </div>
+                    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: taskDialogLockedByUser">
+                        <strong>@Localizer["Locked"]</strong> <span data-bind="text: taskDialogLockedPrefix"></span><span data-bind="text: taskDialogLockedByUser"></span>@Localizer["LockedPostfix"]
+                    </div>
+                    <form id="gn-taskDialogForm">
+                        <div class="form-group">
+                            <label for="gn-taskDialogName">@Localizer["Name"]</label>
+                            <input type="text" class="form-control" id="gn-taskDialogName" placeholder="@Localizer["Name"]" name="taskDialogName" data-bind="value: taskDialogName, enterPressed: function() { $root.saveTaskDialog(true); }, disable: isReadonly() || isTaskDialogReadonly()" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-taskDialogDescription">@Localizer["Description"] <span class="gn-taskDescriptionLinkHint">@Localizer["PressCtrlToOpenLinks"]</span></label>
+                            <!-- ko if: !isReadonly() && !isTaskDialogReadonly() -->
+                            <div class="gn-taskDialogDescription" id="gn-taskDialogDescription" placeholder="@Localizer["Description"]" name="taskDialogDescription" data-bind="richText: taskDialogDescription, richTextAddditionalButtons: generateRichTextButtons, richTextImageUploadUrl: '/api/TaskApi/ImageUpload?imageFile={filename}', richTextImageUploadSuccess: imageUploaded, richTextAddditionalImageUploadError: uploadError, richTextAfterImageInserted: function() { $root.saveTaskDialog(false); }, click: checkDescriptionOpenLink"></div>
+                            <!-- /ko -->
+                            <!-- ko if: isReadonly() || isTaskDialogReadonly() -->
+                            <div class="gn-taskDialogDescription form-control" id="gn-taskDialogDescription" data-bind="html: taskDialogDescription" disabled></div>
+                            <!-- /ko -->
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-taskDialogAssignedTo">@Localizer["AssignedTo"]</label>
+                            <select class="form-control" id="gn-taskDialogAssignedTo" name="taskDialogAssignedTo" data-bind="value: taskDialogAssignedTo, options: allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', disable: isReadonly() || isTaskDialogReadonly()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-taskDialogStatus">@Localizer["Status"]</label>
+                            <select class="form-control" id="gn-taskDialogStatus" name="taskDialogStatus" data-bind="value: taskDialogStatus, options: taskStatus, optionsText: 'displayName', optionsValue: 'value', disable: isReadonly() || isTaskDialogReadonly()"></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="gn-taskDeleteButton btn btn-default" data-bind="click: openDeleteDialog, disable: isLoading() || isReadonly() || isTaskDialogReadonly(), visible: isTaskEditDialog">@Localizer["Delete"]</button>
+                    <button type="button" class="btn btn-primary" data-bind="click: function() { $root.saveTaskDialog(true); }, disable: isLoading() || isReadonly() || isTaskDialogReadonly()">@Localizer["Save"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeTaskDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link Dialog -->
+    <!-- ko with: linkDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    <!-- Delete Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p data-bind="text: deleteDialogText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteTask">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+            <h2><span data-bind="text: boardName">@Localizer["Tasks"]</span> <span class="gn-taskHeaderBoardDates" data-bind="text: currentBoardDates"></span> <i class="glyphicon glyphicon-refresh spinning gn-taskBoardLoading" style="display: none" data-bind="visible: isLoading"></i></h2>
+        </div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 gn-taskSwitchBoardContainer">
+            <div class="dropdown gn-inlineDropdown gn-taskSwitchBoardButton">
+                <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-switchBoardButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    @Localizer["SwitchBoard"] <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="gn-switchBoardButton">
+                    <!-- ko foreach: allBoards -->
+                        <li><a class="gn-clickable" data-bind="click: function(board) { $root.switchBoard(board.id); }"><span data-bind="text: name"></span> <span class="gn-taskSelectBoardDates" data-bind="text: $root.formatTaskBoardDates($data)"></span></a></li>
+                    <!-- /ko -->
+                    @if(User.IsInRole(RoleNames.TaskBoardManager))
+                    {
+                        <li class="divider"></li>
+                        <li><a asp-area="" asp-controller="Task" asp-action="ManageBoards">@Localizer["ManageBoards"]</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Buttons -->
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openCreateTaskGroupDialog, disable: isLoading() || isReadonly()">
+        <i class="glyphicon glyphicon-plus" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["CreateTaskGroup"]
+    </button>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: isReadonly">
+        <strong>@Localizer["Locked"]</strong> @Localizer["BoardIsClosed"]
+    </div>
+
+    <!-- Task Groups -->
+    <div class="gn-tasksGroupContainer" style="display: none" data-bind="visible: true">
+        <div class="row">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+            </div>
+            <!-- ko foreach: taskStatus -->
+            <div class="col-xs-12 gn-tasksStatusColumnHeader" data-bind="css: $root.taskColumnClass, text: displayName">
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- ko foreach: taskGroups -->
+        <div class="row gn-taskGroupRow">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                <div class="gn-taskGroupExpandCollapse gn-clickable" data-bind="click: toogleExpanded"><i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i></div>
+                <div class="gn-taskGroupCard gn-taskGroupCardExpanded" data-bind="visible: isExpanded">
+                    <div class="gn-taskCardTitle gn-taskGroupTitle"><a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a></div>
+                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null); } }, disabled: $root.isLoading"></select></div>
+                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: status, options: $root.taskStatus, optionsValue: 'value', optionsText: 'displayName', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null); } }, disabled: $root.isLoading"></select></div>
+                </div>
+                <button class="gn-taskCreateTaskButton btn btn-primary" data-bind="visible: isExpanded() && !$root.isReadonly(), click: function(taskGroup) { $root.openCreateNewTaskDialog(taskGroup); }" title="@Localizer["CreateTaskToolTip"]"><i class="glyphicon glyphicon-plus"></i></button>
+                <div class="gn-taskGroupCard gn-taskGroupCardCollapsed" data-bind="visible: !isExpanded()">
+                    <div class="gn-taskTitle"><a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a></div>
+                </div>
+            </div>
+            <!-- ko foreach: statusColumns -->
+            <div class="col-xs-12 gn-taskGroupColumn" data-bind="css: $root.taskColumnClass">
+                <div class="gn-taskGroupColumnTaskDrop" data-bind="droppable: function(draggable, left, top, task) { $root.dropTaskToStatus($parent, task, $data.status); }, droppableAccept: '.gn-task' + $parent.id"></div>
+                <div class="gn-taskGroupColumnTaskContainer">
+                    <!-- ko if: $parent.isExpanded -->
+                        <!-- ko foreach: tasks -->
+                        <div class="gn-taskCard" data-bind="draggable: 'original', draggableRevert: true, draggableRevertDuration: 100, draggableZIndex: 100, css: 'gn-task' + $parents[1].id, draggableObject: $data">
+                            <div class="gn-taskCardTitle gn-taskTitle"><a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(task) { $root.openEditTaskDialog($parents[1], task); }"></a></div>
+                            <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(task) { $root.saveTaskQuickEdit($parents[1], task); } }, disabled: $root.isLoading"></select></div>
+                        </div>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko if: !$parent.isExpanded() -->
+                    <div class="gn-taskColumnCollapsedTaskCount" data-bind="visible: tasks().length > 0">
+                        <span data-bind="text: tasks().length"></span> <span data-bind="visible: tasks().length == 1">@Localizer["TasksSingle"]</span><span data-bind="visible: tasks().length > 1">@Localizer["TasksMulti"]</span>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+
+    <environment include="Development">
+        <script src="~/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).js"></script>
+
+        <script src="~/js/Task/taskBoard.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).min.js"></script>
+
+        <script src="~/js/Task/taskBoard.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.Task.TaskBoard.Localization = {
+            Tasks: "@Localizer["Tasks"]",
+            StartingFrom: "@Localizer["StartingFrom"]",
+
+            NewTaskGroup: "@Localizer["NewTaskGroup"]",
+            EditTaskGroup: "@Localizer["EditTaskGroup"]",
+            NewTask: "@Localizer["NewTask"]",
+            EditTask: "@Localizer["EditTask"]",
+
+            LockedTaskGroupPrefix: "@Localizer["LockedTaskGroupPrefix"]",
+            LockedTaskPrefix: "@Localizer["LockedTaskPrefix"]",
+
+            AreYouSureYouWantToDeleteTheTaskGroup: "@Localizer["AreYouSureYouWantToDeleteTheTaskGroup"]",
+            AreYouSureYouWantToDeleteTheTask: "@Localizer["AreYouSureYouWantToDeleteTheTask"]",
+
+            Unassigned: "@Localizer["Unassigned"]",
+
+            ToolbarButtonInsertKirjaLinkTitle: "@Localizer["InsertKirjaLink"]",
+            ToolbarButtonInsertAikaQuestLinkTitle: "@Localizer["InsertAikaQuestLink"]",
+            ToolbarButtonInsertKortistoNpcLinkTitle: "@Localizer["InsertKortistoNpcLink"]",
+            ToolbarButtonInsertStyrItemLinkTitle: "@Localizer["InsertStyrItemLink"]"
+        };
+
+        @if(User.IsInRole(RoleNames.Aika))
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasAikaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasAikaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasKortistoRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasKortistoRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Styr))
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasStyrRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasStyrRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Karta))
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasKartaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasKartaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Kirja))
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasKirjaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasKirjaRights = false;
+            </text>
+        }
+
+        var taskStatus = [];
+        @foreach(MappedTaskStatus curStatus in @Model.TaskStatus)
+        {
+            <text>
+            taskStatus.push({
+                value: @curStatus.Value,
+                displayName: "@Localizer["TaskStatus" + @curStatus.Name]"
+            });
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Task.TaskBoard.ViewModel(taskStatus), jQuery("#gn-taskBoardContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.css" />
+    </environment>
+}

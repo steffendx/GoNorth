@@ -1,0 +1,72 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.FlexFieldDatabaseModels
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Item"];
+}
+
+<div id="gn-styrItemContainer">
+    <h2><span data-bind="visible: !isTemplateMode()">@ViewData["Title"]</span><span data-bind="visible: isTemplateMode" style="display: none">@Localizer["Template"]</span><span data-bind="visible: objectNameDisplay"> <span data-bind="text: objectNameDisplay"></span></span></h2>
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormDialogsButtons.cshtml", Localizer)
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormContent.cshtml", new ObjectFormViewModel { Localizer = Localizer, ApiControllerName = "StyrApi", ObjectIcon = "glyphicon-apple" } )
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormTagInput.cshtml", Localizer)
+
+    <!-- Related objects -->
+    <!-- ko if: !isTemplateMode() -->
+    <hr>
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormRelatedObjects.cshtml", Localizer)
+
+    @if(User.IsInRole(RoleNames.Kortisto))
+    {
+        <h4>@Localizer["ReferencedInNpcInventories"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingContainedInNpcInventory"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingContainedInNpcInventory"></i></h4>
+        <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: containedInNpcInventory">
+            <li>
+                <a class="gn-clickable" data-bind="text: name, href: $root.buildNpcInventoryUrl" target="_blank"></a>
+            </li>
+        </ul>
+    }
+    <!-- /ko -->
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormBaseScripts.cshtml", Localizer)
+
+    <environment include="Development">
+        <script src="~/js/Styr/item.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Styr/item.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormScriptRights.cshtml", Localizer)
+
+    <script type="text/javascript">
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights = false;
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Styr.Item.ViewModel(), jQuery("#gn-styrItemContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormStyles.cshtml")
+}

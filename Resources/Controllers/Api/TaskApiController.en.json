@@ -1,0 +1,8 @@
+{
+    "CanNotDeleteNonEmptyTaskBoard": "The task board is not empty. You have to delete all task groups first.",
+    "CanNotDeleteNonEmptyTaskGroup": "The task group is not empty. You have to delete all tasks first.",
+
+    "OnlyOneFileAllowed": "You must upload exactly one image file.",
+    "CouldNotUploadImage": "Image could not be uploaded.",
+    "ImageFormatNotSupported": "The image format is not supported."
+}

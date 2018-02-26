@@ -1,0 +1,17 @@
+{
+    "QuestList": "Quest list",
+
+    "CreateNewQuest": "Create quest",    
+    "Name": "Name",
+    "IsMainQuest": "Main quest",
+    "Yes": "Yes",
+    "No": "No",
+    
+    "Search": "Search",
+
+    "PreviousPage": "Previous page",
+    "NextPage": "Next page",
+    
+    "Error": "Error:",
+    "ErrorOccured": "An error occured."
+}

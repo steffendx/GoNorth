@@ -1,0 +1,43 @@
+{
+    "Item": "Item",
+    "Template": "Template",
+
+    "Save": "Save",
+    "SaveAndDistributeFields": "Save & distribute fields to items",
+    "IsImplemented": "Implemented",
+    "IsNotImplementedTooltip": "Item is not implemented.",
+    "MarkAsImplemented": "Mark as implemented",
+    "Cancel": "Cancel",
+    "Delete": "Delete",
+
+    "Name": "Name",
+    "DropImageHere": "Drop image for item here or click to choose an image",
+
+    "ReferencedInAikaQuests": "Referenced in Aika quests:",
+    
+    "MentionedInKirjaPages": "Mentioned in Kirja pages:",
+
+    "MarkedInKartaMaps": "Marked in Karta maps:",
+    "MarkedInMapNTimes": "Item is marked in the map {{0}} times. No zoom on marker is possible.",
+
+    "ReferencedInTaleDialogs": "Referenced in Tale dialogs:",
+
+    "ReferencedInNpcInventories": "In npc inventory:",
+    
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheObject": "Are you sure you want to delete the item?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedTemplatePrefix": "The template is currently beeing edited by ",
+    "LockedObjectPrefix": "The item is currently beeing edited by ",
+    "LockedPostfix": ".",
+
+    "RichTextLocale": "en",
+    "DropzoneLocale": "en"
+}

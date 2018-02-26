@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+
+        /**
+         * Node Graph Actions Namespace
+         * @namespace Actions
+         */
+        (function(Actions) {
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));

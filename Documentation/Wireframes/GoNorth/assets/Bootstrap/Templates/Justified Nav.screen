@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:Master" id="1" x="33" y="70" measuredWidth="1140" measuredHeight="52">
+    <screen xsi:type="model:WidgetGroup" href="../Buttons.screen#Button%20Group%20Justified"/>
+    <overrides>
+      <widgets ref="19" width="1140" height="52" text="Home, Projects, Services, Downloads, About, Contact">
+        <attributes key="selection" value="0"/>
+        <attributes key="background" value="#eeeeee"/>
+        <font bold="true"/>
+        <items ref="@items.0" text="Home"/>
+        <items ref="@items.1" text="Projects"/>
+        <items ref="@items.2" text="Services"/>
+        <itemChanges xsi:type="o:Insert" newIndex="3">
+          <object xsi:type="model:Item" text="Contact"/>
+        </itemChanges>
+        <itemChanges xsi:type="o:Insert" newIndex="3">
+          <object xsi:type="model:Item" text="About"/>
+        </itemChanges>
+        <itemChanges xsi:type="o:Insert" newIndex="3">
+          <object xsi:type="model:Item" text="Downloads"/>
+        </itemChanges>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="2" x="33" y="24" measuredWidth="150" measuredHeight="36">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h3.%20Heading"/>
+    <overrides>
+      <widgets ref="7" text="Project name"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Label" id="6" x="33" y="197" width="1140" text="Marketing stuff!" measuredWidth="1140" measuredHeight="79" layoutParams="anchor-left|anchor-top" textAlignment="Center">
+    <font size="63px"/>
+  </widgets>
+  <widgets xsi:type="model:Text" id="7" x="106" y="301" width="994" height="62" text="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet." measuredWidth="994" measuredHeight="62" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" textAlignment="Center" lineHeight="1.4">
+    <font size="21px"/>
+  </widgets>
+  <widgets xsi:type="model:Button" id="8" x="495" y="388" width="215" height="57" text="Get started today" measuredWidth="215" measuredHeight="57" layoutParams="anchor-left|anchor-bottom" background="#5cb85c">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="14" x="33" y="544" measuredWidth="373" measuredHeight="206">
+    <widgets xsi:type="model:Master" id="11" measuredWidth="122" measuredHeight="43">
+      <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h2.%20Heading"/>
+      <overrides>
+        <widgets ref="5" text="Heading"/>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Master" id="12" y="57" measuredWidth="373" measuredHeight="109">
+      <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+      <overrides>
+        <widgets ref="17" width="373" height="109" text="Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."/>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Master" id="13" y="172" measuredWidth="121" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" text="View details >>"/>
+      </overrides>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="15" x="416" y="544" measuredWidth="373" measuredHeight="206">
+    <widgets xsi:type="model:Master" id="16" measuredWidth="122" measuredHeight="43">
+      <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h2.%20Heading"/>
+      <overrides>
+        <widgets ref="5" text="Heading"/>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Master" id="17" y="57" measuredWidth="373" measuredHeight="109">
+      <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+      <overrides>
+        <widgets ref="17" width="373" height="109" text="Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."/>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Master" id="18" y="172" measuredWidth="121" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" text="View details >>"/>
+      </overrides>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="19" x="800" y="544" measuredWidth="373" measuredHeight="206">
+    <widgets xsi:type="model:Master" id="20" measuredWidth="122" measuredHeight="43">
+      <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h2.%20Heading"/>
+      <overrides>
+        <widgets ref="5" text="Heading"/>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Master" id="21" y="57" measuredWidth="373" measuredHeight="109">
+      <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+      <overrides>
+        <widgets ref="17" width="373" height="109" text="Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui."/>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Master" id="22" y="172" measuredWidth="121" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" text="View details >>"/>
+      </overrides>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:HLine" id="23" x="33" y="818" width="1140" measuredWidth="1140" measuredHeight="6"/>
+  <widgets xsi:type="model:Label" id="24" x="33" y="848" text="© Company 2013" measuredWidth="118" measuredHeight="25">
+    <font/>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

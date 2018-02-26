@@ -1,0 +1,18 @@
+{
+    "MoveConditionUp": "Move condition up",
+    "MoveConditionDown": "Move condition down",
+    "DragOnOperatorToMove": "Drag this icon onto an operator to move the condition in this group",
+    "DeleteCondition": "Delete condition",
+    "DoubleClickToChangeOperator": "Doube click to change the operator",
+    "EditCondition": "Edit condition",
+    "AddCondition": "Add condition",
+    "GroupAnd": "And",
+    "GroupOr": "Or",
+    "Warning": "Warning",
+    "CanOnlyGroupOnSameLevel": "You can only group conditions from the same group.",
+    "YouCanNotMoveAParentToOneOfItsChildren": "You can not move a condition into one of its children.",
+    "Confirm": "Confirm",
+    "Cancel": "Cancel",
+
+    "ErrorOccured": "An error occured."
+}

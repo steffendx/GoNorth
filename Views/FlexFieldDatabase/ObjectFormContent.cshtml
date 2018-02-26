@@ -1,0 +1,44 @@
+@using GoNorth.Models.FlexFieldDatabaseModels
+
+@model ObjectFormViewModel
+
+<button type="button" class="btn btn-default gn-commandWidgetTopMargin gn-buttonMarginLeft" data-bind="click: openDeleteObjectDialog, visible: id, disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-trash"></i> @Model.Localizer["Delete"]</button>
+
+<div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+    <strong>@Model.Localizer["Error"]</strong> @Model.Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+</div>
+
+<div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+    <strong>@Model.Localizer["Locked"]</strong> <span data-bind="visible: isTemplateMode">@Model.Localizer["LockedTemplatePrefix"]</span><span data-bind="visible: !isTemplateMode()">@Model.Localizer["LockedObjectPrefix"]</span><span data-bind="text: lockedByUser"></span>@Model.Localizer["LockedPostfix"]
+</div>
+
+<!-- Object Form -->
+<form id="gn-objectFields">
+    <div class="row gn-defaultContentTopMargin">
+        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 gn-flexFieldObjectFormImageColumn">
+            <div class="gn-flexFieldObjectFormImageContainer" title="@Model.Localizer["DropImageHere"]">
+                <!-- ko if: !imageFilename() -->
+                    <i class="glyphicon @Model.ObjectIcon gn-flexFieldObjectFormImagePlaceholder"></i>
+                <!-- /ko -->
+                <!-- ko if: imageFilename -->
+                    <img class="gn-flexFieldObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFilename() }">
+                <!-- /ko -->
+                <!-- ko if: id -->
+                    <div class="gn-flexFieldObjectFormImageDropzone" data-bind="dropzone: objectImageUploadUrl, dropzoneAcceptedFiles: 'image/*', dropzoneMaxFiles: 1, dropzoneHoverClass: 'gn-dropzoneFileHover', dropzoneDisable: isReadonly, dropzoneSuccess: function(imageFile) { $root.imageUploaded(imageFile); }, dropzoneError: function(errorMessage, xhr) { $root.imageUploadError(errorMessage, xhr); }, dropzoneAddedFile: function() { $root.resetErrorState(); }"></div>
+                <!-- /ko -->
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
+            <form id="gn-objectForm">
+                <div class="form-group">
+                    <label for="gn-objectName">@Model.Localizer["Name"]</label>
+                    <input type="text" class="form-control" id="gn-objectName" placeholder="@Model.Localizer["Name"]" name="objectName" data-bind="value: objectName, disable: isReadonly" required/>
+                </div>
+
+                @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldList.cshtml")
+            </form>
+        </div>
+    </div>
+</form>
+
+@await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldTemplates.cshtml")

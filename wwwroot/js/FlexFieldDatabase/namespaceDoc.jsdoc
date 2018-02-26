@@ -1,0 +1,22 @@
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+
+        /**
+         * Flex Field Template Management Namespace
+         * @namespace ManageTemplates
+         */
+        (function(ManageTemplates) {
+
+        }(FlexFieldDatabase.ManageTemplates = FlexFieldDatabase.ManageTemplates || {}));
+
+        /**
+         * Overview Forms Namespace
+         * @namespace Overview
+         */
+        (function(Overview) {
+
+        }(FlexFieldDatabase.Overview = FlexFieldDatabase.Overview || {}));
+
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));

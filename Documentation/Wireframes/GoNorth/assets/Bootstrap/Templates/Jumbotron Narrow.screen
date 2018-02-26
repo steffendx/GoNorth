@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:Master" id="1" x="60" y="20" measuredWidth="150" measuredHeight="36">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h3.%20Heading"/>
+    <overrides>
+      <widgets ref="7" text="Project name"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:HLine" id="2" x="60" y="72" width="700" measuredWidth="700" measuredHeight="6"/>
+  <widgets xsi:type="model:Master" id="4" x="535" y="17" measuredWidth="225" measuredHeight="41">
+    <screen xsi:type="model:WidgetGroup" href="../Navigation.screen#Pills"/>
+    <overrides>
+      <widgets ref="12" text="Home, About, Contact">
+        <items ref="@items.0" text="Home"/>
+        <items ref="@items.1" text="About"/>
+        <items ref="@items.2" text="Contact"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="5" x="60" y="104" height="372" measuredWidth="700" measuredHeight="372">
+    <screen xsi:type="model:WidgetGroup" href="../Content.screen#Jumbotron"/>
+    <overrides>
+      <widgets ref="2" width="700" height="372"/>
+      <widgets ref="5" width="567" height="122" text="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.">
+        <attributes key="textAlignment" value="Center"/>
+      </widgets>
+      <widgets ref="4" width="576" text="Jumbotron heading">
+        <attributes key="textAlignment" value="Center"/>
+        <attributes key="layoutParams" value="anchor-left,anchor-right|anchor-top"/>
+      </widgets>
+      <widgets ref="7" x="276" y="280" text="Sign up today">
+        <attributes key="background" value="#5cb85c"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:HLine" id="6" x="60" y="866" width="700" measuredWidth="700" measuredHeight="6"/>
+  <widgets xsi:type="model:Label" id="7" x="60" y="880" text="© Company 2013" measuredWidth="118" measuredHeight="25">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="8" x="82" y="507" measuredWidth="106" measuredHeight="30">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h4.%20Heading"/>
+    <overrides>
+      <widgets ref="9" text="Subheading"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="9" x="82" y="546" measuredWidth="319" measuredHeight="43">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+    <overrides>
+      <widgets ref="17" width="319" height="43" text="Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum."/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="10" x="424" y="507" measuredWidth="106" measuredHeight="30">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h4.%20Heading"/>
+    <overrides>
+      <widgets ref="9" text="Subheading"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="11" x="424" y="546" measuredWidth="319" measuredHeight="43">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+    <overrides>
+      <widgets ref="17" width="319" height="43" text="Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum."/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="12" x="82" y="617" measuredWidth="106" measuredHeight="30">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h4.%20Heading"/>
+    <overrides>
+      <widgets ref="9" text="Subheading"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="13" x="82" y="656" height="63" measuredWidth="319" measuredHeight="63">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+    <overrides>
+      <widgets ref="17" width="319" height="63" text="Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum."/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="14" x="424" y="617" measuredWidth="106" measuredHeight="30">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h4.%20Heading"/>
+    <overrides>
+      <widgets ref="9" text="Subheading"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="15" x="424" y="656" height="63" measuredWidth="319" measuredHeight="63">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+    <overrides>
+      <widgets ref="17" width="319" height="63" text="Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum."/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="16" x="82" y="742" measuredWidth="106" measuredHeight="30">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h4.%20Heading"/>
+    <overrides>
+      <widgets ref="9" text="Subheading"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="17" x="82" y="781" measuredWidth="319" measuredHeight="43">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+    <overrides>
+      <widgets ref="17" width="319" height="43" text="Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum."/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="18" x="424" y="742" measuredWidth="106" measuredHeight="30">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#h4.%20Heading"/>
+    <overrides>
+      <widgets ref="9" text="Subheading"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="19" x="424" y="781" measuredWidth="319" measuredHeight="43">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy"/>
+    <overrides>
+      <widgets ref="17" width="319" height="43" text="Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum."/>
+    </overrides>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

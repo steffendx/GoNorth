@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e225 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="piggy-bank" d="M484 1095h195q75 0 146 -32.5t124 -86t89.5 -122.5t48.5 -142q18 -14 35 -20q31 -10 64.5 6.5t43.5 48.5q10 34 -15 71q-19 27 -9 43q5 8 12.5 11t19 -1t23.5 -16q41 -44 39 -105q-3 -63 -46 -106.5t-104 -43.5h-62q-7 -55 -35 -117t-56 -100l-39 -234q-3 -20 -20 -34.5 t-38 -14.5h-100q-21 0 -33 14.5t-9 34.5l12 70q-49 -14 -91 -14h-195q-24 0 -65 8l-11 -64q-3 -20 -20 -34.5t-38 -14.5h-100q-21 0 -33 14.5t-9 34.5l26 157q-84 74 -128 175l-159 53q-19 7 -33 26t-14 40v50q0 21 14.5 35.5t35.5 14.5h124q11 87 56 166l-111 95 q-16 14 -12.5 23.5t24.5 9.5h203q116 101 250 101zM675 1000h-250q-10 0 -17.5 -7.5t-7.5 -17.5v-50q0 -10 7.5 -17.5t17.5 -7.5h250q10 0 17.5 7.5t7.5 17.5v50q0 10 -7.5 17.5t-17.5 7.5z" />
+</g>
+</svg>	

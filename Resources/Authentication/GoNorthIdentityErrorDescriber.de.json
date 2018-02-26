@@ -1,0 +1,23 @@
+{
+    "DefaultError": "Ein unbekannter Fehler ist aufgetreten.",
+    "ConcurrencyFailure": "Optimistic concurrency Fehler, Objekt wurde modifiziert.",
+    "PasswordMismatch": "Ungültiges Password.",
+    "InvalidToken": "Ungültiger Token.",
+    "LoginAlreadyAssociated": "Es existiert bereits ein Benutzer mit diesem Benutzernamen.",
+    "InvalidUserName": "Benutzername '{0}' ist ungültig. Er darf nur Zahlen und Buchstaben beinhalten.",
+    "InvalidEmail": "Email '{0}' ist ungültig." ,
+    "DuplicateUserName": "Benutzername '{0}' ist bereits vergeben." ,
+    "DuplicateEmail": "Email '{0}' ist bereits vergeben." ,
+    "InvalidRoleName": "Rollen Name '{0}' ist ungültig." ,
+    "DuplicateRoleName": "Rollen Name '{0}' ist bereits vergeben." ,
+    "UserAlreadyHasPassword": "Der Benutzer hat bereits ein Passwort.",
+    "UserLockoutNotEnabled": "Account-Sperren ist für den Benutzer nicht aktiviert.",
+    "UserAlreadyInRole": "Der Benutzer ist bereits in Rolle '{0}'." ,
+    "UserNotInRole": "Benutzer ist nicht in Rolle '{0}'." ,
+    "PasswordTooShort": "Das Passwort muss mindenstens {0} Zeichen lang sein." ,
+    "PasswordRequiresNonAlphanumeric": "Das Passwort muss mindenstens ein nicht alphanumerisches Zeichen beinhalten.",
+    "PasswordRequiresDigit": "Das Passwort muss mindenstens eine Zahl beinhalten ('0'-'9').",
+    "PasswordRequiresLower": "Das Passwort muss mindenstens einen Kleinbuchstaben beinhalten ('a'-'z').",
+    "PasswordRequiresUpper": "Das Passwort muss mindenstens einen Großbuchstaben beinhalten ('A'-'Z').",
+    "UserRequiresDisplayName": "Es muss ein Name angegeben werden."
+}

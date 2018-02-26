@@ -1,0 +1,318 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.KirjaViewModels
+
+@inject IViewLocalizer Localizer
+
+@model KirjaPageViewModel
+
+@{
+    ViewData["Title"] = @Localizer["Kirja"];
+}
+
+<div id="gn-kirjaPageContainer">
+    <!-- Delete Page Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteThePage"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deletePage">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dirty exit edit mode Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDirtyExitEdit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToExitEditMode"]</span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: exitEditModeWithoutDirtyCheck">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDirtyExitEdit">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Attachment Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteAttachmentDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheAttachment"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteAttachment">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmAttachmentDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link Dialog -->
+    <!-- ko with: linkDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    <!-- Wait on new page dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showNewWaitPageDialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Localizer["WaitingOnNewPage"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["DialogWillCloseOnSaveOfNewPage"]</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <form id="gn-kirjaHeaderFields">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-5 col-lg-5 gn-kirjaNameCol">
+                    <div data-bind="visible: !isEditMode()">
+                        <h2 data-bind="text: pageName"></h2>
+                    </div>
+                    <div data-bind="visible: isEditMode" style="display: none">
+                        <div class="form-group">
+                            <input type="text" class="form-control gn-kirjaPageNameInput" placeholder="@Localizer["Name"]" name="folderDisplayName" data-bind="value: pageName" id="gn-kirjaPageName" required tabindex="1"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-8 col-md-7 col-lg-7 gn-kirjaButtonCol">
+                    <!-- Command Buttons -->
+                    <button type="button" class="btn btn-primary" data-bind="click: enterEditMode, disable: isLoading() || isReadonly(), visible: !isEditMode()" tabindex="3">
+                        <i class="glyphicon glyphicon-pencil" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["EditPage"]
+                    </button>
+                    <div data-bind="visible: isEditMode" style="display: none" class="gn-kirjaButtonContainer">
+                        <button type="button" class="btn btn-primary" data-bind="click: save, disable: isLoading() || isReadonly()" tabindex="3">
+                            <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["SavePage"]
+                        </button>
+                        <button type="button" class="btn btn-default" data-bind="click: openConfirmDeleteDialog, disable: isLoading() || isReadonly(), visible: id" tabindex="4">
+                            <i class="glyphicon glyphicon-trash" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["DeletePage"]
+                        </button>
+                        <button type="button" class="btn btn-default" data-bind="click: exitEditMode, disable: isLoading() || isReadonly()" tabindex="5">
+                            <i class="glyphicon glyphicon-remove" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["StopEditPage"]
+                        </button>
+                    </div> 
+                    <div class="gn-kirjaSidebarContainer">
+                        <a class="gn-clickable gn-kirjaSidebarButton" data-bind="click: toogleSidebar" title="@Localizer["ToogleSidebar"]"><i class="glyphicon glyphicon-chevron-down"></i></a>
+
+                        <div class="panel panel-default gn-kirjaSidebar" style="display: none" data-bind="slide: showSidebar">
+                            <div class="panel-body">
+                                <h4>@Localizer["Connections"]</h4>
+
+                                <div class="gn-kirjaSidebarContent">
+                                    <div>@Localizer["MentionedInPages"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedInPages"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedInPagesError"></i></div>
+                                    <ul data-bind="foreach: mentionedInPages" class="gn-kirjaSidebarList">
+                                        <li>
+                                            <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                        </li>
+                                    </ul>
+
+                                    @if(User.IsInRole(RoleNames.Aika))
+                                    {
+                                        <div>@Localizer["Quests"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedQuestsError"></i></div>
+                                        <ul data-bind="foreach: mentionedQuests" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                            </li>
+                                        </ul>
+                                    }
+
+                                    @if(User.IsInRole(RoleNames.Kortisto))
+                                    {
+                                        <div>@Localizer["Npcs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedNpcs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedNpcsError"></i></div>
+                                        <ul data-bind="foreach: mentionedNpcs" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                            </li>
+                                        </ul>
+                                    }
+
+                                    @if(User.IsInRole(RoleNames.Styr))
+                                    {
+                                        <div>@Localizer["Items"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedItems"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedItemsError"></i></div>
+                                        <ul data-bind="foreach: mentionedItems" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                            </li>
+                                        </ul>
+                                    }
+
+                                    @if(User.IsInRole(RoleNames.Karta))
+                                    {
+                                        <div>@Localizer["Maps"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMarkedInMaps"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMarkedInMapsError"></i></div>
+                                        <ul data-bind="foreach: markedInMaps" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                                <span data-bind="visible: markerCount > 1, attr: { title: tooltip }" style="display: none"> (<span data-bind="text: markerCount"></span>)</span>
+                                            </li>
+                                        </ul>
+                                    }
+
+                                    <div>@Localizer["Attachments"]</div>
+                                    <!-- ko if: !id() -->
+                                    <div class="gn-kirjaAttachmentText">@Localizer["SaveThePageToUploadFiles"]</div>
+                                    <!-- /ko -->
+                                    <!-- ko if: id -->
+                                        <ul data-bind="foreach: attachmentFiles" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <div class="gn-kirjaAttachmentFilename"><a class="gn-clickable" data-bind="text: originalFilename, attr: { title: originalFilename }, href: function(attachment) { return $root.buildAttachmentUrl(attachment); }" target="_blank"></a></div>
+                                                <a class="gn-clickable" title="@Localizer["DeleteAttachmentToolTip"]" data-bind="click: function(attachment) { $root.openDeleteAttachmentDialog(attachment); }, visible: !$root.isReadonly()"><i class="glyphicon glyphicon-trash"></i></a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="gn-clickable gn-kirjaAttachmentDropzone" data-bind="dropzone: attachmentUploadUrl, dropzoneAcceptedFiles: '@Model.AllowedAttachmentMimeTypes', dropzoneMaxFiles: 1, dropzoneHoverClass: 'gn-dropzoneFileHover', dropzoneDisable: isReadonly, dropzoneSuccess: function(attachmentFile) { $root.attachmentUploaded(attachmentFile); }, dropzoneError: function(errorMessage, xhr) { $root.uploadError(errorMessage, xhr); }, dropzoneAddedFile: function() { $root.resetErrorState(); }">
+                                            @Localizer["DropFilesHereToUpload"]
+                                        </div>
+                                    <!-- /ko -->
+                                </div>
+
+                                <div class="gn-kirjaSidebarOpenOverview">
+                                    <a href="/Kirja/Pages">@Localizer["OpenPageOverview"]</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> <span data-bind="visible: !pageNotFound()">@Localizer["ErrorOccured"]</span> <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span><span data-bind="visible: pageNotFound">@Localizer["PageNotFound"]</span> 
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <div data-bind="if: !isEditMode()">
+        <div data-bind="html: pageContent" class="gn-kirjaPageContent gn-kirjaPageContentFormats">
+        </div>
+    </div>
+    <div data-bind="if: isEditMode, visible: isEditMode" style="display: none">
+        <div data-bind="richText: pageContent, richTextAddditionalButtons: generateRichTextButtons, richTextImageUploadUrl: '/api/KirjaApi/ImageUpload?imageFile={filename}', richTextImageUploadSuccess: imageUploaded, richTextAddditionalImageUploadError: uploadError, richTextAfterImageInserted: save" class="gn-kirjaPageRichTextEditor gn-kirjaPageContentFormats" tabindex="2">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="~/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).js"></script>
+
+        <script src="~/js/Kirja/page.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).min.js"></script>
+
+        <script src="~/js/Kirja/page.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    
+    <script src="~/lib/dropzone/dist/min/dropzone.min.js"></script>
+    <script src="~/js/Localization/dropzone.locales.@(Localizer["DropzoneLocale"]).js"></script>
+
+    <script type="text/javascript">
+        Dropzone.autoDiscover = false;
+
+        GoNorth.Kirja.Page.toolbarButtonInsertKirjaLinkTitle = "@Localizer["InsertKirjaLink"]";
+        GoNorth.Kirja.Page.toolbarButtonInsertAikaQuestLinkTitle = "@Localizer["InsertAikaQuestLink"]";
+        GoNorth.Kirja.Page.toolbarButtonInsertKortistoNpcLinkTitle = "@Localizer["InsertKortistoNpcLink"]";
+        GoNorth.Kirja.Page.toolbarButtonInsertStyrItemLinkTitle = "@Localizer["InsertStyrItemLink"]";
+        
+        GoNorth.Kirja.Page.kirjaMapMarkerCountTooltip = "@Localizer["MarkedInMapNTimes"]";
+        
+        @if(User.IsInRole(RoleNames.Aika))
+        {
+            <text>
+            GoNorth.Kirja.Page.hasAikaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Page.hasAikaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <text>
+            GoNorth.Kirja.Page.hasKortistoRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Page.hasKortistoRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Styr))
+        {
+            <text>
+            GoNorth.Kirja.Page.hasStyrRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Page.hasStyrRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Karta))
+        {
+            <text>
+            GoNorth.Kirja.Page.hasKartaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Page.hasKartaRights = false;
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Kirja.Page.ViewModel(), jQuery("#gn-kirjaPageContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.css" />
+    </environment>
+}

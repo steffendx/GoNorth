@@ -1,0 +1,35 @@
+{
+    "TaskBoards": "Task boards",
+
+    "CreateNewBoard": "Create task board",
+    "CreateTaskBoard": "Create task board",
+    "EditTaskBoard": "Edit task board",
+
+    "OpenTaskBoards": "Open task boards",
+    "ClosedTaskBoards": "Closed task boards",
+
+    "Name": "Name",
+    "PlannedStart": "Planned start",
+    "PlannedEnd": "Planned end",
+    "Save": "Save",
+    "Cancel": "Cancel",
+    "StartDateHasToBeBeforeEndDate": "The planned start must be before the planned end.",
+
+    "EditBoardToolTip": "Edit task board",
+    "DeleteBoardToolTip": "Delete task board",
+    "CloseTaskBoardToolTip": "Close task board",
+    "ReopenTaskBoardToolTip": "Reopen task board",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheBoard": "Are you sure you want to delete the task board?",
+    "AreYouSureYouWantToCloseTheBoard": "Are you sure you want to close the task board?",
+    "AreYouSureYouWantToReopenTheBoard": "Are you sure you want to reopen the task board?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "PreviousPage": "Previous page",
+    "NextPage": "Next page",
+    
+    "Error": "Error:",
+    "ErrorOccured": "An error occured."
+}

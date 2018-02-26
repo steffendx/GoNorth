@@ -1,0 +1,108 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.HomeViewModels
+@using GoNorth
+
+@model GoNorth.Models.HomeViewModels.IndexViewModel
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["HomePage"];
+}
+
+<h2>@Localizer["WelcomeToProject"] @Model.ProjectName</h2>
+
+<div class="container">
+    <div class="row">
+        @if(User.IsInRole(RoleNames.Task))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="Task" asp-action="Index">
+                    <div class="gn-homeTile gn-taskTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-tasks"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["Tasks"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["TaskManagement"]</div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @if(User.IsInRole(RoleNames.Aika))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="Aika" asp-action="Index">
+                    <div class="gn-homeTile gn-aikaTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-king"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["Aika"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["AikaQuestDatabase"]</div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="Kortisto" asp-action="Index">
+                    <div class="gn-homeTile gn-kortistoTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-user"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["Kortisto"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["KortistoNpcDatabase"]</div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @if(User.IsInRole(RoleNames.Styr))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="Styr" asp-action="Index">
+                    <div class="gn-homeTile gn-styrTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-apple"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["Styr"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["StyrItemDatabase"]</div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @if(User.IsInRole(RoleNames.Kirja))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="Kirja" asp-action="Index">
+                    <div class="gn-homeTile gn-kirjaTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-book"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["Kirja"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["KirjaWiki"]</div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @if(User.IsInRole(RoleNames.Karta))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="Karta" asp-action="Index">
+                    <div class="gn-homeTile gn-kartaTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-map-marker"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["Karta"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["KartaMap"]</div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="ImplementationStatus" asp-action="Index">
+                    <div class="gn-homeTile gn-implementationStatusTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-scale"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["ImplementationStatus"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["TrackCurrentImplementationProgress"]</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>

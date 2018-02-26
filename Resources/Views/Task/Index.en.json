@@ -1,0 +1,54 @@
+{
+    "Tasks": "Tasks",
+
+    "StartingFrom": "Start",
+
+    "CreateTaskGroup": "Create task group",
+    "CreateTaskToolTip": "Create task",
+
+    "SwitchBoard": "Switch task board",
+    "ManageBoards": "Manage task boards",
+
+    "InsertKirjaLink": "Add link to Kirja page",
+    "InsertAikaQuestLink": "Add link to quest",
+    "InsertKortistoNpcLink": "Add link to npc",
+    "InsertStyrItemLink": "Add link to item",
+
+    "NewTaskGroup": "New task group",
+    "EditTaskGroup": "Edit task group",
+    "NewTask": "New task",
+    "EditTask": "Edit task",
+    "Name": "Name",
+    "Description": "Description",
+    "PressCtrlToOpenLinks": "Ctrl to open links",
+    "AssignedTo": "Assigned to",
+    "Delete": "Delete",
+    "Save": "Save",
+    "Cancel": "Cancel",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheTaskGroup": "Are you sure you want to delete the task group?",
+    "AreYouSureYouWantToDeleteTheTask": "Are you sure you want to delete the task?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "Unassigned": "Unassigned",
+
+    "TasksSingle": "Task",
+    "TasksMulti": "Tasks",
+
+    "TaskStatusOpen": "Open",
+    "TaskStatusInProgress": "In progress",
+    "TaskStatusDone": "Done",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedTaskGroupPrefix": "This task group is currently beeing edited by ",
+    "LockedTaskPrefix": "This task is currently beeing edited by ",
+    "LockedPostfix": ".",
+    "BoardIsClosed": "The board is already closed.",
+
+    "RichTextLocale": "en"
+}

@@ -1,0 +1,18 @@
+(function(GoNorth) {
+    "use strict";
+
+    /**
+     * Util Namespace
+     * @namespace Util
+     */
+    (function(Util) {
+    }(GoNorth.Util = GoNorth.Util || {}));
+
+    /**
+     * Lock Service Namespace
+     * @namespace LockService
+     */
+    (function(LockService) {
+    }(GoNorth.LockService = GoNorth.LockService || {}));
+
+}(window.GoNorth = window.GoNorth || {}));

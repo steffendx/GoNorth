@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:WidgetGroup" id="2" x="8" y="8" measuredWidth="140" measuredHeight="140" name="Image Rounded">
+    <widgets xsi:type="model:Shape" id="1" width="140" height="140" text="~140x140~" measuredWidth="140" measuredHeight="140" background="#cccccc" border="false" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="4" x="168" y="8" measuredWidth="140" measuredHeight="140" name="Image Circle">
+    <widgets xsi:type="model:Shape" id="5" width="140" height="140" text="~140x140~" measuredWidth="140" measuredHeight="140" background="#cccccc" border="false">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="9" x="328" y="8" measuredWidth="140" measuredHeight="140" name="Thumbnail">
+    <widgets xsi:type="model:Shape" id="8" width="140" height="140" measuredWidth="140" measuredHeight="140" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" foreground="#cccccc" shapeType="rectangle">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Shape" id="7" x="6" y="6" width="128" height="128" text="~140x140~" measuredWidth="128" measuredHeight="128" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#cccccc" border="false" shapeType="rectangle">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="10" x="8" y="168" measuredWidth="300" measuredHeight="438" name="Thumbnail Content">
+    <widgets xsi:type="model:Shape" id="11" width="300" height="438" measuredWidth="300" measuredHeight="438" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" foreground="#cccccc" shapeType="rectangle">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Shape" id="12" x="6" y="6" width="288" height="200" text="~300x200~" measuredWidth="288" measuredHeight="200" layoutParams="anchor-left,anchor-right|anchor-top" background="#cccccc" border="false" shapeType="rectangle">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Label" id="15" x="16" y="230" text="Thumbnail label" measuredWidth="182" measuredHeight="36" layoutParams="anchor-left|anchor-top">
+      <font size="24px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="17" x="16" y="270" width="267" height="104" text="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit." measuredWidth="267" measuredHeight="104" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="19" x="17" y="386" height="34" text="Button" measuredWidth="66" measuredHeight="34" layoutParams="anchor-left|anchor-bottom" background="#428bca">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="21" x="88" y="386" height="34" text="Button" measuredWidth="66" measuredHeight="34" layoutParams="anchor-left|anchor-bottom">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="23" x="336" y="168" measuredWidth="200" measuredHeight="22" name="Progress Bar">
+    <widgets xsi:type="model:ProgressBar" id="22" width="200" height="22" measuredWidth="200" measuredHeight="22" value="25" background="#428bca"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="24" x="336" y="200" measuredWidth="200" measuredHeight="22" name="Progress Bar Success">
+    <widgets xsi:type="model:ProgressBar" id="25" width="200" height="22" measuredWidth="200" measuredHeight="22" value="25" background="#5cb85c"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="26" x="336" y="232" measuredWidth="200" measuredHeight="22" name="Progress Bar Info">
+    <widgets xsi:type="model:ProgressBar" id="27" width="200" height="22" measuredWidth="200" measuredHeight="22" value="25" background="#5bc0de"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="28" x="336" y="264" measuredWidth="200" measuredHeight="22" name="Progress Bar Warning">
+    <widgets xsi:type="model:ProgressBar" id="29" width="200" height="22" measuredWidth="200" measuredHeight="22" value="25" background="#f0ad4e"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="30" x="336" y="296" measuredWidth="200" measuredHeight="22" name="Progress Bar Danger">
+    <widgets xsi:type="model:ProgressBar" id="31" width="200" height="22" measuredWidth="200" measuredHeight="22" value="25" background="#d9534f"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="36" x="8" y="624" measuredWidth="795" measuredHeight="94" name="Media Object">
+    <widgets xsi:type="model:Shape" id="33" y="6" width="64" height="64" text="~64x64~" measuredWidth="64" measuredHeight="64" layoutParams="anchor-left|anchor-top" background="#eeeeee" border="false" shapeType="rectangle">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Label" id="34" x="73" text="Media heading" measuredWidth="130" measuredHeight="30" layoutParams="anchor-left|anchor-top">
+      <font size="18px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="35" x="74" y="31" width="721" height="63" text="Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus." measuredWidth="721" measuredHeight="63" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

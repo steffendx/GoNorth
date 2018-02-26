@@ -1,0 +1,8 @@
+{
+    "CanNotDeleteNonEmptyChapter": "Ein gelöschtes Kapitel ist nicht leer. Um Story Fehler zu verhindern muss es erst geleert werden.",
+    "CanNotDeleteNonEmptyChapterDetail": "Eine gelöschte Detailansicht ist nicht leer. Um Story Fehler zu verhindern muss sie erst geleert werden.",
+
+    "CanNotDeleteQuestUsedInChapterDetail": "Der Quest wird in den Detailansichten \"{0}\" genutzt. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
+    "CanNotDeleteQuestMentionedInKirjaPage": "Der Quest wird in den Kirja Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
+    "CanNotDeleteQuestReferencedInTaleDialog": "Der Quest ist in den Tale Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann."
+}

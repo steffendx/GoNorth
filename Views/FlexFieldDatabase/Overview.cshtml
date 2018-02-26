@@ -1,0 +1,143 @@
+@using GoNorth.Models.FlexFieldDatabaseModels
+
+@model OverviewViewModel
+
+<!-- Delete Folder Dialog -->
+<div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteFolderDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Model.Localizer["AreYouSure"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger" style="display: none" data-bind="visible: deleteFolderError">
+                    <strong>@Model.Localizer["Error"]</strong> <span data-bind="text: deleteFolderError"></span>
+                </div>
+                <p>@Model.Localizer["AreYouSureYouWantToDeleteTheFolder"]</p>
+                <p>@Model.Localizer["OnlyEmptyFoldersCanBeDeleted"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bind="click: deleteFolder, disable: dialogLoading">
+                    <span data-bind="visible: !dialogLoading()">@Model.Localizer["Yes"]</span>
+                    <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                </button>
+                <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteFolderDialog, disable: dialogLoading">@Model.Localizer["No"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit Folder Dialog -->
+<div class="modal fade" role="dialog" data-bind="modal: showFolderCreateEditDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span data-bind="if: editFolderId">@Model.Localizer["EditCategory"]</span><span data-bind="if: !editFolderId()">@Model.Localizer["CreateCategory"]</span></h4>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="gn-folderCreateEditForm">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: createEditFolderError">
+                        <strong>@Model.Localizer["Error"]</strong> <span data-bind="text: createEditFolderError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="gn-folderDisplayName">@Model.Localizer["Name"]</label>
+                        <input type="text" class="form-control" id="gn-folderDisplayName" placeholder="@Model.Localizer["Name"]" name="folderDisplayName" data-bind="value: createEditFolderName, enterPressed: saveFolder" required/>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bind="click: saveFolder, disable: dialogLoading">
+                    <span data-bind="visible: !dialogLoading()">@Model.Localizer["Save"]</span>
+                    <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                </button>
+                <button type="button" class="btn btn-default" data-bind="click: closeCreateEditFolderDialog, disable: dialogLoading">@Model.Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overview -->
+<div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
+    <strong>@Model.Localizer["Error"]</strong> @Model.Localizer["ErrorOccured"]
+</div>
+
+<div class="dropdown gn-inlineDropdown">
+    <button class="btn btn-primary dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-createFlexFieldObjectButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <i class="glyphicon glyphicon-plus"></i> @Model.Localizer["CreateFlexFieldObject"] <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="gn-createFlexFieldObjectButton">
+        <!-- ko foreach: availableTemplates -->
+            <li><a class="gn-clickable" data-bind="click: function(template) { $root.openNewFlexFieldObjectForm(template); }, text: name"></a></li>
+        <!-- /ko -->
+        @if(Model.HasTemplatePermissions)
+        {
+            <li class="divider"></li>
+            <li><a asp-area="" asp-controller="@Model.ControllerName" asp-action="ManageTemplates">@Model.Localizer["ManageTemplates"]</a></li>
+        }
+    </ul>
+</div>
+
+<button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreateFolderDialog"><i class="glyphicon glyphicon-plus"></i> @Model.Localizer["CreateCategory"]</button>
+
+<button class="btn btn-default gn-commandWidgetTopMargin" type="button" style="display: none" data-bind="click: navigateLevelBack, visible: parentFolderId() || currentFolderId()"><i class="glyphicon glyphicon-level-up"></i> @Model.Localizer["LevelBack"]</button>
+
+<div class="input-group gn-commandWidgetTopMargin">
+    <input type="text" class="form-control" placeholder="@Model.Localizer["Search"]" data-bind="value: searchPattern, enterPressed: searchFlexFieldObjects"/>
+    <span class="input-group-addon gn-clickable" data-bind="click: searchFlexFieldObjects" title="@Model.Localizer["Search"]">
+        <i class="glyphicon glyphicon-search"></i>
+    </span>
+</div>
+
+<div class="container gn-defaultContentTopMargin" data-bind="foreach: displayObjectRows">
+    <div class="row" data-bind="foreach: $data, visible: true" style="display: none">
+        <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 gn-flexFieldOverviewTileContainer">
+            <a data-bind="href: tileUrl">
+                <div class="gn-flexFieldOverviewTile" data-bind="template: { name: template, data: $data }"></div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+    <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Model.Localizer["PreviousPage"]">
+        <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+    </button>
+    <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Model.Localizer["NextPage"]">
+        <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+    </button>
+</div>
+
+<script type="text/html" id="gn-folderTemplate">
+    <div class="gn-flexFieldOverviewFolderButtons">
+        <a class="gn-clickable" data-bind="click: function(folder) { $root.openEditFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["EditCategory"]"><i class="glyphicon glyphicon-pencil"></i></a>
+        <a class="gn-clickable" data-bind="click: function(folder) { $root.openDeleteFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["DeleteCategory"]"><i class="glyphicon glyphicon-trash"></i></a>
+    </div>
+    <div class="gn-flexFieldOverviewTileIcon">
+        <i class="glyphicon glyphicon-folder-open"></i>
+    </div>
+    <div class="gn-flexFieldOverviewTileName" data-bind="text: name, attr: { title: name }">
+    </div>
+</script>
+
+<script type="text/html" id="gn-flexFieldObjectTemplate">
+    <!-- ko if: !imageFile -->
+    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewObjectTileIcon">
+        <i class="glyphicon @Model.ObjectIcon"></i>
+    </div>
+    <!-- /ko -->
+    <!-- ko if: imageFile -->
+    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewObjectImageContainer">
+        <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }">
+    </div>
+    <!-- /ko -->
+    <div class="gn-flexFieldOverviewTileName" data-bind="text: name, attr: { title: name }">
+    </div>
+</script>

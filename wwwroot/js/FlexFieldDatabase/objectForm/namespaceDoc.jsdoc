@@ -1,0 +1,14 @@
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+
+        /**
+         * Flex Field Object Form Namespace
+         * @namespace ObjectForm
+         */
+        (function(ObjectForm) {
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));

@@ -1,0 +1,13 @@
+@using GoNorth.Views.Administration
+@using GoNorth.Data.User
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+@inject SignInManager<GoNorthUser> SignInManager
+
+<ul class="nav nav-pills nav-stacked">
+    <li class="@AdministrationNavPages.IndexNavClass(ViewContext)"><a asp-action="Index">@Localizer["UserManagement"]</a></li>
+    <li class="@AdministrationNavPages.ProjectNavClass(ViewContext)"><a asp-action="Project">@Localizer["ProjectManagement"]</a></li>
+    <li class="@AdministrationNavPages.ConfigEncryptionClass(ViewContext)"><a asp-action="ConfigEncryption">@Localizer["ConfigEncryption"]</a></li>
+    <li class="@AdministrationNavPages.DbSetupNavClass(ViewContext)"><a asp-action="DbSetup">@Localizer["DbSetup"]</a></li>
+</ul>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e211 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="king" d="M700 1200h100v-200h-100v-100h350q62 0 86.5 -39.5t-3.5 -94.5l-66 -132q-41 -83 -81 -134h-772q-40 51 -81 134l-66 132q-28 55 -3.5 94.5t86.5 39.5h350v100h-100v200h100v100h200v-100zM250 400h700q21 0 35.5 -14.5t14.5 -35.5t-14.5 -35.5t-35.5 -14.5h-12l137 -100 h-950l138 100h-13q-21 0 -35.5 14.5t-14.5 35.5t14.5 35.5t35.5 14.5zM50 100h1100q21 0 35.5 -14.5t14.5 -35.5v-50h-1200v50q0 21 14.5 35.5t35.5 14.5z" />
+</g>
+</svg>	

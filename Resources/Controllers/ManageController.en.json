@@ -1,0 +1,11 @@
+{
+    "UserNotFound": "User could not be found.",
+
+    "ErrorOccurredWhileSaving": "An error occured while saving.",
+    "ProfileHasBeenUpdated": "Your profil has been updated.",
+
+    "VerificationEmailSent": "Verification email has beend sent. Please check your mails.",
+
+    "NoPasswordExists": "No password exists. Please contact an administrator.",
+    "PasswordHasBeenChanged": "Your password has been successfully changed."
+}

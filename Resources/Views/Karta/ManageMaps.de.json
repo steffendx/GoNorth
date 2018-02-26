@@ -1,0 +1,25 @@
+{
+    "KartaMaps": "Karten verwalten",
+
+    "CreateMap": "Karte erstellen",
+    "EditMap": "Karte editieren",
+    "DeleteMap": "Karte löschen",
+
+    "Name": "Name",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "DropMapImageHere": "Kartenbild hier ablegen oder klicken um ein Bild auszuwählen",
+    "MapImageIsRequired": "Du musst ein Kartenbild hochladen.",
+    "ProcessingMap": "Karte wird verarbeitet...",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheMap": "Bist du sicher das die Karte gelöscht werden soll?",    
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten",
+
+    "DropzoneLocale": "de"
+}

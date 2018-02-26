@@ -1,0 +1,37 @@
+{
+  "name": "moment",
+  "license": "MIT",
+  "main": "moment.js",
+  "ignore": [
+    "**/.*",
+    "benchmarks",
+    "bower_components",
+    "meteor",
+    "node_modules",
+    "scripts",
+    "tasks",
+    "test",
+    "component.json",
+    "composer.json",
+    "CONTRIBUTING.md",
+    "ender.js",
+    "Gruntfile.js",
+    "Moment.js.nuspec",
+    "package.js",
+    "package.json",
+    "ISSUE_TEMPLATE.md",
+    "typing-tests",
+    "min/tests.js"
+  ],
+  "homepage": "https://github.com/moment/moment",
+  "version": "2.19.1",
+  "_release": "2.19.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.19.1",
+    "commit": "c1d1ee30e921fa9fc0cc69cd17b534bb4637b8af"
+  },
+  "_source": "https://github.com/moment/moment.git",
+  "_target": "^2.19.1",
+  "_originalSource": "moment"
+}

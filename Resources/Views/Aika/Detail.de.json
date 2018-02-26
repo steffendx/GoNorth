@@ -1,0 +1,25 @@
+{
+    "ChapterDetail": "Kapitel Detailansicht",
+
+    "Save": "Speichern",
+    "OpenQuestList": "Quest Liste öffnen",
+
+    "NewQuestNode": "Neuer Quest",
+    "ExistingQuestNode": "Bestehender Quest",
+    "AllDone": "Alles abgeschlossen",
+    "FinishNode": "Abschluss",
+    "NewDetailNode": "Neue Detailansicht",
+    "ExistingDetailNode": "Existierende Detailansicht",
+
+    "WaitingOnNewObject": "Warte auf neues Objekt",
+    "DialogWillCloseOnSaveOfNewObject": "Dieser Dialog schließt sich sobald du das neue Objekt gespeichert hast oder das Fenster schließt. Wenn das neue Objekt gespeichert wird wird automatisch ein Knoten eingefügt.",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Die Detailansicht wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "NodeLang": "de"
+}

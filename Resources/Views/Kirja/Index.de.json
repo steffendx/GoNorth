@@ -1,0 +1,50 @@
+{
+    "Kirja": "Kirja",
+
+    "EditPage": "Bearbeiten",
+    "StopEditPage": "Bearbeiten beenden",
+    "SavePage": "Speichern",
+    "DeletePage": "Löschen",
+
+    "Name": "Name",
+
+    "InsertKirjaLink": "Link zu Kirja Seite einfügen",
+    "InsertAikaQuestLink": "Link zu Quest einfügen",
+    "InsertKortistoNpcLink": "Link zu Npc einfügen",
+    "InsertStyrItemLink": "Link zu Item einfügen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteThePage": "Bist du sicher das du die Seite löschen willst?",
+    "AreYouSureYouWantToExitEditMode": "Es liegen ungespeicherte Änderungen vor. Soll der Bearbeitungsmodus wirklich verlassen werden?",
+    "AreYouSureYouWantToDeleteTheAttachment": "Bist du sicher das du den Anhang löschen willst?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "WaitingOnNewPage": "Warte auf neue Seite",
+    "DialogWillCloseOnSaveOfNewPage": "Dieser Dialog schließt sich sobald du die neue Seite gespeichert hast oder das Fenster schließt. Wenn die neue Seite gespeichert wird wird automatisch ein Link eingefügt.<br/><b>Hinweis:</b> Die Seite wird in diesem Fall gespeichert.",
+
+    "ToogleSidebar": "Hier klicken um die Seitenleiste zu öffnen oder schließen",
+    "Connections": "Verknüpfungen",
+    "MentionedInPages": "In Kirja Seiten erwähnt",
+    "Quests": "Quests",
+    "Npcs": "Npcs",
+    "Items": "Items",
+    "Maps": "Karten",
+    "MarkedInMapNTimes": "Seite ist in Karte {{0}} mal markiert. Kein Zoom auf Markierung möglich.",
+    "Attachments": "Anhänge",
+    "SaveThePageToUploadFiles": "Speichere die Seite um Anhänge anzufügen",
+    "DropFilesHereToUpload": "Dateien hier ablegen für den Upload...",
+    "DeleteAttachmentToolTip": "Hier klicken um den Anhang zu löschen",
+    "OpenPageOverview": "Seitenübersicht öffnen",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+    "PageNotFound": "Die Seite wurde nicht gefunden.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Diese Seite wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+    
+    "RichTextLocale": "de",
+    "DropzoneLocale": "de"
+}

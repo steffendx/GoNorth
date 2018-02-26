@@ -1,0 +1,10 @@
+{
+    "EncryptConfigValue": "Konfigurationswert verschlüsseln",
+
+    "ConfigValue": "Konfigurationswert",
+    "EncryptedConfigValue": "Verschlüsselter Konfigurationswert",
+    "Encrypt": "Verschlüsseln",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

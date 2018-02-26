@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e122 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="bullhorn" d="M1150 1100q21 0 35.5 -14.5t14.5 -35.5v-850q0 -21 -14.5 -35.5t-35.5 -14.5t-35.5 14.5t-14.5 35.5v850q0 21 14.5 35.5t35.5 14.5zM1000 200l-675 200h-38l47 -276q3 -16 -5.5 -20t-29.5 -4h-7h-84q-20 0 -34.5 14t-18.5 35q-55 337 -55 351v250v6q0 16 1 23.5t6.5 14 t17.5 6.5h200l675 250v-850zM0 750v-250q-4 0 -11 0.5t-24 6t-30 15t-24 30t-11 48.5v50q0 26 10.5 46t25 30t29 16t25.5 7z" />
+</g>
+</svg>	

@@ -1,0 +1,33 @@
+{
+    "recurseDepth": 10,
+    "source": {
+        "exclude": [
+            "..\\..\\wwwroot\\js\\Aika\\chapterDetail.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Aika\\chapterOverview.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Aika\\quest.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Aika\\questList.viewmodel.js",
+            "..\\..\\wwwroot\\js\\ImplementationStatus\\overview.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Karta\\map.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Kirja\\page.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Kortisto\\manageTemplates.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Kortisto\\npc.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Kortisto\\overview.ViewModel.js",
+            "..\\..\\wwwroot\\js\\Shared\\nodeGraph\\nodeGraph.knockout.binding.js",
+            "..\\..\\wwwroot\\js\\Shared\\shared.lib.js",
+            "..\\..\\wwwroot\\js\\Styr\\item.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Styr\\manageTemplates.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Styr\\overview.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Tale\\dialog.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Tale\\taleLang.de.js",
+            "..\\..\\wwwroot\\js\\Tale\\taleLang.en.js",
+            "..\\..\\wwwroot\\js\\Task\\manageBoards.viewmodel.js",
+            "..\\..\\wwwroot\\js\\Task\\taskBoard.viewmodel.js"
+        ],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": ".*.min.js"
+    },
+    "opts": {
+        "recurse": true,
+        "readme": "GoNorthClientSide/jsdoc/Index.md"
+    }
+}

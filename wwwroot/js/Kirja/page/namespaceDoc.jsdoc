@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Kirja) {
+
+        /**
+         * Kirja Page Form Namespace
+         * @namespace Page
+         */
+        (function(Page) {
+        }(Kirja.Page = Kirja.Page || {}));
+        
+    }(GoNorth.Kirja = GoNorth.Kirja || {}));
+}(window.GoNorth = window.GoNorth || {}));

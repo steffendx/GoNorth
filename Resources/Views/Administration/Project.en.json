@@ -1,0 +1,22 @@
+{
+    "ProjectManagement": "Project Management",
+
+    "CreateProject": "Create project",
+    "EditProject": "Edit project",
+    "Name": "Name",
+    "IsDefault": "Default project",
+    "Yes": "Yes",
+    "No": "No",
+    "Save": "Save",
+    "Cancel": "Cancel",
+
+    "EditProjectTooltip": "Click here to edit the project",
+    "DeleteProjectTooltip": "Click here to delete the project",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheProject": "Are you sure you want to delete the project?",
+    "OnlyEmptyProjectsCanBeDeleted": "Note: Only empty projects can be deleted.",
+
+    "Error": "Error",
+    "ErrorOccured": "An error occured."
+}

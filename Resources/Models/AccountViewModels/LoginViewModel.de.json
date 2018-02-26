@@ -1,0 +1,8 @@
+{
+    "Email": "Email",
+    "Password": "Passwort",
+    "RememberMe": "Eingeloggt bleiben?",
+
+    "FieldRequired": "Das {0} Feld ist ein Pflichtfeld.",
+    "EmailFormat": "Das {0} Feld ist keine gültige Email."
+}

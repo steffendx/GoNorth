@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="18" width="18" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" onload="onLoad(evt)" onresize="onResize(evt)" ws-fill="red">
+ <title id="title2818">WireframeSketcher SVG asset</title>
+ <defs id="defs4"></defs>
+ <metadata id="metadata7">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>WireframeSketcher SVG asset</dc:title>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Peter Severin</dc:title>
+     </cc:Agent>
+    </dc:creator>
+    <dc:rights>
+     <cc:Agent>
+      <dc:title>Copyright (c) WireframeSketcher.com</dc:title>
+     </cc:Agent>
+    </dc:rights>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <script><![CDATA[
+ var doc, svg, links;
+ 
+ function onLoad(evt) {
+	svg = evt.target;
+	doc = svg.ownerDocument;
+	links = doc.createElement("g");
+	svg.appendChild(links);
+ }
+ 
+ function onResize(evt) {
+ 	var width = parseInt(svg.getAttribute("width"));
+ 	var height = parseInt(svg.getAttribute("height"));
+    var selectionIndex = ($model.selection === null || $model.selection === "") ? -1 : Number($model.selection);
+	if(!(selectionIndex >= -1 && selectionIndex < $items.length))
+		selectionIndex = -1;
+ 	var spacing = Math.round(height * 0.8);
+ 	clearNode(links);
+ 	
+ 	for(var i = 0, x = 0; i < items.length; i ++) {
+ 		var itemWidth = items[i].width;
+ 		
+ 		var text = doc.createElement("foreignObject");
+ 		text.setAttribute("id", "item" + i);
+ 		text.setAttribute("stroke", selectionIndex == i ? "blue" : "black");
+ 		text.setAttribute("x", x);
+ 		text.setAttribute("y", 0);
+ 		text.setAttribute("width", itemWidth);
+ 		text.setAttribute("height", height);
+		links.appendChild(text);
+		 		
+ 		x += itemWidth + spacing;
+ 	}
+ }
+ 
+ function getPreferredSize() {
+ 	var width = 0, height = 0;
+ 	
+ 	for(var i = 0; i < items.length; i++) {
+ 		width += items[i].width;
+ 		height = Math.max(height, items[i].height);
+ 	}
+ 	
+ 	// 0.8rem
+ 	var spacing = Math.round(height * 0.8);
+ 	
+ 	width += (items.length - 1) * spacing;
+ 	
+ 	return { width: width, height: height };
+ }
+ 
+ function clearNode(node) {
+	while (node.firstChild) {
+		node.removeChild(node.firstChild);
+	}
+ } 
+ ]]></script>
+</svg>

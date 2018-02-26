@@ -1,0 +1,60 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "GoNorth.csproj"
+          ],
+          "src": "../../../../"
+        }
+      ],
+      "dest": "api",
+      "disableGitFeatures": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "api/**.yml",
+          "api/index.md",
+          "index.md",
+          "toc.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "exclude": [
+          "obj/**",
+          "generatedDocumentation/**"
+        ]
+      }
+    ],
+    "dest": "../generatedDocumentation",
+    "globalMetadata": {
+      "_appTitle": "GoNorth",
+      "_appFooter": "Copyright © 2018 Steffen Nörterhäuser",
+      "_appLogoPath": "images/logo.png",
+      "_appFaviconPath": "images/favicon.ico",
+      "_disableContribution": true
+    },
+    "fileMetadataFiles": [],
+    "template": [
+      "statictoc"
+    ],
+    "postProcessors": [],
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": true
+  }
+}

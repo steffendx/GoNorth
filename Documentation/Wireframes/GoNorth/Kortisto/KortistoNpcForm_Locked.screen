@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides">
+  <widgets xsi:type="model:Master" id="6" x="10" y="10" width="1135" measuredWidth="1135" measuredHeight="50">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Navigation.screen#Navbar"/>
+    <overrides>
+      <widgetChanges xsi:type="o:Delete" ref="25"/>
+      <widgetChanges xsi:type="o:Delete" ref="24"/>
+      <widgetChanges xsi:type="o:Delete" ref="28"/>
+      <widgetChanges xsi:type="o:Delete" ref="19"/>
+      <widgets ref="20" width="1135"/>
+      <widgets ref="21" text="GoNorth"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="9" x="112" y="9" measuredWidth="311" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Startseite, Ereignisse, Kortisto">
+        <items ref="@items.0" text="Startseite"/>
+        <items ref="@items.1" text="Ereignisse"/>
+        <items ref="@items.2" text="Kortisto"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="10" x="766" y="9" measuredWidth="379" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Administration, Hallo User, Abmelden">
+        <items ref="@items.0" text="Administration"/>
+        <items ref="@items.1" text="Hallo User"/>
+        <items ref="@items.2" text="Abmelden"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="19" x="136" y="64" measuredWidth="174" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="17" width="174" measuredWidth="174" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="174" height="41" text="Feld hinzufügen {desc}">
+          <attributes key="textAlignment" value="Right"/>
+          <attributes key="state" value="disabled"/>
+          <attributes key="background" value="#fff"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="18" x="5" y="2" width="37" measuredWidth="37" measuredHeight="32" foreground="#999" icon="assets/gl-plus (large)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="20" x="318" y="64" measuredWidth="105" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="21" width="105" measuredWidth="105" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="105" height="41" text="Löschen">
+          <attributes key="textAlignment" value="Right"/>
+          <attributes key="state" value="disabled"/>
+          <attributes key="background" value="#fff"/>
+          <font size="16px"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="22" x="5" y="2" measuredWidth="32" measuredHeight="32" foreground="#999" icon="assets/gl-trash (large)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1280" x="10" y="64" measuredWidth="119" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="1281" width="119" measuredWidth="119" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="119" height="41" text="Speichern">
+          <attributes key="textAlignment" value="Right"/>
+          <attributes key="state" value="disabled"/>
+          <font size="16px"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="1282" x="5" y="2" measuredWidth="32" measuredHeight="32" foreground="#666" icon="assets/gl-floppy-disk (large)"/>
+  </widgets>
+  <widgets xsi:type="model:Panel" id="1283" x="10" y="182" width="199" height="209" measuredWidth="199" measuredHeight="209"/>
+  <widgets xsi:type="model:Icon" id="1284" x="33" y="206" width="153" height="145" measuredWidth="153" measuredHeight="145" icon="assets/gl-user (custom)"/>
+  <widgets xsi:type="model:VLine" id="1285" x="232" y="182" height="265" measuredWidth="6" measuredHeight="265"/>
+  <widgets xsi:type="model:Master" id="1286" x="242" y="224" measuredWidth="535" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="535"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Text" id="1287" x="244" y="192" width="196" height="33" text="Name" measuredWidth="196" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Text" id="1290" x="244" y="270" width="56" height="33" text="Health" measuredWidth="56" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="1289" x="242" y="302" measuredWidth="535" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="535" text="Number input"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Text" id="1293" x="245" y="344" width="92" height="33" text="MaxHealth" measuredWidth="92" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="1294" x="243" y="376" measuredWidth="535" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="535" text="Number input"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Text" id="1296" x="245" y="422" width="100" height="33" text="Background" measuredWidth="100" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="1298" x="244" y="454" measuredWidth="533" measuredHeight="129">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Area"/>
+    <overrides>
+      <widgets ref="16" width="533" height="129" text="Multiline input"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:HLine" id="1299" x="13" y="598" width="1122" measuredWidth="1122" measuredHeight="6"/>
+  <widgets xsi:type="model:Master" id="1301" x="20" y="622" measuredWidth="1115" measuredHeight="53">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input%20Large"/>
+    <overrides>
+      <widgets ref="3" width="1115" noText="true"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1304" x="32" y="633" width="49" measuredWidth="49" measuredHeight="34">
+    <widgets xsi:type="model:Master" id="1302" width="49" measuredWidth="49" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+      <overrides>
+        <widgets ref="21" width="49" text="Tag1">
+          <attributes key="textAlignment" value="Left"/>
+        </widgets>
+      </overrides>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1305" x="87" y="633" measuredWidth="46" measuredHeight="34">
+    <widgets xsi:type="model:Master" id="1306" width="46" measuredWidth="46" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+      <overrides>
+        <widgets ref="21" width="46" text="Tag2">
+          <attributes key="textAlignment" value="Left"/>
+        </widgets>
+      </overrides>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1308" x="141" y="632" measuredWidth="45" measuredHeight="34">
+    <widgets xsi:type="model:Master" id="1309" width="45" measuredWidth="45" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+      <overrides>
+        <widgets ref="21" width="45" text="Tag3">
+          <attributes key="textAlignment" value="Left"/>
+        </widgets>
+      </overrides>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:Master" id="1314" x="10" y="119" width="1135" measuredWidth="1135" measuredHeight="52">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Content.screen#Alert%20Info"/>
+    <overrides>
+      <widgets ref="16" width="1135"/>
+      <widgets ref="17" width="1104" text="*Gesperrt* Dieser Npc wird gerade durch User1 bearbeitet."/>
+      <widgets ref="22" x="1111"/>
+    </overrides>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

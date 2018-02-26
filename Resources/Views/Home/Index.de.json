@@ -1,0 +1,26 @@
+{
+    "HomePage": "Startseite",
+
+    "WelcomeToProject": "Willkommen beim Projekt",
+
+    "Tasks": "Aufgaben",
+    "TaskManagement": "Aufgaben Verwaltung",
+
+    "Aika": "Aika",
+    "AikaQuestDatabase": "Quest Datenbank",
+
+    "Kortisto": "Kortisto",
+    "KortistoNpcDatabase": "Npc Datenbank",
+    
+    "Styr": "Styr",
+    "StyrItemDatabase": "Item Datenbank",
+
+    "Kirja": "Kirja",
+    "KirjaWiki": "Wiki Komponente",
+
+    "Karta": "Karta",
+    "KartaMap": "Karten Komponente",
+
+    "ImplementationStatus": "Implementierung",
+    "TrackCurrentImplementationProgress": "Aktueller Implementierungsfortschritt"
+}

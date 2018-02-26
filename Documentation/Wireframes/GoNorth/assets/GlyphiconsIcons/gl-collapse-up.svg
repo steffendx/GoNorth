@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e160 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="collapse-up" d="M350 1100h400q165 0 257.5 -92.5t92.5 -257.5v-400q0 -163 -92.5 -256.5t-257.5 -93.5h-400q-163 0 -256.5 94t-93.5 256v400q0 165 92.5 257.5t257.5 92.5zM800 900h-500q-41 0 -70.5 -29.5t-29.5 -70.5v-500q0 -41 29.5 -70.5t70.5 -29.5h500q41 0 70.5 29.5t29.5 70.5 v500q0 41 -29.5 70.5t-70.5 29.5zM580 693l190 -253q12 -16 6.5 -28t-26.5 -12h-400q-21 0 -26.5 12t6.5 28l190 253q12 17 30 17t30 -17z" />
+</g>
+</svg>	

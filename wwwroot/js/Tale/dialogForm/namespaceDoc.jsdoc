@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Tale) {
+        
+        /**
+         * Dialog Form Namespace
+         * @namespace Dialog
+         */
+        (function(Dialog) {
+        }(Tale.Dialog = Tale.Dialog || {}));
+
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));

@@ -1,0 +1,18 @@
+{
+    "MoveConditionUp": "Bedingung nach oben verschieben",
+    "MoveConditionDown": "Bedingung nach unten verschieben",
+    "DragOnOperatorToMove": "Zieh dieses Icon auf einen Operator einer Gruppe um die Bedingung dorthin zu verschieben",
+    "DeleteCondition": "Bedingung löschen",
+    "DoubleClickToChangeOperator": "Doppelklick um den Operator zu ändern",
+    "EditCondition": "Bedingung bearbeiten",
+    "AddCondition": "Bedingung hinzufügen",
+    "GroupAnd": "Und",
+    "GroupOr": "Oder",
+    "Warning": "Warnung",
+    "CanOnlyGroupOnSameLevel": "Es können nur Bedingungen aus der selben Gruppe gruppiert werden.",
+    "YouCanNotMoveAParentToOneOfItsChildren": "Du kannst keine Bedingung in eines ihrer Kinder verschieben.",
+    "Confirm": "Übernehmen",
+    "Cancel": "Abbrechen",
+
+    "ErrorOccured": "Ein Fehler ist aufgetreten"
+}

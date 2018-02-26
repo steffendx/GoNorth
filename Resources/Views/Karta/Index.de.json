@@ -1,0 +1,57 @@
+{
+    "Karta": "Karta",
+
+    "SwitchMap": "Karte wechseln",
+    "ManageMaps": "Karten verwalten",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheMarker": "Bist du sicher das du die Markierung löschen willst?",
+    "Yes": "Ja",
+    "No": "Nein",
+    
+    "Kirja": "Kirja",
+    "NewKirjaPage": "<Neue Seite>",
+    "ShowKirjaMarker": "Kirja Markierungen anzeigen",
+
+    "Kortisto": "Kortisto",
+    "ShowKortistoMarker": "Kortisto Markierungen anzeigen",
+
+    "Styr": "Styr",
+    "ShowStyrMarker": "Styr Markierungen anzeigen",
+
+    "Aika": "Aika",
+    "ShowAikaMarker": "Aika Markierungen anzeigen",
+
+    "ShowKartaMarker": "Karta Markierungen anzeigen",
+
+    "ShowingMarkersOfObjectTooltip": "Zugehörige Markierungen werden aktuell angezeigt",
+
+    "WaitingOnNewMarker": "Warte auf neuen Marker",
+    "DialogWillCloseOnSaveOfNewMarker": "Dieser Dialog schließt sich sobald du die Seite gespeichert hast oder das Fenster schließt. Wenn die neue Seite gespeichert wird wird automatisch eine Markierung eingefügt.",
+
+    "PickMarkerName": "Name für Markierung eingeben",
+    "Name": "Name",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "Search": "Suchen",
+    
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+    
+    "EditingDefaultChapter": "Standardkapitel bearbeiten",
+
+    "YouAreEditingANonDefaultChapter": "Du bearbeitest aktuell nicht die Markierungen des Standardkapitel. Alle Änderungen gelten erst ab dem ausgewählten Kapitel.",
+
+    "EditMarkerTooltip": "Markierung bearbeiten",
+    "MarkerIsNotImplementedTooltip": "Markierung ist noch nicht implementiert",
+    "MarkerIsImplementedTooltip": "Markierung ist implementiert",
+    "DeleteMarkerTooltip": "Markierung löschen",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Diese Karte wird gerade von ",
+    "LockedPostfix": " bearbeitet."
+}

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="116" width="100" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" onload="onLoad(evt)" onresize="onResize(evt)">
+ <title id="title2818">WireframeSketcher SVG asset</title>
+ <defs id="defs4"></defs>
+ <metadata id="metadata7">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>WireframeSketcher SVG asset</dc:title>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Peter Severin</dc:title>
+     </cc:Agent>
+    </dc:creator>
+    <dc:rights>
+     <cc:Agent>
+      <dc:title>Copyright (c) WireframeSketcher.com</dc:title>
+     </cc:Agent>
+    </dc:rights>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <script><![CDATA[
+ var doc, svg, field, grip, text;
+ var scrollbar, scrollbarFrame, scrollbarThumb, scrollbarArrowDown, scrollbarArrowDownSeparator, scrollbarArrowUp, scrollbarArrowUpSeparator;
+ var defaultWidth, defaultHeight, defaultScrollbarHeight;
+ var hPadding = 12, vPadding = 6;
+ 
+ function onLoad(evt) {
+	svg = evt.target;
+	doc = svg.ownerDocument;
+	field = doc.getElementById("field");
+	grip = doc.getElementById("grip");
+	scrollbar = doc.getElementById("scrollbar");
+	scrollbarFrame = doc.getElementById("scrollbar-frame");
+	scrollbarThumb = doc.getElementById("scrollbar-thumb");
+	scrollbarArrowDown = doc.getElementById("scrollbar-arrow-down");
+	scrollbarArrowDownSeparator = doc.getElementById("scrollbar-arrow-down-separator");
+	scrollbarArrowUp = doc.getElementById("scrollbar-arrow-up");
+	scrollbarArrowUpSeparator = doc.getElementById("scrollbar-arrow-up-separator");
+ 	defaultScrollbarHeight = parseInt(scrollbarFrame.getAttribute("height"));
+	text = doc.createElement("foreignObject");
+	text.setAttribute("id", "item");
+	text.setAttribute("fill", "white");
+	svg.appendChild(text);
+ 	defaultWidth = parseInt(svg.getAttribute("width"));
+ 	defaultHeight = parseInt(svg.getAttribute("height"));
+ }
+ 
+ function onResize(evt) {
+ 	var width = parseInt(svg.getAttribute("width"));
+ 	var height = parseInt(svg.getAttribute("height"));
+ 	
+ 	field.setAttribute("width", width - 2);
+ 	field.setAttribute("height", height - 2);
+ 	
+	text.setAttribute("x", hPadding);
+	text.setAttribute("width", width - hPadding * 2 - ($model.verticalScrollbar ? 18 : 0));
+	text.setAttribute("y", vPadding);
+	text.setAttribute("height", height - vPadding * 2);
+	
+	if($model.state == State.DISABLED) {
+		field.setAttribute("stroke", "#ccc");
+		field.setAttribute("fill", "#eee");
+		text.setAttribute("stroke", "#555");
+		text.removeAttribute("fill");
+	} else if($model.state == State.FOCUSED) {
+		field.setAttribute("stroke", "#52a8ec");
+		field.setAttribute("fill", "white");
+		text.removeAttribute("stroke");
+		text.setAttribute("fill", "white");
+	} else {
+		field.setAttribute("stroke", $model.borderColor);
+		field.setAttribute("fill", "white");
+		text.removeAttribute("stroke");
+		text.setAttribute("fill", "white");
+	}
+	
+	grip.setAttribute("transform", "translate(" + (-defaultWidth + width) + "," + (-defaultHeight + height) + ")");
+	
+	if($model.verticalScrollbar) {
+		scrollbar.setAttribute("display", "inline");
+		scrollbar.setAttribute("transform", "translate(" + (-defaultWidth + width) + ",0)");
+		var scrollbarHeight = defaultScrollbarHeight + height - defaultHeight;
+		scrollbarFrame.setAttribute("height", scrollbarHeight);
+		scrollbarArrowDown.setAttribute("transform", "translate(0," + (-defaultHeight + height) + ")");
+		scrollbarArrowDownSeparator.setAttribute("transform", "translate(0," + (-defaultHeight + height) + ")");
+		var thumbHeight = Math.round(scrollbarHeight / 4);
+		scrollbarThumb.setAttribute("height", thumbHeight);
+		var availableHeight = scrollbarHeight - 34;
+		if(availableHeight < thumbHeight) {
+			scrollbarThumb.setAttribute("display", "none");
+		} else {
+			scrollbarThumb.setAttribute("display", "inline");
+			scrollbarThumb.setAttribute("transform", "translate(0," + (Math.round((availableHeight - thumbHeight) * $model.value / 100)) + ")");
+		}
+		
+		if($model.state == State.DISABLED) {
+			scrollbar.setAttribute("stroke", "#ccc");
+			scrollbarArrowUp.setAttribute("fill", "#ccc");
+			scrollbarArrowDown.setAttribute("fill", "#ccc");
+		} else {
+			scrollbar.setAttribute("stroke", "#000");
+			scrollbarArrowUp.setAttribute("fill", "#000");
+			scrollbarArrowDown.setAttribute("fill", "#000");
+		}
+	} else {
+		scrollbar.setAttribute("display", "none");
+	}
+ }
+ 
+ function getPreferredSize() {
+ 	return { width: $item.width + hPadding * 2 + ($model.verticalScrollbar ? 18 : 0), height: $item.height + vPadding * 2 };
+ }
+ ]]></script>
+ <rect id="field" stroke-linejoin="round" style="color:#000000;enable-background:accumulate;" stroke-dashoffset="0" ry="4" height="114" width="98" stroke="#000" stroke-linecap="round" stroke-dasharray="none" stroke-miterlimit="4" y="1" x="1" stroke-width="2" fill="#FFF"/>
+ <g id="grip" stroke-linejoin="miter" stroke="#000" stroke-linecap="round" stroke-dasharray="none" stroke-miterlimit="4" stroke-width="2" fill="none">
+  <path id="path3792" d="M93,112,96,109"/>
+  <path id="path3794" d="M89,112,96,105"/>
+ </g>
+ <g id="scrollbar" stroke-linejoin="round" stroke="#000" stroke-linecap="round" stroke-miterlimit="4" stroke-width="2">
+  <rect id="scrollbar-frame" stroke-dasharray="none" stroke-dashoffset="0" height="98" width="15" y="4" x="81" fill="#FFF"/>
+  <path id="scrollbar-arrow-up-separator" d="M81,17,96,17" stroke-dasharray="none" fill="none"/>
+  <path id="scrollbar-arrow-down-separator" d="M81,89,96,89" stroke-dasharray="none" fill="none"/>
+  <path id="scrollbar-arrow-up" d="M88.5,7.5,92,12.5,85,12.5,88.5,7.5z" stroke-dashoffset="0" stroke-dasharray="none" fill="#000"/>
+  <path id="scrollbar-arrow-down" d="M88.5,98.5,92,93.5,85,93.5,88.5,98.5z" stroke-dashoffset="0" fill="#000"/>
+  <rect id="scrollbar-thumb" stroke-dasharray="none" stroke-dashoffset="0" height="19" width="7" y="21" x="85" fill="#CCC"/>
+ </g>
+</svg>

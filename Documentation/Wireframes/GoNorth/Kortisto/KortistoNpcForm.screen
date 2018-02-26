@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides">
+  <widgets xsi:type="model:Master" id="6" x="10" y="10" width="1135" measuredWidth="1135" measuredHeight="50">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Navigation.screen#Navbar"/>
+    <overrides>
+      <widgetChanges xsi:type="o:Delete" ref="25"/>
+      <widgetChanges xsi:type="o:Delete" ref="24"/>
+      <widgetChanges xsi:type="o:Delete" ref="28"/>
+      <widgetChanges xsi:type="o:Delete" ref="19"/>
+      <widgets ref="20" width="1135"/>
+      <widgets ref="21" text="GoNorth"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="9" x="112" y="9" measuredWidth="311" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Startseite, Ereignisse, Kortisto">
+        <items ref="@items.0" text="Startseite"/>
+        <items ref="@items.1" text="Ereignisse"/>
+        <items ref="@items.2" text="Kortisto"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="10" x="766" y="9" measuredWidth="379" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Administration, Hallo User, Abmelden">
+        <items ref="@items.0" text="Administration"/>
+        <items ref="@items.1" text="Hallo User"/>
+        <items ref="@items.2" text="Abmelden"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="19" x="136" y="64" measuredWidth="174" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="17" width="174" measuredWidth="174" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="174" height="41" text="Feld hinzufügen {desc}">
+          <attributes key="textAlignment" value="Right"/>
+          <attributes key="background" value="#fff"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="18" x="5" y="2" width="37" measuredWidth="37" measuredHeight="32" foreground="#666" icon="assets/gl-plus (large)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="20" x="318" y="64" measuredWidth="105" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="21" width="105" measuredWidth="105" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="105" height="41" text="Löschen">
+          <attributes key="textAlignment" value="Right"/>
+          <attributes key="background" value="#fff"/>
+          <font size="16px"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="22" x="5" y="2" measuredWidth="32" measuredHeight="32" foreground="#666" icon="assets/gl-trash (large)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1280" x="10" y="64" measuredWidth="119" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="1281" width="119" measuredWidth="119" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="119" height="41" text="Speichern">
+          <attributes key="textAlignment" value="Right"/>
+          <font size="16px"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="1282" x="5" y="2" measuredWidth="32" measuredHeight="32" foreground="#fff" icon="assets/gl-floppy-disk (large)"/>
+  </widgets>
+  <widgets xsi:type="model:Panel" id="1283" x="10" y="112" width="199" height="209" measuredWidth="199" measuredHeight="209"/>
+  <widgets xsi:type="model:Icon" id="1284" x="33" y="136" width="153" height="145" measuredWidth="153" measuredHeight="145" icon="assets/gl-user (custom)"/>
+  <widgets xsi:type="model:VLine" id="1285" x="232" y="112" height="265" measuredWidth="6" measuredHeight="265"/>
+  <widgets xsi:type="model:Master" id="1286" x="242" y="154" width="535" measuredWidth="535" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="535"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Text" id="1287" x="244" y="122" width="196" height="33" text="Name" measuredWidth="196" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="1288" x="369" y="198" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-trash (large)"/>
+  <widgets xsi:type="model:Text" id="1290" x="244" y="200" width="56" height="33" text="Health" measuredWidth="56" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="1289" x="242" y="232" measuredWidth="535" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="535" text="Number input"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Text" id="1293" x="245" y="274" width="92" height="33" text="MaxHealth" measuredWidth="92" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="1294" x="243" y="306" measuredWidth="535" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="535" text="Number input"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Text" id="1296" x="245" y="352" width="100" height="33" text="Background" measuredWidth="100" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="1298" x="244" y="384" width="533" height="129" measuredWidth="533" measuredHeight="129">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Area"/>
+    <overrides>
+      <widgets ref="16" width="533" height="129" text="Multiline input"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:HLine" id="1299" x="13" y="528" width="1122" measuredWidth="1122" measuredHeight="6"/>
+  <widgets xsi:type="model:Master" id="1301" x="20" y="552" width="1115" measuredWidth="1115" measuredHeight="53">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input%20Large"/>
+    <overrides>
+      <widgets ref="3" width="1115" noText="true"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1304" x="28" y="563" measuredWidth="61" measuredHeight="34">
+    <widgets xsi:type="model:Master" id="1302" width="61" measuredWidth="61" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+      <overrides>
+        <widgets ref="21" width="61" text="Tag1">
+          <attributes key="textAlignment" value="Left"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="1303" x="35" y="4" measuredWidth="24" measuredHeight="24" icon="assets/gl-remove (medium)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1305" x="99" y="563" measuredWidth="61" measuredHeight="34">
+    <widgets xsi:type="model:Master" id="1306" width="61" measuredWidth="61" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+      <overrides>
+        <widgets ref="21" width="61" text="Tag2">
+          <attributes key="textAlignment" value="Left"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="1307" x="35" y="4" measuredWidth="24" measuredHeight="24" icon="assets/gl-remove (medium)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="1308" x="172" y="563" measuredWidth="61" measuredHeight="34">
+    <widgets xsi:type="model:Master" id="1309" width="61" measuredWidth="61" measuredHeight="34">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+      <overrides>
+        <widgets ref="21" width="61" text="Tag3">
+          <attributes key="textAlignment" value="Left"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="1310" x="35" y="4" measuredWidth="24" measuredHeight="24" icon="assets/gl-remove (medium)"/>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="1313" x="299" y="198" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-log-in (custom)"/>
+  <widgets xsi:type="model:Icon" id="1314" x="322" y="198" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-arrow-up (custom)"/>
+  <widgets xsi:type="model:Icon" id="1315" x="345" y="198" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-arrow-down (custom)"/>
+  <widgets xsi:type="model:Icon" id="1316" x="405" y="272" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-trash (large)"/>
+  <widgets xsi:type="model:Icon" id="1317" x="335" y="272" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-log-in (custom)"/>
+  <widgets xsi:type="model:Icon" id="1318" x="358" y="272" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-arrow-up (custom)"/>
+  <widgets xsi:type="model:Icon" id="1319" x="381" y="272" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-arrow-down (custom)"/>
+  <widgets xsi:type="model:Icon" id="1320" x="413" y="348" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-trash (large)"/>
+  <widgets xsi:type="model:Icon" id="1321" x="343" y="348" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-log-in (custom)"/>
+  <widgets xsi:type="model:Icon" id="1322" x="366" y="348" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-arrow-up (custom)"/>
+  <widgets xsi:type="model:Icon" id="1323" x="389" y="348" width="24" height="30" measuredWidth="24" measuredHeight="30" icon="assets/gl-arrow-down (custom)"/>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

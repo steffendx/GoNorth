@@ -1,0 +1,22 @@
+{
+    "ProjectManagement": "Projektverwaltung",
+
+    "CreateProject": "Projekt erstellen",
+    "EditProject": "Projekt bearbeiten",
+    "Name": "Name",
+    "IsDefault": "Standardprojekt",
+    "Yes": "Ja",
+    "No": "Nein",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "EditProjectTooltip": "Hier klicken um das Projekt zu bearbeiten",
+    "DeleteProjectTooltip": "Hier klicken um das Projekt zu löschen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheProject": "Bist du sicher das das Projekt gelöscht werden soll?",
+    "OnlyEmptyProjectsCanBeDeleted": "Hinweis: Nur leere Projekte können gelöscht werden.",
+
+    "Error": "Fehler",
+    "ErrorOccured": "Ein Fehler ist aufgetreten."
+}

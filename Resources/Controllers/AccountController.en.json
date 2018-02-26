@@ -1,0 +1,7 @@
+{
+    "InvalidLogin": "Invalid login data",
+
+    "CodeMissing": "Wrong code",
+
+    "UserNotFound": "User could not be found."
+}

@@ -1,0 +1,12 @@
+{
+    "FolderNotEmpty": "Der Ordner ist nicht leer.",
+
+    "CanNotDeleteNpcReferencedInAikaQuest": "Der Npc wird in den Aika Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
+    "CanNotDeleteNpcMentionedInKirjaPage": "Der Npc wird in den Kirja Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
+    "CanNotDeleteNpcMarkedInKartaMap": "Der Npc ist in den Karta Karten \"{0}\" markiert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
+    "CanNotDeleteNpcReferencedInTaleDialog": "Der Npc ist in den Tale Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
+
+    "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
+    "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",
+    "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt."
+}

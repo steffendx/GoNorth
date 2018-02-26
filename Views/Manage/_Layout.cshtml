@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{ 
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Localizer["ManageYourAccount"]</h2>
+
+<div>
+    <h4>@Localizer["ChangeYourAccountSettings"]</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-2">
+            @await Html.PartialAsync("_ManageNav")
+        </div>
+        <div class="col-md-10">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+        

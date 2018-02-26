@@ -1,0 +1,131 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["KartaMaps"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div id="gn-kartaManageMapsContainer">
+    <!-- Delete Map Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: deleteError">
+                        <strong>@Localizer["Error"]</strong> <span data-bind="text: deleteError"></span>
+                    </div>
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheMap"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteMap, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Yes"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog, disable: dialogLoading">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create / Edit Map Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showMapCreateEditDialog, attr: { 'data-backdrop': dialogLoading() ? 'static' : null, 'data-keyboard': dialogLoading() ? 'false' : null }">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" data-bind="visible: !dialogLoading()">&times;</button>
+                    <h4 class="modal-title"><span data-bind="if: editMapId">@Localizer["EditMap"]</span><span data-bind="if: !editMapId()">@Localizer["CreateMap"]</span></h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="gn-mapCreateEditForm">
+                        <div class="alert alert-danger" style="display: none" data-bind="visible: createEditDialogError">
+                            <strong>@Localizer["Error"]</strong> <span data-bind="text: createEditDialogError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-mapDisplayName">@Localizer["Name"]</label>
+                            <input type="text" class="form-control" id="gn-mapDisplayName" placeholder="@Localizer["Name"]" name="mapDisplayName" data-bind="value: createEditName, disable: dialogLoading" required/>
+                        </div>
+                        <div data-bind="dropzone: createEditUrl, dropzoneAutoProcess: false, dropzoneAcceptedFiles: 'image/*', dropzoneMaxFiles: 1, dropzoneHoverClass: 'gn-dropzoneFileHover', dropzoneTimeout: 600000, dropzoneAddedFile: mapImageAdded, dropzoneSuccess: mapSaveSuccess, dropzoneError: mapSaveError, dropzoneReceiveTriggerFunctions: receiveDropzoneTriggers, visible: !dialogLoading()" class="gn-kartaMapDropzone" title="@Localizer["DropMapImageHere"]">
+                        </div>
+                        <div data-bind="visible: !dialogLoading() && !hasMapImageInQueue()" class="gn-kartaMapUploadIndicatorImage">
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                        <div data-bind="visible: dialogLoading" class="gn-kartaMapDropzone gn-kartaMapProcessing" style="display: none">
+                            <i class="glyphicon glyphicon-refresh spinning"></i>
+                            <div class="gn-kartaMapProcessingText">@Localizer["ProcessingMap"]</div>
+                        </div>
+                        <div data-bind="visible: mapImageIsMissing" class="text-danger" style="display: none">@Localizer["MapImageIsRequired"]</div>
+                    </form>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveMap, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Save"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeCreateEditMapDialog, disable: dialogLoading">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Map List -->
+    <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreateMapDialog"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreateMap"]</button>
+
+    <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <div class="row gn-gridTableRow">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableHeader gn-gridTableCell">
+            @Localizer["Name"]
+        </div>
+    </div>
+    <!-- ko foreach: maps -->
+        <div class="row gn-gridTableRow">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10 gn-gridTableCell">
+                <a class="gn-clickable" data-bind="text: name, attr: { title: name }, href: $root.buildMapUrl"></a>
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 gn-gridTableCell">
+                <a class="gn-clickable" data-bind="click: function(map) { $root.openEditMapDialog(map); }" title="@Localizer["EditMap"]"><i class="glyphicon glyphicon-pencil"></i></a>
+                <a class="gn-clickable" data-bind="click: function(map) { $root.openDeleteMapDialog(map); }" title="@Localizer["DeleteMap"]"><i class="glyphicon glyphicon-trash"></i></a>
+            </div>
+        </div>
+    <!-- /ko -->
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="~/js/Karta/manageMaps.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Karta/manageMaps.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script src="~/lib/dropzone/dist/min/dropzone.min.js"></script>
+    <script src="~/js/Localization/dropzone.locales.@(Localizer["DropzoneLocale"]).js"></script>
+
+    <script type="text/javascript">
+        Dropzone.autoDiscover = false;
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Karta.ManageMaps.ViewModel(), jQuery("#gn-kartaManageMapsContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/dropzone/dist/min/dropzone.min.css" />
+}

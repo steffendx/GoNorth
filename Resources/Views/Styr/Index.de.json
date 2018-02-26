@@ -1,0 +1,28 @@
+{
+    "Styr": "Styr",
+
+    "LevelBack": "Zurück",
+    "CreateFlexFieldObject": "Item erstellen",
+    "CreateCategory": "Kategorie erstellen",
+    "EditCategory": "Kategorie editieren",
+    "DeleteCategory": "Kategorie löschen",
+    "Name": "Name",    
+    "Yes": "Ja",
+    "No": "Nein",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "ManageTemplates": "Templates verwalten",
+
+    "Search": "Suchen",
+    
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheFolder": "Bist du sicher das die Kategorie gelöscht werden soll?",
+    "OnlyEmptyFoldersCanBeDeleted": "Hinweis: Nur leere Kategorien können gelöscht werden.",
+
+    "Error": "Fehler",
+    "ErrorOccured": "Ein Fehler ist aufgetreten"
+}

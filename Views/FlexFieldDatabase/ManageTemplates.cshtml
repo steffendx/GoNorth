@@ -1,0 +1,34 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@model IViewLocalizer
+
+<!-- Template List -->
+<div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
+    <strong>@Model["Error"]</strong> @Model["ErrorOccured"]
+</div>
+
+<button type="button" class="btn btn-primary gn-flexFieldCreateTemplateButton" data-bind="click: createNewTemplate"><i class="glyphicon glyphicon-plus"></i> @Model["CreateTemplate"]</button>
+
+<div class="row gn-gridTableRow">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableHeader gn-gridTableCell">
+        @Model["Name"]
+    </div>
+</div>
+<!-- ko foreach: templates -->
+    <div class="row gn-gridTableRow">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableCell">
+            <a class="gn-clickable" data-bind="text: name, attr: { title: name }, href: function(template) { return $root.buildTemplateUrl(template); }"></a>
+        </div>
+    </div>
+<!-- /ko -->
+
+<div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+    <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Model["PreviousPage"]">
+        <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+    </button>
+    <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Model["NextPage"]">
+        <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+    </button>
+</div>

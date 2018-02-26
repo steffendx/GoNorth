@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e237 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="modal-window" d="M350 1200h500q162 0 256 -93.5t94 -256.5v-500q0 -165 -93.5 -257.5t-256.5 -92.5h-500q-165 0 -257.5 92.5t-92.5 257.5v500q0 165 92.5 257.5t257.5 92.5zM900 1000h-600q-41 0 -70.5 -29.5t-29.5 -70.5v-600q0 -41 29.5 -70.5t70.5 -29.5h600q41 0 70.5 29.5 t29.5 70.5v600q0 41 -29.5 70.5t-70.5 29.5zM350 900h500q21 0 35.5 -14.5t14.5 -35.5v-300q0 -21 -14.5 -35.5t-35.5 -14.5h-500q-21 0 -35.5 14.5t-14.5 35.5v300q0 21 14.5 35.5t35.5 14.5zM400 800v-200h400v200h-400z" />
+</g>
+</svg>	

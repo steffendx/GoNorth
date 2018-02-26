@@ -1,0 +1,178 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["TaskBoards"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div id="gn-taskManageBoardsContainer">
+    <!-- Board List Template -->
+    <script type="text/html" id="gn-taskBoardList">
+        <h4 class="gn-clickable gn-taskBoardListTitle" data-bind="click: toogleVisibility">
+            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i>
+            <span data-bind="text: title"></span>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+        </h4>
+
+        <div class="container gn-commandWidgetTopMargin" data-bind="visible: isExpanded">
+            <div class="row gn-gridTableRow">
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 gn-gridTableHeader gn-gridTableCell">
+                    @Localizer["Name"]
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-4 col-lg-4 gn-gridTableHeader gn-gridTableCell">
+                    @Localizer["PlannedStart"]
+                </div>
+                <div class="col-xs-12 col-sm-5 col-md-4 col-lg-4 gn-gridTableHeader gn-gridTableCell">
+                    @Localizer["PlannedEnd"]
+                </div>
+            </div>
+            <!-- ko foreach: boards -->
+            <div class="row gn-gridTableRow">
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 gn-gridTableCell">
+                    <a class="gn-clickable" data-bind="text: name, href: $root.buildTaskBoardUrl"></a>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 gn-gridTableCell" data-bind="formattedDateText: plannedStart">
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 gn-gridTableCell" data-bind="formattedDateText: plannedEnd">
+                </div>
+                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableCell">
+                    <a class="gn-clickable" data-bind="click: function(board) { $root.openEditBoardDialog(board); }" title="@Localizer["EditBoardToolTip"]"><i class="glyphicon glyphicon-pencil"></i></a>
+                    <a class="gn-clickable" data-bind="click: function(board) { $root.openDeleteBoardDialog(board); }" title="@Localizer["DeleteBoardToolTip"]"><i class="glyphicon glyphicon-trash"></i></a>
+                    <a class="gn-clickable" data-bind="click: function(board) { $root.openToogleBoardStatusDialog(board); }, attr: { title: $parent.toogleStatusToolTip }"><i class="glyphicon" data-bind="css: $parent.toogleStatusIcon"></i></a>
+                </div>
+            </div>
+            <!-- /ko -->
+
+            <div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+                <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
+                    <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+                    <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+                </button>
+                <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+                    <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+                    <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+                </button>
+            </div>
+        </div>
+    </script>
+
+    <!-- Delete Board Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheBoard"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteBoard">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toogle Board Status Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmToogleStatusDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p data-bind="visible: isToogleStatusClosing">@Localizer["AreYouSureYouWantToCloseTheBoard"]</p><p data-bind="visible: !isToogleStatusClosing()">@Localizer["AreYouSureYouWantToReopenTheBoard"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: toogleBoardStatus">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmToogleStatusDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create / Edit Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showBoardCreateEditDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><span data-bind="if: isEditingBoard">@Localizer["EditTaskBoard"]</span><span data-bind="if: !isEditingBoard()">@Localizer["CreateTaskBoard"]</span></h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="gn-taskBoardCreateEditForm">
+                        <div class="form-group">
+                            <label for="gn-boardName">@Localizer["Name"]</label>
+                            <input type="text" class="form-control" id="gn-boardName" placeholder="@Localizer["Name"]" name="boardName" data-bind="value: createEditBoardName, enterPressed: saveBoard" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-boardPlannedStart">@Localizer["PlannedStart"]</label>
+                            <input type="text" class="form-control" id="gn-boardPlannedStart" placeholder="@Localizer["PlannedStart"]" name="boardPlannedStart" data-bind="dateTimePicker: createEditBoardPlannedStart"/>
+                            <div class="text-danger" data-bind="visible: showDateValidationError" style="display: none">@Localizer["StartDateHasToBeBeforeEndDate"]</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-boardPlannedEnd">@Localizer["PlannedEnd"]</label>
+                            <input type="text" class="form-control" id="gn-boardPlannedEnd" placeholder="@Localizer["PlannedEnd"]" name="boardPlannedEnd" data-bind="dateTimePicker: createEditBoardPlannedEnd"/>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveBoard">@Localizer["Save"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: cancelBoardDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Buttons -->
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openNewBoardDialog, disable: isLoading()">
+        <i class="glyphicon glyphicon-plus" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["CreateNewBoard"]
+    </button>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> <span>@Localizer["ErrorOccured"]</span> <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+    </div>
+
+    <div data-bind="template: { name: 'gn-taskBoardList', data: openBoardList }"></div>
+
+    <div data-bind="template: { name: 'gn-taskBoardList', data: closedBoardList }"></div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <environment include="Development">
+        <script src="~/js/Task/manageBoards.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Task/manageBoards.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.Task.ManageBoards.Localization = {
+            OpenTaskBoards: "@Localizer["OpenTaskBoards"]",
+            CloseTaskBoardToolTip: "@Localizer["CloseTaskBoardToolTip"]",
+            ClosedTaskBoards: "@Localizer["ClosedTaskBoards"]",
+            ReopenTaskBoardToolTip: "@Localizer["ReopenTaskBoardToolTip"]",
+        };
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Task.ManageBoards.ViewModel(), jQuery("#gn-taskManageBoardsContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+}

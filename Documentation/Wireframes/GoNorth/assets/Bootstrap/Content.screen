@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:WidgetGroup" id="8" x="16" y="8" measuredWidth="816" measuredHeight="312" name="Jumbotron">
+    <widgets xsi:type="model:Shape" id="2" width="816" height="312" measuredWidth="816" measuredHeight="312" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" border="false" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Label" id="4" x="61" y="59" text="Hello, world!" measuredWidth="364" measuredHeight="79" layoutParams="anchor-left|anchor-top">
+      <font size="63px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="5" x="61" y="143" width="683" height="62" text="This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information." measuredWidth="683" measuredHeight="62" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="21px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="7" x="61" y="210" height="45" text="Learn more" measuredWidth="116" measuredHeight="45" layoutParams="anchor-left|anchor-bottom" background="#428bca">
+      <font size="18px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="11" x="16" y="336" measuredWidth="816" measuredHeight="52" name="Alert Success">
+    <widgets xsi:type="model:Shape" id="9" width="816" height="52" measuredWidth="816" measuredHeight="52" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#dff0d8" foreground="#d6e9c6" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="10" x="16" y="17" width="785" text="*Well done!* You successfully read this important alert message." measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" foreground="#3c763d">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="21" x="792" y="8" measuredWidth="16" measuredHeight="16" layoutParams="anchor-right|anchor-top" foreground="#666666" icon="delete (small)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="15" x="16" y="405" measuredWidth="816" measuredHeight="52" name="Alert Info">
+    <widgets xsi:type="model:Shape" id="16" width="816" height="52" measuredWidth="816" measuredHeight="52" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#d9edf7" foreground="#bce8f1" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="17" x="16" y="17" width="785" text="*Heads up!* This alert needs your attention, but it's not super important." measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" foreground="#31708f">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="22" x="792" y="8" measuredWidth="16" measuredHeight="16" layoutParams="anchor-right|anchor-top" foreground="#666666" icon="delete (small)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="18" x="16" y="474" measuredWidth="816" measuredHeight="52" name="Alert Warning">
+    <widgets xsi:type="model:Shape" id="19" width="816" height="52" measuredWidth="816" measuredHeight="52" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#fcf8e3" foreground="#faebcc" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="20" x="16" y="17" width="785" text="*Warning!* Best check yo self, you're not looking too good." measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" foreground="#8a6d3b">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="23" x="792" y="8" measuredWidth="16" measuredHeight="16" layoutParams="anchor-right|anchor-top" foreground="#666666" icon="delete (small)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="28" x="16" y="544" measuredWidth="816" measuredHeight="52" name="Alert Danger">
+    <widgets xsi:type="model:Shape" id="29" width="816" height="52" measuredWidth="816" measuredHeight="52" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#f2dede" foreground="#ebccd1" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="30" x="16" y="17" width="785" text="*Oh snap!* Change a few things up and try submitting again." measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" foreground="#a94442">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="31" x="792" y="8" measuredWidth="16" measuredHeight="16" layoutParams="anchor-right|anchor-top" foreground="#666666" icon="delete (small)"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="32" x="16" y="614" measuredWidth="816" measuredHeight="52" name="Panel">
+    <widgets xsi:type="model:SVGImage" id="93" width="816" height="52" measuredWidth="816" measuredHeight="52" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" src="_panel.svg"/>
+    <widgets xsi:type="model:Text" id="34" x="16" y="17" width="785" text="Basic panel example" measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="60" x="16" y="679" measuredWidth="816" measuredHeight="87" name="Panel with Heading">
+    <widgets xsi:type="model:SVGImage" id="56" width="816" measuredWidth="816" measuredHeight="87" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" foreground="#444444" src="_panel-titled.svg"/>
+    <widgets xsi:type="model:Label" id="57" x="18" y="10" text="Panel title" measuredWidth="78" measuredHeight="27" layoutParams="anchor-left|anchor-top">
+      <font size="16px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="59" x="15" y="53" width="788" height="24" text="Panel content" measuredWidth="788" measuredHeight="24" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="41" x="16" y="808" measuredWidth="816" measuredHeight="60" name="Well">
+    <widgets xsi:type="model:Shape" id="42" width="816" height="60" measuredWidth="816" measuredHeight="60" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#f5f5f5" foreground="#e3e3e3" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="43" x="24" y="21" width="785" text="Look, I'm in a well!" measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="44" x="856" y="656" measuredWidth="816" measuredHeight="70" name="Well Large">
+    <widgets xsi:type="model:Shape" id="45" width="816" height="70" measuredWidth="816" measuredHeight="70" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#f5f5f5" foreground="#e3e3e3" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="46" x="24" y="26" width="785" text="Look, I'm in a well!" measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="47" x="856" y="740" measuredWidth="816" measuredHeight="40" name="Well Small">
+    <widgets xsi:type="model:Shape" id="48" width="816" height="40" measuredWidth="816" measuredHeight="40" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#f5f5f5" foreground="#e3e3e3" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="49" x="9" y="11" width="785" text="Look, I'm in a well!" measuredWidth="785" measuredHeight="17" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="50" x="856" y="8" measuredWidth="692" measuredHeight="152" name="Table">
+    <widgets xsi:type="model:Table" id="51" width="692" text="#, First Name, Last Name, Username&#xA;1, Mark, Otto, @mdo&#xA;2, Jacob, Thornton, @fat&#xA;3, Larry, the Bird, @twitter" measuredWidth="692" measuredHeight="152" border="false" rowHeight="37" horizontalLines="true" alternative="#eeeeee" verticalLines="false">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="52" x="856" y="179" measuredWidth="692" measuredHeight="128" name="Table Condensed">
+    <widgets xsi:type="model:Table" id="53" width="692" text="#, First Name, Last Name, Username&#xA;1, Mark, Otto, @mdo&#xA;2, Jacob, Thornton, @fat&#xA;3, Larry, the Bird, @twitter" measuredWidth="692" measuredHeight="128" border="false" rowHeight="31" horizontalLines="true" alternative="#eeeeee" verticalLines="false">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="54" x="856" y="333" measuredWidth="692" measuredHeight="300" name="Table Contextual">
+    <widgets xsi:type="model:Table" id="55" width="692" text="#, Column heading, Column heading, Column heading&#xA;(bg:#f5f5f5)|1, Column content, Column content, Column content&#xA;2, Column content, Column content, Column content&#xA;(bg:#dff0d8)|3, Column content, Column content, Column content&#xA;4, Column content, Column content, Column content&#xA;(bg:#fcf8e3)|5, Column content, Column content, Column content&#xA;6, Column content, Column content, Column content&#xA;(bg:#f2dede)|7, Column content, Column content, Column content" measuredWidth="692" measuredHeight="300" border="false" rowHeight="37" horizontalLines="true" verticalLines="false">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="61" x="16" y="781" measuredWidth="816" measuredHeight="87" name="Panel with Footer">
+    <widgets xsi:type="model:SVGImage" id="62" width="816" measuredWidth="816" measuredHeight="87" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" foreground="#444444" vFlip="true" src="_panel-titled.svg"/>
+    <widgets xsi:type="model:Label" id="63" x="18" y="52" text="Panel footer" measuredWidth="89" measuredHeight="25" layoutParams="anchor-left|anchor-bottom">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="64" x="15" y="12" width="788" height="24" text="Panel content" measuredWidth="788" measuredHeight="24" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="69" x="16" y="888" measuredWidth="816" measuredHeight="87" name="Panel Primary">
+    <widgets xsi:type="model:SVGImage" id="70" width="816" measuredWidth="816" measuredHeight="87" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#428bca" foreground="#428bca" src="_panel-titled.svg"/>
+    <widgets xsi:type="model:Label" id="71" x="18" y="10" text="Panel title" measuredWidth="78" measuredHeight="27" layoutParams="anchor-left|anchor-top" foreground="#ffffff">
+      <font size="16px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="72" x="15" y="53" width="788" height="24" text="Panel content" measuredWidth="788" measuredHeight="24" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="73" x="16" y="987" measuredWidth="816" measuredHeight="87" name="Panel Success">
+    <widgets xsi:type="model:SVGImage" id="74" width="816" measuredWidth="816" measuredHeight="87" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#dff0d8" foreground="#d6e9c6" src="_panel-titled.svg"/>
+    <widgets xsi:type="model:Label" id="75" x="18" y="10" text="Panel title" measuredWidth="78" measuredHeight="27" layoutParams="anchor-left|anchor-top" foreground="#3c763d">
+      <font size="16px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="76" x="15" y="53" width="788" height="24" text="Panel content" measuredWidth="788" measuredHeight="24" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="77" x="16" y="1086" measuredWidth="816" measuredHeight="87" name="Panel Info">
+    <widgets xsi:type="model:SVGImage" id="78" width="816" measuredWidth="816" measuredHeight="87" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#d9edf7" foreground="#bce8f1" src="_panel-titled.svg"/>
+    <widgets xsi:type="model:Label" id="79" x="18" y="10" text="Panel title" measuredWidth="78" measuredHeight="27" layoutParams="anchor-left|anchor-top" foreground="#31708f">
+      <font size="16px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="80" x="15" y="53" width="788" height="24" text="Panel content" measuredWidth="788" measuredHeight="24" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="85" x="16" y="1184" measuredWidth="816" measuredHeight="87" name="Panel Warning">
+    <widgets xsi:type="model:SVGImage" id="86" width="816" measuredWidth="816" measuredHeight="87" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#fcf8e3" foreground="#faebcc" src="_panel-titled.svg"/>
+    <widgets xsi:type="model:Label" id="87" x="18" y="10" text="Panel title" measuredWidth="78" measuredHeight="27" layoutParams="anchor-left|anchor-top" foreground="#8a6d3b">
+      <font size="16px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="88" x="15" y="53" width="788" height="24" text="Panel content" measuredWidth="788" measuredHeight="24" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="89" x="16" y="1282" measuredWidth="816" measuredHeight="87" name="Panel Danger">
+    <widgets xsi:type="model:SVGImage" id="90" width="816" measuredWidth="816" measuredHeight="87" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#f2dede" foreground="#ebccd1" src="_panel-titled.svg"/>
+    <widgets xsi:type="model:Label" id="91" x="18" y="10" text="Panel title" measuredWidth="78" measuredHeight="27" layoutParams="anchor-left|anchor-top" foreground="#a94442">
+      <font size="16px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="92" x="15" y="53" width="788" height="24" text="Panel content" measuredWidth="788" measuredHeight="24" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="108" x="856" y="800" measuredWidth="782" measuredHeight="383" name="Modal Background">
+    <widgets xsi:type="model:Panel" id="109" width="782" height="383" measuredWidth="782" measuredHeight="383" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#666666" alpha="128" border="none"/>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="107" x="948" y="888" measuredWidth="600" measuredHeight="219" name="Modal">
+    <widgets xsi:type="model:SVGImage" id="94" width="600" height="219" measuredWidth="600" measuredHeight="219" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" src="_panel.svg"/>
+    <widgets xsi:type="model:HLine" id="95" y="54" width="600" measuredWidth="600" measuredHeight="6" layoutParams="anchor-left,anchor-right|anchor-top"/>
+    <widgets xsi:type="model:Icon" id="97" x="571" y="19" measuredWidth="16" measuredHeight="16" layoutParams="anchor-right|anchor-top" foreground="#666666" icon="delete (small)"/>
+    <widgets xsi:type="model:HLine" id="98" y="140" width="600" measuredWidth="600" measuredHeight="6" layoutParams="anchor-left,anchor-right|anchor-bottom"/>
+    <widgets xsi:type="model:Label" id="100" x="16" y="14" text="Modal title" measuredWidth="98" measuredHeight="30" layoutParams="anchor-left|anchor-top">
+      <font size="18px" bold="false"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="102" x="20" y="79" width="560" height="48" text="One fine body..." measuredWidth="560" measuredHeight="48" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="104" x="398" y="163" height="34" text="Close" measuredWidth="57" measuredHeight="34" layoutParams="anchor-right|anchor-bottom">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="106" x="469" y="163" height="34" text="Save changes" measuredWidth="108" measuredHeight="34" layoutParams="anchor-right|anchor-bottom" background="#428bca">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="120" x="856" y="1200" measuredWidth="54" measuredHeight="29" name="Tooltip">
+    <widgets xsi:type="model:Tooltip" id="111" text="Tooltip" measuredWidth="54" measuredHeight="29" textAlignment="Center" background="#000000" skin="_tooltip.svg" position="bottomRight">
+      <font size="12px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="165" x="856" y="1254" height="150" measuredWidth="250" measuredHeight="154" name="Popover Top">
+    <widgets xsi:type="model:SVGImage" id="161" width="250" height="154" measuredWidth="250" measuredHeight="154" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" src="_popover-top.svg"/>
+    <widgets xsi:type="model:Label" id="162" x="14" y="5" text="Popover top" measuredWidth="89" measuredHeight="25" layoutParams="anchor-left|anchor-top">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="164" x="14" y="48" width="221" height="78" text="Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum." measuredWidth="221" measuredHeight="78" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="170" x="1136" y="1254" measuredWidth="250" measuredHeight="154" name="Popover Bottom">
+    <widgets xsi:type="model:SVGImage" id="171" width="250" height="154" measuredWidth="250" measuredHeight="154" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" src="_popover-bottom.svg"/>
+    <widgets xsi:type="model:Label" id="172" x="14" y="16" text="Popover bottom" measuredWidth="117" measuredHeight="25" layoutParams="anchor-left|anchor-top">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="173" x="14" y="59" width="221" height="78" text="Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum." measuredWidth="221" measuredHeight="78" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="178" x="1408" y="1254" measuredWidth="250" measuredHeight="143" name="Popover Right">
+    <widgets xsi:type="model:SVGImage" id="179" width="250" height="143" measuredWidth="250" measuredHeight="143" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" src="_popover-right.svg"/>
+    <widgets xsi:type="model:Label" id="180" x="25" y="5" text="Popover right" measuredWidth="97" measuredHeight="25" layoutParams="anchor-left|anchor-top">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="181" x="25" y="48" width="221" height="78" text="Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum." measuredWidth="221" measuredHeight="78" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="182" x="856" y="1424" measuredWidth="261" measuredHeight="143" name="Popover Left">
+    <widgets xsi:type="model:SVGImage" id="183" width="261" height="143" measuredWidth="261" measuredHeight="143" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" src="_popover-left.svg"/>
+    <widgets xsi:type="model:Label" id="184" x="14" y="5" text="Popover left" measuredWidth="89" measuredHeight="25" layoutParams="anchor-left|anchor-top">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="185" x="14" y="48" width="221" height="78" text="Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum." measuredWidth="221" measuredHeight="78" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="192" x="1136" y="1424" measuredWidth="250" measuredHeight="118" name="Popover">
+    <widgets xsi:type="model:SVGImage" id="190" width="250" height="118" measuredWidth="250" measuredHeight="118" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" rotation="90" src="_popover.svg"/>
+    <widgets xsi:type="model:Text" id="191" x="14" y="15" width="221" height="78" text="Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum." measuredWidth="221" measuredHeight="78" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="196" x="16" y="1384" measuredWidth="161" measuredHeight="260" name="List Group">
+    <widgets xsi:type="model:SVGImage" id="197" width="161" height="260" measuredWidth="161" measuredHeight="260" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" src="_panel.svg"/>
+    <widgets xsi:type="model:List" id="195" x="10" y="5" width="135" text="Link&#xA;Link&#xA;Link&#xA;Link&#xA;Link&#xA;Link&#xA;Link" measuredWidth="135" measuredHeight="249" border="false" alpha="0" rowHeight="35" horizontalLines="true">
+      <font size="14px"/>
+      <items x="0" y="2" width="135" height="35" text="Link"/>
+      <items x="0" y="37" width="135" height="35" text="Link"/>
+      <items x="0" y="72" width="135" height="35" text="Link"/>
+      <items x="0" y="107" width="135" height="35" text="Link"/>
+      <items x="0" y="142" width="135" height="35" text="Link"/>
+      <items x="0" y="177" width="135" height="35" text="Link"/>
+      <items x="0" y="212" width="135" height="35" text="Link"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="212" x="200" y="1384" measuredWidth="368" measuredHeight="270" name="List Group Content">
+    <widgets xsi:type="model:SVGImage" id="198" width="368" height="270" measuredWidth="368" measuredHeight="270" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" src="_panel.svg"/>
+    <widgets xsi:type="model:WidgetGroup" id="204" x="15" y="11" measuredWidth="335" measuredHeight="79">
+      <widgets xsi:type="model:Label" id="200" text="List group item heading" measuredWidth="207" measuredHeight="30">
+        <font size="18px" bold="false"/>
+      </widgets>
+      <widgets xsi:type="model:Text" id="202" y="29" width="335" height="50" text="Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit." measuredWidth="335" measuredHeight="50" lineHeight="1.4">
+        <font size="14px"/>
+      </widgets>
+    </widgets>
+    <widgets xsi:type="model:HLine" id="203" y="89" width="368" measuredWidth="368" measuredHeight="6"/>
+    <widgets xsi:type="model:WidgetGroup" id="205" x="15" y="101" measuredWidth="335" measuredHeight="79">
+      <widgets xsi:type="model:Label" id="206" text="List group item heading" measuredWidth="207" measuredHeight="30">
+        <font size="18px" bold="false"/>
+      </widgets>
+      <widgets xsi:type="model:Text" id="207" y="29" width="335" height="50" text="Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit." measuredWidth="335" measuredHeight="50" lineHeight="1.4">
+        <font size="14px"/>
+      </widgets>
+    </widgets>
+    <widgets xsi:type="model:HLine" id="208" y="179" width="368" measuredWidth="368" measuredHeight="6"/>
+    <widgets xsi:type="model:WidgetGroup" id="209" x="15" y="189" measuredWidth="335" measuredHeight="79">
+      <widgets xsi:type="model:Label" id="210" text="List group item heading" measuredWidth="207" measuredHeight="30">
+        <font size="18px" bold="false"/>
+      </widgets>
+      <widgets xsi:type="model:Text" id="211" y="29" width="335" height="50" text="Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit." measuredWidth="335" measuredHeight="50" lineHeight="1.4">
+        <font size="14px"/>
+      </widgets>
+    </widgets>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

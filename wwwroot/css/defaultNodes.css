@@ -1,0 +1,380 @@
+/*
+ * Editor tools
+ */
+.marker-target
+{
+	fill: #fff;
+	stroke-width: 0;
+}
+
+.marker-vertex
+{
+   fill: #fff;
+}
+
+.marker-vertex:hover
+{
+   fill: #000;
+   stroke: none;
+}
+
+.marker-arrowhead
+{
+   fill: #fff;
+   stroke: none;
+}
+
+.marker-arrowhead:hover
+{
+   fill: #000;
+}
+
+.link-tools .tool-remove circle
+{
+   fill: #c0392b;
+}
+
+.connection
+{
+	stroke: #fff;
+}
+
+.inPorts circle
+{
+	fill: #c0392b;
+	stroke-width: 0;
+}
+
+.outPorts circle
+{
+	fill: #8c6;
+	stroke-width: 0;
+}
+
+.port-label
+{
+	display: none;
+}
+
+.available-magnet {
+    fill: yellow !important;
+}
+
+/*
+ * Node styles
+ */
+ .gn-nodeInsertContainer 
+ {
+	z-index: 10;
+	margin-bottom: 15px;
+	display: inline-block;
+	margin-left: 5px;
+ }
+
+.gn-nodeInsert
+{
+    background: #666;
+    border: none;
+	box-sizing: border-box;
+	color: #fff;
+    width: 200px;
+    height: 64px;
+    border: 1px solid black;
+}
+
+.gn-labelInsert {
+	margin-top: 20px;
+    margin-left: 25px;
+}
+
+.node
+{
+	position: absolute;
+	background: #666;
+	/* Make sure events are propagated to the JointJS element so, e.g. dragging works.*/
+	pointer-events: none;
+	-webkit-user-select: none;
+	padding: 8px;
+	box-sizing: border-box;
+	z-index: 2;
+	overflow: hidden;
+}
+
+.node input, .node button, .node select, .node textarea
+{
+	/* Enable interacting with inputs only. */
+	pointer-events: auto;	
+	border: none;
+	box-sizing: border-box;
+	background-color: #456;
+	color: #fff;
+}
+
+.node textarea
+{
+	resize: none;
+	width: 100%;
+	height: calc(100% - 30px);
+	margin-top: 5px;
+}
+
+.node .label
+{
+	color: #ddd;
+}
+
+.node .label.default_Text
+{
+	color: #8c6;
+}
+
+.node .label.Set
+{
+	color: #acf;
+}
+
+.node .label.Choice
+{
+	color: #dc5;
+}
+
+.node .label.Branch
+{
+	color: #ea6;
+}
+
+.node .cornerButton
+{
+	float: right;
+	border: none;
+	border-radius: 8px;
+	font-weight: bold;
+	width: 16px;
+	height: 16px;
+	line-height: 0px;
+	text-align: middle;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+}
+
+button.delete:hover
+{
+	background-color: #c0392b;
+}
+
+.node button.add:hover
+{
+	background-color: #8c6;
+}
+
+.node button.remove:hover
+{
+	background-color: #dc5;
+}
+
+.node input, .node select
+{
+	width: 100%;
+	padding: 4px;
+	margin-top: 8px;
+	display: block;
+}
+
+.node
+{
+	color: #fff;
+}
+
+.node .text-danger {
+	color: #c92a26 !important;
+}
+
+.nodeIcon 
+{
+	margin-right: 5px;
+}
+
+/**
+ * Background
+ */
+.joint-paper-background {
+    background-color: #BBBBBB;
+}
+
+.gn-nodeGraph svg {
+	cursor: -moz-grab; 
+	cursor: -webkit-grab; 
+	cursor: grab;
+}
+
+.gn-nodeGraph svg:active {
+	cursor: -moz-grabbing !important; 
+	cursor: -webkit-grabbing !important; 
+	cursor: grabbing !important;
+}
+
+.gn-nodeGraph-dragging svg {
+	cursor: -moz-grabbing !important; 
+	cursor: -webkit-grabbing !important; 
+	cursor: grabbing !important;
+}
+
+/**
+ * Icons
+ */
+.gn-nodeLoading {
+    font-size: 11px;
+}
+
+.gn-nodeError {
+	pointer-events: auto;
+}
+
+/**
+ * Container
+ */
+.gn-nodeGraphContainer {
+	width: 100%;
+	height: 700px;
+	overflow: hidden;
+}
+
+@media(min-height:1300px) {
+    .gn-nodeGraphContainer {
+		height: 1000px;
+    }
+}
+
+.gn-nodeGraphPositionZoomIndicator {
+	position: absolute;
+	z-index: 50;
+	background-color: #999999;
+	border-bottom: 1px solid #888888;
+	border-right: 1px solid #888888;
+	padding: 5px;
+	color: #FFFFFF;
+	min-width: 250px;
+}
+
+/**
+ * Condition
+ */
+.gn-nodeConditionGroupCell {
+    border: 1px solid #CCCCCC;
+    border-spacing: 0px;
+}
+
+.gn-nodeConditionGroupTable {
+    width: 100%;
+}
+
+.gn-nodeConditionIcon {
+    pointer-events: auto;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.gn-nodeConditionIcon:hover {
+    text-decoration: none;
+}
+
+.gn-nodeConditionGroupOperator {
+    vertical-align: middle;
+    background-color: rgb(85, 133, 196);
+    color: #FFFFFF;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 50px;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    cursor: pointer;
+}
+
+.gn-nodeConditionMoveDropIndicator {
+    border: 2px dashed #666666;
+}
+
+.gn-nodeConditionDialogMoveToRoot {
+    width: 100%;
+    height: 30px;
+}
+
+.gn-nodeConditionDialogElementTable {
+    width: 100%;
+    border-spacing: 10px;
+    border-collapse: separate;
+}
+
+@media(min-width:768px) {
+    .gn-nodeConditionDialog {
+        width: calc(100% - 100px);
+    }
+}
+
+.gn-nodeConditionDialogAddCondition {
+    margin-left: 10px;
+}
+
+.gn-nodeAddCondition {
+    margin-right: 10px !important;
+}
+
+.gn-nodeAddCondition:hover {
+    background-color: rgb(33, 100, 0);
+}
+
+.gn-nodeConditionTable {
+    width: 100%;
+    height: calc(100% - 33px);
+    margin-top: 15px;
+    table-layout: fixed;
+}
+
+.gn-nodeConditionTable tr {
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+.gn-nodeConditionTable input {
+    margin-top: 0px !important;
+}
+
+.gn-nodeConditionTable a {
+    color: #ffffff;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.gn-nodeConditionTableConditionCell {
+    width: 80%;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.node .label.default_Condition, .gn-nodeCondition .gn-labelInsert {
+    color: #e2b025;
+}
+
+/**
+ * Action
+ */
+.gn-actionNodeActionContent a {
+    color: #ffffff;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.gn-actionNodeObjectSelectContainer {
+	margin-top: 5px;
+	padding-left: 5px;
+}
+
+.gn-nodeActionText {
+    margin-top: 8px;
+    padding-left: 5px;
+}

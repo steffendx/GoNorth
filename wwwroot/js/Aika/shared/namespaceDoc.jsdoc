@@ -1,0 +1,14 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Aika) {
+        
+        /**
+         * Shared Classes Namespace
+         * @namespace Shared
+         */
+        (function(Shared) {
+            
+        }(Aika.Shared = Aika.Shared || {}));
+
+    }(GoNorth.Aika = GoNorth.Aika || {}));
+}(window.GoNorth = window.GoNorth || {}));

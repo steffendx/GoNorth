@@ -1,0 +1,7 @@
+{
+    "AddField": "Add field",
+
+    "SingleLineField": "Text field",
+    "MultiLineField": "Multiline text field",
+    "NumberField": "Number field"
+}

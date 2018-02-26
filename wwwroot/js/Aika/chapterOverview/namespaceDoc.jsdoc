@@ -1,0 +1,14 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Aika) {
+        
+        /**
+         * Chapter Overview Form Namespace
+         * @namespace ChapterOverview
+         */
+        (function(ChapterOverview) {
+            
+        }(Aika.ChapterOverview = Aika.ChapterOverview || {}));
+
+    }(GoNorth.Aika = GoNorth.Aika || {}));
+}(window.GoNorth = window.GoNorth || {}));

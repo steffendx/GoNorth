@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+
+        /**
+         * Node Graph Conditions Namespace
+         * @namespace Conditions
+         */
+        (function(Conditions) {
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));

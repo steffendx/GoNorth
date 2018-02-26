@@ -1,0 +1,11 @@
+(function(GoNorth) {
+    "use strict";
+    
+    /**
+     * Timeline View Namespace
+     * @namespace Timeline
+     */
+    (function(Timeline) {
+    }(GoNorth.Timeline = GoNorth.Timeline || {}));
+
+}(window.GoNorth = window.GoNorth || {}));

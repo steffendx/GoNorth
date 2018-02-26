@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" onload="onLoad(evt)" onresize="onResize(evt)" height="35" width="100" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <title id="title2818">WireframeSketcher SVG asset</title>
+ <metadata id="metadata7">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>WireframeSketcher SVG asset</dc:title>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Peter Severin</dc:title>
+     </cc:Agent>
+    </dc:creator>
+    <dc:rights>
+     <cc:Agent>
+      <dc:title>Copyright (c) WireframeSketcher.com</dc:title>
+     </cc:Agent>
+    </dc:rights>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <script><![CDATA[
+ var doc, svg, field, arrow, text, dropdown;
+ var defaultWidth, defaultHeight;
+ var arrowWidth = 12;
+ 
+ function onLoad(evt) {
+	svg = evt.target;
+	doc = svg.ownerDocument;
+	field = doc.getElementById("field");
+	arrow = doc.getElementById("arrow");
+	text = doc.createElement("foreignObject");
+	text.setAttribute("id", "item");
+	text.setAttribute("fill", "white");
+	svg.appendChild(text);
+ 	defaultWidth = parseInt(svg.getAttribute("width"));
+ 	defaultHeight = parseInt(svg.getAttribute("height"));
+ 	dropdown = doc.createElement("g");
+ 	svg.appendChild(dropdown);
+ }
+ 
+ function onResize(evt) {
+ 	var width = parseInt(svg.getAttribute("width"));
+ 	var height = parseInt(svg.getAttribute("height"));
+
+	var hPadding = Math.round($items[0].height * 0.75), vPadding = Math.round($items[0].height * 0.5);
+ 	
+ 	var comboHeight;
+ 	
+ 	if($items.length > 1) {
+		comboHeight =  $items[0].height + vPadding * 2;
+ 	} else {
+ 		comboHeight = height;
+ 	}
+ 	
+ 	field.setAttribute("width", width - 2);
+ 	field.setAttribute("height", comboHeight - 2);
+ 	
+	text.setAttribute("x", hPadding);
+	text.setAttribute("width", width - hPadding * 2 - arrowWidth);
+	text.setAttribute("y", 0);
+	text.setAttribute("height", comboHeight);
+	
+	arrow.setAttribute("transform", "translate(" + (-defaultWidth + width) + "," + (Math.round((comboHeight - defaultHeight) / 2)) + ")");
+	
+	if($model.state == State.DISABLED) {
+		field.setAttribute("stroke", "#ccc");
+		field.setAttribute("fill", "#eee");
+		text.setAttribute("stroke", "#555");
+		text.removeAttribute("fill");
+		arrow.setAttribute("stroke", "#ccc");
+		arrow.setAttribute("fill", "#ccc");
+	} else if($model.state == State.FOCUSED) {
+		field.setAttribute("stroke", "#52a8ec");
+		field.setAttribute("fill", "white");
+		text.removeAttribute("stroke");
+		text.setAttribute("fill", "white");
+		arrow.setAttribute("stroke", "#000");
+		arrow.setAttribute("fill", "#000");
+	} else {
+		field.setAttribute("stroke", $model.borderColor);
+		field.setAttribute("fill", "white");
+		text.removeAttribute("stroke");
+		text.setAttribute("fill", "white");
+		arrow.setAttribute("stroke", "#000");
+		arrow.setAttribute("fill", "#000");
+	}
+	
+	if($items.length > 1) {
+		dropdown.setAttribute("display", "inline");
+		clearNode(dropdown);
+		var frame = doc.createElement("rect");
+		dropdown.appendChild(frame);
+		frame.setAttribute("stroke-width", 2);
+		frame.setAttribute("x", 1);
+		frame.setAttribute("y", comboHeight + 1);
+		frame.setAttribute("width", width - 2);
+		frame.setAttribute("height", height - comboHeight - 2);
+		frame.setAttribute("fill", "white");
+		frame.setAttribute("stroke", "black");
+		
+		for(var i = 1, y = comboHeight + vPadding; i < $items.length; i ++) {
+			var item = doc.createElement("foreignObject");
+			dropdown.appendChild(item);
+			var itemHeight = $items[i].height;
+			item.setAttribute("id", "item" + i);
+			item.setAttribute("x", hPadding);
+			item.setAttribute("width", width - 2 * hPadding);
+			item.setAttribute("y", y);
+			item.setAttribute("height", itemHeight);
+			item.setAttribute("fill", "white"); 
+			
+			y += itemHeight + vPadding;
+		}
+	} else {
+		dropdown.setAttribute("display", "none");
+	}
+ }
+ 
+ function getPreferredSize() {
+ 	if($items.length == 0)
+ 		return { width: 20, height: 35 };
+ 		
+	var hPadding = Math.round($items[0].height * 0.75), vPadding = Math.round($items[0].height * 0.5);
+	if($items[0].height > 20) {
+		vPadding += 1;
+	}
+	var width = $items[0].width + hPadding * 2 + arrowWidth;
+	var height =  $items[0].height + vPadding * 2;
+	
+	if($items.length > 1) {
+		for(var i = 1; i < $items.length; i ++) {
+			width = Math.max(width, $items[i].width + hPadding * 2);
+			height += $items[i].height;
+		}
+		
+		height += vPadding * 2;
+		height += ($items.length - 2) * vPadding;
+	}
+	
+ 	return { width: width, height: height };
+ }
+ 
+ function clearNode(node) {
+	while (node.firstChild) {
+		node.removeChild(node.firstChild);
+	}
+ }
+ ]]></script>
+ <rect id="field" stroke-linejoin="round" ry="4" height="33" width="98" stroke="#000" stroke-linecap="round" stroke-miterlimit="4" y="1" x="1" stroke-width="2" fill="#FFF"/>
+ <path id="arrow" stroke-linejoin="round" style="enable-background:accumulate;color:#000000;" d="M87,15,93,15,90,20z" fill-rule="nonzero" stroke-dashoffset="0" stroke="#000" stroke-linecap="round" stroke-miterlimit="4" stroke-width="2" fill="#000"/>
+</svg>

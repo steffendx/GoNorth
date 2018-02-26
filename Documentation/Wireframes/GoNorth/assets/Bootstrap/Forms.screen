@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:WidgetGroup" id="13" x="16" y="8" measuredWidth="257" measuredHeight="35" name="Text Input">
+    <widgets xsi:type="model:TextField" id="1" width="257" text="Text input" measuredWidth="257" measuredHeight="35" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="14" x="16" y="53" measuredWidth="257" measuredHeight="46" name="Text Input Large">
+    <widgets xsi:type="model:TextField" id="3" width="257" text="Large text input" measuredWidth="257" measuredHeight="46" skin="_text-input.svg">
+      <font size="18px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="15" x="16" y="110" measuredWidth="108" measuredHeight="31" name="Text Input Small">
+    <widgets xsi:type="model:TextField" id="4" text="Small text input" measuredWidth="108" measuredHeight="31" skin="_text-input.svg">
+      <font size="12px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="17" x="16" y="152" measuredWidth="160" measuredHeight="69" name="Text Area">
+    <widgets xsi:type="model:TextArea" id="16" text="A *paragraph* of text&#xA;A _second_ row of text&#xA;A third row of text" measuredWidth="160" measuredHeight="69" skin="_text-area.svg" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="19" x="16" y="240" measuredWidth="87" measuredHeight="25" name="Checkbox">
+    <widgets xsi:type="model:Checkbox" id="18" text="Checkbox" measuredWidth="87" measuredHeight="25">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="21" x="16" y="272" measuredWidth="108" measuredHeight="25" name="Radio Button">
+    <widgets xsi:type="model:RadioButton" id="20" text="Radio button" measuredWidth="108" measuredHeight="25">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="33" x="16" y="368" measuredWidth="79" measuredHeight="35" name="Select">
+    <widgets xsi:type="model:Combo" id="24" text="Select" measuredWidth="79" measuredHeight="35" skin="_select.svg">
+      <font size="14px" bold="false"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="46" x="16" y="312" measuredWidth="148" measuredHeight="46" name="Select Large">
+    <widgets xsi:type="model:Combo" id="47" text="Large select" measuredWidth="148" measuredHeight="46" skin="_select.svg">
+      <font size="18px" bold="false"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="48" x="16" y="416" measuredWidth="98" measuredHeight="31" name="Select Small">
+    <widgets xsi:type="model:Combo" id="49" text="Small select" measuredWidth="98" measuredHeight="31" skin="_select.svg">
+      <font size="12px" bold="false"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="35" x="175" y="312" measuredWidth="99" measuredHeight="73" name="Select Multiple">
+    <widgets xsi:type="model:List" id="34" text="Item One&#xA;Item Two&#xA;Item Three&#xA;" measuredWidth="99" measuredHeight="73" verticalScrollbar="true">
+      <font size="14px"/>
+      <items x="0" y="2" width="82" height="23" text="Item One"/>
+      <items x="0" y="25" width="82" height="23" text="Item Two"/>
+      <items x="0" y="48" width="82" height="23" text="Item Three"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="36" x="296" y="8" measuredWidth="257" measuredHeight="63" name="Input Success">
+    <widgets xsi:type="model:Label" id="39" text="Input with success" measuredWidth="126" measuredHeight="25" layoutParams="anchor-left|anchor-top" foreground="#3c763d">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="37" y="28" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top" borderColor="#3c763d" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="40" x="296" y="90" measuredWidth="257" measuredHeight="63" name="Input Warning">
+    <widgets xsi:type="model:Label" id="41" text="Input with warning" measuredWidth="128" measuredHeight="25" layoutParams="anchor-left|anchor-top" foreground="#8a6d3b">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="42" y="28" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top" borderColor="#8a6d3b" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="43" x="296" y="173" measuredWidth="257" measuredHeight="63" name="Input Error">
+    <widgets xsi:type="model:Label" id="44" text="Input with error" measuredWidth="110" measuredHeight="25" layoutParams="anchor-left|anchor-top" foreground="#a94442">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="45" y="28" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top" borderColor="#a94442" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="53" x="296" y="266" measuredWidth="257" measuredHeight="59" name="Input with Help">
+    <widgets xsi:type="model:TextField" id="54" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="60" y="40" width="257" text="A block of help text" measuredWidth="257" measuredHeight="19" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" foreground="#444444" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="61" x="592" y="8" measuredWidth="290" measuredHeight="35" name="Input Group Prefix">
+    <widgets xsi:type="model:Shape" id="63" width="35" height="35" text="@" measuredWidth="35" measuredHeight="35" layoutParams="anchor-left|anchor-top,anchor-bottom" background="#cccccc" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="62" x="33" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="64" x="592" y="60" measuredWidth="290" measuredHeight="35" name="Input Group Suffix">
+    <widgets xsi:type="model:TextField" id="66" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Shape" id="70" x="255" width="35" height="35" text=".00" measuredWidth="35" measuredHeight="35" layoutParams="anchor-right|anchor-top,anchor-bottom" background="#cccccc" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="67" x="592" y="112" measuredWidth="323" measuredHeight="35" name="Input Group Prefix Suffix">
+    <widgets xsi:type="model:Shape" id="68" width="35" height="35" text="@" measuredWidth="35" measuredHeight="35" layoutParams="anchor-left|anchor-top,anchor-bottom" background="#cccccc" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="69" x="33" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Shape" id="71" x="288" width="35" height="35" text=".00" measuredWidth="35" measuredHeight="35" layoutParams="anchor-right|anchor-top,anchor-bottom" background="#cccccc" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="76" x="592" y="164" measuredWidth="290" measuredHeight="35" name="Input Group Checkbox">
+    <widgets xsi:type="model:Shape" id="77" width="35" height="35" measuredWidth="35" measuredHeight="35" layoutParams="anchor-left|anchor-top,anchor-bottom" background="#cccccc" icon="unchecked (small)" shapeType="rectangle-rounded">
+      <font/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="78" x="33" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="79" x="592" y="216" measuredWidth="290" measuredHeight="35" name="Input Group Radio">
+    <widgets xsi:type="model:Shape" id="80" width="35" height="35" measuredWidth="35" measuredHeight="35" layoutParams="anchor-left|anchor-top,anchor-bottom" background="#cccccc" icon="unselected (small)" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="81" x="33" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="82" x="592" y="264" measuredWidth="294" measuredHeight="35" name="Input Group Button Prefix">
+    <widgets xsi:type="model:Shape" id="83" height="35" text="Go!" measuredWidth="39" measuredHeight="35" layoutParams="anchor-left|anchor-top,anchor-bottom" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="84" x="37" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="85" x="596" y="312" measuredWidth="294" measuredHeight="35" name="Input Group Button">
+    <widgets xsi:type="model:TextField" id="86" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Shape" id="87" x="255" height="35" text="Go!" measuredWidth="39" measuredHeight="35" layoutParams="anchor-right|anchor-top,anchor-bottom" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="91" x="596" y="360" measuredWidth="334" measuredHeight="35" name="Input Group Dropdown Prefix">
+    <widgets xsi:type="model:Shape" id="92" height="35" text="Action {desc}" measuredWidth="79" measuredHeight="35" layoutParams="anchor-left|anchor-top,anchor-bottom" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="93" x="77" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="97" x="596" y="408" measuredWidth="334" measuredHeight="35" name="Input Group Dropdown">
+    <widgets xsi:type="model:TextField" id="98" width="257" measuredWidth="257" measuredHeight="35" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Shape" id="99" x="255" height="35" text="Action {desc}" measuredWidth="79" measuredHeight="35" layoutParams="anchor-right|anchor-top,anchor-bottom" shapeType="rectangle-rounded">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

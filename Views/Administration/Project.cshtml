@@ -1,0 +1,121 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Views
+@using GoNorth.Views.Administration
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["ProjectManagement"];
+    ViewData.AddActivePage(AdministrationNavPages.Project);
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div id="gn-projectAdministrationContainer">
+    <!-- Delete Project Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: deleteErrorOccured">
+                        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="visible: deleteErrorAdditionalDetails, text: deleteErrorAdditionalDetails"></span>
+                    </div>
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheProject"]</p>
+                    <p>@Localizer["OnlyEmptyProjectsCanBeDeleted"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteProject, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Yes"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog, disable: dialogLoading">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Project Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showProjectCreateEditDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><span data-bind="if: editProjectId">@Localizer["EditProject"]</span><span data-bind="if: !editProjectId()">@Localizer["CreateProject"]</span></h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="gn-projectCreateEditForm">
+                        <div class="alert alert-danger" style="display: none" data-bind="visible: createEditDialogErrorOccured">
+                            <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-projectDisplayName">@Localizer["Name"]</label>
+                            <input type="text" class="form-control" id="gn-projectDisplayName" placeholder="@Localizer["Name"]" name="projectDisplayName" data-bind="value: createEditName" required/>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" data-bind="checked: createEditIsDefault"/>@Localizer["IsDefault"]</label>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveProject, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Save"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeCreateEditProjectDialog, disable: dialogLoading">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project List -->
+    <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <button type="button" class="btn btn-primary gn-createProjectButton" data-bind="click: openCreateProjectDialog"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreateProject"]</button>
+
+    <div class="row gn-gridTableRow">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 gn-gridTableHeader gn-gridTableCell">
+            @Localizer["Name"]
+        </div>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 gn-gridTableHeader gn-gridTableCell">
+            @Localizer["IsDefault"]
+        </div>
+    </div>
+    <!-- ko foreach: projects -->
+        <div class="row gn-gridTableRow" data-bind="css: { 'gn-defaultProjectRow': isDefault }">
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 gn-gridTableCell" data-bind="text: name, attr: { title: name }">
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3 gn-gridTableCell" data-bind="text: isDefault ? '@Localizer["Yes"]' : '@Localizer["No"]'">
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 gn-gridTableCell">
+                <a class="gn-clickable" data-bind="click: function(project) { $root.openEditProjectDialog(project); }" title="@Localizer["EditProjectTooltip"]"><i class="glyphicon glyphicon-pencil"></i></a>
+                <a class="gn-clickable" data-bind="click: function(project) { $root.openDeleteProjectDialog(project); }" title="@Localizer["DeleteProjectTooltip"]"><i class="glyphicon glyphicon-trash"></i></a>
+            </div>
+        </div>
+    <!-- /ko -->
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="~/js/Administration/projectManagement.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Administration/projectManagement.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Administration.ProjectManagement.ViewModel(), jQuery("#gn-projectAdministrationContainer")[0]);
+        });
+    </script>
+}

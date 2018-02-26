@@ -1,0 +1,27 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Administration) {
+
+        /**
+         * Config Encryption Form Namespace
+         * @namespace ConfigEncryption
+         */
+        (function(ConfigEncryption) {
+        }(Administration.ConfigEncryption = Administration.ConfigEncryption || {}));
+
+        /**
+         * Project Management Form Namespace
+         * @namespace ProjectManagement
+         */
+        (function(ProjectManagement) {
+        }(Administration.ProjectManagement = Administration.ProjectManagement || {}));
+
+        /**
+         * User Management Form Namespace
+         * @namespace UserManagement
+         */
+        (function(UserManagement) {
+        }(Administration.UserManagement = Administration.UserManagement || {}));
+
+    }(GoNorth.Administration = GoNorth.Administration || {}));
+}(window.GoNorth = window.GoNorth || {}));

@@ -1,0 +1,55 @@
+{
+    "Npc": "Npc",
+    "Template": "Template",
+    "IsPlayerNpc": "(Player npc)",
+
+    "Save": "Save",
+    "SaveAndDistributeFields": "Save & distribute fields to npcs",
+    "IsImplemented": "Implemented",
+    "IsNotImplementedTooltip": "Npc is not implemented.",
+    "MarkAsImplemented": "Mark as implemented",
+    "Cancel": "Cancel",
+    "Delete": "Delete",
+    "Dialog": "Dialog",
+    "DialogIsImplementedTooltip": "Dialog is implemented",
+    "DialogIsNotImplementedTooltip": "Dialog is not implemented",
+    "MarkAsPlayer": "Mark as player",
+
+    "Name": "Name",
+    "DropImageHere": "Drop image for npc here or click to choose an image",
+
+    "Inventory": "Inventory",
+    "AddItemToInventory": "Add item",
+    "Quantity": "Quantity",
+    "Equipped": "Equipped",
+    "RemoveItemFromInventory": "Remove item from inventory",
+    "AreYouSureYouWantToRemoveTheItem": "Are you sure you want to remove the item?",
+
+    "ReferencedInAikaQuests": "Referenced in Aika quests:",
+
+    "MentionedInKirjaPages": "Mentioned in Kirja pages:",
+
+    "MarkedInKartaMaps": "Marked in Karta maps:",
+    "MarkedInMapNTimes": "Npc is marked in the map {{0}} times. No zoom on marker is possible.",
+
+    "ReferencedInTaleDialogs": "Referenced in Tale dialogs:",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheObject": "Are you sure you want to delete the npc?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "AreYouSureYouWantToMarkTheNpcAsPlayer": "Are you sure you want to mark the npc as the player?",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedTemplatePrefix": "The template is currently beeing edited by ",
+    "LockedObjectPrefix": "The npc is currently beeing edited by ",
+    "LockedPostfix": ".",
+
+    "RichTextLocale": "en",
+    "DropzoneLocale": "en"
+}

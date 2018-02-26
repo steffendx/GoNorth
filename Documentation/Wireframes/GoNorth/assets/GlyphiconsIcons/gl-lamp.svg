@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e223 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="lamp" d="M1057 647l-189 506q-8 19 -27.5 33t-40.5 14h-400q-21 0 -40.5 -14t-27.5 -33l-189 -506q-8 -19 1.5 -33t30.5 -14h625v-150q0 -21 14.5 -35.5t35.5 -14.5t35.5 14.5t14.5 35.5v150h125q21 0 30.5 14t1.5 33zM897 0h-595v50q0 21 14.5 35.5t35.5 14.5h50v50 q0 21 14.5 35.5t35.5 14.5h48v300h200v-300h47q21 0 35.5 -14.5t14.5 -35.5v-50h50q21 0 35.5 -14.5t14.5 -35.5v-50z" />
+</g>
+</svg>	

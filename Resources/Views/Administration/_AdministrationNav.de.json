@@ -1,0 +1,6 @@
+{
+    "UserManagement": "Benutzerverwaltung",
+    "ProjectManagement": "Projektverwaltung",
+    "ConfigEncryption": "Wert verschlüsseln",
+    "DbSetup": "DB aktualisieren"
+}

@@ -1,0 +1,108 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using GoNorth.Config;
+using GoNorth.Data.FlexFieldDatabase;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+
+namespace GoNorth.Data.Aika
+{
+    /// <summary>
+    /// Aika Chapter Overview Mongo DB Access
+    /// </summary>
+    public class AikaChapterOverviewMongoDbAccess : BaseMongoDbAccess, IAikaChapterOverviewDbAccess
+    {
+        /// <summary>
+        /// Collection Name of the aika chapters
+        /// </summary>
+        public const string AikaChapterOverviewCollectionName = "AikaChapterOverview";
+
+        /// <summary>
+        /// Collection Name of the aika chapter recycling bin
+        /// </summary>
+        public const string AikaChapterOverviewRecyclingBinCollectionName = "AikaChapterOverviewRecyclingBin";
+
+        /// <summary>
+        /// Chapter Collection
+        /// </summary>
+        private IMongoCollection<AikaChapterOverview> _ChapterOverviewCollection;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        public AikaChapterOverviewMongoDbAccess(IOptions<ConfigurationData> configuration) : base(configuration)
+        {
+            _ChapterOverviewCollection = _Database.GetCollection<AikaChapterOverview>(AikaChapterOverviewCollectionName);
+        }
+
+        /// <summary>
+        /// Returns a chapter overview by the project id
+        /// </summary>
+        /// <param name="projectId">Project Id of the chapter</param>
+        /// <returns>Chapter overview</returns>
+        public async Task<AikaChapterOverview> GetChapterOverviewByProjectId(string projectId)
+        {
+            AikaChapterOverview chapterOverview = await _ChapterOverviewCollection.Find(c => c.ProjectId == projectId).FirstOrDefaultAsync();
+            return chapterOverview;
+        }
+
+        /// <summary>
+        /// Returns a chapter overview by the id
+        /// </summary>
+        /// <param name="id">Id of the chapter overview</param>
+        /// <returns>Chapter overview</returns>
+        public async Task<AikaChapterOverview> GetChapterOverviewById(string id)
+        {
+            AikaChapterOverview chapterOverview = await _ChapterOverviewCollection.Find(c => c.Id == id).FirstOrDefaultAsync();
+            return chapterOverview;
+        }
+
+        /// <summary>
+        /// Creates a new chapter overview
+        /// </summary>
+        /// <param name="chapterOverview">Chapter overview</param>
+        /// <returns>Chapter Overview filled with data</returns>
+        public async Task<AikaChapterOverview> CreateChapterOverview(AikaChapterOverview chapterOverview)
+        {
+            chapterOverview.Id = Guid.NewGuid().ToString();
+            await _ChapterOverviewCollection.InsertOneAsync(chapterOverview);
+
+            return chapterOverview;
+        }
+
+        /// <summary>
+        /// Updates a chapter overview
+        /// </summary>
+        /// <param name="chapterOverview">Chapter overview to update</param>
+        /// <returns>Task</returns>
+        public async Task UpdateChapterOverview(AikaChapterOverview chapterOverview)
+        {
+            ReplaceOneResult result = await _ChapterOverviewCollection.ReplaceOneAsync(c => c.Id == chapterOverview.Id, chapterOverview);
+        }
+
+        /// <summary>
+        /// Deletes a chapter overview
+        /// </summary>
+        /// <param name="chapterOverview">Chapter overview to delete</param>
+        /// <returns>Task</returns>
+        public async Task DeleteChapterOverview(AikaChapterOverview chapterOverview)
+        {
+            AikaChapterOverview existingChapterOverview = await GetChapterOverviewById(chapterOverview.Id);
+            if(existingChapterOverview == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            IMongoCollection<AikaChapterOverview> recyclingBin = _Database.GetCollection<AikaChapterOverview>(AikaChapterOverviewRecyclingBinCollectionName);
+            await recyclingBin.InsertOneAsync(existingChapterOverview);
+
+            DeleteResult result = await _ChapterOverviewCollection.DeleteOneAsync(c => c.Id == chapterOverview.Id);
+        }
+
+    }
+}

@@ -1,0 +1,16 @@
+<script type="text/html" id="gn-singleLineField">
+    <input type="text" class="form-control" data-bind="value: value, attr: { placeholder: name }, disable: $root.isReadonly"/>
+</script>
+
+<script type="text/html" id="gn-multiLineField">
+    <!-- ko if: !$root.isReadonly() -->
+        <div class="form-control gn-flexFieldObjectFormRichText" data-bind="richText: value, disable: $root.isReadonly"></div>
+    <!-- /ko -->
+    <!-- ko if: $root.isReadonly() -->
+        <div class="form-control gn-flexFieldObjectFormRichText" data-bind="html: value" disabled></div>
+    <!-- /ko -->
+</script>
+
+<script type="text/html" id="gn-numberField">
+    <input type="text" class="form-control" data-bind="numeric: value, attr: { placeholder: name }, disable: $root.isReadonly"/>
+</script>

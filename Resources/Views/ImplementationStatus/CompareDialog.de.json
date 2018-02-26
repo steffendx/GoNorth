@@ -1,0 +1,10 @@
+{
+    "CompareResult": "Vergleichsergebnis",
+    "MarkAsImplemented": "Als implementiert markieren",
+    "Cancel": "Abbrechen",
+
+    "ObjectHasNeverBeenImplemented": "Objekt wurde noch nie implementiert.",
+    
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

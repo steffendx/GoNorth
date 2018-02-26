@@ -1,0 +1,24 @@
+{
+    "ImplementationStatus": "Implementierungs Status",
+
+    "Npcs": "Npcs",
+    "Dialogs": "Dialoge",
+    "Items": "Items",
+    "Quests": "Quests",
+    "Markers": "Markierungen",
+
+    "Name": "Name",
+    "Type": "Typ",
+    "Open": "Öffnen",
+
+    "MarkerTypeNpc": "Npc",
+    "MarkerTypeItem": "Item",
+    "MarkerTypeMapChange": "Kartenwechsel",
+    "MarkerTypeQuest": "Quest",
+
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+    
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

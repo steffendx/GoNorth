@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Task) {
+
+        /**
+         * Task Board Form Namespace
+         * @namespace TaskBoard
+         */
+        (function(TaskBoard) {
+        }(Task.TaskBoard = Task.TaskBoard || {}));
+
+    }(GoNorth.Task = GoNorth.Task || {}));
+}(window.GoNorth = window.GoNorth || {}));

@@ -1,0 +1,10 @@
+{
+    "EncryptConfigValue": "Encrypt config value",
+
+    "ConfigValue": "Config value",
+    "EncryptedConfigValue": "Encrypted config value",
+    "Encrypt": "Encrypt",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured."
+}

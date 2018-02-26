@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Styr) {
+        
+        /**
+         * Item Form Namespace
+         * @namespace Item
+         */
+        (function(Item) {
+        }(Styr.Item = Styr.Item || {}));
+        
+    }(GoNorth.Styr = GoNorth.Styr || {}));
+}(window.GoNorth = window.GoNorth || {}));

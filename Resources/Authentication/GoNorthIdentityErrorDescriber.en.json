@@ -1,0 +1,23 @@
+{
+    "DefaultError": "An unknown error occured.",
+    "ConcurrencyFailure": "Optimistic concurrency error, object was modified.",
+    "PasswordMismatch": "Invalid password.",
+    "InvalidToken": "Invalid token.",
+    "LoginAlreadyAssociated": "A user with the given username already exists.",
+    "InvalidUserName": "Username '{0}' is invalid. It must only contain digits and letters.",
+    "InvalidEmail": "Email '{0}' is invalid." ,
+    "DuplicateUserName": "Username '{0}' is already taken." ,
+    "DuplicateEmail": "Email '{0}' is already taken." ,
+    "InvalidRoleName": "Role Name '{0}' is invalid." ,
+    "DuplicateRoleName": "Role Name '{0}' is already taken." ,
+    "UserAlreadyHasPassword": "The user already has a password.",
+    "UserLockoutNotEnabled": "User lockout is not enabled.",
+    "UserAlreadyInRole": "The user is already member of the role '{0}'." ,
+    "UserNotInRole": "The user is no member of the role '{0}'." ,
+    "PasswordTooShort": "The password must be at least {0} characters long." ,
+    "PasswordRequiresNonAlphanumeric": "The password must at least contain one non alpha numeric character.",
+    "PasswordRequiresDigit": "The password must contain at least one number ('0'-'9').",
+    "PasswordRequiresLower": "The password must contain at least one lower letter ('a'-'z').",
+    "PasswordRequiresUpper": "The password must contain at least one upper letter ('A'-'Z').",
+    "UserRequiresDisplayName": "User requires a display name."
+}

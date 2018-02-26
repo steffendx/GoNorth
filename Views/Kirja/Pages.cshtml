@@ -1,0 +1,66 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["KirjaPages"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div id="gn-kirjaAllPagesContainer">
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreatePage"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreatePage"]</button>
+
+    <div class="input-group gn-commandWidgetTopMargin">
+        <input type="text" class="form-control" placeholder="@Localizer["Search"]" data-bind="value: searchPattern, enterPressed: startNewSearch, enable: !isLoading()"/>
+        <span class="input-group-addon gn-clickable" data-bind="click: startNewSearch, enable: !isLoading()" title="@Localizer["Search"]">
+            <i class="glyphicon glyphicon-search" data-bind="visible: !isLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+        </span>
+    </div>
+
+    <div class="container gn-defaultContentTopMargin">
+        <div class="row gn-gridTableRow">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableHeader gn-gridTableCell">
+                @Localizer["Name"]
+            </div>
+        </div>
+        <!-- ko foreach: pages -->
+        <div class="row gn-gridTableRow">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableCell">
+                <a class="gn-clickable" data-bind="text: name, href: $root.buildPageUrl"></a>
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+        <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
+            <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+        </button>
+        <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+            <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/Kirja/allPages.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Kirja/allPages.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Kirja.AllPages.ViewModel(), jQuery("#gn-kirjaAllPagesContainer")[0]);
+        });
+    </script>
+}

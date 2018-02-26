@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Task) {
+
+        /**
+         * Manage Task Boards Form Namespace
+         * @namespace ManageBoards
+         */
+        (function(ManageBoards) {
+        }(Task.ManageBoards = Task.ManageBoards || {}));
+
+    }(GoNorth.Task = GoNorth.Task || {}));
+}(window.GoNorth = window.GoNorth || {}));

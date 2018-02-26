@@ -1,0 +1,14 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<div class="dropdown gn-inlineDropdown">
+    <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-addFieldButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="disable: isLoading() || isReadonly()">
+        <i class="glyphicon glyphicon-plus"></i> @Localizer["AddField"] <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="gn-addFieldButton">
+        <li><a class="gn-clickable" data-bind="click: addSingleLineField">@Localizer["SingleLineField"]</a></li>
+        <li><a class="gn-clickable" data-bind="click: addMultiLineField">@Localizer["MultiLineField"]</a></li>
+        <li><a class="gn-clickable" data-bind="click: addNumberField">@Localizer["NumberField"]</a></li>
+    </ul>
+</div>

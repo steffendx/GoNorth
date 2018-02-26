@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:WidgetGroup" id="2" x="16" y="8" measuredWidth="176" measuredHeight="35" name="Button Group">
+    <widgets xsi:type="model:ButtonBar" id="3" text="Left, Middle, Right" measuredWidth="176" measuredHeight="35" skin="_button-bar.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="50" height="35" text="Left"/>
+      <items x="50" y="0" width="69" height="35" text="Middle"/>
+      <items x="119" y="0" width="57" height="35" text="Right"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="4" x="16" y="56" measuredWidth="254" measuredHeight="35" name="Button Toolbar">
+    <widgets xsi:type="model:ButtonBar" id="5" text="1,2,3,4" measuredWidth="120" measuredHeight="35" skin="_button-bar.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="30" height="35" text="1"/>
+      <items x="30" y="0" width="30" height="35" text="2"/>
+      <items x="60" y="0" width="30" height="35" text="3"/>
+      <items x="90" y="0" width="30" height="35" text="4"/>
+    </widgets>
+    <widgets xsi:type="model:ButtonBar" id="6" x="127" text="5,6,7" measuredWidth="90" measuredHeight="35" skin="_button-bar.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="30" height="35" text="5"/>
+      <items x="30" y="0" width="30" height="35" text="6"/>
+      <items x="60" y="0" width="30" height="35" text="7"/>
+    </widgets>
+    <widgets xsi:type="model:ButtonBar" id="7" x="224" text="8" measuredWidth="30" measuredHeight="35" skin="_button-bar.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="30" height="35" text="8"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="8" x="16" y="105" measuredWidth="224" measuredHeight="44" name="Button Group Large">
+    <widgets xsi:type="model:ButtonBar" id="9" text="Left, Middle, Right" measuredWidth="224" measuredHeight="44" skin="_button-bar.svg">
+      <font size="18px"/>
+      <items x="0" y="0" width="63" height="44" text="Left"/>
+      <items x="63" y="0" width="86" height="44" text="Middle"/>
+      <items x="149" y="0" width="75" height="44" text="Right"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="10" x="16" y="163" measuredWidth="176" measuredHeight="35" name="Button Group Small">
+    <widgets xsi:type="model:ButtonBar" id="11" text="Left, Middle, Right" measuredWidth="176" measuredHeight="35" skin="_button-bar.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="50" height="35" text="Left"/>
+      <items x="50" y="0" width="69" height="35" text="Middle"/>
+      <items x="119" y="0" width="57" height="35" text="Right"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="12" x="16" y="208" measuredWidth="128" measuredHeight="21" name="Button Group XSmall">
+    <widgets xsi:type="model:ButtonBar" id="13" width="128" height="21" text="Left, Middle, Right" measuredWidth="128" measuredHeight="21" skin="_button-bar.svg">
+      <font size="12px"/>
+      <items x="0" y="0" width="37" height="21" text="Left"/>
+      <items x="37" y="0" width="49" height="21" text="Middle"/>
+      <items x="86" y="0" width="42" height="21" text="Right"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="14" x="16" y="240" measuredWidth="172" measuredHeight="35" name="Button Group Dropdown">
+    <widgets xsi:type="model:ButtonBar" id="15" text="1,2, Dropdown {desc}" measuredWidth="172" measuredHeight="35" skin="_button-bar.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="30" height="35" text="1"/>
+      <items x="30" y="0" width="30" height="35" text="2"/>
+      <items x="60" y="0" width="112" height="35" text="Dropdown {desc}"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="16" x="280" y="8" measuredWidth="116" measuredHeight="284" name="Button Group Vertical">
+    <widgets xsi:type="model:Table" id="17" width="116" text="Button&#xA;Button&#xA;Dropdown {desc}&#xA;Button&#xA;Button&#xA;Dropdown {desc}&#xA;Dropdown {desc}&#xA;Dropdown {desc}" measuredWidth="116" measuredHeight="284" rowHeight="35" horizontalLines="true" textAlignment="Center" verticalLines="false" header="false">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="18" x="16" y="291" measuredWidth="254" measuredHeight="35" name="Button Group Justified">
+    <widgets xsi:type="model:ButtonBar" id="19" width="254" text="Left, Middle, Right" measuredWidth="254" measuredHeight="35" skin="_button-bar-justified.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="85" height="35" text="Left"/>
+      <items x="85" y="0" width="85" height="35" text="Middle"/>
+      <items x="170" y="0" width="84" height="35" text="Right"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="20" x="580" y="242" measuredWidth="66" measuredHeight="34" name="Button">
+    <widgets xsi:type="model:Button" id="21" height="34" text="Button" measuredWidth="66" measuredHeight="34">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="22" x="411" y="184" measuredWidth="110" measuredHeight="34" name="Button Dropdown">
+    <widgets xsi:type="model:Button" id="23" height="34" text="Dropdown {desc}" measuredWidth="110" measuredHeight="34">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="24" x="411" y="232" measuredWidth="160" measuredHeight="34" name="Button Split Dropdown">
+    <widgets xsi:type="model:Button" id="25" height="34" text="Split Dropdown {separator}{desc}" measuredWidth="160" measuredHeight="34">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="26" x="580" y="184" measuredWidth="133" measuredHeight="45" name="Button Large">
+    <widgets xsi:type="model:Button" id="27" height="45" text="Large Button" measuredWidth="133" measuredHeight="45">
+      <font size="18px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="28" x="580" y="290" measuredWidth="90" measuredHeight="30" name="Button Small">
+    <widgets xsi:type="model:Button" id="29" height="30" text="Small Button" measuredWidth="90" measuredHeight="30">
+      <font size="12px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="30" x="580" y="334" measuredWidth="98" measuredHeight="22" name="Button XSmall">
+    <widgets xsi:type="model:Button" id="31" height="22" text="XSmall Button" measuredWidth="98" measuredHeight="22">
+      <font size="12px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="32" x="411" y="280" measuredWidth="106" measuredHeight="34" name="Button Dropup">
+    <widgets xsi:type="model:Button" id="33" height="34" text="Dropup {separator}{asc}" measuredWidth="106" measuredHeight="34">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="34" x="725" y="180" measuredWidth="73" measuredHeight="34" name="Button Primary">
+    <widgets xsi:type="model:Button" id="35" height="34" text="Primary" measuredWidth="73" measuredHeight="34" background="#428bca">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="36" x="726" y="222" measuredWidth="72" measuredHeight="34" name="Button Success">
+    <widgets xsi:type="model:Button" id="37" height="34" text="Success" measuredWidth="72" measuredHeight="34" background="#5cb85c">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="38" x="751" y="264" measuredWidth="47" measuredHeight="34" name="Button Info">
+    <widgets xsi:type="model:Button" id="39" height="34" text="Info" measuredWidth="47" measuredHeight="34" background="#5bc0de">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="40" x="722" y="306" measuredWidth="76" measuredHeight="34" name="Button Warning">
+    <widgets xsi:type="model:Button" id="41" height="34" text="Warning" measuredWidth="76" measuredHeight="34" background="#f0ad4e">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="42" x="730" y="348" measuredWidth="68" measuredHeight="34" name="Button Danger">
+    <widgets xsi:type="model:Button" id="43" height="34" text="Danger" measuredWidth="68" measuredHeight="34" background="#d9534f">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="45" x="310" y="301" measuredWidth="31" measuredHeight="25" name="Link">
+    <widgets xsi:type="model:Link" id="44" text="Link" measuredWidth="31" measuredHeight="25">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="46" x="16" y="343" measuredWidth="273" measuredHeight="45" name="Button Block">
+    <widgets xsi:type="model:Button" id="47" width="273" height="45" text="Block level button" measuredWidth="273" measuredHeight="45">
+      <font size="18px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="48" x="418" y="8" measuredWidth="182" measuredHeight="141" name="Dropdown">
+    <widgets xsi:type="model:Popup" id="49" width="182" text="Action&#xA;Another action&#xA;~Disabled link~&#xA;Something else here&#xA;--&#xA;Separated link" measuredWidth="182" measuredHeight="141">
+      <items x="0" y="2" width="182" height="25" text="Action"/>
+      <items x="0" y="27" width="182" height="25" text="Another action"/>
+      <items x="0" y="52" width="182" height="25" text="~Disabled link~"/>
+      <items x="0" y="77" width="182" height="25" text="Something else here"/>
+      <items x="0" y="102" width="182" height="12" text="--"/>
+      <items x="0" y="114" width="182" height="25" text="Separated link"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="50" x="616" y="8" measuredWidth="182" measuredHeight="166" name="Dropdown Header">
+    <widgets xsi:type="model:Popup" id="51" width="182" text="%(font:12)~Dropdown header~%&#xA;Action&#xA;Another action&#xA;Something else here&#xA;--&#xA;%(font:12)~Dropdown header~%&#xA;Separated link" measuredWidth="182" measuredHeight="166">
+      <items x="0" y="2" width="182" height="25" text="%(font:12)~Dropdown header~%"/>
+      <items x="0" y="27" width="182" height="25" text="Action"/>
+      <items x="0" y="52" width="182" height="25" text="Another action"/>
+      <items x="0" y="77" width="182" height="25" text="Something else here"/>
+      <items x="0" y="102" width="182" height="12" text="--"/>
+      <items x="0" y="114" width="182" height="25" text="%(font:12)~Dropdown header~%"/>
+      <items x="0" y="139" width="182" height="25" text="Separated link"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="52" x="310" y="327" measuredWidth="39" measuredHeight="30" name="Link Large">
+    <widgets xsi:type="model:Link" id="53" text="Link" measuredWidth="39" measuredHeight="30">
+      <font size="18px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="54" x="310" y="359" measuredWidth="25" measuredHeight="23" name="Link Small">
+    <widgets xsi:type="model:Link" id="55" text="Link" measuredWidth="25" measuredHeight="23">
+      <font size="12px"/>
+    </widgets>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

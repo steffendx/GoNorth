@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e183 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="phone-alt" d="M600 1100q92 0 175 -10.5t141.5 -27t108.5 -36.5t81.5 -40t53.5 -37t31 -27l9 -10v-200q0 -21 -14.5 -33t-34.5 -9l-202 34q-20 3 -34.5 20t-14.5 38v146q-141 24 -300 24t-300 -24v-146q0 -21 -14.5 -38t-34.5 -20l-202 -34q-20 -3 -34.5 9t-14.5 33v200q3 4 9.5 10.5 t31 26t54 37.5t80.5 39.5t109 37.5t141 26.5t175 10.5zM600 795q56 0 97 -9.5t60 -23.5t30 -28t12 -24l1 -10v-50l365 -303q14 -15 24.5 -40t10.5 -45v-212q0 -21 -14.5 -35.5t-35.5 -14.5h-1100q-21 0 -35.5 14.5t-14.5 35.5v212q0 20 10.5 45t24.5 40l365 303v50 q0 4 1 10.5t12 23t30 29t60 22.5t97 10z" />
+</g>
+</svg>	

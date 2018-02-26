@@ -1,0 +1,48 @@
+(function(GoNorth) {
+    "use strict";
+
+    /**
+     * Node Graph Default Implementations Namespace
+     * @namespace DefaultNodeShapes
+     */
+    (function(DefaultNodeShapes) {
+
+        /**
+         * Node Graph Shapes Namespace
+         * @namespace Shapes
+         */
+        (function(Shapes) {
+        }(DefaultNodeShapes.Shapes = DefaultNodeShapes.Shapes || {}));
+
+        /**
+         * Node Graph Serializer Namespace
+         * @namespace Serialize
+         */
+        (function(Serialize) {
+        }(DefaultNodeShapes.Serialize = DefaultNodeShapes.Serialize || {}));
+
+        /**
+         * Node Graph Connections Namespace
+         * @namespace Connections
+         */
+        (function(Connections) {
+        }(DefaultNodeShapes.Connections = DefaultNodeShapes.Connections || {}));
+
+        /**
+         * Localization Namespace
+         * @namespace Localization
+         */
+        (function(Localization) {
+        }(DefaultNodeShapes.Localization = DefaultNodeShapes.Localization || {}));
+
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+
+
+    /**
+     * BindingHandlers Namespace
+     * @namespace BindingHandlers
+     */
+    (function(BindingHandlers) {
+    }(GoNorth.BindingHandlers = GoNorth.BindingHandlers || {}));
+
+}(window.GoNorth = window.GoNorth || {}));

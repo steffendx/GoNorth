@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e040 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="barcode" d="M100 200h-100v1000h100v-1000zM300 200h-100v1000h100v-1000zM700 200h-200v1000h200v-1000zM900 200h-100v1000h100v-1000zM1200 200h-200v1000h200v-1000zM400 0h-300v100h300v-100zM600 0h-100v91h100v-91zM800 0h-100v91h100v-91zM1100 0h-200v91h200v-91z" />
+</g>
+</svg>	

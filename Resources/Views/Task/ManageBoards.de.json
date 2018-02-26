@@ -1,0 +1,35 @@
+{
+    "TaskBoards": "Aufgabenboards",
+
+    "CreateNewBoard": "Neues Aufgabenboard anlegen",
+    "CreateTaskBoard": "Aufgabenboard erstellen",
+    "EditTaskBoard": "Aufgabenboard editieren",
+
+    "OpenTaskBoards": "Offene Aufgabenboards",
+    "ClosedTaskBoards": "Geschlossene Aufgabenboards",
+
+    "Name": "Name",
+    "PlannedStart": "Geplanter Beginn",
+    "PlannedEnd": "Geplantes Ende",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+    "StartDateHasToBeBeforeEndDate": "Der geplante Start muss vor dem geplanten Ende liegen",
+
+    "EditBoardToolTip": "Aufgabenboard editieren",
+    "DeleteBoardToolTip": "Aufgabenboard löschen",
+    "CloseTaskBoardToolTip": "Aufgabenboard abschließen",
+    "ReopenTaskBoardToolTip": "Aufgabenboard erneut öffnen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheBoard": "Bist du sicher das das Aufgabenboard gelöscht werden soll?",
+    "AreYouSureYouWantToCloseTheBoard": "Bist du sicher das das Aufgabenboard abgeschlossen werden soll?",
+    "AreYouSureYouWantToReopenTheBoard": "Bist du sicher das das Aufgabenboard erneut geöffnet werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+    
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

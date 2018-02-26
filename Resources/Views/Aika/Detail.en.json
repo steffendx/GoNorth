@@ -1,0 +1,25 @@
+{
+    "ChapterDetail": "Chapter detail view",
+
+    "Save": "Save",
+    "OpenQuestList": "Open quest list",
+
+    "NewQuestNode": "New quest",
+    "ExistingQuestNode": "Existing quest",
+    "AllDone": "All done",
+    "FinishNode": "Finish",
+    "NewDetailNode": "New detail view",
+    "ExistingDetailNode": "Existing detail view",
+
+    "WaitingOnNewObject": "Waiting on new object",
+    "DialogWillCloseOnSaveOfNewObject": "This dialog will close as soon the new object was saved or the window is closed. If the object was saved a new node will be inserted.",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedPrefix": "This detail view is currently beeing edited by ",
+    "LockedPostfix": ".",
+
+    "NodeLang": "en"
+}

@@ -1,0 +1,16 @@
+{
+    "EditField": "Edit field",
+    "AddField": "Add field",
+    "Name": "Name",
+    "Save": "Save",
+    "Cancel": "Cancel",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheField": "Are you sure you want to delete the field?",
+    "Yes": "Yes",
+    "No": "No",
+    
+    "FieldScriptSetting": "Field script settings",
+    "DontExportToScript": "Dont export to script",
+    "AdditionalScriptNames": "Additional script names (Comma separated)"
+}

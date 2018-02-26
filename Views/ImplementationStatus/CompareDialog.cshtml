@@ -1,0 +1,39 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<script type="text/html" id="gn-implementationCompareDialogResult">
+    <div>
+        <div class="gn-implementationCompareDialogRow" data-bind="css: { 'gn-implementationCompareDialogResultGroup': !text && $parents.length <= 2, 'gn-implementationCompareDialogResultHasChildren': subDifferences.length > 0 }">
+            <div class="gn-clickable gn-implementationCompareDialogExpandButton" data-bind="visible: subDifferences.length > 0, click: function(compareResult) { compareResult.isExpanded(!compareResult.isExpanded()); }"><i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i></div> 
+            <div class="gn-implementationCompareDialogResultLabel" data-bind="text: label"></div> 
+            <div class="gn-implementationCompareDialogResultText" data-bind="text: text, visible: text"></div>
+        </div>
+        <div class="gn-implementationCompareDialogResultIndent" data-bind="template: { name: 'gn-implementationCompareDialogResult', foreach: subDifferences }, visible: isExpanded"></div>
+    </div>
+</script>
+
+<!-- Compare Dialog -->
+<div class="modal fade" role="dialog" data-bind="modal: isOpen">
+    <div class="modal-dialog gn-implementationCompareDialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Localizer["CompareResult"] <span data-bind="visible: objectName">"<span data-bind="text: objectName"></span>"</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+                    <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+                </div>
+
+                <div class="gn-implementationCompareDialogLoading" data-bind="visible: isLoading"><i class="glyphicon glyphicon-refresh spinning"></i></div>
+                <div class="gn-implementationCompareDialogResultLog" data-bind="template: { name: 'gn-implementationCompareDialogResult', foreach: difference }, visible: !isLoading() && doesSnapshotExists()"></div>
+                <div data-bind="visible: !isLoading() && !doesSnapshotExists()">@Localizer["ObjectHasNeverBeenImplemented"]</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bind="click: markAsImplemented">@Localizer["MarkAsImplemented"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: closeDialog">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

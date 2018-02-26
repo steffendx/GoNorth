@@ -1,0 +1,153 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Tale) {
+        (function(Actions) {
+
+            /**
+             * Change Inventory Action
+             * @class
+             */
+            Actions.ChangeInventoryAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.ChangeInventoryAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.ChangeInventoryAction.prototype.getContent = function() {
+                return  "<a class='gn-clickable gn-taleSelectItemAction gn-nodeNonClickableOnReadonly'></a>" +
+                        "<div class='gn-nodeActionText'>" + Tale.Localization.Actions.ItemQuantity + "</div>" +
+                        "<input type='text' class='gn-taleItemQuantity'/>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.ChangeInventoryAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-taleSelectItemAction").text(Tale.Localization.Actions.ChooseItem);
+
+                // Deserialize
+                var existingItemId = this.deserializeData();
+                if(existingItemId)
+                {
+                    actionNode.showLoading();
+                    actionNode.hideError();
+                    jQuery.ajax({ 
+                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify([ existingItemId ]), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(itemNames) {
+                        if(itemNames.length == 0)
+                        {
+                            actionNode.hideLoading();
+                            actionNode.showError();
+                            return;
+                        }
+
+                        contentElement.find(".gn-taleSelectItemAction").text(itemNames[0].name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var selectItemAction = contentElement.find(".gn-taleSelectItemAction");
+                contentElement.find(".gn-taleSelectItemAction").on("click", function() {
+                    Tale.openItemSearchDialog().then(function(item) {
+                        selectItemAction.data("itemid", item.id);
+                        selectItemAction.text(item.name);
+                        self.saveData();
+                    });
+                });
+
+                var itemQuantity = contentElement.find(".gn-taleItemQuantity");
+                itemQuantity.keydown(function(e) {
+                    GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
+                });
+
+                itemQuantity.change(function(e) {
+                    self.ensureNumberValue();
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Syncs the operators
+             */
+            Actions.ChangeInventoryAction.prototype.ensureNumberValue = function() {
+                var parsedValue = parseFloat(this.contentElement.find(".gn-taleItemQuantity").val());
+                if(isNaN(parsedValue))
+                {
+                    this.contentElement.find(".gn-taleItemQuantity").val("");
+                }
+            }
+
+            /**
+             * Deserializes the data
+             */
+            Actions.ChangeInventoryAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var itemId = "";
+                if(data.itemId)
+                {
+                    this.contentElement.find(".gn-taleSelectItemAction").data("itemid", data.itemId);
+                    itemId = data.itemId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-taleSelectItemAction").data("itemid", "");
+                }
+
+                var quantity = data.quantity;
+                if(isNaN(parseInt(data.quantity)))
+                {
+                    quantity = "";
+                }
+                this.contentElement.find(".gn-taleItemQuantity").val(quantity);
+
+                return itemId;
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.ChangeInventoryAction.prototype.saveData = function() {
+                var itemId = this.contentElement.find(".gn-taleSelectItemAction").data("itemid");
+                var quantity = parseInt(this.contentElement.find(".gn-taleItemQuantity").val());
+                if(isNaN(quantity))
+                {
+                    quantity = null;
+                }
+
+                var serializeData = {
+                    itemId: itemId,
+                    quantity: quantity
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            }
+
+        }(Tale.Actions = Tale.Actions || {}));
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));

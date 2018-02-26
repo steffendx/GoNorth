@@ -1,0 +1,12 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["AccessDenied"];
+}
+
+<header>
+    <h2 class="text-danger">@ViewData["Title"]</h2>
+    <p class="text-danger">@Localizer["YouDoNotHaveAccess"]</p>
+</header>

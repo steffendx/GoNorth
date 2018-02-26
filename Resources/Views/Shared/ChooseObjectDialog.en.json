@@ -1,0 +1,14 @@
+{
+    "Name": "Name",
+    "Open": "Open",
+    "Close": "Close",
+    "CreateNewPage": "Create new page",
+
+    "Search": "Search",
+
+    "PreviousPage": "Previous page",
+    "NextPage": "Next page",
+    
+    "Error": "Error:",
+    "ErrorOccured": "An error occured."
+}

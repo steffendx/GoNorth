@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@model IViewLocalizer
+
+@if(User.IsInRole(RoleNames.Aika))
+{
+    <h4>@Model["ReferencedInAikaQuests"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInQuests"></i></h4>
+    <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInQuests">
+        <li>
+            <a class="gn-clickable" data-bind="text: name, href: $root.buildAikaQuestUrl" target="_blank"></a>
+        </li>
+    </ul>
+}
+
+@if(User.IsInRole(RoleNames.Kirja))
+{
+    <h4>@Model["MentionedInKirjaPages"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedInKirjaPages"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMentionedInKirjaPages"></i></h4>
+    <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: mentionedInKirjaPages">
+        <li>
+            <a class="gn-clickable" data-bind="text: name, href: $root.buildKirjaPageUrl" target="_blank"></a>
+        </li>
+    </ul>
+}
+
+@if(User.IsInRole(RoleNames.Karta))
+{
+    <h4>@Model["MarkedInKartaMaps"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMarkedInKartaMaps"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMarkedInKartaMaps"></i></h4>
+    <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: markedInKartaMaps">
+        <li>
+            <a class="gn-clickable" data-bind="text: name, href: $root.buildKartaMapUrl" target="_blank"></a>
+            <span data-bind="visible: markerIds.length > 1, attr: { title: tooltip }" style="display: none"> (<span data-bind="text: markerIds.length"></span>)</span>
+        </li>
+    </ul>
+}
+
+@if(User.IsInRole(RoleNames.Tale))
+{
+    <h4>@Model["ReferencedInTaleDialogs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInTaleDialogs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInTaleDialogs"></i></h4>
+    <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInTaleDialogs">
+        <li>
+            <a class="gn-clickable" data-bind="text: name, href: $root.buildTaleDialogUrl" target="_blank"></a>
+        </li>
+    </ul>
+}

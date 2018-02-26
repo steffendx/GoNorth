@@ -1,0 +1,17 @@
+{
+    "ChapterOverview": "Chapter overview",
+
+    "Save": "Save",
+    "OpenQuestList": "Open quest list",
+
+    "ChapterNode": "Chapter",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedPrefix": "The overview is currently beeing edited by ",
+    "LockedPostfix": ".",
+
+    "NodeLang": "en"
+}

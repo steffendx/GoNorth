@@ -1,0 +1,147 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Tale"];
+}
+
+<div id="gn-taleDialogContainer">
+    <h2 data-bind="text: headerName">@Localizer["Tale"]</h2>
+
+    <script type="text/html" id="gn-taleConditionInventoryCheck">
+    <!-- ko with: conditionData -->
+        <td colspan="2"><select data-bind="value: operator, options: availableOperators, optionsText: 'title', optionsValue: 'value'" class="form-control"></td>
+        <td><input type="text" data-bind="numeric: quantity" class="form-control" /></td>
+        <td><a data-bind="text: selectedItemName, click: chooseItem" class="gn-clickable"></a></td>
+    <!-- /ko -->
+    </script>
+
+    <!-- ko with: conditionDialog -->
+        @await Html.PartialAsync("~/Views/Shared/NodeConditionBase.cshtml")
+    <!-- /ko -->
+
+    <!-- Object Dialog -->
+    <!-- ko with: objectDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    <!-- Node Dialog -->
+    @await Html.PartialAsync("~/Views/Shared/NodeGraphDialogs.cshtml")
+
+    @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+    {
+        <!-- ko with: compareDialog -->
+            @await Html.PartialAsync("~/Views/ImplementationStatus/CompareDialog.cshtml")
+        <!-- /ko -->
+    }
+
+    <!-- Command Buttons -->
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: save, disable: isLoading() || isReadonly() || !nodeGraph()">
+        <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["Save"]
+    </button>
+
+    @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+    {
+        <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openCompareDialog, disable: isLoading() || isReadonly() || isImplemented(), visible: dialogId">
+            <span data-bind="visible: isImplemented()" style="display: none"><i class="glyphicon glyphicon-ok text-success"></i> @Localizer["IsImplemented"]</span>
+            <span data-bind="visible: !isImplemented()" title="@Localizer["IsNotImplementedTooltip"]"><i class="glyphicon glyphicon-remove text-danger"></i> @Localizer["MarkAsImplemented"]</span>
+        </button>
+    }
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: returnToNpc, visible: showReturnToNpcButton">
+        <i class="glyphicon glyphicon-level-up"></i> @Localizer["ReturnToNpc"]
+    </button>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <div class="row gn-defaultContentTopMargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" data-bind="if: !isReadonly()">
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodePlayerText" data-nodetype="tale.PlayerText">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["PlayerTextNode"]</div>
+                </div>
+            </div>
+
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeNpcText" data-nodetype="tale.NpcText">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["NpcTextNode"]</div>
+                </div>
+            </div>
+
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeChoice" data-nodetype="tale.Choice">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["ChoiceNode"]</div>
+                </div>
+            </div>
+            
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeAction" data-nodetype="default.Action">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["ActionNode"]</div>
+                </div>
+            </div>
+
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeCondition" data-nodetype="default.Condition">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["ConditionNode"]</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="gn-nodeGraphContainer">
+                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, droppable: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js" integrity="sha384-0BrUT26SU4JPtbvE/hI6oj4mbEXE32qhRoD51rUTB+QFrg6ViIceJR8op6FmEIA1" crossorigin="anonymous" asp-fallback-test="typeof _ != 'undefined'" asp-fallback-src="~/lib/jointjs/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js" integrity="sha384-NNt9ocJfZhIg2c5PbM5G2a3tTaeXhEfqCHWHNB7htzaWKn8MwFkzVyGdzLA8QMX7" crossorigin="anonymous" asp-fallback-test="Backbone" asp-fallback-src="~/lib/jointjs/backbone-min.js"></script>
+    <script src="~/lib/jointjs/joint.js"></script>
+    <script src="~/lib/jointjs/joint.shapes.dev.js"></script>
+
+    <environment include="Development">
+        <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"]).js"></script>
+        <script src="~/js/Tale/taleLang.@(Localizer["NodeLang"]).js"></script>
+
+        <script src="~/js/Shared/nodeGraph/nodeGraph.knockout.binding.js"></script>
+        <script src="~/js/Tale/dialog.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"]).min.js"></script>
+        <script src="~/js/Tale/taleLang.@(Localizer["NodeLang"]).min.js"></script>
+
+        <script src="~/js/Shared/nodeGraph/nodeGraph.knockout.binding.min.js"></script>
+        <script src="~/js/Tale/dialog.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.Tale.Dialog.Localization = {
+            Tale: "@Localizer["Tale"]"
+        };
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Tale.Dialog.ViewModel(), jQuery("#gn-taleDialogContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/jointjs/joint.css" />
+    
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/defaultNodes.css" />
+    </environment>
+    <environment exclude="Development">   
+        <link rel="stylesheet" href="~/css/defaultNodes.min.css" />
+    </environment>
+}

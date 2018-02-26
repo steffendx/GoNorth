@@ -1,0 +1,7 @@
+{
+    "ResetPasswordSubject": "Reset password",
+    "ResetPasswordBody": "Please click here to reset your password: <a href='{0}'>Reset</a>",
+
+    "EmailConfirmationSubject": "Confirm email",
+    "EmailConfirmationBody": "Please click to confirm your email address: <a href='{0}'>Confirm</a>"
+}

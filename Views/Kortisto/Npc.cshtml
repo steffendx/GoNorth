@@ -1,0 +1,139 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.FlexFieldDatabaseModels
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Npc"];
+}
+
+<div id="gn-kortistoNpcContainer">
+    <h2><span data-bind="visible: !isTemplateMode()">@ViewData["Title"]</span><span data-bind="visible: isTemplateMode" style="display: none">@Localizer["Template"]</span><span data-bind="visible: objectNameDisplay"> <span data-bind="text: objectNameDisplay"></span></span><span data-bind="visible: isPlayerNpc" style="display: none"> @Localizer["IsPlayerNpc"]</span></h2>
+
+    @if(User.IsInRole(RoleNames.KortistoPlayerManager))
+    {
+        <!-- Mark as player dialog -->
+        <div class="modal fade" role="dialog" data-bind="modal: showMarkAsPlayerDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>@Localizer["AreYouSureYouWantToMarkTheNpcAsPlayer"]</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bind="click: markAsPlayer">@Localizer["Yes"]</button>
+                        <button type="button" class="btn btn-default" data-bind="click: closeMarkAsPlayerDialog">@Localizer["No"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormDialogsButtons.cshtml", Localizer)
+
+    <!-- ko with: objectDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    <!-- Remove Item Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmItemRemoveDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToRemoveTheItem"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: removeItemFromInventory">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmItemRemoveDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Buttons -->
+    @if(User.IsInRole(RoleNames.Tale))
+    {
+        <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openTale, visible: id() && !isTemplateMode(), disable: isLoading()">
+            @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+            {
+                <span data-bind="visible: dialogExists" style="display: none">
+                    <i class="glyphicon glyphicon-ok text-success" data-bind="visible: dialogImplemented" title="@Localizer["DialogIsImplementedTooltip"]"></i>
+                    <i class="glyphicon glyphicon-remove text-danger" data-bind="visible: !dialogImplemented()" title="@Localizer["DialogIsNotImplementedTooltip"]"></i>
+                </span>
+            }
+            <i class="glyphicon glyphicon-comment"></i> @Localizer["Dialog"]
+        </button>
+    }
+
+    @if(User.IsInRole(RoleNames.KortistoPlayerManager))
+    {
+        <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openMarkAsPlayerDialog, visible: id() && !isPlayerNpc() && !isTemplateMode(), disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-star"></i> @Localizer["MarkAsPlayer"]</button>
+    }
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormContent.cshtml", new ObjectFormViewModel { Localizer = Localizer, ApiControllerName = "KortistoApi", ObjectIcon = "glyphicon-user" } )
+
+    <h4>@Localizer["Inventory"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoadingInventory"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingInventoryError"></i></h4>
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: addItemToInventory, disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-plus"></i> @Localizer["AddItemToInventory"]</button>
+    <table class="table table-striped table-bordered gn-chooseObjectDialogTable">
+        <thead>
+            <tr>
+                <th class="gn-kortistoInventoryItemNameColumn">@Localizer["Name"]</th>
+                <th>@Localizer["Quantity"]</th>
+                <th>@Localizer["Equipped"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: inventoryItems">
+            <tr>
+                <td class="gn-kortistoInventoryItemNameColumn"><a class="gn-clickable" data-bind="text: name, href: $root.buildItemUrl" target="_blank"></a></td>
+                <td><input type="text" data-bind="numeric: quantity, disable: $root.isReadonly" class="form-control"></td>
+                <td><label class="checkbox-inline"><input type="checkbox" data-bind="checked: isEquipped, disable: $root.isReadonly"></label></td>
+                <td><a class="gn-clickable" title="@Localizer["RemoveItemFromInventory"]" data-bind="click: function(item) { $root.openRemoveItemDialog(item); }, visible: !$root.isReadonly()"><i class="glyphicon glyphicon-trash"></i></a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormTagInput.cshtml", Localizer)
+
+    <!-- Related objects -->
+    <!-- ko if: !isTemplateMode() -->
+    <hr>
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormRelatedObjects.cshtml", Localizer)
+    <!-- /ko -->
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormBaseScripts.cshtml", Localizer)
+
+    <environment include="Development">
+        <script src="~/js/Kortisto/npc.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Kortisto/npc.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormScriptRights.cshtml", Localizer)
+
+    <script type="text/javascript">
+        GoNorth.Kortisto.Npc.Localization = {
+            AddItemToInventory: "@Localizer["AddItemToInventory"]"
+        };
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Kortisto.Npc.ViewModel(), jQuery("#gn-kortistoNpcContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormStyles.cshtml")
+}

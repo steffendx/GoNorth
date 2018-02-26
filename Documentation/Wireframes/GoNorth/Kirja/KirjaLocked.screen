@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides">
+  <widgets xsi:type="model:Master" id="2" x="10" y="10" width="1135" measuredWidth="1135" measuredHeight="50">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Navigation.screen#Navbar"/>
+    <overrides>
+      <widgetChanges xsi:type="o:Delete" ref="25"/>
+      <widgetChanges xsi:type="o:Delete" ref="24"/>
+      <widgetChanges xsi:type="o:Delete" ref="28"/>
+      <widgetChanges xsi:type="o:Delete" ref="19"/>
+      <widgets ref="20" width="1135"/>
+      <widgets ref="21" text="GoNorth"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="3" x="112" y="9" measuredWidth="377" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Startseite, Ereignisse, Kortisto, Kirja">
+        <items ref="@items.0" text="Startseite"/>
+        <items ref="@items.1" text="Ereignisse"/>
+        <items ref="@items.2" text="Kortisto"/>
+        <itemChanges xsi:type="o:Insert" newIndex="3">
+          <object xsi:type="model:Item" text="Kirja"/>
+        </itemChanges>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="4" x="766" y="9" measuredWidth="379" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Administration, Hallo User, Abmelden">
+        <items ref="@items.0" text="Administration"/>
+        <items ref="@items.1" text="Hallo User"/>
+        <items ref="@items.2" text="Abmelden"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="6" x="10" y="64" measuredWidth="111" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="7" width="111" measuredWidth="111" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="111" height="41" text="Editieren">
+          <attributes key="textAlignment" value="Right"/>
+          <attributes key="state" value="disabled"/>
+          <font size="16px"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="8" x="5" y="2" measuredWidth="32" measuredHeight="32" foreground="#666" icon="assets/gl-pencil (large)"/>
+  </widgets>
+  <widgets xsi:type="model:Text" id="9" x="10" y="183" width="335" height="33" text="Taverne zur einbeinigen Hure" measuredWidth="335" measuredHeight="33" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="24px"/>
+  </widgets>
+  <widgets xsi:type="model:Text" id="10" x="13" y="231" width="1115" height="202" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." measuredWidth="1115" measuredHeight="202" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom">
+    <font size="18px"/>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="12" x="1103" y="73" measuredWidth="32" measuredHeight="32" icon="assets/gl-chevron-left (large)"/>
+  <widgets xsi:type="model:Master" id="13" x="10" y="119" width="1135" measuredWidth="1135" measuredHeight="52">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Content.screen#Alert%20Info"/>
+    <overrides>
+      <widgets ref="16" width="1135"/>
+      <widgets ref="17" width="1104" text="*Gesperrt* Dieser Seite wird gerade durch User1 bearbeitet."/>
+      <widgets ref="22" x="1111"/>
+    </overrides>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e043 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="book" d="M300 1200h825q75 0 75 -75v-900q0 -25 -18 -43l-64 -64q-8 -8 -13 -5.5t-5 12.5v950q0 10 -7.5 17.5t-17.5 7.5h-700q-25 0 -43 -18l-64 -64q-8 -8 -5.5 -13t12.5 -5h700q10 0 17.5 -7.5t7.5 -17.5v-950q0 -10 -7.5 -17.5t-17.5 -7.5h-850q-10 0 -17.5 7.5t-7.5 17.5v975 q0 25 18 43l139 139q18 18 43 18z" />
+</g>
+</svg>	

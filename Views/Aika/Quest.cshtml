@@ -1,0 +1,322 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Quest"];
+}
+
+<div id="gn-aikaQuestContainer">
+    <h2 data-bind="text: name, visible: name"></h2>
+    <h2 data-bind="visible: !name()" style="display: none">@Localizer["NameMissing"]</h2>
+
+    <!-- Node Dialog -->
+    @await Html.PartialAsync("~/Views/Shared/NodeGraphDialogs.cshtml")
+
+    <!-- Flex Field Dialogs -->
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldFieldDialogs.cshtml")
+
+    <!-- Condition Dialog -->
+    <!-- ko with: conditionDialog -->
+        @await Html.PartialAsync("~/Views/Shared/NodeConditionBase.cshtml")
+
+        <script type="text/html" id="gn-nodeConditionQuestMarkerCheck">
+        <!-- ko with: conditionData -->
+            <td colspan="2"><select data-bind="value: selectedMarker, options: availableMarkers, optionsText: function(marker) { return marker.name + '(' + marker.mapName + ')'; }" class="form-control"></td>
+            <td><select data-bind="value: operator, options: availableOperators, optionsText: 'label', optionsValue: 'value'" class="form-control"></td>
+            <td><input type="text" data-bind="numeric: distanceCompare" class="form-control" /></td>
+        <!-- /ko -->
+        </script>
+    <!-- /ko -->
+    
+    <!-- Choose Object Dialog -->
+    <!-- ko with: chooseObjectDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    <!-- Delete Quest Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheQuest"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteQuest">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeDeleteQuestDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+    {
+        <!-- ko with: compareDialog -->
+            @await Html.PartialAsync("~/Views/ImplementationStatus/CompareDialog.cshtml")
+        <!-- /ko -->
+    } 
+
+    <!-- Command Buttons -->
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: save, disable: isLoading() || isReadonly()">
+        <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["Save"]
+    </button>
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldAddButton.cshtml")
+
+    @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+    {
+        <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openCompareDialog, disable: isLoading() || isReadonly() || isImplemented(), visible: id">
+            <span data-bind="visible: isImplemented()" style="display: none"><i class="glyphicon glyphicon-ok text-success"></i> @Localizer["IsImplemented"]</span>
+            <span data-bind="visible: !isImplemented()" title="@Localizer["IsNotImplementedTooltip"]"><i class="glyphicon glyphicon-remove text-danger"></i> @Localizer["MarkAsImplemented"]</span>
+        </button>
+    }
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openQuestList">
+        <i class="glyphicon glyphicon-king"></i> @Localizer["OpenQuestList"]
+    </button>
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin  gn-buttonMarginLeft" data-bind="click: openDeleteQuestDialog, disable: isLoading() || isReadonly(), visible: id">
+        <i class="glyphicon glyphicon-trash" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["Delete"]
+    </button>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <!-- Header -->
+    <h4 class="gn-clickable" data-bind="click: toogleHeaderVisibility">
+        <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isHeaderExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isHeaderExpanded" style="display: none"></i> 
+        @Localizer["HeaderData"]
+    </h4>
+
+    <div class="gn-aikaQuestExpandableContainer" data-bind="visible: isHeaderExpanded" style="display: none">
+        <form id="gn-questHeader">
+            <div class="form-group">
+                <label for="gn-questName">@Localizer["Name"]</label>
+                <input type="text" class="form-control" id="gn-questName" placeholder="@Localizer["Name"]" name="questName" data-bind="value: name, disable: isReadonly" required/>
+            </div>
+            <div class="form-group">
+                <label for="gn-questDescription">@Localizer["Description"]</label>
+                <textarea type="text" class="form-control gn-aikaQuestDescription" id="gn-questName" placeholder="@Localizer["Description"]" name="questName" data-bind="value: description, disable: isReadonly"></textarea>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" data-bind="checked: isMainQuest">@Localizer["IsMainQuest"]</label>
+            </div>
+        </form>
+    </div>
+
+    <!-- Fields -->
+    <h4 class="gn-clickable" data-bind="click: toogleFieldVisibility">
+        <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !areFieldsExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: areFieldsExpanded" style="display: none"></i> 
+        @Localizer["Fields"]
+    </h4>
+
+    <div class="gn-aikaQuestExpandableContainer" data-bind="visible: areFieldsExpanded() && fieldManager.fields().length > 0" style="display: none">
+        @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldList.cshtml")
+    </div>
+    <div class="gn-aikaQuestExpandableContainer" data-bind="visible: areFieldsExpanded() && fieldManager.fields().length == 0" style="display: none">
+        @Localizer["NoFieldsAdded"]
+    </div>
+
+    <!-- Related Objects -->
+    <h4 class="gn-clickable" data-bind="click: toogleConnectionsVisibility">
+        <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !areConnectionsExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: areConnectionsExpanded" style="display: none"></i> 
+        @Localizer["Connections"]
+    </h4>
+
+    <div class="gn-aikaQuestExpandableContainer" data-bind="visible: areConnectionsExpanded" style="display: none">
+        <h5>@Localizer["UsedInAikaDetailView"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedInAikaDetails"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMentionedInAikaDetails"></i></h5>
+        <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: mentionedInAikaDetails">
+            <li>
+                <a class="gn-clickable" data-bind="text: name, href: $root.buildAikaDetailUrl" target="_blank"></a>
+            </li>
+        </ul>
+
+        <h5>@Localizer["UsedInAikaQuest"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingUsedInAikaQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingUsedInAikaQuests"></i></h5>
+        <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: usedInAikaQuests">
+            <li>
+                <a class="gn-clickable" data-bind="text: name, href: $root.buildAikaQuestUrl" target="_blank"></a>
+            </li>
+        </ul>
+
+        @if(User.IsInRole(RoleNames.Kirja))
+        {
+            <h5>@Localizer["MentionedInKirjaPages"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedInKirjaPages"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMentionedInKirjaPages"></i></h5>
+            <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: mentionedInKirjaPages">
+                <li>
+                    <a class="gn-clickable" data-bind="text: name, href: $root.buildKirjaPageUrl" target="_blank"></a>
+                </li>
+            </ul>
+        }
+
+        @if(User.IsInRole(RoleNames.Tale))
+        {
+            <h5>@Localizer["ReferencedInTaleDialogs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInTaleDialogs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInTaleDialogs"></i></h5>
+            <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: referencedInTaleDialogs">
+                <li>
+                    <a class="gn-clickable" data-bind="text: name, href: $root.buildTaleDialogUrl" target="_blank"></a>
+                </li>
+            </ul>
+        }
+
+        @if(User.IsInRole(RoleNames.Karta))
+        {
+            <h5>@Localizer["HasMarkersInKartaMaps"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingHasMarkersInKartaMaps"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingHasMarkersInKartaMaps"></i></h5>
+            <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: hasMarkersInKartaMaps">
+                <li>
+                    <a class="gn-clickable" data-bind="text: name, href: function(map) { return $root.buildKartaMapUrl(map); }" target="_blank"></a>
+                </li>
+            </ul>
+        }
+    </div>
+
+    <!-- Node System -->
+    <div class="row gn-defaultContentTopMargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" data-bind="if: !isReadonly()">
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeText" data-nodetype="aika.Text">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["TextNode"]</div>
+                </div>
+            </div>
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeCondition" data-nodetype="default.Condition">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["ConditionNode"]</div>
+                </div>
+            </div>
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeAction" data-nodetype="default.Action">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["ActionNode"]</div>
+                </div>
+            </div>
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeAllDone" data-nodetype="aika.AllDone">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["AllDone"]</div>
+                </div>
+            </div>
+            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeFinish" data-nodetype="aika.Finish">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["FinishNode"]</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="gn-nodeGraphContainer">
+                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, nodeGraphAllowMultpleOutbound: true, droppable: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldTemplates.cshtml")
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js" integrity="sha384-0BrUT26SU4JPtbvE/hI6oj4mbEXE32qhRoD51rUTB+QFrg6ViIceJR8op6FmEIA1" crossorigin="anonymous" asp-fallback-test="typeof _ != 'undefined'" asp-fallback-src="~/lib/jointjs/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js" integrity="sha384-NNt9ocJfZhIg2c5PbM5G2a3tTaeXhEfqCHWHNB7htzaWKn8MwFkzVyGdzLA8QMX7" crossorigin="anonymous" asp-fallback-test="Backbone" asp-fallback-src="~/lib/jointjs/backbone-min.js"></script>
+    <script src="~/lib/jointjs/joint.js"></script>
+    <script src="~/lib/jointjs/joint.shapes.dev.js"></script>
+
+    <environment include="Development">
+        <script src="~/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).js"></script>
+
+        <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"]).js"></script>
+        <script src="~/js/Aika/aikaLang.@(Localizer["NodeLang"]).js"></script>
+
+        <script src="~/js/Shared/nodeGraph/nodeGraph.knockout.binding.js"></script>
+        <script src="~/js/Aika/quest.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).min.js"></script>
+
+        <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"]).min.js"></script>
+        <script src="~/js/Aika/aikaLang.@(Localizer["NodeLang"]).min.js"></script>
+
+        <script src="~/js/Shared/nodeGraph/nodeGraph.knockout.binding.min.js"></script>
+        <script src="~/js/Aika/quest.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <text>
+            GoNorth.Aika.Quest.hasKortistoRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Quest.hasKortistoRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Kirja))
+        {
+            <text>
+            GoNorth.Aika.Quest.hasKirjaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Quest.hasKirjaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Tale))
+        {
+            <text>
+            GoNorth.Aika.Quest.hasTaleRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Quest.hasTaleRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Karta))
+        {
+            <text>
+            GoNorth.Aika.Quest.hasKartaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Quest.hasKartaRights = false;
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Aika.Quest.ViewModel(), jQuery("#gn-aikaQuestContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/jointjs/joint.css" />
+    
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/defaultNodes.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.css" />
+    </environment>
+    <environment exclude="Development">   
+        <link rel="stylesheet" href="~/css/defaultNodes.min.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.css" />
+    </environment>
+}

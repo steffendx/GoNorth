@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: 26fa -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="tent" d="M774 1193.5q16 -9.5 20.5 -27t-5.5 -33.5l-136 -187l467 -746h30q20 0 35 -18.5t15 -39.5v-42h-1200v42q0 21 15 39.5t35 18.5h30l468 746l-135 183q-10 16 -5.5 34t20.5 28t34 5.5t28 -20.5l111 -148l112 150q9 16 27 20.5t34 -5zM600 200h377l-182 112l-195 534v-646z " />
+</g>
+</svg>	

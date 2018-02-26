@@ -1,0 +1,259 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Views
+@using GoNorth.Views.Administration
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["UserManagement"];
+    ViewData.AddActivePage(AdministrationNavPages.Index);
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div id="gn-userAdministrationContainer">
+    <!-- Delete User Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: deleteErrorOccured">
+                        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="visible: deleteErrorAdditionalDetails, text: deleteErrorAdditionalDetails"></span>
+                    </div>
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheUser"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteUser, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Yes"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog, disable: dialogLoading">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update User Security Stamp Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showUpdateSecurityStampDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: updateSecurityStampErrorOccured">
+                        <strong>@Localizer["Error"]</strong>@Localizer["ErrorOccured"]
+                    </div>
+                    <p>@Localizer["AreYouSureYouWantToUpdateTheSecurityStamp"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: updateSecurityStampForUser, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Yes"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeUpdateSecurityStampDialog, disable: dialogLoading">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showUserCreateDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["CreateUser"]</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="gn-userForm">
+                        <div class="alert alert-danger" style="display: none" data-bind="visible: createError">
+                            <strong>@Localizer["Error"]</strong><span data-bind="text: createError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-userDisplayName">@Localizer["Name"]</label>
+                            <input type="text" class="form-control" id="gn-userDisplayName" placeholder="@Localizer["Name"]" name="userDisplayName" data-bind="value: createName" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-userEmail">@Localizer["Email"]</label>
+                            <input type="email" class="form-control" id="gn-userEmail" placeholder="@Localizer["Email"]" name="userEmail" data-bind="value: createEmail" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-password">@Localizer["Password"]</label>
+                            <input type="password" class="form-control" id="gn-password" placeholder="@Localizer["Password"]" name="userPassword" data-bind="value: createPassword" minlength="8" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-passwordRepeat">@Localizer["PasswordRepeat"]</label>
+                            <input type="password" class="form-control" id="gn-passwordRepeat" placeholder="@Localizer["PasswordRepeat"]" name="userPasswordRepeat" data-bind="value: createPasswordRepeat" required equalto="#gn-password"/>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: createUser, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Save"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeCreateUserDialog, disable: dialogLoading">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Roles Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showUserRolesDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["ManageRoles"]</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: roleError">
+                        <strong>@Localizer["Error"]</strong><span data-bind="text: roleError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="gn-availableRoles">@Localizer["AvailableRoles"]</label>
+                        <select class="form-control" id="gn-availableRoles" data-bind="options: availableUserRoles, selectedOptions: selectedAvailableUserRoles" multiple="true">
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 gn-userRolesChangeButtonContainer">
+                            <button type="button" class="btn btn-default" data-bind="click: addSelectedUserRoles, enable: !dialogLoading() && selectedAvailableUserRoles().length > 0">
+                                <i class="glyphicon glyphicon-chevron-down"></i>
+                                @Localizer["AddRole"]
+                            </button>
+                        </div> 
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 gn-userRolesChangeButtonContainer">
+                            <button type="button" class="btn btn-default" data-bind="click: removeSelectedUserRoles, enable: !dialogLoading() && selectedAssignedUserRoles().length > 0">
+                                <i class="glyphicon glyphicon-chevron-up"></i>
+                                @Localizer["RemoveRole"]
+                            </button>
+                        </div> 
+                    </div>
+                    <div class="form-group gn-formGroupTopMargin">
+                        <label for="gn-assignedRoles">@Localizer["AssignedRoles"]</label>
+                        <select class="form-control" id="gn-assignedRoles" multiple data-bind="options: assignedUserRoles, selectedOptions: selectedAssignedUserRoles">
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveUserRoles, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Save"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeUserRolesDialog, disable: dialogLoading">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm User Email Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmEmailDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: confirmEmailErrorOccured">
+                        <strong>@Localizer["Error"]</strong>@Localizer["ErrorOccured"]
+                    </div>
+                    <p>@Localizer["AreYouSureYouWantToConfirmTheEmailForUser"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: confirmEmailForUser, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Yes"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmEmailDialog, disable: dialogLoading">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User List -->
+    <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <button type="button" class="btn btn-primary gn-createUserButton" data-bind="click: openCreateUserDialog"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreateUser"]</button>
+
+    <div class="row gn-gridTableRow">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 gn-gridTableHeader gn-gridTableCell">
+            @Localizer["Username"]
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3 gn-gridTableHeader gn-gridTableCell">
+            @Localizer["Email"]
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableHeader gn-gridTableCell">
+            @Localizer["Name"]
+        </div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 gn-gridTableHeader gn-gridTableCell">
+            @Localizer["Roles"]
+        </div>
+    </div>
+    <!-- ko foreach: users -->
+        <div class="row gn-gridTableRow">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 gn-gridTableCell" data-bind="text: userName, attr: { title: userName }">
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3 gn-gridTableCell" data-bind="text: email, attr: { title: email }">
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableCell" data-bind="text: displayName, attr: { title: displayName }">
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 gn-gridTableCell" data-bind="foreach: roles, attr: { title: roles.join(', ') }">
+                <span data-bind="text: $data"></span><span data-bind="if: $index() != $parent.roles.length - 1">, </span>
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableCell">
+                <a class="gn-clickable" data-bind="click: function(user) { $root.openUserRoleDialog(user); }, visible: $root.availableRoles().length > 0" title="@Localizer["SetUserRolesToolTip"]"><i class="glyphicon glyphicon-certificate"></i></a>
+                <a class="gn-clickable" data-bind="click: function(user) { $root.openUpdateSecurityStampDialog(user); }" title="@Localizer["RefreshSecurityStampTooltip"]"><i class="glyphicon glyphicon-link"></i></a>
+                <a class="gn-clickable" data-bind="click: function(user) { $root.openConfirmEmailDialog(user); }, visible: !isEmailConfirmed" title="@Localizer["ConfirmEmailToolTip"]"><i class="glyphicon glyphicon-send"></i></a>
+                <a class="gn-clickable" data-bind="click: function(user) { $root.openDeleteUserDialog(user); }" title="@Localizer["DeleteUserToolTip"]"><i class="glyphicon glyphicon-trash"></i></a>
+            </div>
+        </div>
+    <!-- /ko -->
+
+    <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+        <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
+            <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+        </button>
+        <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+            <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="~/js/Administration/userManagement.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Administration/userManagement.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        GoNorth.Administration.UserManagement.Localization = {
+            ErrorOccured: "@Localizer["ErrorOccured"]"
+        };
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Administration.UserManagement.ViewModel(), jQuery("#gn-userAdministrationContainer")[0]);
+        });
+    </script>
+}

@@ -1,0 +1,8 @@
+{
+    "Username": "Username",
+    "Email": "Email",
+    "Name": "Name",
+    
+    "FieldRequired": "The {0} field is mandatory.",
+    "EmailFormat": "The {0} field is not a valid email."
+}

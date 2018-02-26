@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:WidgetGroup" id="6" x="16" y="8" measuredWidth="263" measuredHeight="41" name="Tabs">
+    <widgets xsi:type="model:Tabs" id="2" text="Tab, ~Disabled~, Dropdown {desc}" measuredWidth="263" measuredHeight="41" selection="0" skin="_tabs.svg">
+      <items x="0" y="0" width="54" height="41" text="Tab"/>
+      <items x="54" y="0" width="89" height="41" text="~Disabled~"/>
+      <items x="143" y="0" width="120" height="41" text="Dropdown {desc}"/>
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="7" x="16" y="61" measuredWidth="360" measuredHeight="41" name="Tabs Justified">
+    <widgets xsi:type="model:Tabs" id="8" text="Tab, ~Disabled~, Dropdown {desc}" measuredWidth="360" measuredHeight="41" selection="0" skin="_tabs-justified.svg">
+      <items x="0" y="0" width="120" height="41" text="Tab"/>
+      <items x="120" y="0" width="120" height="41" text="~Disabled~"/>
+      <items x="240" y="0" width="120" height="41" text="Dropdown {desc}"/>
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="14" x="16" y="114" measuredWidth="260" measuredHeight="41" name="Pills">
+    <widgets xsi:type="model:ButtonBar" id="12" text="Pill, ~Disabled~, Dropdown {desc}" measuredWidth="260" measuredHeight="41" selection="0" background="#428bca" skin="_pills.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="51" height="41" text="Pill"/>
+      <items x="51" y="0" width="89" height="41" text="~Disabled~"/>
+      <items x="140" y="0" width="120" height="41" text="Dropdown {desc}"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="15" x="16" y="168" measuredWidth="360" measuredHeight="41" name="Pills Justified">
+    <widgets xsi:type="model:ButtonBar" id="13" text="Pill, ~Disabled~, Dropdown {desc}" measuredWidth="360" measuredHeight="41" selection="0" background="#428bca" skin="_pills-justified.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="120" height="41" text="Pill"/>
+      <items x="120" y="0" width="120" height="41" text="~Disabled~"/>
+      <items x="240" y="0" width="120" height="41" text="Dropdown {desc}"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="16" x="16" y="224" measuredWidth="120" measuredHeight="123" name="Pills Vertical">
+    <widgets xsi:type="model:ButtonBar" id="17" text="Pill, ~Disabled~, Dropdown {desc}" measuredWidth="120" measuredHeight="123" selection="0" background="#428bca" skin="_pills-vertical.svg">
+      <font size="14px"/>
+      <items x="15" y="0" width="21" height="41" text="Pill"/>
+      <items x="15" y="41" width="59" height="41" text="~Disabled~"/>
+      <items x="15" y="82" width="90" height="41" text="Dropdown {desc}"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="26" x="16" y="368" measuredWidth="750" measuredHeight="50" name="Navbar">
+    <widgets xsi:type="model:Panel" id="20" width="750" height="50" measuredWidth="750" measuredHeight="50" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom"/>
+    <widgets xsi:type="model:ButtonBar" id="19" x="83" y="2" height="46" text="Link, Link, Dropdown {desc}" measuredWidth="236" measuredHeight="46" layoutParams="anchor-left|anchor-middle" selection="0" background="#cccccc" skin="_pills.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="58" height="46" text="Link"/>
+      <items x="58" y="0" width="58" height="46" text="Link"/>
+      <items x="116" y="0" width="120" height="46" text="Dropdown {desc}"/>
+    </widgets>
+    <widgets xsi:type="model:Label" id="21" x="15" y="10" text="Brand" measuredWidth="56" measuredHeight="30" layoutParams="anchor-left|anchor-middle">
+      <font size="18px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="28" x="320" y="7" width="145" text="~Search~" measuredWidth="145" measuredHeight="35" layoutParams="anchor-left|anchor-middle" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="24" x="467" y="7" height="34" text="Submit" measuredWidth="68" measuredHeight="34" layoutParams="anchor-left|anchor-middle">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:ButtonBar" id="25" x="572" y="4" text="Link, Dropdown {desc}" measuredWidth="178" measuredHeight="41" layoutParams="anchor-right|anchor-middle" background="#cccccc" skin="_pills.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="58" height="41" text="Link"/>
+      <items x="58" y="0" width="120" height="41" text="Dropdown {desc}"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="36" x="16" y="432" measuredWidth="750" measuredHeight="50" name="Navbar Inverse">
+    <widgets xsi:type="model:Panel" id="37" width="750" height="50" measuredWidth="750" measuredHeight="50" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#999999"/>
+    <widgets xsi:type="model:ButtonBar" id="38" x="83" y="2" height="46" text="Link, Link, Dropdown {desc}" measuredWidth="236" measuredHeight="46" layoutParams="anchor-left|anchor-middle" selection="0" background="#000000" skin="_pills.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="58" height="46" text="Link"/>
+      <items x="58" y="0" width="58" height="46" text="Link"/>
+      <items x="116" y="0" width="120" height="46" text="Dropdown {desc}"/>
+    </widgets>
+    <widgets xsi:type="model:Label" id="39" x="15" y="10" text="Brand" measuredWidth="56" measuredHeight="30" layoutParams="anchor-left|anchor-middle">
+      <font size="18px"/>
+    </widgets>
+    <widgets xsi:type="model:TextField" id="40" x="320" y="7" width="145" text="~Search~" measuredWidth="145" measuredHeight="35" layoutParams="anchor-left|anchor-middle" skin="_text-input.svg">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="41" x="467" y="7" height="34" text="Submit" measuredWidth="68" measuredHeight="34" layoutParams="anchor-left|anchor-middle">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:ButtonBar" id="42" x="572" y="4" text="Link, Dropdown {desc}" measuredWidth="178" measuredHeight="41" layoutParams="anchor-right|anchor-middle" background="#cccccc" skin="_pills.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="58" height="41" text="Link"/>
+      <items x="58" y="0" width="120" height="41" text="Dropdown {desc}"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="43" x="16" y="496" measuredWidth="306" measuredHeight="34" name="Breadcrumbs">
+    <widgets xsi:type="model:Panel" id="44" width="306" height="34" measuredWidth="306" measuredHeight="34" layoutParams="anchor-left,anchor-right|anchor-top" background="#f4f4f4" foreground="#dbdbdb"/>
+    <widgets xsi:type="model:Breadcrumbs" id="45" x="14" y="5" text="Home, Library, Data" measuredWidth="163" measuredHeight="25" layoutParams="anchor-left|anchor-top">
+      <font size="14px" underline="false"/>
+      <items x="0" y="0" width="40" height="25" text="Home"/>
+      <items x="60" y="0" width="48" height="25" text="Library"/>
+      <items x="128" y="0" width="32" height="25" text="Data"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="47" x="16" y="544" measuredWidth="254" measuredHeight="35" name="Pagination">
+    <widgets xsi:type="model:ButtonBar" id="46" width="254" text="«,1,2,3,4,5,»" measuredWidth="254" measuredHeight="35" skin="_button-bar-justified.svg">
+      <font size="14px"/>
+      <items x="0" y="0" width="36" height="35" text="«"/>
+      <items x="36" y="0" width="36" height="35" text="1"/>
+      <items x="72" y="0" width="36" height="35" text="2"/>
+      <items x="108" y="0" width="36" height="35" text="3"/>
+      <items x="144" y="0" width="36" height="35" text="4"/>
+      <items x="180" y="0" width="36" height="35" text="5"/>
+      <items x="216" y="0" width="38" height="35" text="»"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="48" x="16" y="592" measuredWidth="254" measuredHeight="44" name="Pagination Large">
+    <widgets xsi:type="model:ButtonBar" id="49" width="254" text="«,1,2,3,4,5,»" measuredWidth="254" measuredHeight="44" skin="_button-bar-justified.svg">
+      <font size="18px"/>
+      <items x="0" y="0" width="36" height="44" text="«"/>
+      <items x="36" y="0" width="36" height="44" text="1"/>
+      <items x="72" y="0" width="36" height="44" text="2"/>
+      <items x="108" y="0" width="36" height="44" text="3"/>
+      <items x="144" y="0" width="36" height="44" text="4"/>
+      <items x="180" y="0" width="36" height="44" text="5"/>
+      <items x="216" y="0" width="38" height="44" text="»"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="50" x="16" y="648" measuredWidth="254" measuredHeight="31" name="Pagination Small">
+    <widgets xsi:type="model:ButtonBar" id="51" width="254" text="«,1,2,3,4,5,»" measuredWidth="254" measuredHeight="31" skin="_button-bar-justified.svg">
+      <font size="12px"/>
+      <items x="0" y="0" width="36" height="31" text="«"/>
+      <items x="36" y="0" width="36" height="31" text="1"/>
+      <items x="72" y="0" width="36" height="31" text="2"/>
+      <items x="108" y="0" width="36" height="31" text="3"/>
+      <items x="144" y="0" width="36" height="31" text="4"/>
+      <items x="180" y="0" width="36" height="31" text="5"/>
+      <items x="216" y="0" width="38" height="31" text="»"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="54" x="16" y="696" measuredWidth="138" measuredHeight="32" name="Pager">
+    <widgets xsi:type="model:Button" id="52" height="32" text="Previous" measuredWidth="78" measuredHeight="32" style="round">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:Button" id="53" x="85" height="32" text="Next" measuredWidth="53" measuredHeight="32" style="round">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="55" x="432" y="8" measuredWidth="751" measuredHeight="241" name="Collapse">
+    <widgets xsi:type="model:Accordion" id="56" width="751" height="241" text="Collapsible Group Item #1&#xA;Collapsible Group Item #2&#xA;Collapsible Group Item #3" measuredWidth="751" measuredHeight="241" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" selection="0">
+      <items x="0" y="2" width="751" height="30" text="Collapsible Group Item #1"/>
+      <items x="0" y="181" width="751" height="30" text="Collapsible Group Item #2"/>
+      <items x="0" y="211" width="751" height="30" text="Collapsible Group Item #3"/>
+      <font size="16px"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="57" x="20" y="50" width="709" height="115" text="Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS." measuredWidth="709" measuredHeight="115" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="58" x="16" y="744" measuredWidth="810" measuredHeight="450" name="Carousel">
+    <widgets xsi:type="model:Panel" id="59" width="810" height="450" measuredWidth="810" measuredHeight="450" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#999999" border="none"/>
+    <widgets xsi:type="model:WidgetGroup" id="60" measuredWidth="100" measuredHeight="450" layoutParams="anchor-left|anchor-top,anchor-bottom" name="Nav Left">
+      <widgets xsi:type="model:Panel" id="61" height="450" measuredWidth="100" measuredHeight="450" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" alpha="0" border="none"/>
+      <widgets xsi:type="model:Icon" id="62" x="34" y="209" measuredWidth="32" measuredHeight="32" layoutParams="anchor-center|anchor-middle" foreground="#ffffff" icon="line-arrow-left (large)"/>
+    </widgets>
+    <widgets xsi:type="model:WidgetGroup" id="63" x="710" measuredWidth="100" measuredHeight="450" layoutParams="anchor-right|anchor-top,anchor-bottom" name="Nav Right">
+      <widgets xsi:type="model:Panel" id="64" height="450" measuredWidth="100" measuredHeight="450" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" alpha="0" border="none"/>
+      <widgets xsi:type="model:Icon" id="65" x="34" y="209" measuredWidth="32" measuredHeight="32" layoutParams="anchor-center|anchor-middle" foreground="#ffffff" icon="line-arrow-left (large)" iconRotation="180"/>
+    </widgets>
+    <widgets xsi:type="model:Label" id="66" y="331" width="810" text="Slide label" measuredWidth="810" measuredHeight="36" layoutParams="anchor-left,anchor-right|anchor-bottom" textAlignment="Center" foreground="#ffffff">
+      <font size="24px" bold="false"/>
+    </widgets>
+    <widgets xsi:type="model:Text" id="67" y="372" width="810" text="Nulla vitae elit libero, a pharetra augue mollis interdum" measuredWidth="810" measuredHeight="19" layoutParams="anchor-left,anchor-right|anchor-bottom" textAlignment="Center" foreground="#ffffff" lineHeight="1.4">
+      <font size="14px"/>
+    </widgets>
+    <widgets xsi:type="model:WidgetGroup" id="68" x="369" y="398" measuredWidth="72" measuredHeight="24" layoutParams="anchor-center|anchor-bottom">
+      <widgets xsi:type="model:Icon" id="69" measuredWidth="24" measuredHeight="24" foreground="#ffffff" icon="bullet (medium)"/>
+      <widgets xsi:type="model:Icon" id="70" x="24" measuredWidth="24" measuredHeight="24" icon="bullet (medium)"/>
+      <widgets xsi:type="model:Icon" id="71" x="48" measuredWidth="24" measuredHeight="24" icon="bullet (medium)"/>
+    </widgets>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="72" x="825" y="264" measuredWidth="268" measuredHeight="464" name="Affix">
+    <widgets xsi:type="model:SVGImage" id="73" width="268" height="464" measuredWidth="268" measuredHeight="464" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" background="#eeeeee" src="_panel.svg"/>
+    <widgets xsi:type="model:List" id="74" x="19" y="7" width="232" text="Overview&#xA;Transitions&#xA;Modal&#xA;Dropdown&#xA;Scrollspy&#xA;Tab&#xA;Tooltip&#xA;Popover&#xA;Alert&#xA;Button&#xA;Collapse&#xA;Carousel&#xA;  Examples&#xA;  Usage&#xA;Affix" measuredWidth="232" measuredHeight="454" layoutParams="anchor-left,anchor-right|anchor-top,anchor-bottom" border="false" alpha="5" rowHeight="30">
+      <font size="14px"/>
+      <items x="0" y="2" width="232" height="30" text="Overview"/>
+      <items x="0" y="32" width="232" height="30" text="Transitions"/>
+      <items x="0" y="62" width="232" height="30" text="Modal"/>
+      <items x="0" y="92" width="232" height="30" text="Dropdown"/>
+      <items x="0" y="122" width="232" height="30" text="Scrollspy"/>
+      <items x="0" y="152" width="232" height="30" text="Tab"/>
+      <items x="0" y="182" width="232" height="30" text="Tooltip"/>
+      <items x="0" y="212" width="232" height="30" text="Popover"/>
+      <items x="0" y="242" width="232" height="30" text="Alert"/>
+      <items x="0" y="272" width="232" height="30" text="Button"/>
+      <items x="0" y="302" width="232" height="30" text="Collapse"/>
+      <items x="0" y="332" width="232" height="30" text="Carousel"/>
+      <items x="0" y="362" width="232" height="30" text="  Examples"/>
+      <items x="0" y="392" width="232" height="30" text="  Usage"/>
+      <items x="0" y="422" width="232" height="30" text="Affix"/>
+    </widgets>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

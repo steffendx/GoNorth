@@ -1,0 +1,235 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.ImplementationStatusViewModels
+
+@inject IViewLocalizer Localizer
+
+@model OverviewViewModel
+
+@{
+    ViewData["Title"] = @Localizer["ImplementationStatus"];
+}
+
+<div id="gn-overviewContainer">
+    <script type="text/html" id="gn-implementationStatusObjectList">
+        <div class="gn-commandWidgetTopMargin">
+            <div class="row gn-gridTableRow">
+                <div class="col-xs-12 gn-gridTableHeader gn-gridTableCell" data-bind="css: { 'col-sm-8 col-md-8 col-lg-9': !hasMarkerTypeRow, 'col-sm-4 col-md-4 col-lg-6': hasMarkerTypeRow }">
+                    @Localizer["Name"]
+                </div>
+                <!-- ko if: hasMarkerTypeRow -->
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 gn-gridTableHeader gn-gridTableCell">
+                    @Localizer["Type"]
+                </div>
+                <!-- /ko -->
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 gn-gridTableHeader gn-gridTableCell">
+                </div>
+            </div>
+            <!-- ko foreach: objects -->
+            <div class="row gn-gridTableRow">
+                <div class="col-xs-12 gn-gridTableCell"  data-bind="css: { 'col-sm-8 col-md-8 col-lg-9': !$parent.hasMarkerTypeRow, 'col-sm-4 col-md-4 col-lg-6': $parent.hasMarkerTypeRow }">
+                    <a class="gn-clickable" data-bind="text: name, click: function(obj) { $parent.openCompare(obj); }"></a>
+                </div>
+                <!-- ko if: $parent.hasMarkerTypeRow -->
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 gn-gridTableCell">
+                    <span data-bind="text: $root.markerTypes[$data.type]"></span>
+                </div>
+                <!-- /ko -->
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 gn-gridTableCell">
+                    <a class="gn-clickable" data-bind="href: function(obj) { return $parent.buildObjectUrl(obj); }" target="_blank">@Localizer["Open"]</a>
+                </div>
+            </div>
+            <!-- /ko -->
+        </div>
+
+        <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+            <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
+                <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+                <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+            </button>
+            <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+                <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+                <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+            </button>
+        </div>
+    </script>
+
+    <!-- ko with: compareDialog -->
+        @await Html.PartialAsync("~/Views/ImplementationStatus/CompareDialog.cshtml")
+    <!-- /ko -->
+
+    <h2>
+        @ViewData["Title"]
+        <span class="gn-implementationStatusOverviewLoading"><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i></span>
+    </h2>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <div class="row gn-implementationStatusOverviewContent">
+        <div class="col-md-3 col-lg-2">
+            <ul class="nav nav-pills nav-stacked">
+                @if(User.IsInRole(RoleNames.Kortisto))
+                {
+                    <li data-bind="css: { 'active': isNpcListSelected }"><a class="gn-clickable" data-bind="click: selectNpcList">@Localizer["Npcs"]</a></li>
+                }
+
+                @if(User.IsInRole(RoleNames.Tale))
+                {
+                    <li data-bind="css: { 'active': isDialogListSelected }"><a class="gn-clickable" data-bind="click: selectDialogList">@Localizer["Dialogs"]</a></li>
+                }
+                
+                @if(User.IsInRole(RoleNames.Styr))
+                {
+                    <li data-bind="css: { 'active': isItemListSelected }"><a class="gn-clickable" data-bind="click: selectItemList">@Localizer["Items"]</a></li>
+                }
+
+                @if(User.IsInRole(RoleNames.Aika))
+                {
+                    <li data-bind="css: { 'active': isQuestListSelected }"><a class="gn-clickable" data-bind="click: selectQuestList">@Localizer["Quests"]</a></li>
+                }
+
+                @if(User.IsInRole(RoleNames.Karta))
+                {
+                    <li data-bind="css: { 'active': isMarkerListSelected }"><a class="gn-clickable" data-bind="click: selectMarkerList">@Localizer["Markers"]</a></li>
+                }
+            </ul>
+        </div>
+        <div class="col-md-9 col-lg-10">
+            @if(User.IsInRole(RoleNames.Kortisto))
+            {
+                <div data-bind="visible: isNpcListSelected" style="display: none">
+                    <h4>@Localizer["Npcs"]</h4>
+
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: npcList }"></div>
+                </div>
+            }
+
+            @if(User.IsInRole(RoleNames.Tale))
+            {
+                <div data-bind="visible: isDialogListSelected" style="display: none">
+                    <h4>@Localizer["Dialogs"]</h4>
+
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: dialogList }"></div>
+                </div>
+            }
+
+            @if(User.IsInRole(RoleNames.Styr))
+            {
+                <div data-bind="visible: isItemListSelected" style="display: none">
+                    <h4>@Localizer["Items"]</h4>
+
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: itemList }"></div>
+                </div>
+            }
+
+            @if(User.IsInRole(RoleNames.Aika))
+            {
+                <div data-bind="visible: isQuestListSelected" style="display: none">
+                    <h4>@Localizer["Quests"]</h4>
+
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: questList }"></div>
+                </div>
+            }
+
+            @if(User.IsInRole(RoleNames.Karta))
+            {
+                <div data-bind="visible: isMarkerListSelected" style="display: none">
+                    <h4>@Localizer["Markers"]</h4>
+
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: markerList }"></div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/ImplementationStatus/overview.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/ImplementationStatus/overview.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasKortistoRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasKortistoRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Tale))
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasTaleRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasTaleRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Styr))
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasStyrRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasStyrRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Aika))
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasAikaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasAikaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Karta))
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasKartaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasKartaRights = false;
+            </text>
+        }
+
+        var nonLocalizedMarkerTypes = {};
+        var markerTypes = {};
+        @foreach(MappedMarkerType curMarkerType in @Model.MarkerTypes)
+        {
+            <text>
+            nonLocalizedMarkerTypes[@curMarkerType.Value] = "@curMarkerType.Name";
+            markerTypes[@curMarkerType.Value] = "@Localizer["MarkerType" + @curMarkerType.Name]";
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.ImplementationStatus.Overview.ViewModel(nonLocalizedMarkerTypes, markerTypes), jQuery("#gn-overviewContainer")[0]);
+        });
+    </script>
+}

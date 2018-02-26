@@ -1,0 +1,11 @@
+{
+    "UserNotFound": "Benutzer konnte nicht gefunden werden.",
+
+    "ErrorOccurredWhileSaving": "Es ist ein Fehler beim Speichern aufgetreten.",
+    "ProfileHasBeenUpdated": "Dein Profil wurde aktualisiert.",
+
+    "VerificationEmailSent": "Bestätigungs Email wurde gesendet. Bitte prüfe deine Emails.",
+
+    "NoPasswordExists": "Es existiert kein Passwort. Bitte wende dich an einen Administrator.",
+    "PasswordHasBeenChanged": "Das Passwort wurde erfolgreich aktualisiert."
+}

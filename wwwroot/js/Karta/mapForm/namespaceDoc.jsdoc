@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Karta) {
+
+        /**
+         * Map Form Namespace
+         * @Namespace Map
+         */
+        (function(Map) {
+        }(Karta.Map = Karta.Map || {}));
+
+    }(GoNorth.Karta = GoNorth.Karta || {}));
+}(window.GoNorth = window.GoNorth || {}));

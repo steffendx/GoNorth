@@ -1,0 +1,13 @@
+{
+    "MarkerTypeKirjaPage": "Kirja",
+    "MarkerTypeItem": "Styr",
+    "MarkerTypeNpc": "Kortisto",
+    "MarkerTypeQuest": "Aika",
+    "MarkerTypeMapChange": "Karta",
+
+    "CanNotDeleteMapMarkedInKartaMap": "The map is marked in the maps \"{0}\". To prevent errors in the story it must be deleted there first.",
+
+    "OnlyOneFileAllowed": "You must upload exactly one image file.",
+    "CouldNotUploadImage": "Image could not be uploaded.",
+    "ImageFormatNotSupported": "The image format is not supported."
+}

@@ -1,0 +1,46 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Views
+@using GoNorth.Views.Administration
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["EncryptConfigValue"];
+    ViewData.AddActivePage(AdministrationNavPages.ConfigEncryption);
+}
+
+<h4>@ViewData["Title"]</h4>
+
+<div id="gn-configValueEncryptionContainer">
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <form id="gn-encryptionDialogForm">
+        <div class="form-group">
+            <label for="gn-configValue">@Localizer["ConfigValue"]</label> <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+            <input type="text" class="form-control" id="gn-configValue" placeholder="@Localizer["ConfigValue"]" name="configValue" data-bind="value: configValue, enterPressed: encryptConfigValue" required/>
+        </div>
+        <div class="form-group">
+            <label for="gn-encryptedConfigValue">@Localizer["EncryptedConfigValue"]</label>
+            <input type="text" class="form-control" id="gn-encryptedConfigValue" placeholder="@Localizer["EncryptedConfigValue"]" name="encryptedConfigValue" data-bind="value: encryptedConfigValue" readonly/>
+        </div>
+        <button type="button" class="btn btn-primary" data-bind="click: encryptConfigValue">@Localizer["Encrypt"]</button>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="~/js/Administration/configEncryption.ViewModel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Administration/configEncryption.ViewModel.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Administration.ConfigEncryption.ViewModel(), jQuery("#gn-configValueEncryptionContainer")[0]);
+        });
+    </script>
+}

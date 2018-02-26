@@ -1,0 +1,11 @@
+(function(GoNorth) {
+    "use strict";
+
+    /**
+     * Choose Object Dialog Namespace
+     * @namespace ChooseObjectDialog
+     */
+    (function(ChooseObjectDialog) {
+    }(GoNorth.ChooseObjectDialog = GoNorth.ChooseObjectDialog || {}));
+
+}(window.GoNorth = window.GoNorth || {}));

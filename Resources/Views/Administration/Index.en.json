@@ -1,0 +1,38 @@
+{
+    "UserManagement": "User Management",
+
+    "Username": "Username",
+    "Email": "Email",
+    "Name": "Name",
+    "Roles": "Roles",
+
+    "SetUserRolesToolTip": "Click here to manage the roles of the user",
+    "RefreshSecurityStampTooltip": "Click here to refresh the security stamp of the user",
+    "DeleteUserToolTip": "Click here to delete the user",
+    "ConfirmEmailToolTip": "Click here to confirm the email address of the user",
+
+    "CreateUser": "Create user",
+    "Password": "Password",
+    "PasswordRepeat": "Repeat password",
+    "Save": "Save",
+    "Cancel": "Cancel",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToUpdateTheSecurityStamp": "Are you sure you want to refresh the security stamp?",
+    "AreYouSureYouWantToDeleteTheUser": "Are you sure you want to delete the user?",
+    "AreYouSureYouWantToConfirmTheEmailForUser": "Are you sure you want to confirm the email adress of the user?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "ManageRoles": "Manage roles",
+    "AvailableRoles": "Available roles",
+    "AssignedRoles": "Assigned roles",
+    "AddRole": "Add role",
+    "RemoveRole": "Remove role",
+
+    "PreviousPage": "Previous page",
+    "NextPage": "Next page",
+    
+    "Error": "Error:",
+    "ErrorOccured": "An error occured."
+}

@@ -1,0 +1,581 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/defaultNodes.min.css",
+    "inputFiles": [
+      "wwwroot/css/defaultNodes.css"
+    ]
+  },
+
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.js",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js",
+      "wwwroot/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.de.min.js",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.de.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.en.min.js",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.en.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.css",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.css"
+    ]
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Shared/shared.lib.js",
+    "inputFiles": [
+      "wwwroot/lib/moment/locale/de.js",
+      "wwwroot/js/Shared/util.js",
+      "wwwroot/js/Shared/knockout.bindings.js",
+      "wwwroot/js/Shared/lockService.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Shared/nodeGraph/nodeGraph.knockout.binding.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/nodeGraph/defaultNodeConnections.js",
+      "wwwroot/js/Shared/nodeGraph/baseNode.js",
+      "wwwroot/js/Shared/nodeGraph/textNode.js",
+      "wwwroot/js/Shared/nodeGraph/baseNodeSerializer.js",
+      "wwwroot/js/Shared/nodeGraph/nodeGraphSerializer.js",
+      "wwwroot/js/Shared/nodeGraph/bindingHandler.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Shared/nodeGraph/nodeLang.de.min.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/nodeGraph/nodeLang.de.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Shared/nodeGraph/nodeLang.en.min.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/nodeGraph/nodeLang.en.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+
+  {
+    "outputFileName": "wwwroot/js/Timeline/timeline.viewmodel.min.js",
+    "inputFiles": [
+      "wwwroot/js/Timeline/timeline.viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Administration/userManagement.viewmodel.min.js",
+    "inputFiles": [
+      "wwwroot/js/Administration/userManagement.viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Administration/projectManagement.viewmodel.min.js",
+    "inputFiles": [
+      "wwwroot/js/Administration/projectManagement.viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Administration/configEncryption.ViewModel.min.js",
+    "inputFiles": [
+      "wwwroot/js/Administration/configEncryption.ViewModel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Kortisto/overview.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/flexFieldOverview.BaseViewModel.js",
+      "wwwroot/js/Kortisto/overview/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Kortisto/manageTemplates.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/flexFieldManageTemplates.BaseViewModel.js",
+      "wwwroot/js/Kortisto/manageTemplates/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Kortisto/npc.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+      "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
+      "wwwroot/js/Kortisto/npcForm/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Styr/overview.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/flexFieldOverview.BaseViewModel.js",
+      "wwwroot/js/Styr/overview/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Styr/manageTemplates.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/flexFieldManageTemplates.BaseViewModel.js",
+      "wwwroot/js/Styr/manageTemplates/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Styr/item.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
+      "wwwroot/js/Styr/itemForm/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Kirja/page.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+      "wwwroot/js/Kirja/page/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Kirja/allPages.viewmodel.min.js",
+    "inputFiles": [
+      "wwwroot/js/Kirja/allPages.viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Karta/manageMaps.viewmodel.min.js",
+    "inputFiles": [
+      "wwwroot/js/Karta/manageMaps.viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Karta/map.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+      "wwwroot/js/Karta/mapForm/map.knockout.binding.js",
+      "wwwroot/js/Karta/mapForm/baseMarker.js",
+      "wwwroot/js/Karta/mapForm/kirjaMarker.js",
+      "wwwroot/js/Karta/mapForm/kortistoMarker.js",
+      "wwwroot/js/Karta/mapForm/kartaMarker.js",
+      "wwwroot/js/Karta/mapForm/styrMarker.js",
+      "wwwroot/js/Karta/mapForm/aikaMarker.js",
+      "wwwroot/js/Karta/mapForm/markerManager.js",
+      "wwwroot/js/Karta/mapForm/kirjaMarkerManager.js",
+      "wwwroot/js/Karta/mapForm/kortistoMarkerManager.js",
+      "wwwroot/js/Karta/mapForm/styrMarkerManager.js",
+      "wwwroot/js/Karta/mapForm/aikaMarkerManager.js",
+      "wwwroot/js/Karta/mapForm/kartaMarkerManager.js",
+      "wwwroot/js/Karta/mapForm/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Tale/dialog.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+
+      "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+
+      "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
+      "wwwroot/js/Shared/nodeGraph/questStates.js",
+      "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
+
+      "wwwroot/js/Shared/flexFieldUtil.js",
+      
+      "wwwroot/js/Tale/dialogForm/textLine.js",
+
+      "wwwroot/js/Tale/dialogForm/choiceNode.js",
+
+      "wwwroot/js/Shared/nodeGraph/actionNode.js",
+
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      
+      "wwwroot/js/Shared/nodeGraph/actions/baseAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueChooseObjectAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/changePlayerValueAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/changeNpcValueAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/changeInventoryAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/spawnItemInPlayerInventoryAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/spawnItemInNpcInventoryAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/transferItemToPlayerInventoryAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/transferItemToNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeQuestValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setQuestStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/addQuestTextAction.js",
+
+      "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/groupCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkValueCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkPlayerValueCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkNpcValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcAliveStateCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkInventoryCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkPlayerInventoryCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkNpcInventoryCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseObjectValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseQuestValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkQuestStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditionNode.js",
+      "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
+
+      "wwwroot/js/Tale/dialogForm/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Tale/taleLang.de.js",
+    "inputFiles": [
+      "wwwroot/js/Tale/dialogForm/taleLang.de.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Tale/taleLang.en.js",
+    "inputFiles": [
+      "wwwroot/js/Tale/dialogForm/taleLang.en.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+
+  {
+    "outputFileName": "wwwroot/js/Aika/chapterOverview.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
+
+      "wwwroot/js/Aika/shared/viewModelHelper.js",
+      "wwwroot/js/Aika/shared/chapterDetailNodeHelper.js",
+
+      "wwwroot/js/Aika/chapterOverview/chapterNode.js",
+
+      "wwwroot/js/Aika/chapterOverview/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Aika/chapterDetail.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+
+      "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
+
+      "wwwroot/js/Aika/shared/viewModelHelper.js",
+      "wwwroot/js/Aika/shared/chapterDetailNodeHelper.js",
+      "wwwroot/js/Aika/shared/finishNode.js",
+      "wwwroot/js/Aika/shared/startNode.js",
+      "wwwroot/js/Aika/shared/allDOneNode.js",
+
+      "wwwroot/js/Aika/chapterDetail/questNode.js",
+      "wwwroot/js/Aika/chapterDetail/chapterDetailNode.js",
+
+      "wwwroot/js/Aika/chapterDetail/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Aika/quest.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+
+      "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+
+      "wwwroot/js/Shared/flexFieldUtil.js",
+      
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
+
+      "wwwroot/js/Shared/nodeGraph/questStates.js",
+      "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
+      "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
+
+      "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/groupCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseObjectValueCondition.js",
+      "wwwroot/js/Aika/quest/conditions/checkCurrentQuestValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseQuestValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkQuestStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcAliveStateCondition.js",
+      "wwwroot/js/Aika/quest/conditions/checkQuestMarkerCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditionNode.js",
+      "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
+
+      "wwwroot/js/Shared/nodeGraph/actionNode.js",
+      "wwwroot/js/Shared/nodeGraph/actions/baseAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueChooseObjectAction.js",
+      "wwwroot/js/Aika/quest/actions/changeCurrentQuestValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeQuestValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setQuestStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/addQuestTextAction.js",
+      "wwwroot/js/Aika/quest/actions/changeQuestInNpcDialogBaseAction.js",
+      "wwwroot/js/Aika/quest/actions/changeQuestStateInNpcDialogAction.js",
+      "wwwroot/js/Aika/quest/actions/changeQuestTextInNpcDialogAction.js",
+
+      "wwwroot/js/Aika/shared/finishNode.js",
+      "wwwroot/js/Aika/shared/startNode.js",
+      "wwwroot/js/Aika/shared/allDoneNode.js",
+
+      "wwwroot/js/Aika/quest/textNode.js",
+
+      "wwwroot/js/Aika/quest/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Aika/aikaLang.de.js",
+    "inputFiles": [
+      "wwwroot/js/Aika/shared/sharedLang.de.js",
+      "wwwroot/js/Aika/chapterOverview/chapterOverviewLang.de.js",
+      "wwwroot/js/Aika/chapterDetail/chapterDetailLang.de.js",
+      "wwwroot/js/Aika/quest/questLang.de.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Aika/aikaLang.en.js",
+    "inputFiles": [
+      "wwwroot/js/Aika/shared/sharedLang.en.js",
+      "wwwroot/js/Aika/chapterOverview/chapterOverviewLang.en.js",
+      "wwwroot/js/Aika/chapterDetail/chapterDetailLang.en.js",
+      "wwwroot/js/Aika/quest/questLang.en.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Aika/questList.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Aika/questList/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Task/taskBoard.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+      "wwwroot/js/Task/taskBoard/task.js",
+      "wwwroot/js/Task/taskBoard/statusColumnTaskContainer.js",
+      "wwwroot/js/Task/taskBoard/taskGroup.js",
+      "wwwroot/js/Task/taskBoard/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Task/manageBoards.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Task/manageBoards/taskBoardList.js",
+      "wwwroot/js/Task/manageBoards/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/ImplementationStatus/overview.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+      "wwwroot/js/ImplementationStatus/overview/implementationStatusObjectList.js",
+      "wwwroot/js/ImplementationStatus/overview/implementationStatusNpcList.js",
+      "wwwroot/js/ImplementationStatus/overview/implementationStatusDialogList.js",
+      "wwwroot/js/ImplementationStatus/overview/implementationStatusItemList.js",
+      "wwwroot/js/ImplementationStatus/overview/implementationStatusQuestList.js",
+      "wwwroot/js/ImplementationStatus/overview/implementationStatusMarkerList.js",
+      "wwwroot/js/ImplementationStatus/overview/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  }
+]

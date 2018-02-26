@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(ImplementationStatus) {
+
+        /**
+         * Implementation Status Compare Dialog Namespace
+         * @namespace CompareDialog
+         */
+        (function(CompareDialog) {
+        }(ImplementationStatus.CompareDialog = ImplementationStatus.CompareDialog || {}));
+    
+    }(GoNorth.ImplementationStatus = GoNorth.ImplementationStatus || {}));
+}(window.GoNorth = window.GoNorth || {}));

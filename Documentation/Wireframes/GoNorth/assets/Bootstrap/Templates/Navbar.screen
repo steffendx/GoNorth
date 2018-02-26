@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" theme="clean">
+  <widgets xsi:type="model:Master" id="1" x="10" y="10" width="1000" measuredWidth="1000" measuredHeight="50">
+    <screen xsi:type="model:WidgetGroup" href="../Navigation.screen#Navbar"/>
+    <overrides>
+      <widgets ref="20" width="1000"/>
+      <widgets ref="25" x="822"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="2" x="10" y="80" height="352" measuredWidth="1000" measuredHeight="352">
+    <screen xsi:type="model:WidgetGroup" href="../Content.screen#Jumbotron"/>
+    <overrides>
+      <widgets ref="2" width="1000" height="352"/>
+      <widgets ref="5" width="867" height="102" text="This example is a quick exercise to illustrate how the default, static navbar and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device."/>
+      <widgets ref="4" text="Navbar example"/>
+      <widgets ref="7" y="250"/>
+    </overrides>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

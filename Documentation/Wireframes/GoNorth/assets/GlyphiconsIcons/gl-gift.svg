@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e102 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="gift" d="M260 1200q9 0 19 -2t15 -4l5 -2q22 -10 44 -23l196 -118q21 -13 36 -24q29 -21 37 -12q11 13 49 35l196 118q22 13 45 23q17 7 38 7q23 0 47 -16.5t37 -33.5l13 -16q14 -21 18 -45l25 -123l8 -44q1 -9 8.5 -14.5t17.5 -5.5h61q10 0 17.5 -7.5t7.5 -17.5v-50 q0 -10 -7.5 -17.5t-17.5 -7.5h-50q-10 0 -17.5 -7.5t-7.5 -17.5v-175h-400v300h-200v-300h-400v175q0 10 -7.5 17.5t-17.5 7.5h-50q-10 0 -17.5 7.5t-7.5 17.5v50q0 10 7.5 17.5t17.5 7.5h61q11 0 18 3t7 8q0 4 9 52l25 128q5 25 19 45q2 3 5 7t13.5 15t21.5 19.5t26.5 15.5 t29.5 7zM915 1079l-166 -162q-7 -7 -5 -12t12 -5h219q10 0 15 7t2 17l-51 149q-3 10 -11 12t-15 -6zM463 917l-177 157q-8 7 -16 5t-11 -12l-51 -143q-3 -10 2 -17t15 -7h231q11 0 12.5 5t-5.5 12zM500 0h-375q-10 0 -17.5 7.5t-7.5 17.5v375h400v-400zM1100 400v-375 q0 -10 -7.5 -17.5t-17.5 -7.5h-375v400h400z" />
+</g>
+</svg>	

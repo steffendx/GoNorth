@@ -1,0 +1,24 @@
+{
+    "Tale": "Tale",
+
+    "Save": "Speichern",
+    "IsImplemented": "Implementiert",
+    "IsNotImplementedTooltip": "Dialog ist noch nicht implementiert.",
+    "MarkAsImplemented": "Als implementiert markieren",
+    "ReturnToNpc": "Zurück zum Npc",
+
+    "PlayerTextNode": "Spieler Zeile",
+    "NpcTextNode": "Npc Zeile",
+    "ChoiceNode": "Auswahl",
+    "ActionNode": "Aktion",
+    "ConditionNode": "Bedingung",
+
+    "Error": "Fehler",
+    "ErrorOccured": "Ein Fehler ist aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Dieser Dialog wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "NodeLang": "de"
+}

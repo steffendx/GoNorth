@@ -1,0 +1,25 @@
+{
+    "KartaMaps": "Manage maps",
+
+    "CreateMap": "Create map",
+    "EditMap": "Edit map",
+    "DeleteMap": "Delete map",
+
+    "Name": "Name",
+    "Save": "Save",
+    "Cancel": "Cancel",
+
+    "DropMapImageHere": "Drop a map image here or click to choose a map image",
+    "MapImageIsRequired": "You have to upload a map image.",
+    "ProcessingMap": "Processing map...",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheMap": "Are you sure you want to delete the map?",    
+    "Yes": "Yes",
+    "No": "No",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "DropzoneLocale": "en"
+}

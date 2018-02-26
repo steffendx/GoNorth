@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides">
+  <widgets xsi:type="model:Master" id="2" x="10" y="10" width="1135" measuredWidth="1135" measuredHeight="50">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Navigation.screen#Navbar"/>
+    <overrides>
+      <widgetChanges xsi:type="o:Delete" ref="25"/>
+      <widgetChanges xsi:type="o:Delete" ref="24"/>
+      <widgetChanges xsi:type="o:Delete" ref="28"/>
+      <widgetChanges xsi:type="o:Delete" ref="19"/>
+      <widgets ref="20" width="1135"/>
+      <widgets ref="21" text="GoNorth"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="3" x="112" y="9" measuredWidth="377" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Startseite, Ereignisse, Kortisto, Kirja">
+        <items ref="@items.0" text="Startseite"/>
+        <items ref="@items.1" text="Ereignisse"/>
+        <items ref="@items.2" text="Kortisto"/>
+        <itemChanges xsi:type="o:Insert" newIndex="3">
+          <object xsi:type="model:Item" text="Kirja"/>
+        </itemChanges>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="4" x="766" y="9" measuredWidth="379" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Administration, Hallo User, Abmelden">
+        <items ref="@items.0" text="Administration"/>
+        <items ref="@items.1" text="Hallo User"/>
+        <items ref="@items.2" text="Abmelden"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="12" x="1103" y="73" measuredWidth="32" measuredHeight="32" icon="assets/gl-chevron-left (large)"/>
+  <widgets xsi:type="model:WidgetGroup" id="13" x="10" y="64" measuredWidth="119" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="14" width="119" measuredWidth="119" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="119" height="41" text="Speichern">
+          <attributes key="textAlignment" value="Right"/>
+          <font size="16px"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="15" x="5" y="2" measuredWidth="32" measuredHeight="32" foreground="#fff" icon="assets/gl-floppy-disk (large)"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="16" x="12" y="116" measuredWidth="535" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="535" text="Taverne zur einbeinigen Hure"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Image" id="17" x="13" y="165" width="957" height="51" measuredWidth="957" measuredHeight="51" src="../assets/RichTextBar.png"/>
+  <widgets xsi:type="model:Master" id="19" x="20" y="224" width="1115" height="393" measuredWidth="1115" measuredHeight="393">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Area"/>
+    <overrides>
+      <widgets ref="16" width="1115" height="393" text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.">
+        <font size="18px"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="20" x="969" y="172" measuredWidth="37" measuredHeight="37">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+    <overrides>
+      <widgets ref="21" width="37" height="37" noText="true"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="21" x="972" y="175" measuredWidth="32" measuredHeight="32" icon="assets/gl-user (large)"/>
+  <widgets xsi:type="model:WidgetGroup" id="22" x="136" y="64" measuredWidth="105" measuredHeight="41">
+    <widgets xsi:type="model:Master" id="23" width="105" measuredWidth="105" measuredHeight="41">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Primary"/>
+      <overrides>
+        <widgets ref="35" width="105" height="41" text="Löschen">
+          <attributes key="textAlignment" value="Right"/>
+          <attributes key="background" value="#fff"/>
+          <font size="16px"/>
+        </widgets>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="24" x="5" y="2" measuredWidth="32" measuredHeight="32" foreground="#666" icon="assets/gl-trash (large)"/>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

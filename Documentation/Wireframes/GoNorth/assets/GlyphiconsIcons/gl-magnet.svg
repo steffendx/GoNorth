@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e112 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="magnet" d="M150 1200h200q21 0 35.5 -14.5t14.5 -35.5v-250h-300v250q0 21 14.5 35.5t35.5 14.5zM850 1200h200q21 0 35.5 -14.5t14.5 -35.5v-250h-300v250q0 21 14.5 35.5t35.5 14.5zM1100 800v-300q0 -41 -3 -77.5t-15 -89.5t-32 -96t-58 -89t-89 -77t-129 -51t-174 -20t-174 20 t-129 51t-89 77t-58 89t-32 96t-15 89.5t-3 77.5v300h300v-250v-27v-42.5t1.5 -41t5 -38t10 -35t16.5 -30t25.5 -24.5t35 -19t46.5 -12t60 -4t60 4.5t46.5 12.5t35 19.5t25 25.5t17 30.5t10 35t5 38t2 40.5t-0.5 42v25v250h300z" />
+</g>
+</svg>	

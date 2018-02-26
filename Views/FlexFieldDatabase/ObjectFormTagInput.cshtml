@@ -1,0 +1,12 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@model IViewLocalizer
+
+<div class="row row gn-defaultContentTopMargin">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h4>@Model["Tags"]</h4>
+        <div class="form-group">
+            <input type="text" class="form-control" id="gn-objectTags" data-bind="tagsInput: objectTags, tagsInputOptions: existingObjectTags, tagsInputDisabled: isReadonly"/>
+        </div>
+    </div>
+</div>

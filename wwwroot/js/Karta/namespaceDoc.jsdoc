@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Karta) {
+
+        /**
+         * Manage Maps Form Namespace
+         * @Namespace ManageMaps
+         */
+        (function(ManageMaps) {
+        }(Karta.ManageMaps = Karta.ManageMaps || {}));
+
+    }(GoNorth.Karta = GoNorth.Karta || {}));
+}(window.GoNorth = window.GoNorth || {}));

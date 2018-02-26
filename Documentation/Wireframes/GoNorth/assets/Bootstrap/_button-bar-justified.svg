@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="32" width="160" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" onload="onLoad(evt)" onresize="onResize(evt)">
+ <title id="title2818">WireframeSketcher SVG asset</title>
+ <defs id="defs4"></defs>
+ <metadata id="metadata7">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>WireframeSketcher SVG asset</dc:title>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Peter Severin</dc:title>
+     </cc:Agent>
+    </dc:creator>
+    <dc:rights>
+     <cc:Agent>
+      <dc:title>Copyright (c) WireframeSketcher.com</dc:title>
+     </cc:Agent>
+    </dc:rights>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <script><![CDATA[
+ 	var $justified = true;
+ ]]></script>
+ <script src="_button-bar.js" />
+ <script><![CDATA[
+ 	var backgroundLeftD, backgroundRightD;
+ 	
+ 	var superOnLoad = onLoad;
+ 	onLoad = function(evt) {
+ 		superOnLoad(evt);
+ 		
+ 		// Templatize paths
+ 		backgroundLeftD = backgroundLeft.getAttribute("d").
+ 			replace(/39/g, "{w}").replace(/31/g, "{h1}").replace(/20/g, "{h2}");
+ 		backgroundRightD = backgroundRight.getAttribute("d").
+ 			replace(/34/g, "{w}").replace(/20/g, "{h}");
+ 	};
+ 	
+	function resizeBackground(template, element, x, y, width, height) {
+	    if (template === backgroundSingle) {
+	        element.setAttribute("x", x - 1);
+	        element.setAttribute("height", height - 2);
+	        element.setAttribute("width", width);
+	    } else if (template === backgroundLeft) {
+	        element.setAttribute("d", backgroundLeftD.replace(/{w}/g, width).replace(/{h1}/g, height - 1).replace(/{h2}/g, height - 12));
+	        element.setAttribute("transform", "translate(1,0)");
+	    } else if (template === backgroundRight) {
+	        element.setAttribute("d", backgroundRightD.replace(/{w}/g, width - 5).replace(/{h}/g, height - 12));
+	        element.setAttribute("transform", "translate(" + (x - 1) + ",0)");
+	    } else {
+	        element.setAttribute("x", x - 1);
+	        element.setAttribute("height", height - 2);
+	        element.setAttribute("width", width);
+	    }
+	}
+ ]]></script>
+ <g id="container" fill-rule="nonzero" fill="#505050">
+  <path id="background-left" d="M5,1,39,1,39,31,5,31c-2.77,0-5-2.23-5-5v-20c0-2.77,2.23-5,5-5z"/>
+  <rect id="background-single" ry="5" height="30" width="44" y="1" x="0" transform="translate(134)"/>
+  <rect id="background-middle" height="30" width="44" y="1" x="0" transform="translate(46)"/>
+  <path id="background-right" d="M0,1,34,1c2.8,0,5,2.23,5,5v20c0,2.77-2.2,5-5,5h-34z" transform="translate(92)"/>
+  <path id="separator" stroke-linejoin="miter" d="M45,2,45,30" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="2" fill="none"/>
+ </g>
+ <rect id="bar" stroke-dasharray="none" ry="5" height="30" width="158" stroke="#000" stroke-linecap="round" stroke-miterlimit="4" y="1" x="1" stroke-width="2" fill="none"/>
+</svg>

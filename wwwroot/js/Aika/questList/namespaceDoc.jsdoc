@@ -1,0 +1,14 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Aika) {
+        
+        /**
+         * Quest List Form Namespace
+         * @namespace QuestList
+         */
+        (function(QuestList) {
+            
+        }(Aika.QuestList = Aika.QuestList || {}));
+
+    }(GoNorth.Aika = GoNorth.Aika || {}));
+}(window.GoNorth = window.GoNorth || {}));

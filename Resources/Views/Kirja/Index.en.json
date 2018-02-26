@@ -1,0 +1,50 @@
+{
+    "Kirja": "Kirja",
+
+    "EditPage": "Edit",
+    "StopEditPage": "Stop editing",
+    "SavePage": "Save",
+    "DeletePage": "Delete",
+
+    "Name": "Name",
+
+    "InsertKirjaLink": "Add link to Kirja page",
+    "InsertAikaQuestLink": "Add link to quest",
+    "InsertKortistoNpcLink": "Add link to npc",
+    "InsertStyrItemLink": "Add link to item",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteThePage": "Are you sure you want to delete the page?",
+    "AreYouSureYouWantToExitEditMode": "Unsaved changes exist. Are you sure you want to leave the edit mode?",
+    "AreYouSureYouWantToDeleteTheAttachment": "Are you sure you want to delete the attachment?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "WaitingOnNewPage": "Waiting on new page",
+    "DialogWillCloseOnSaveOfNewPage": "This dialog will close as soon as the page is saved or the window is closed. If you save the new page a link will be inserted.<br/><b>Note:</b> This page will be saved in this case.",
+
+    "ToogleSidebar": "Click here to open or close the sidebar",
+    "Connections": "Connections",
+    "MentionedInPages": "Mentioned in Kirja page",
+    "Quests": "Quests",
+    "Npcs": "Npcs",
+    "Items": "Items",
+    "Maps": "Maps",
+    "MarkedInMapNTimes": "Page is marked in the map {{0}} times. No zoom on marker is possible.",
+    "Attachments": "Attachments",
+    "SaveThePageToUploadFiles": "Save the page to upload files",
+    "DropFilesHereToUpload": "Drop files here to upload...",
+    "DeleteAttachmentToolTip": "Click here to delete the attachment",
+    "OpenPageOverview": "Open page list",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+    "PageNotFound": "The page was not found.",
+
+    "Locked": "Locked",
+    "LockedPrefix": "The page is currently beeing edited by ",
+    "LockedPostfix": ".",
+    
+    "RichTextLocale": "en",
+    "DropzoneLocale": "en"
+}

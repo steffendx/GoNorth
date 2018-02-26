@@ -1,0 +1,14 @@
+{
+    "Name": "Name",
+    "Open": "Öffnen",
+    "Close": "Schließen",
+    "CreateNewPage": "Neue Seite anlegen",
+
+    "Search": "Suchen",
+    
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

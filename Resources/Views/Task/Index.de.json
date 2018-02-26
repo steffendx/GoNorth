@@ -1,0 +1,54 @@
+{
+    "Tasks": "Aufgaben",
+
+    "StartingFrom": "Ab",
+
+    "CreateTaskGroup": "Aufgabengruppe erstellen",
+    "CreateTaskToolTip": "Aufgabe erstellen",
+
+    "SwitchBoard": "Aufgabenboard wechseln",
+    "ManageBoards": "Aufgabenboards verwalten",
+
+    "InsertKirjaLink": "Link zu Kirja Seite einfügen",
+    "InsertAikaQuestLink": "Link zu Quest einfügen",
+    "InsertKortistoNpcLink": "Link zu Npc einfügen",
+    "InsertStyrItemLink": "Link zu Item einfügen",
+
+    "NewTaskGroup": "Neue Aufgabengruppe",
+    "EditTaskGroup": "Aufgabengruppe editieren",
+    "NewTask": "Neue Aufgabe",
+    "EditTask": "Aufgabe editieren",
+    "Name": "Name",
+    "Description": "Beschreibung",
+    "PressCtrlToOpenLinks": "Strg um Links zu öffnen",
+    "AssignedTo": "Zugewiesen an",
+    "Delete": "Löschen",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheTaskGroup": "Bist du sicher das die Aufgabengruppe gelöscht werden soll?",
+    "AreYouSureYouWantToDeleteTheTask": "Bist du sicher das die Aufgabe gelöscht werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "Unassigned": "Nicht zugewiesen",
+
+    "TasksSingle": "Aufgabe",
+    "TasksMulti": "Aufgaben",
+
+    "TaskStatusOpen": "Offen",
+    "TaskStatusInProgress": "In Arbeit",
+    "TaskStatusDone": "Erledigt",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedTaskGroupPrefix": "Diese Aufgabengruppe wird gerade von ",
+    "LockedTaskPrefix": "Diese Aufgabe wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+    "BoardIsClosed": "Board ist bereits geschlossen.",
+
+    "RichTextLocale": "de"
+}

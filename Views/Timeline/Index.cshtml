@@ -1,0 +1,58 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Timeline"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div id="gn-timelineContainer">
+    <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccuredDuringLoading"]
+    </div>
+
+    <div data-bind="foreach: dayEntries" class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 data-bind="text: timestamp" class="gn-timelineHeader"></h4>
+                <hr class="gn-timelineHr" />
+            </div>
+        </div>
+        <!-- ko foreach: entries -->
+        <div class="row">
+            <!-- ko if: $index() > 0 -->
+                <div class="col-xs-12 visible-xs-block gn-timelineSmallScreenSpacer"></div>
+            <!-- /ko -->
+            <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" data-bind="text: timestamp"></div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8" data-bind="html: content"></div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">@Localizer["By"] <span data-bind="text:userName"></span></div>
+        </div>
+        <!-- /ko -->
+    </div>
+    <div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+        <button class="btn btn-default" data-bind="enable: startIndices().length > 2 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
+            <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+        </button>
+        <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+            <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/Timeline/timeline.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Timeline/timeline.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Timeline.ViewModel(), jQuery("#gn-timelineContainer")[0]);
+        })
+    </script>
+}

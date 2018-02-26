@@ -1,0 +1,17 @@
+{
+    "ChapterOverview": "Kapitelübersicht",
+
+    "Save": "Speichern",
+    "OpenQuestList": "Quest Liste öffnen",
+
+    "ChapterNode": "Kapitel",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Die Übersicht wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "NodeLang": "de"
+}

@@ -1,0 +1,71 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["QuestList"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div id="gn-aikaQuestListContainer">
+    <!-- Quest List -->
+    <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <button type="button" class="btn btn-primary gn-aikaCreateQuestButton" data-bind="click: createNewQuest"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreateNewQuest"]</button>
+
+    <div class="input-group gn-commandWidgetTopMargin">
+        <input type="text" class="form-control" placeholder="@Localizer["Search"]" data-bind="value: searchPattern, enterPressed: searchQuests"/>
+        <span class="input-group-addon gn-clickable" data-bind="click: searchQuests" title="@Localizer["Search"]">
+            <i class="glyphicon glyphicon-search"></i>
+        </span>
+    </div>
+
+    <div class="gn-defaultContentTopMargin">
+        <div class="row gn-gridTableRow">
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10 gn-gridTableHeader gn-gridTableCell">
+                @Localizer["Name"]
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 gn-gridTableHeader gn-gridTableCell">
+                @Localizer["IsMainQuest"]
+            </div>
+        </div>
+        <!-- ko foreach: quests -->
+            <div class="row gn-gridTableRow">
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10 gn-gridTableCell">
+                    <a class="gn-clickable" data-bind="text: name, attr: { title: name }, href: $root.buildQuestUrl"></a>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 gn-gridTableCell">
+                    <span data-bind="text: isMainQuest ? '@Localizer["Yes"]' : '@Localizer["No"]'"></span>
+                </div>
+            </div>
+        <!-- /ko -->
+    </div>
+
+    <div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+        <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
+            <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+        </button>
+        <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+            <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/Aika/questList.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Aika/questList.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Aika.QuestList.ViewModel(), jQuery("#gn-aikaQuestListContainer")[0]);
+        });
+    </script>
+}

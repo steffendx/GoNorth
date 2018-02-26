@@ -1,0 +1,12 @@
+{
+    "FirstTimeDeploymentPassword": "First Time Deployment Passwort",
+    "Name": "Name",
+    "Email": "Email",
+    "Password": "Passwort",
+    "ConfirmPassword": "Passwort wiederholen",
+
+    "PasswordLength": "Das {0} muss mindestens {2} und maximal {1} Zeichen lang sein.",
+    "PasswordsDoNotMatch": "Die Passwörter stimmen nicht überein",
+    "FieldRequired": "Das {0} Feld ist ein Pflichtfeld.",
+    "EmailFormat": "Das {0} Feld ist keine gültige Email."
+}

@@ -1,0 +1,12 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Views
+@using GoNorth.Views.Administration
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["DatabaseWasSetup"];
+    ViewData.AddActivePage(AdministrationNavPages.DbSetup);
+}
+
+<h4>@ViewData["Title"]</h4>

@@ -1,0 +1,38 @@
+{
+    "UserManagement": "Benutzerverwaltung",
+
+    "Username": "Benutzername",
+    "Email": "Email",
+    "Name": "Name",
+    "Roles": "Rollen",
+
+    "SetUserRolesToolTip": "Hier klicken um die Rollen des Users zu verwalten",
+    "RefreshSecurityStampTooltip": "Hier klicken um den Security Stamp für den User zu aktualisieren",
+    "DeleteUserToolTip": "Hier klicken um den User zu löschen",
+    "ConfirmEmailToolTip": "Hier klicken um die E-Mail Adresse des Users zu bestätigen",
+
+    "CreateUser": "User erstellen",
+    "Password": "Passwort",
+    "PasswordRepeat": "Passwort wiederholen",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToUpdateTheSecurityStamp": "Bist du sicher das der Security Stamp aktualisiert werden soll?",
+    "AreYouSureYouWantToDeleteTheUser": "Bist du sicher das der Benutzer gelöscht werden soll?",
+    "AreYouSureYouWantToConfirmTheEmailForUser": "Bist du sicher das die Email des Benutzers bestätigt werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "ManageRoles": "Rollen verwalten",
+    "AvailableRoles": "Verfügbare Rollen",
+    "AssignedRoles": "Zugewiesene Rollen",
+    "AddRole": "Rolle hinzufügen",
+    "RemoveRole": "Rolle entfernen",
+
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

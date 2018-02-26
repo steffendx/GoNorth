@@ -1,0 +1,113 @@
+# GoNorth
+
+GoNorth is a web application used for planning the story and world of RPGs or other open world games. GoNorth is cross-plattform ready, provides multilanguage support and is designed as a responsive layout. 
+
+It offers modules for:
+ * Timeline view to provide a quick overview of changes
+ * Planning Chapters as a Node System of Quests
+ * Planning Quests as a Node System of Tasks
+ * Planning Npcs and there different values
+ * Planning dialogs of Npcs as Node System of dialog branches
+ * Planning Items and there different values
+ * Wiki component with tight integration into the other modules
+ * Map component to position Quest marker, Npcs, Items, Wiki pages and map changes
+ * Tracking your implementation status and showing changed values after change to already implemented object
+ * Simple Task Tracker
+
+## Deployment
+Please refer to the [wiki for deployment details](/steffendx/GoNorth/wiki/Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?tabs=aspnetcore2x).
+
+## Brief Overview
+
+### Chapter and Quest Planning (Aika)
+GoNorth provides a module for planning the different chapters of your game and the branching story.
+For this it provides a node system which allows you to connect the different quests and their possible outcomes together:
+
+![Chapter planning](TeaserImages/Aika.png)
+
+A similiar node system can be created for the different quests.  
+Each quest will show the connections to Maps, Wiki pages and other objects to provide a view on the big picture while planning the quest.  
+More details can be found [in the wiki](/steffendx/GoNorth/wiki/Aika).
+
+### Npc and Item Planning (Kortisto and Styr)
+The web application provides functionality for planning Npcs and Items with flexible values. You can create templates and then create new Npcs or Items based on these templates:
+
+![Npc planning](TeaserImages/Kortisto.png)
+
+Each object will display the different maps in which the Npc or Item is marked, the Wiki Pages in which its mentioned and all other connections. This way the user has a good overview what he or she has to consider when building the character or item.  
+More details can be found in the wiki for [npcs](/steffendx/GoNorth/wiki/Kortisto) and [items](/steffendx/GoNorth/wiki/Styr).
+
+### Dialog Planning (Tale)
+Using the dialog planning module a user can create the branching dialogs for the different game characters as a node system:
+
+![Npc planning](TeaserImages/Tale.png)
+
+GoNorth provides different dialog nodes for player or npc lines, player choices, conditions or actions.  
+It is planned to implement a script export for these node systems.  
+More details can be found [in the wiki](/steffendx/GoNorth/wiki/Tale).
+
+### Wiki Component (Kirja)
+Kirja is the wiki component of GoNorth. Apart from allowing the user to write wiki pages it also features a tight integration into the other systems:
+
+![Npc planning](TeaserImages/Kirja.png)
+
+Kirja also allows the users to attach additional planning files.  
+More details can be found [in the wiki](/steffendx/GoNorth/wiki/Kirja).
+
+### Map Planning (Karta)
+A user can upload a high resolution map image to GoNorth which will then be transformed into an interactive map similiar to Google Maps. On this map a user can mark the position of Quest Markers, Npcs, Items, Wiki Pages and Map Changes:
+
+![Npc planning](TeaserImages/Karta.png)
+
+Each marker provides brief informations about the different objects and allow the users to jump of the detail page.  
+More details can be found [in the wiki](/steffendx/GoNorth/wiki/Karta).
+
+## Implementation Status Tracking
+GoNorth allows you to mark objects as implemented once they are integrated into your game. If a user changes relevant values of theses objects afterwards GoNorth will reset the implemented flag and show you which values where changed:
+
+![Npc planning](TeaserImages/ImplementationStatus.png)
+
+This way its much easier to keep track of the integration progress and not forget changes.  
+More details can be found [in the wiki](/steffendx/GoNorth/wiki/Implementation-Status-Tracking).
+
+## Task Management
+A simple Kanban Board is integrated into GoNorth:
+
+![Npc planning](TeaserImages/Task.png)
+
+More details can be found [in the wiki](/steffendx/GoNorth/wiki/Task-Management).
+
+## Technology
+GoNorth is implemented using .Net Core for the backend. Since .Net Core provides cross-plattform support you can host the portal on Windows, Linux and Mac OS.  
+To store the values GoNorth currently uses a MongoDB System. Since GoNorth uses dependency injection and all database access is done through an interface it is possible to integrate a different database system. More details on this topic can be found in the wiki.  
+Knockout is used for the frontend together with Bootstrap. The whole frontend is optimized for a responsive layout.   
+
+## Browser Support
+I've tested the web application using Chrome and Firefox. The portal might have problems running under Internet Explorer since this is a hobby, spare time project and I did not want to bother with all the Internet Explorer problems.
+
+## Plans for the future
+The next steps which I will implement in the future are:
+ * Exporting of Npcs, Items and Dialogs to scripts 
+
+## License
+GoNorth is open source and released under the [MIT LICENSE](LICENSE).
+
+Copyright (c) 2018 Steffen Noertershaeuser.
+
+## Acknowledgement
+GoNorth uses the following libraries:
+ * [.Net Core](https://github.com/dotnet/core) licensed under MIT
+ * [MongoDB](https://www.mongodb.com/) licensed under Apache License 2.0
+ * [Bootstrap](https://getbootstrap.com/) licensed under MIT
+ * [Knockout](http://knockoutjs.com/) licensed under MIT
+ * [Leaflet](http://leafletjs.com/) licensed under BSD-License
+ * [JointJS](https://www.jointjs.com) licensed under Mozilla Public License Version 2.0
+ * [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) licensed under Apache License 2.0
+ * [Moment](https://github.com/moment/moment) licensed under MIT
+ * [jQuery](https://jquery.org/) licensed under MIT
+ * [jQuery UI](http://jqueryui.com/) licensed under MIT
+ * [jQuery Validation](http://jqueryvalidation.org/) licensed under MIT
+ * [Dropzone](https://github.com/enyo/dropzone) licensed under MIT
+ * [bootstrap-wysiwyg](https://github.com/mindmup/bootstrap-wysiwyg) licensed under MIT
+ * [bootstrap-tagsinput](https://github.com/bootstrap-tagsinput/bootstrap-tagsinput) licensed under MIT
+ * [eonasdan-bootstrap-datetimepicker](https://github.com/Eonasdan/bootstrap-datetimepicker) licensed under MIT

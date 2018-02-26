@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
+  <widgets xsi:type="model:Master" id="1" x="10" y="9" measuredWidth="1135" measuredHeight="959">
+    <screen xsi:type="model:Screen" href="KortistoOverview.screen#/"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="3" y="-11" width="1169" height="1028" measuredWidth="1169" measuredHeight="1028">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Content.screen#Modal%20Background"/>
+    <overrides>
+      <widgets ref="109" width="1169" height="1028"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="2" x="336" y="357" measuredWidth="600" measuredHeight="219">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Content.screen#Modal"/>
+    <overrides>
+      <widgets ref="100" text="Neue Kategorie"/>
+      <widgets ref="106" x="416" text="Speichern"/>
+      <widgets ref="104" x="501" text="Abbrechen"/>
+      <widgets ref="102" x="12" y="65" height="29" text="Name"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="5" x="347" y="449" width="576" measuredWidth="576" measuredHeight="39">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Text%20Input"/>
+    <overrides>
+      <widgets ref="1" width="576" noText="true"/>
+    </overrides>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:Master" id="6" x="10" y="4" measuredWidth="1532" measuredHeight="1860">
+    <screen xsi:type="model:Screen" href="Content.screen#/"/>
+    <overrides>
+      <widgets ref="44" width="692"/>
+      <widgets ref="45" width="692"/>
+      <widgets ref="46" width="661"/>
+      <widgets ref="47" width="692"/>
+      <widgets ref="48" width="692"/>
+      <widgets ref="49" width="661"/>
+      <widgets ref="108" width="692"/>
+      <widgets ref="109" width="692"/>
+      <widgets ref="178" x="912" y="1590"/>
+      <widgets ref="107" width="490"/>
+      <widgets ref="94" width="490"/>
+      <widgets ref="95" width="490"/>
+      <widgets ref="97" x="461"/>
+      <widgets ref="98" width="490"/>
+      <widgets ref="102" width="450"/>
+      <widgets ref="104" x="288"/>
+      <widgets ref="106" x="359"/>
+      <widgets ref="170" y="1244"/>
+      <widgets ref="192" x="912" y="1750"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="7" x="1570" y="4" measuredWidth="775" measuredHeight="1056">
+    <screen xsi:type="model:Screen" href="Typography.screen#/"/>
+    <overrides>
+      <widgetChanges xsi:type="o:Delete" ref="55"/>
+      <widgets ref="58" x="250" y="830"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="8" x="1563" y="1096" measuredWidth="782" measuredHeight="380">
+    <screen xsi:type="model:Screen" href="Buttons.screen#/"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="9" x="10" y="2245" measuredWidth="914" measuredHeight="439">
+    <screen xsi:type="model:Screen" href="Forms.screen#/"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="10" x="10" y="1671" measuredWidth="882" measuredHeight="543">
+    <screen xsi:type="model:Screen" href="Media.screen#/"/>
+    <overrides>
+      <widgets ref="10" x="590" y="8"/>
+      <widgets ref="36" y="457"/>
+      <widgets ref="23" x="8" y="188"/>
+      <widgets ref="22" width="528">
+        <attributes key="value" value="75"/>
+      </widgets>
+      <widgets ref="24" x="8" y="220"/>
+      <widgets ref="25" width="528">
+        <attributes key="value" value="50"/>
+      </widgets>
+      <widgets ref="26" x="8" y="252"/>
+      <widgets ref="27" width="528"/>
+      <widgets ref="28" x="8" y="284"/>
+      <widgets ref="29" width="528">
+        <attributes key="value" value="75"/>
+      </widgets>
+      <widgets ref="30" x="8" y="316"/>
+      <widgets ref="31" width="528">
+        <attributes key="value" value="50"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="11" x="1178" y="1498" measuredWidth="1167" measuredHeight="1186">
+    <screen xsi:type="model:Screen" href="Navigation.screen#/"/>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>

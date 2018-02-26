@@ -1,0 +1,13 @@
+{
+    "DefaultPageName": "Kirja",
+    "DefaultPageContent": "Click edit to change the page.",
+
+    "CanNotDeletePageMentionedInOtherPages": "This page is mentioned in the pages \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeletePageMarkedInKartaMap": "The page is marked in the maps \"{0}\". To prevent errors in the story it must be deleted there first.",
+
+    "OnlyOneFileAllowed": "You must upload exactly one image file..",
+    "CouldNotUploadImage": "Image could not be uploaded.",
+    "ImageFormatNotSupported": "The image format is not supported.",
+    "FileTypeNotAllowed": "The file format is not supported.",
+    "CouldNotUploadFile": "Could not upload file."
+}

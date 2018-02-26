@@ -1,0 +1,304 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Karta"];
+}
+
+<div id="gn-kartaMapContainer">
+    <!-- Marker Manager Template -->
+    <script type="text/html" id="gn-kartaMarkerManager">
+        <h4 class="gn-clickable" data-bind="click: toogleVisibility">
+            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i> 
+            <span data-bind="text: title"></span>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorOccured"></i>
+        </h4>
+
+        <div data-bind="visible: isExpanded" style="display: none">
+            <div class="gn-kartaTreeViewSearchContainer" data-bind="visible: !hideSearchBar">
+                <div class="input-group gn-commandWidgetTopMargin">
+                    <input type="text" class="form-control" placeholder="@Localizer["Search"]" data-bind="value: searchTerm, enterPressed: startNewSearch, enable: !isLoading()"/>
+                    <span class="input-group-addon gn-clickable" data-bind="click: startNewSearch, enable: !isLoading()" title="@Localizer["Search"]">
+                        <i class="glyphicon glyphicon-search" data-bind="visible: !isLoading()"></i>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+                    </span>
+                </div>
+            </div>
+
+            <ul class="gn-kartaTreeView">
+                <!-- ko foreach: additionalButtons -->
+                <li class="gn-kartaTreeViewEntry" data-bind="css: { 'gn-kartaTreeViewEntrySelected': $root.selectedMarkerObjectId() == buttonId }"><a class="gn-clickable" data-bind="click: function() { callback.apply($parent); }, text: title"></a></li>
+                <!-- /ko -->
+                
+                <!-- ko foreach: loadedEntries -->
+                <li class="gn-kartaTreeViewEntry" data-bind="css: { 'gn-kartaTreeViewEntrySelected': $root.selectedMarkerObjectId() == id }">
+                    <a class="gn-clickable" data-bind="text: name, click: function(entry) { $parent.selectEntry(entry); }"></a>
+                    <!-- ko if: $parent.markerChildShowId() == id -->
+                        <i class="glyphicon glyphicon-eye-open gn-kartaTreeViewEntryMarkerEye" title="@Localizer["ShowingMarkersOfObjectTooltip"]"></i>
+                    <!-- /ko -->
+                </li>
+                <!-- /ko -->
+            </ul>
+
+            <div class="gn-buttonContainer" data-bind="visible: !hidePaging">
+                <button class="btn btn-default" data-bind="enable: currentPage() > 0 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
+                    <i class="glyphicon glyphicon-chevron-left"></i>
+                </button>
+                <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </script>
+
+    <!-- Delete Page Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheMarker"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteMarker">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wait on page dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showWaitOnPageDialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Localizer["WaitingOnNewMarker"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["DialogWillCloseOnSaveOfNewMarker"]</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pick name dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showMarkerNameDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["PickMarkerName"]</h4>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="gn-markerNameForm">
+                        <div class="form-group">
+                            <label for="gn-markerName">@Localizer["Name"]</label>
+                            <input type="text" class="form-control" id="gn-markerName" placeholder="@Localizer["Name"]" name="markerName" data-bind="value: dialogMarkerName, enterPressed: saveMarkerName" required/>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveMarkerName">@Localizer["Save"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeMarkerNameDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+    {
+        <!-- ko with: compareDialog -->
+            @await Html.PartialAsync("~/Views/ImplementationStatus/CompareDialog.cshtml")
+        <!-- /ko -->
+    }
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+            <h2><span data-bind="text: currentMapName">@Localizer["Karta"]</span> <i class="glyphicon glyphicon-refresh spinning gn-kartaMapLoading" style="display: none" data-bind="visible: isLoading"></i></h2>
+        </div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 gn-kartaSwitchMapContainer">
+            @if(User.IsInRole(RoleNames.Aika))
+            {
+                <div class="gn-kartaNotEditingDefaultChapterHint text-info" title="@Localizer["YouAreEditingANonDefaultChapter"]" style="display: none" data-bind="visible: isNonDefaultChapterSelected">
+                    <i class="glyphicon glyphicon-time"></i>
+                </div>
+
+                <div class="dropdown gn-inlineDropdown gn-kartaSwitchChapterButton">
+                    <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-switchChapterButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <span data-bind="text: selectedChapterName"></span> <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="gn-switchChapterButton">
+                        <!-- ko foreach: chapters -->
+                            <li><a class="gn-clickable" data-bind="click: function(chapter) { $root.switchChapter(chapter); }, text: number + ': ' + name"></a></li>
+                        <!-- /ko -->
+                    </ul>
+                </div>
+            }
+
+            <div class="dropdown gn-inlineDropdown gn-kartaSwitchMapButton">
+                <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-switchMapButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    @Localizer["SwitchMap"] <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="gn-switchMapButton">
+                    <!-- ko foreach: allMaps -->
+                        <li><a class="gn-clickable" data-bind="click: function(map) { $root.switchMap(map.id); }, text: name"></a></li>
+                    <!-- /ko -->
+                    @if(User.IsInRole(RoleNames.KartaMapManager))
+                    {
+                        <li class="divider"></li>
+                        <li><a asp-area="" asp-controller="Karta" asp-action="ManageMaps">@Localizer["ManageMaps"]</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <div class="row gn-kartaFilterRow">
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
+            @if(User.IsInRole(RoleNames.Kirja))
+            {
+                <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: kirjaMarkerManager.isLayerVisible">@Localizer["ShowKirjaMarker"]</label>
+            }
+
+            @if(User.IsInRole(RoleNames.Kortisto))
+            {
+                <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: kortistoMarkerManager.isLayerVisible">@Localizer["ShowKortistoMarker"]</label>
+            }
+
+            @if(User.IsInRole(RoleNames.Styr))
+            {
+                <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: styrMarkerManager.isLayerVisible">@Localizer["ShowStyrMarker"]</label>
+            }
+
+            @if(User.IsInRole(RoleNames.Aika))
+            {
+                <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: aikaMarkerManager.isLayerVisible">@Localizer["ShowAikaMarker"]</label>
+            }
+
+            <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: kartaMarkerManager.isLayerVisible">@Localizer["ShowKartaMarker"]</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
+            @if(User.IsInRole(RoleNames.Kirja))
+            {
+                <div data-bind="template: { name: 'gn-kartaMarkerManager', data: kirjaMarkerManager }"></div>
+            }
+
+            @if(User.IsInRole(RoleNames.Kortisto))
+            {
+                <div data-bind="template: { name: 'gn-kartaMarkerManager', data: kortistoMarkerManager }"></div>
+            }
+
+            @if(User.IsInRole(RoleNames.Styr))
+            {
+                <div data-bind="template: { name: 'gn-kartaMarkerManager', data: styrMarkerManager }"></div>
+            }
+
+            @if(User.IsInRole(RoleNames.Aika))
+            {
+                <div data-bind="template: { name: 'gn-kartaMarkerManager', data: aikaMarkerManager }"></div>
+            }
+
+            <div data-bind="template: { name: 'gn-kartaMarkerManager', data: kartaMarkerManager }"></div>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
+            <!-- ko if: mapLoaded -->
+            <div class="gn-kartaMap" data-bind="map: mapUrlTemplate, mapMaxZoom: mapMaxZoom, mapImageWidth: mapImageWidth, mapImageHeight: mapImageHeight, mapClick: addMarkerToMap, mapReady: mapReady"></div>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha256-kdEnCVOWosn3TNsGslxB8ffuKdrZoGQdIdPwh7W1CsE=" crossorigin="anonymous"></script>
+
+        <script src="~/js/Karta/map.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha256-kdEnCVOWosn3TNsGslxB8ffuKdrZoGQdIdPwh7W1CsE=" crossorigin="anonymous"></script>
+
+        <script src="~/js/Karta/map.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.Karta.Map.Localization = {
+            Karta: "@Localizer["Karta"]",
+
+            KirjaMarkerTitle: "@Localizer["Kirja"]",
+            KirjaMarkerNewPage: "@Localizer["NewKirjaPage"]",
+
+            KortistoMarkerTitle: "@Localizer["Kortisto"]",
+
+            StyrMarkerTitle: "@Localizer["Styr"]",
+    
+            AikaMarkerTitle: "@Localizer["Aika"]",
+
+            KartaMarkerTitle: "@Localizer["Karta"]",
+            
+            EditingDefaultChapter: "@Localizer["EditingDefaultChapter"]",
+
+            EditMarkerTooltip: "@Localizer["EditMarkerTooltip"]",
+            MarkerIsNotImplementedTooltip: "@Localizer["MarkerIsNotImplementedTooltip"]",
+            MarkerIsImplementedTooltip: "@Localizer["MarkerIsImplementedTooltip"]",
+            DeleteMarkerTooltip: "@Localizer["DeleteMarkerTooltip"]",
+
+            ErrorOccured: "@Localizer["ErrorOccured"]"
+        };
+
+        @if(User.IsInRole(RoleNames.Aika))
+        {
+            <text>
+            GoNorth.Karta.Map.hasAikaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Karta.Map.hasAikaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
+        {
+            <text>
+            GoNorth.Karta.Map.hasImplementationStatusTrackerRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Karta.Map.hasImplementationStatusTrackerRights = false;
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Karta.Map.ViewModel(), jQuery("#gn-kartaMapContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha256-LcmP8hlMTofQrGU6W2q3tUnDnDZ1QVraxfMkP060ekM=" crossorigin="anonymous" />
+}

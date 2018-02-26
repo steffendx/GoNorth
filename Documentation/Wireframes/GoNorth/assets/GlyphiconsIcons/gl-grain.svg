@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Converted from Font Awesome. Glyph: e239 -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1600" xml:space="preserve">
+<g transform="translate(200, 1400) scale(1, -1)">
+	<path id="grain" d="M650 1187q87 -67 118.5 -156t0 -178t-118.5 -155q-87 66 -118.5 155t0 178t118.5 156zM300 800q124 0 212 -88t88 -212q-124 0 -212 88t-88 212zM1000 800q0 -124 -88 -212t-212 -88q0 124 88 212t212 88zM300 500q124 0 212 -88t88 -212q-124 0 -212 88t-88 212z M1000 500q0 -124 -88 -212t-212 -88q0 124 88 212t212 88zM700 199v-144q0 -21 -14.5 -35.5t-35.5 -14.5t-35.5 14.5t-14.5 35.5v142q40 -4 43 -4q17 0 57 6z" />
+</g>
+</svg>	

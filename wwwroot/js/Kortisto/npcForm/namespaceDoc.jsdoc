@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Kortisto) {
+        
+        /**
+         * Npc Form Namespace
+         * @namespace Npc
+         */
+        (function(Npc) {
+        }(Kortisto.Npc = Kortisto.Npc || {}));
+        
+    }(GoNorth.Kortisto = GoNorth.Kortisto || {}));
+}(window.GoNorth = window.GoNorth || {}));

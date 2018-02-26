@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides">
+  <widgets xsi:type="model:Master" id="2" x="10" y="10" width="1135" measuredWidth="1135" measuredHeight="50">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Navigation.screen#Navbar"/>
+    <overrides>
+      <widgetChanges xsi:type="o:Delete" ref="25"/>
+      <widgetChanges xsi:type="o:Delete" ref="24"/>
+      <widgetChanges xsi:type="o:Delete" ref="28"/>
+      <widgetChanges xsi:type="o:Delete" ref="19"/>
+      <widgets ref="20" width="1135"/>
+      <widgets ref="21" text="GoNorth"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="3" x="112" y="9" measuredWidth="377" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Startseite, Ereignisse, Kortisto, Kirja">
+        <items ref="@items.0" text="Startseite"/>
+        <items ref="@items.1" text="Ereignisse"/>
+        <items ref="@items.2" text="Kortisto"/>
+        <itemChanges xsi:type="o:Insert" newIndex="3">
+          <object xsi:type="model:Item" text="Kirja"/>
+        </itemChanges>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="4" x="766" y="9" measuredWidth="379" measuredHeight="51">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button%20Group%20Large"/>
+    <overrides>
+      <widgets ref="9" text="Administration, Hallo User, Abmelden">
+        <items ref="@items.0" text="Administration"/>
+        <items ref="@items.1" text="Hallo User"/>
+        <items ref="@items.2" text="Abmelden"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:WidgetGroup" id="21" x="13" y="65" measuredWidth="1129" measuredHeight="39">
+    <widgets xsi:type="model:Master" id="22" width="1129" measuredWidth="1129" measuredHeight="39">
+      <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Forms.screen#Input%20Group%20Button"/>
+      <overrides>
+        <widgets ref="87" x="1095" width="34" noText="true"/>
+        <widgets ref="86" width="1097"/>
+      </overrides>
+    </widgets>
+    <widgets xsi:type="model:Icon" id="23" x="1100" y="2" width="29" measuredWidth="29" measuredHeight="32" icon="assets/gl-search (large)"/>
+  </widgets>
+  <widgets xsi:type="model:Master" id="24" x="13" y="128" width="1129" height="145" measuredWidth="1129" measuredHeight="145">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Content.screen#List%20Group"/>
+    <overrides>
+      <widgets ref="197" width="1129" height="121"/>
+      <widgets ref="195" x="3" y="4" width="1126" height="117" text="Altes Königreich&#xD;&#xA;Ruine im Wald&#xD;&#xA;Taverne zur Einbeinigen Hure">
+        <items ref="@items.4" text="Altes Königreich"/>
+        <items ref="@items.5" text="Ruine im Wald"/>
+        <items ref="@items.6" text="Taverne zur Einbeinigen Hure"/>
+        <itemChanges xsi:type="o:Delete" ref="@items.3"/>
+        <itemChanges xsi:type="o:Delete" ref="@items.2"/>
+        <itemChanges xsi:type="o:Delete" ref="@items.1"/>
+        <itemChanges xsi:type="o:Delete" ref="@items.0"/>
+      </widgets>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="25" x="1110" y="256" measuredWidth="32" measuredHeight="34">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+    <overrides>
+      <widgets ref="21" width="32" noText="true"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="26" x="1110" y="257" measuredWidth="32" measuredHeight="32" icon="assets/gl-chevron-right (large)"/>
+  <widgets xsi:type="model:Master" id="27" x="1072" y="256" measuredWidth="32" measuredHeight="34">
+    <screen xsi:type="model:WidgetGroup" href="../assets/Bootstrap/Buttons.screen#Button"/>
+    <overrides>
+      <widgets ref="21" width="32" noText="true"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Icon" id="28" x="1072" y="257" measuredWidth="32" measuredHeight="32" icon="assets/gl-chevron-left (large)"/>
+  <hRuler/>
+  <vRuler/>
+  <font size="12px"/>
+</model:Screen>

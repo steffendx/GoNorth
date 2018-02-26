@@ -1,0 +1,127 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<script type="text/html" id="gn-nodeConditionRow">
+    <tr>
+        <td>
+            <input type="checkbox" class="from-control" data-bind="checked: isSelected"/>
+            <i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorOccured"></i>
+        </td>
+        <!-- ko if: $parents[$parents.length - 2].isConditionTypeSelectable($data); -->
+        <td>
+            <select data-bind="value: conditionType, options: $parents[$parents.length - 2].selectableConditionTypes, optionsText: function(condition) { return condition.getLabel(); }, optionsValue: function(condition) { return condition.getType(); }" class="form-control"></select>
+        </td>
+        <!-- /ko -->
+        <!-- ko template: { name: conditionTemplate } -->
+        <!-- /ko -->
+        <td>
+            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].moveConditionElementUp(condition); }" title="@Localizer["MoveConditionUp"]">
+                <i class="glyphicon glyphicon-arrow-up"></i>
+            </a>
+            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].moveConditionElementDown(condition); }" title="@Localizer["MoveConditionDown"]">
+                <i class="glyphicon glyphicon-arrow-down"></i>
+            </a>
+            <a class="gn-clickable gn-nodeConditionIcon gn-nodeConditionElementMove" data-bind="draggable: 'clone', draggableObject: $data, draggableDropIndicators: { '.gn-nodeConditionGroupOperator': 'gn-nodeConditionMoveDropIndicator', '.gn-nodeConditionDialogMoveToRoot': 'gn-nodeConditionMoveDropIndicator' }" title="@Localizer["DragOnOperatorToMove"]">
+                <i class="glyphicon glyphicon glyphicon-move"></i>
+            </a>
+            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].deleteConditionElement(condition); }" title="@Localizer["DeleteCondition"]">
+                <i class="glyphicon glyphicon-trash"></i>
+            </a>
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="gn-nodeConditionEmpty">
+</script>
+
+<script type="text/html" id="gn-nodeConditionGroup">
+<!-- ko with: conditionData -->
+    <td colspan="4" class="gn-nodeConditionGroupCell">
+        <table class="gn-nodeConditionGroupTable">
+            <tr>
+                <td class="gn-nodeConditionGroupOperator" data-bind="text: operatorText, dblClick: toggleOperator, droppable: function(draggable, left, top, conditionElement) { $parents[$parents.length - 2].dropConditionToGroup($parent, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'" title="@Localizer["DoubleClickToChangeOperator"]"></td>
+                <td>
+                    <table class="gn-nodeConditionDialogElementTable">
+                        <tbody data-bind="template: { name: 'gn-nodeConditionRow', foreach: conditionElements }">
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+<!-- /ko -->
+</script>
+
+<!-- Condition Dialog -->
+<script type="text/html" id="gn-nodeConditionValueCheck">
+<!-- ko with: conditionData -->
+    <td colspan="2"><select data-bind="value: selectedField, options: availableFields, optionsText: function(field) { return field.displayName; }" class="form-control"></td>
+    <td><select data-bind="value: operator, options: availableOperators" class="form-control"></td>
+    <td><input type="text" data-bind="value: compareValue, event: { keydown: validateInput }" class="form-control" /></td>
+<!-- /ko -->
+</script>
+
+<script type="text/html" id="gn-nodeConditionChooseObjectValueCheck">
+<!-- ko with: conditionData -->
+    <td><a data-bind="text: selectedObjectName, click: chooseObject" class="gn-clickable"></a></td>
+    <td><select data-bind="value: selectedField, options: availableFields, optionsText: function(field) { return field.displayName; }" class="form-control"></td>
+    <td><select data-bind="value: operator, options: availableOperators" class="form-control"></td>
+    <td><input type="text" data-bind="value: compareValue, event: { keydown: validateInput }" class="form-control" /></td>
+<!-- /ko -->
+</script>
+
+<script type="text/html" id="gn-nodeQuestStateCheck">
+<!-- ko with: conditionData -->
+    <td colspan="2"><a data-bind="text: selectedQuestName, click: chooseQuest" class="gn-clickable"></a></td>
+    <td colspan="2"><select data-bind="value: selectedQuestState, options: questStates, optionsText: 'label', optionsValue: 'questState'" class="form-control"></td>
+<!-- /ko -->
+</script>
+
+<script type="text/html" id="gn-nodeNpcAliveStateCheck">
+<!-- ko with: conditionData -->
+    <td colspan="2"><a data-bind="text: selectedNpcName, click: chooseNpc" class="gn-clickable"></a></td>
+    <td colspan="2"><select data-bind="value: selectedNpcState, options: npcStates, optionsText: 'label', optionsValue: 'npcState'" class="form-control"></td>
+<!-- /ko -->
+</script>
+
+<div class="modal fade" role="dialog" data-bind="modal: isOpen">
+    <div class="modal-dialog gn-nodeConditionDialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Localizer["EditCondition"]</h4>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-primary gn-nodeConditionDialogAddCondition" data-bind="click: addNewConditionElement">
+                    <i class="glyphicon glyphicon-plus"></i> @Localizer["AddCondition"]
+                </button>
+                <button type="button" class="btn btn-default" data-bind="click: andGroupElements">
+                    @Localizer["GroupAnd"]
+                </button>
+                <button type="button" class="btn btn-default" data-bind="click: orGroupElements">
+                    @Localizer["GroupOr"]
+                </button>
+
+                <div class="alert alert-warning gn-defaultContentTopMargin" style="display: none" data-bind="visible: showGroupWarning">
+                    <strong>@Localizer["Warning"]</strong> @Localizer["CanOnlyGroupOnSameLevel"]
+                </div>
+                
+                <div class="alert alert-warning gn-defaultContentTopMargin" style="display: none" data-bind="visible: showDragParentToChildWarning">
+                    <strong>@Localizer["Warning"]</strong> @Localizer["YouCanNotMoveAParentToOneOfItsChildren"]
+                </div>
+
+
+                <table class="gn-nodeConditionDialogElementTable">
+                    <tbody data-bind="template: { name: 'gn-nodeConditionRow', foreach: conditionElements }">
+                    </tbody>
+                </table>
+                <div class="gn-nodeConditionDialogMoveToRoot" data-bind="droppable: function(draggable, left, top, conditionElement) { dropConditionToGroup(null, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bind="click: saveCondition">@Localizer["Confirm"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: closeDialog">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

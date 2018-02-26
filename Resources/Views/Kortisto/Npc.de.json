@@ -1,0 +1,55 @@
+{
+    "Npc": "Npc",
+    "Template": "Template",
+    "IsPlayerNpc": "(Spieler Npc)",
+
+    "Save": "Speichern",
+    "SaveAndDistributeFields": "Speichern & Felder an Npcs verteilen",
+    "IsImplemented": "Implementiert",
+    "IsNotImplementedTooltip": "Npc ist noch nicht implementiert.",
+    "MarkAsImplemented": "Als implementiert markieren",
+    "Cancel": "Abbrechen",
+    "Delete": "Löschen",
+    "Dialog": "Dialog",
+    "DialogIsImplementedTooltip": "Dialog ist implementiert",
+    "DialogIsNotImplementedTooltip": "Dialog ist nicht implementiert",
+    "MarkAsPlayer": "Als Spieler markieren",
+
+    "Name": "Name",
+    "DropImageHere": "Bild für Npc hier ablegen oder klicken um ein Bild auszuwählen",
+
+    "Inventory": "Inventar",
+    "AddItemToInventory": "Item hinzufügen",
+    "Quantity": "Anzahl",
+    "Equipped": "Ausgerüstet",
+    "RemoveItemFromInventory": "Item aus dem Inventar entfernen",
+    "AreYouSureYouWantToRemoveTheItem": "Bist du sicher das das Item entfernt werden soll?",
+
+    "ReferencedInAikaQuests": "Referenziert in Aika Quests:",
+
+    "MentionedInKirjaPages": "Erwähnt in Kirja Seiten:",
+
+    "MarkedInKartaMaps": "Markiert in Karta Karten:",
+    "MarkedInMapNTimes": "Npc ist in Karte {{0}} mal markiert. Kein Zoom auf Markierung möglich.",
+
+    "ReferencedInTaleDialogs": "Referenziert in Tale Dialogen:",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheObject": "Bist du sicher das der Npc gelöscht werden soll?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Bist du sicher das das Template gelöscht werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "AreYouSureYouWantToMarkTheNpcAsPlayer": "Bist du sicher das der Npc als Spieler markiert werden soll?",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedTemplatePrefix": "Dieses Template wird gerade von ",
+    "LockedObjectPrefix": "Dieser Npc wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "RichTextLocale": "de",
+    "DropzoneLocale": "de"
+}

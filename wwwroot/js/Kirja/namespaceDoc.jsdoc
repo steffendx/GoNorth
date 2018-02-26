@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Kirja) {
+
+        /**
+         * Kirja Page List Namespace
+         * @namespace AllPages
+         */
+        (function(AllPages) {
+        }(Kirja.AllPages = Kirja.AllPages || {}));
+        
+    }(GoNorth.Kirja = GoNorth.Kirja || {}));
+}(window.GoNorth = window.GoNorth || {}));

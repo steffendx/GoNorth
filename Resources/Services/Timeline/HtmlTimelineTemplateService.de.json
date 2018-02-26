@@ -1,0 +1,80 @@
+{
+    "NewUser": "{0} hat das Team betreten.",
+    "UserDeleted": "{0} hat das Team verlassen.",
+    "UserRolesSet": "{0} Rollen wurden auf '{1}' festgelegt.",
+
+    "ProjectCreated": "Projekt {0} wurde gestartet.",
+    "ProjectDeleted": "Projekt {0} wurde gelöscht.",
+    "ProjectUpdated": "Projekt {0} wurde aktualisiert.",
+
+    "KortistoFolderCreated": "Ein neuer Kategorie {0} wurde in Kortisto angelegt.",
+    "KortistoFolderDeleted": "Die Kategorie {0} wurde in Kortisto gelöscht.",
+    "KortistoFolderUpdated": "Die Kategorie {0} wurde in Kortisto aktualisiert.",
+
+    "KortistoNpcTemplateCreated": "Ein neues Npc Template <a href='/Kortisto/Npc#template=1&id={1}'>{0}</a> wurde angelegt.",
+    "KortistoNpcTemplateDeleted": "Das Npc Template {0} wurde gelöscht.",
+    "KortistoNpcTemplateUpdated": "Das Npc Template <a href='/Kortisto/Npc#template=1&id={1}'>{0}</a> wurde aktualisiert.",
+    "KortistoNpcTemplateImageUpload": "Das Bild des Npc Template <a href='/Kortisto/Npc#template=1&id={1}'>{0}</a> wurde geändert.",
+    "KortistoNpcTemplateFieldsDistributed": "Die Felder des Npc Template <a href='/Kortisto/Npc#template=1&id={1}'>{0}</a> wurden verteilt.",
+
+    "KortistoNpcCreated": "Ein neuer Npc <a href='/Kortisto/Npc#id={1}'>{0}</a> wurde angelegt.",
+    "KortistoNpcDeleted": "Der Npc {0} wurde gelöscht.",
+    "KortistoNpcUpdated": "Der Npc <a href='/Kortisto/Npc#id={1}'>{0}</a> wurde aktualisiert.",
+    "KortistoNpcImageUpload": "Das Bild des Npc <a href='/Kortisto/Npc#id={1}'>{0}</a> wurde geändert.",
+
+    "StyrFolderCreated": "Ein neue Kategorie {0} wurde in Styr angelegt.",
+    "StyrFolderDeleted": "Die Kategorie {0} wurde in Styr gelöscht.",
+    "StyrFolderUpdated": "Die Kategorie {0} wurde in Styr aktualisiert.",
+
+    "StyrItemTemplateCreated": "Ein neues Item Template <a href='/Styr/Item#template=1&id={1}'>{0}</a> wurde angelegt.",
+    "StyrItemTemplateDeleted": "Das Item Template {0} wurde gelöscht.",
+    "StyrItemTemplateUpdated": "Das Item Template <a href='/Styr/Item#template=1&id={1}'>{0}</a> wurde aktualisiert.",
+    "StyrItemTemplateImageUpload": "Das Bild des Item Template <a href='/Styr/Item#template=1&id={1}'>{0}</a> wurde geändert.",
+    "StyrItemTemplateFieldsDistributed": "Die Felder des Item Template <a href='/Styr/Item#template=1&id={1}'>{0}</a> wurden verteilt.",
+
+    "StyrItemCreated": "Ein neues Item <a href='/Styr/Item#id={1}'>{0}</a> wurde angelegt.",
+    "StyrItemDeleted": "Das Item {0} wurde gelöscht.",
+    "StyrItemUpdated": "Das Item <a href='/Styr/Item#id={1}'>{0}</a> wurde aktualisiert.",
+    "StyrItemImageUpload": "Das Bild des Item <a href='/Styr/Item#id={1}'>{0}</a> wurde geändert.",
+
+    "KirjaPageCreated": "Eine neue Seite <a href='/Kirja#id={1}'>{0}</a> wurde in Kirja angelegt.",
+    "KirjaPageDeleted": "Die Seite {0} wurde in Kirja gelöscht.",
+    "KirjaPageUpdated": "Die Seite <a href='/Kirja#id={1}'>{0}</a> wurde in Kirja aktualisiert.",
+
+    "KartaMapCreated": "Eine neue Karte <a href='/Karta#id={1}'>{0}</a> wurde angelegt.",
+    "KartaMapDeleted": "Die Karte {0} wurde gelöscht.",
+    "KartaMapUpdated": "Die Karte <a href='/Karta#id={1}'>{0}</a> wurde aktualisiert.",
+    "KartaMapMarkerUpdated": "Eine {4} Markierung auf der Karte <a href='/Karta#id={1}&zoomOnMarkerId={2}&zoomOnMarkerType={3}'>{0}</a> wurde aktualisiert.",
+    "KartaMapMarkerDeleted": "Eine {2} Markierung auf der Karte <a href='/Karta#id={1}'>{0}</a> wurde gelöscht.",
+
+    "TaleDialogCreated": "Eine neuer Dialog für den Npc <a href='/Tale#npcId={0}'>{1}</a> wurde angelegt.",
+    "TaleDialogUpdated": "Der Dialog für den Npc <a href='/Tale#npcId={0}'>{1}</a> wurde aktualisiert.",
+
+    "AikaChapterOverviewUpdated": "Die <a href='/Aika'>Kapitelübersicht</a> wurde in Aika angepasst.",
+    "AikaChapterDetailCreated": "Eine neue Kapitel <a href='/Aika/ChapterDetail#id={0}'>Detailansicht</a> wurde angelegt.",
+    "AikaChapterDetailUpdated": "Eine Kapitel <a href='/Aika/ChapterDetail#id={0}'>Detailansicht</a> wurde aktualisiert.",
+    "AikaChapterDetailDeleted": "Eine Kapitel Detailansicht wurde gelöscht.",
+    "AikaQuestCreated": "Ein neuer Quest <a href='/Aika/Quest#id={0}'>{1}</a> wurde erstellt.",
+    "AikaQuestUpdated": "Der Quest <a href='/Aika/Quest#id={0}'>{1}</a> wurde aktualisiert.",
+    "AikaQuestDeleted": "Der Quest {0} wurde gelöscht.",
+
+    "TaskBoardCreated": "Ein neues Aufgabenboard <a href='/Task#id={0}'>{1}</a> wurde angelegt.",
+    "TaskBoardUpdated": "Das Aufgabenboard <a href='/Task#id={0}'>{1}</a> wurde aktualisiert.",
+    "TaskBoardClosed": "Das Aufgabenboard {1} wurde geschlossen.",
+    "TaskBoardReopened": "Das Aufgabenboard <a href='/Task#id={0}'>{1}</a> wurde wieder geöffnet.",
+    "TaskBoardDeleted": "Das Aufgabenboard {0} wurde gelöscht.",
+
+    "TaskGroupCreated": "Eine neue Aufgabengruppe {2} wurde dem Aufgabenboard <a href='/Task#id={0}'>{1}</a> hinzugefügt.",
+    "TaskGroupUpdated": "Die Aufgabengruppe {2} wurde im Aufgabenboard <a href='/Task#id={0}'>{1}</a> aktualisiert.",
+    "TaskGroupDeleted": "Die Aufgabengruppe {2} wurde im Aufgabenboard <a href='/Task#id={0}'>{1}</a> gelöscht.",
+
+    "TaskCreated": "Eine neue Aufgabe {3} wurde der Aufgabengruppe {2} im Aufgabenboard <a href='/Task#id={0}'>{1}</a> hinzugefügt.",
+    "TaskUpdated": "Die Aufgabe {3} wurde in der Aufgabengruppe {2} im Aufgabenboard <a href='/Task#id={0}'>{1}</a> aktualisiert.",
+    "TaskDeleted": "Die Aufgabe {3} wurde in der Aufgabengruppe {2} im Aufgabenboard <a href='/Task#id={0}'>{1}</a> gelöscht.",
+
+    "ImplementedNpc": "Der Npc <a href='/Kortisto/Npc#id={0}'>{1}</a> wurde implementiert.",
+    "ImplementedItem": "Das Item <a href='/Styr/Item#id={0}'>{1}</a> wurde implementiert.",
+    "ImplementedQuest": "Der Quest <a href='/Aika/Quest#id={0}'>{1}</a> wurde implementiert.",
+    "ImplementedDialog": "Der Dialog <a href='/Tale#npcId={0}'>{1}</a> wurde implementiert.",
+    "ImplementedMarker": "Eine Markierung in der Karte <a href='/Karta#id={0}&zoomOnMarkerId={1}&zoomOnMarkerType={2}'>{3}</a> wurde implementiert."
+}

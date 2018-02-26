@@ -1,0 +1,49 @@
+{
+    "Quest": "Quest",
+
+    "NameMissing": "Quest Name",
+
+    "Save": "Speichern",
+    "IsImplemented": "Implementiert",
+    "IsNotImplementedTooltip": "Quest ist noch nicht implementiert.",
+    "MarkAsImplemented": "Als implementiert markieren", 
+    "OpenQuestList": "Quest Liste öffnen",
+    "Delete": "Löschen",
+
+    "HeaderData": "Kopfdaten",
+
+    "Fields": "Felder",
+    "NoFieldsAdded": "Es wurden noch keine Felder zum Quest hinzugefügt",
+
+    "Connections": "Verknüpfungen",
+    "UsedInAikaDetailView": "In Aika Detailansichten genutzt:",
+    "UsedInAikaQuest": "In Aika Quests genutzt:",
+    "MentionedInKirjaPages": "In Kirja Seiten erwähnt:",
+    "ReferencedInTaleDialogs": "Referenziert in Tale Dialogen:",
+    "HasMarkersInKartaMaps": "Markierungen in Karta Maps:",
+
+    "Name": "Name",
+    "Description": "Beschreibung",
+    "IsMainQuest": "Hauptquest",
+
+    "TextNode": "Text",
+    "ConditionNode": "Bedingung",
+    "ActionNode": "Aktion",
+    "FinishNode": "Abschluss",
+    "AllDone": "Alles abgeschlossen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheQuest": "Bist du sicher das der Quest gelöscht werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Der Quest wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "NodeLang": "de",
+    "RichTextLocale": "de"
+}

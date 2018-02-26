@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore" xmlns:o="http://wireframesketcher.com/1.0/model/overrides" theme="clean" minVersion="4.2.0">
+  <widgets xsi:type="model:Master" id="3" x="8" y="14" measuredWidth="750" measuredHeight="50">
+    <screen xsi:type="model:WidgetGroup" href="../Navigation.screen#Navbar%20Inverse"/>
+    <overrides>
+      <widgetChanges xsi:type="o:Delete" ref="42"/>
+      <widgetChanges xsi:type="o:Delete" ref="41"/>
+      <widgetChanges xsi:type="o:Delete" ref="40"/>
+      <widgets ref="38" x="143" text="Home, About, Contact">
+        <items ref="@items.0" text="Home"/>
+        <items ref="@items.1" text="About"/>
+        <items ref="@items.2" text="Contact"/>
+      </widgets>
+      <widgets ref="39" text="Project name"/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="2" x="69" y="171" measuredWidth="628" measuredHeight="65">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Body%20Copy%20Lead"/>
+    <overrides>
+      <widgets ref="19" width="628" text="Use this document as a way to quickly start any new project.&#xA;All you get is this text and a mostly barebones HTML document."/>
+    </overrides>
+  </widgets>
+  <widgets xsi:type="model:Master" id="4" x="161" y="116" measuredWidth="444" measuredHeight="49">
+    <screen xsi:type="model:WidgetGroup" href="../Typography.screen#Page%20Header"/>
+    <overrides>
+      <widgets ref="81" text="Bootstrap starter template"/>
+    </overrides>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font size="14px"/>
+</model:Screen>
