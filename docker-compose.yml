@@ -6,3 +6,5 @@ services:
      - 5000:80
   mongo:
     image: 'mongo'
+    volumes:
+      - ./dbdata:/data/db
