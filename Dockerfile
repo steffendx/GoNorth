@@ -7,6 +7,7 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY . ./
+COPY ./appsettings.docker.json ./appsettings.json
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
