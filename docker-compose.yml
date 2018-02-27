@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - 5000:80
+  mongo:
+    image: 'mongo'
