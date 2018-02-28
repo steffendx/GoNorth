@@ -1,0 +1,2 @@
+## Creating Documentation (not required)
+If you want to add Documentation to your pull request you can create a pull request for the [Wiki Repo](https://github.com/steffendx/GoNorthWiki). The changes there will get synced to the GoNorth Wiki automatically after beeing accepted.
