@@ -26,6 +26,11 @@ namespace GoNorth.Config
         public string SmtpPassword { get; set; }
 
         /// <summary>
+        /// Smtp FromName
+        /// </summary>
+        public string SmtpFromName { get; set; }
+
+        /// <summary>
         /// true if SSL is used for Smtp, else false
         /// </summary>
         public bool SmtpUseSSL { get; set; }
