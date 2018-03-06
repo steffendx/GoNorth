@@ -58,7 +58,7 @@ namespace GoNorth.Services.Email
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                 MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(_Configuration.SmtpUsername);
+                mailMessage.From = new MailAddress(_Configuration.SmtpUsername, _Configuration.SmtpFromName);
                 mailMessage.To.Add(email);
                 mailMessage.Body = message;
                 mailMessage.Subject = subject;
