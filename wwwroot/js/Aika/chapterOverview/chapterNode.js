@@ -103,6 +103,16 @@
                     },
 
                     /**
+                     * Checks if a node can be deleted
+                     * 
+                     * @returns {jQuery.Deferred} Deferred for the validation process
+                     */
+                    validateDelete: function() {
+                        return Aika.Shared.validateChapterDetailDelete(this.model.get("detailViewId"));
+                    },
+
+
+                    /**
                      * Shows the loading indicator
                      */
                     showLoading: function() {

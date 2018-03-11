@@ -111,10 +111,28 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.StyrItemUpdated, new List<string>() { RoleNames.Styr });
             _entryRoleFilter.Add(TimelineEvent.StyrItemImageUpload, new List<string>() { RoleNames.Styr }); 
             
+            // Evne
+            _entryRoleFilter.Add(TimelineEvent.EvneFolderCreated, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneFolderDeleted, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneFolderUpdated, new List<string>() { RoleNames.Evne });
+
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillTemplateCreated, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillTemplateDeleted, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillTemplateUpdated, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillTemplateImageUpload, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillTemplateFieldsDistributed, new List<string>() { RoleNames.Evne });
+
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillCreated, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillDeleted, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillUpdated, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillImageUpload, new List<string>() { RoleNames.Evne }); 
+            
             // Kirja
             _entryRoleFilter.Add(TimelineEvent.KirjaPageCreated, new List<string>() { RoleNames.Kirja });
             _entryRoleFilter.Add(TimelineEvent.KirjaPageDeleted, new List<string>() { RoleNames.Kirja });
             _entryRoleFilter.Add(TimelineEvent.KirjaPageUpdated, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaAttachmentAdded, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaAttachmentDeleted, new List<string>() { RoleNames.Kirja });
 
             // Karta
             _entryRoleFilter.Add(TimelineEvent.KartaMapCreated, new List<string>() { RoleNames.Karta });
@@ -154,6 +172,7 @@ namespace GoNorth.Services.Timeline
             // Implementation Status
             _entryRoleFilter.Add(TimelineEvent.ImplementedNpc, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Kortisto });
             _entryRoleFilter.Add(TimelineEvent.ImplementedItem, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Styr });
+            _entryRoleFilter.Add(TimelineEvent.ImplementedSkill, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Evne });
             _entryRoleFilter.Add(TimelineEvent.ImplementedQuest, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Aika });
             _entryRoleFilter.Add(TimelineEvent.ImplementedDialog, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Tale });
             _entryRoleFilter.Add(TimelineEvent.ImplementedMarker, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Karta });

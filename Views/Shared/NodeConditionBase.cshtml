@@ -56,8 +56,8 @@
 <!-- Condition Dialog -->
 <script type="text/html" id="gn-nodeConditionValueCheck">
 <!-- ko with: conditionData -->
-    <td colspan="2"><select data-bind="value: selectedField, options: availableFields, optionsText: function(field) { return field.displayName; }" class="form-control"></td>
-    <td><select data-bind="value: operator, options: availableOperators" class="form-control"></td>
+    <td colspan="2"><select data-bind="value: selectedField, options: availableFields, optionsText: function(field) { return field.displayName; }" class="form-control"></select></td>
+    <td><select data-bind="value: operator, options: availableOperators" class="form-control"></select></td>
     <td><input type="text" data-bind="value: compareValue, event: { keydown: validateInput }" class="form-control" /></td>
 <!-- /ko -->
 </script>
@@ -65,23 +65,37 @@
 <script type="text/html" id="gn-nodeConditionChooseObjectValueCheck">
 <!-- ko with: conditionData -->
     <td><a data-bind="text: selectedObjectName, click: chooseObject" class="gn-clickable"></a></td>
-    <td><select data-bind="value: selectedField, options: availableFields, optionsText: function(field) { return field.displayName; }" class="form-control"></td>
-    <td><select data-bind="value: operator, options: availableOperators" class="form-control"></td>
+    <td><select data-bind="value: selectedField, options: availableFields, optionsText: function(field) { return field.displayName; }" class="form-control"></select></td>
+    <td><select data-bind="value: operator, options: availableOperators" class="form-control"></select></td>
     <td><input type="text" data-bind="value: compareValue, event: { keydown: validateInput }" class="form-control" /></td>
+<!-- /ko -->
+</script>
+
+<script type="text/html" id="gn-nodeConditionChooseSkillCheck">
+<!-- ko with: conditionData -->
+    <td colspan="4"><a data-bind="text: selectedSkillName, click: chooseSkill" class="gn-clickable"></a></td>
 <!-- /ko -->
 </script>
 
 <script type="text/html" id="gn-nodeQuestStateCheck">
 <!-- ko with: conditionData -->
     <td colspan="2"><a data-bind="text: selectedQuestName, click: chooseQuest" class="gn-clickable"></a></td>
-    <td colspan="2"><select data-bind="value: selectedQuestState, options: questStates, optionsText: 'label', optionsValue: 'questState'" class="form-control"></td>
+    <td colspan="2"><select data-bind="value: selectedQuestState, options: questStates, optionsText: 'label', optionsValue: 'questState'" class="form-control"></select></td>
 <!-- /ko -->
 </script>
 
 <script type="text/html" id="gn-nodeNpcAliveStateCheck">
 <!-- ko with: conditionData -->
     <td colspan="2"><a data-bind="text: selectedNpcName, click: chooseNpc" class="gn-clickable"></a></td>
-    <td colspan="2"><select data-bind="value: selectedNpcState, options: npcStates, optionsText: 'label', optionsValue: 'npcState'" class="form-control"></td>
+    <td colspan="2"><select data-bind="value: selectedNpcState, options: npcStates, optionsText: 'label', optionsValue: 'npcState'" class="form-control"></select></td>
+<!-- /ko -->
+</script>
+
+<script type="text/html" id="gn-nodeGameTimeCheck">
+<!-- ko with: conditionData -->
+    <td colspan="2"><select data-bind="value: selectedGameTimeOperator, options: gameTimeOperators, optionsText: 'label', optionsValue: 'operator'" class="form-control"></td>
+    <td><select data-bind="value: selectedGameTimeHour, options: gameTimeHours" class="form-control"></select></td>
+    <td><select data-bind="value: selectedGameTimeMinutes, options: gameTimeMinutes" class="form-control"></select></td>
 <!-- /ko -->
 </script>
 

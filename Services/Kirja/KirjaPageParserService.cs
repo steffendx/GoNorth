@@ -27,6 +27,7 @@ namespace GoNorth.Services.Kirja
             _Parser.Add(new QuestKirjaParser());
             _Parser.Add(new NpcKirjaParser());
             _Parser.Add(new ItemKirjaParser());
+            _Parser.Add(new SkillKirjaParser());
             _Parser.Add(new ImageKirjaParser());
         }
 

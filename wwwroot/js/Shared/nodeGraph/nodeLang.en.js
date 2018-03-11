@@ -7,7 +7,8 @@
             Localization.NodeDisplay = {};
 
             Localization.NodeDisplay.Position = "Position:";
-            Localization.NodeDisplay.Zoom = "Zoom:";            
+            Localization.NodeDisplay.Zoom = "Zoom:";    
+            Localization.NodeDisplay.ToogleMiniMap = "Click here to toogle the mini map display";        
 
             // Shared Messages
             Localization.DeleteNode = "Delete node";
@@ -57,6 +58,9 @@
             Localization.Conditions.TextField = "Text field";
             Localization.Conditions.FieldWasDeleted = "Field was deleted.";
 
+            Localization.Conditions.CheckPlayerValueLabel = "Check player value";
+            Localization.Conditions.PlayerLabel = "Player";
+
             Localization.Conditions.ChooseQuestLabel = "<Choose quest>";
 
             Localization.Conditions.CheckChooseQuestValueLabel = "Check pick quest value";
@@ -70,13 +74,30 @@
             Localization.Conditions.CheckNpcAliveStateLabel = "Check npc alive state";
             Localization.Conditions.NpcAliveStateAlive = "Alive";
             Localization.Conditions.NpcAliveStateDead = "Dead";
+
+            Localization.Conditions.CheckGameTimeLabel = "Check game time";
+            Localization.Conditions.GameTimeOperatorBefore = "before";
+            Localization.Conditions.GameTimeOperatorAfter = "after";
+            Localization.Conditions.GameTime = "Game time";
             
+            Localization.Conditions.ChooseSkillLabel = "<Choose skill>";
+
+            Localization.Conditions.CheckChoosePlayerSkillValueLabel = "Check player skill value";
+            Localization.Conditions.PlayerSkillPrefix = "Player ";
+
+            Localization.Conditions.CheckPlayerLearnedSkillLabel = "Player can use skill";
+            Localization.Conditions.CheckPlayerLearnedSkillPrefixLabel = "Player can use ";
+
+            Localization.Conditions.CheckPlayerNotLearnedSkillLabel = "Player can not use skill";
+            Localization.Conditions.CheckPlayerNotLearnedSkillPrefixLabel = "Player can not use ";
+
             // Actions
             Localization.Actions = {};
 
             Localization.Actions.NumberField = "Number field";
             Localization.Actions.TextField = "Text field";
 
+            Localization.Actions.ChangePlayerValueLabel = "Change player value";
             Localization.Actions.ChangeQuestValueLabel = "Change pick quest value";
             Localization.Actions.ChooseQuestLabel = "&lt;Choose quest&gt;";
             
@@ -87,6 +108,27 @@
 
             Localization.Actions.AddQuestTextLabel = "Add quest text";
             Localization.Actions.QuestText = "Text";
+
+            Localization.Actions.WaitLabel = "Wait";
+            Localization.Actions.WaitTypeRealTime = "Realtime";
+            Localization.Actions.WaitTypeGameTime = "Gametime";
+            Localization.Actions.WaitUnitMilliseconds = "Milliseconds";
+            Localization.Actions.WaitUnitSeconds = "Seconds";
+            Localization.Actions.WaitUnitMinutes = "Minutes";
+            Localization.Actions.WaitUnitHours = "Hours";
+            Localization.Actions.WaitUnitDays = "Days";
+
+            Localization.Actions.StatePlaceholder = "State";
+
+            Localization.Actions.SetPlayerStateLabel = "Change player state";
+
+            Localization.Actions.ChooseSkillLabel = "&lt;Choose skill&gt;";
+            Localization.Actions.OpenSkillTooltip = "Opens the chosen skill";
+
+            Localization.Actions.PlayerLearnSkillLabel = "Player learns skill";
+            Localization.Actions.PlayerForgetSkillLabel = "Player forgets skill";
+
+            Localization.Actions.ChangePlayerSkillValueLabel = "Change player skill value";
 
         }(DefaultNodeShapes.Localization = DefaultNodeShapes.Localization || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));

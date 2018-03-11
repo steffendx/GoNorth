@@ -100,6 +100,18 @@
 
                     return self.objectDialog.openNpcSearch(Tale.Localization.ViewModel.ChooseNpc);                    
                 };
+
+                // Opens the skill search dialog 
+                GoNorth.DefaultNodeShapes.openSkillSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.objectDialog.openSkillSearch(Tale.Localization.ViewModel.ChooseSkill);                    
+                };
             };
 
             Dialog.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);

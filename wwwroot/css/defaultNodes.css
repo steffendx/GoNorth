@@ -257,6 +257,26 @@ button.delete:hover
 	min-width: 250px;
 }
 
+.gn-nodeGraphPositionZoomIndicatorText {
+	display: inline-block;
+	min-width: 225px;
+}
+
+.gn-nodeGraphMiniMap {
+	position: absolute;
+	top: 30px;
+	z-index: 50;
+	background-color: #999999;
+	border-bottom: 1px solid #888888;
+	border-right: 1px solid #888888;
+	width: 250px;
+	height: 250px;
+}
+
+.gn-nodeGraphMiniMap svg {
+	pointer-events: none;
+}
+
 /**
  * Condition
  */

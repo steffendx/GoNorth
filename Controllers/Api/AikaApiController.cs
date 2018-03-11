@@ -84,6 +84,22 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
+        /// Chapter Detail Delete Validation Result
+        /// </summary>
+        public class ChapterDetailDeleteValidationResult
+        {
+            /// <summary>
+            /// true if the detail can be deleted
+            /// </summary>
+            public bool CanBeDeleted { get; set; }
+
+            /// <summary>
+            /// Error Message
+            /// </summary>
+            public string ErrorMessage { get; set; }
+        }
+
+        /// <summary>
         /// Chapter Overview Db Service
         /// </summary>
         private readonly IAikaChapterOverviewDbAccess _chapterOverviewDbAccess;
@@ -611,6 +627,43 @@ namespace GoNorth.Controllers.Api
             return Ok(details);
         }
 
+        /// <summary>
+        /// Returns if a chapter detail can be deleted
+        /// </summary>
+        /// <param name="id">Id of the Chapter Detail</param>
+        /// <returns>Chapter detaildelete validation result</returns>
+        [HttpGet]
+        public async Task<IActionResult> ValidateChapterDetailDelete(string id)
+        {
+            if(string.IsNullOrEmpty(id))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest);
+            }
+
+            AikaChapterDetail detail = await _chapterDetailDbAccess.GetChapterDetailById(id);
+            ChapterDetailDeleteValidationResult validationResult = new ChapterDetailDeleteValidationResult();
+            validationResult.CanBeDeleted = true;
+
+            if((detail.Finish != null && detail.Finish.Count > 0) || (detail.Detail != null && detail.Detail.Count > 0) ||
+               (detail.Quest != null && detail.Quest.Count > 0) || (detail.AllDone != null && detail.AllDone.Count > 0))
+            {
+                bool isDetailView = string.IsNullOrEmpty(detail.ChapterId);
+                bool canBeDeleted = false;
+                if(isDetailView)
+                {
+                    canBeDeleted = await _chapterDetailDbAccess.DetailUsedInNodesCount(id, string.Empty) > 1;
+                }
+
+                if(!canBeDeleted)
+                {
+                    validationResult.CanBeDeleted = false;
+                    validationResult.ErrorMessage = isDetailView ? _localizer["CanNotDeleteNonEmptyChapterDetail"].Value : _localizer["CanNotDeleteNonEmptyChapter"].Value;
+                }
+            }
+
+            return Ok(validationResult);
+        }
+
 
         /// <summary>
         /// Creates the detail views for detail nodes in a chapter detail
@@ -738,7 +791,7 @@ namespace GoNorth.Controllers.Api
                     continue;
                 }
 
-                bool detailIsStillUsed = await _chapterDetailDbAccess.IsDetailUsedInOtherNode(curDeletedChapterDetail.DetailViewId, curDeletedChapterDetail.Id);
+                bool detailIsStillUsed = await _chapterDetailDbAccess.DetailUsedInNodesCount(curDeletedChapterDetail.DetailViewId, curDeletedChapterDetail.Id) > 0;
                 if(detailIsStillUsed)
                 {
                     continue;
@@ -1017,7 +1070,7 @@ namespace GoNorth.Controllers.Api
             FlexFieldApiUtil.SetFieldIdsForNewFields(targetQuest.Fields);
 
             targetQuest.Start = GetStartNodeList(sourceQuest.Start);
-            targetQuest.Text = sourceQuest.Text != null ? sourceQuest.Text : new List<AikaTextNode>();
+            targetQuest.Text = sourceQuest.Text != null ? sourceQuest.Text : new List<TextNode>();
             targetQuest.Finish = sourceQuest.Finish != null ? sourceQuest.Finish : new List<AikaFinish>();
             targetQuest.Condition = sourceQuest.Condition != null ? sourceQuest.Condition : new List<ConditionNode>();
             targetQuest.Action = sourceQuest.Action != null ? sourceQuest.Action : new List<ActionNode>();

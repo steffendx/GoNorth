@@ -9,7 +9,7 @@
              */
             Item.ViewModel = function()
             {
-                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "StyrApi", "StyrItem", "StyrTemplate", "GetPagesByItem?itemId=", "GetMapsByItemId?itemId=" ]);
+                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Styr", "StyrApi", "StyrItem", "StyrTemplate", "GetPagesByItem?itemId=", "GetMapsByItemId?itemId=" ]);
 
                 this.containedInNpcInventory = new ko.observableArray();
                 this.loadingContainedInNpcInventory = new ko.observable(false);

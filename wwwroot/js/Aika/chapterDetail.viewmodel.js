@@ -51,6 +51,17 @@
             },
 
             /**
+             * Opens the dialog to search for skills
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @param {function} createCallback Optional callback that will get triggered on hitting the new button, if none is provided the button will be hidden
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openSkillSearch: function(dialogTitle, createCallback) {
+                return this.openDialog(dialogTitle, this.searchSkills, createCallback, null);
+            },
+
+            /**
              * Opens the dialog to search for kirja pages
              * 
              * @param {string} dialogTitle Title of the dialog
@@ -321,6 +332,39 @@
 
 
             /**
+             * Searches Evne skills
+             * 
+             * @param {string} searchPattern Search Pattern
+             * @returns {jQuery.Deferred} Deferred for the result
+             */
+            searchSkills: function(searchPattern) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
+                    type: "GET"
+                }).done(function(data) {
+                    var result = {
+                        hasMore: data.hasMore,
+                        entries: []
+                    };
+
+                    for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
+                    {
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill#id=" + data.flexFieldObjects[curEntry].id));
+                    }
+
+                    def.resolve(result);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            },
+
+
+            /**
              * Searches aika quests
              * 
              * @param {string} searchPattern Search Pattern
@@ -407,6 +451,10 @@
             this.nodePaper = new ko.observable();
         
             this.showConfirmNodeDeleteDialog = new ko.observable(false);
+            this.deleteLoading = new ko.observable(false);
+            this.deleteErrorOccured = new ko.observable(false);
+            this.deleteErrorAdditionalInformation =  new ko.observable("");
+            this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
             this.errorOccured = new ko.observable(false);
@@ -473,18 +521,50 @@
                 newNode.attr(".inPorts circle/magnet", "passive");
                 
                 var self = this;
-                newNode.onDelete = function() {
-                    return self.onDelete();
+                newNode.onDelete = function(node) {
+                    return self.onDelete(node);
                 };
+            },
+
+            /**
+             * Reloads the fields for nodes
+             * 
+             * @param {string} id Id of the object for which to reload the nodes
+             */
+            reloadFieldsForNodes: function(objectType, id) {
+                GoNorth.DefaultNodeShapes.Shapes.resetSharedObjectLoading(objectType, id);
+
+                if(!this.nodeGraph())
+                {
+                    return;
+                }
+
+                var paper = this.nodePaper();
+                var elements = this.nodeGraph().getElements();
+                for(var curElement = 0; curElement < elements.length; ++curElement)
+                {
+                    var view = paper.findViewByModel(elements[curElement]);
+                    if(view && view.reloadSharedLoadedData)
+                    {
+                        view.reloadSharedLoadedData(objectType, id);
+                    }
+                }
             },
 
 
             /**
              * Delete Callback if a user wants to delete a node
+             * 
+             * @param {object} node Node to delete
+             * @returns {jQuery.Deferred} Deferred that will be resolved if the user deletes the node
              */
-            onDelete: function() {
+            onDelete: function(node) {
+                this.deleteLoading(false);
+                this.deleteErrorOccured(false);
+                this.deleteErrorAdditionalInformation("");
                 this.showConfirmNodeDeleteDialog(true);
 
+                this.deleteNodeTarget = node;
                 this.deleteDeferred = new jQuery.Deferred();
                 return this.deleteDeferred.promise();
             },
@@ -493,6 +573,39 @@
              * Deletes the node for which the dialog is opened
              */
             deleteNode: function() {
+                if(!this.deleteNodeTarget || !this.deleteNodeTarget.validateDelete)
+                {
+                    this.resolveDeleteDeferred();
+                }
+                else
+                {
+                    var deleteDef = this.deleteNodeTarget.validateDelete();
+                    if(!deleteDef)
+                    {
+                        this.resolveDeleteDeferred();
+                    }
+                    else
+                    {
+                        var self = this;
+                        this.deleteLoading(true);
+                        this.deleteErrorOccured(false);
+                        this.deleteErrorAdditionalInformation(""); 
+                        deleteDef.done(function() {
+                            self.deleteLoading(false);
+                            self.resolveDeleteDeferred();
+                        }).fail(function(err) {
+                            self.deleteLoading(false);
+                            self.deleteErrorOccured(true);
+                            self.deleteErrorAdditionalInformation(err); 
+                        });
+                    }
+                }
+            },
+
+            /**
+             * Resolves the delete deferred
+             */
+            resolveDeleteDeferred: function() {
                 if(this.deleteDeferred)
                 {
                     this.deleteDeferred.resolve();
@@ -511,6 +624,10 @@
                     this.deleteDeferred = null;
                 }
                 this.showConfirmNodeDeleteDialog(false);
+                this.deleteLoading(false);
+                this.deleteErrorOccured(false);
+                this.deleteErrorAdditionalInformation("");
+                this.deleteNodeTarget = null;
             },
 
             /**
@@ -723,6 +840,38 @@
 
                 return loadDetailViewData(chapterNode, detailViewId);
             };
+
+            /**
+            * Checks if a chapter or chapter detail node can be deleted
+            * 
+            * @param {string} detailNodeId Detail Node id
+            * @returns {jQuery.Deferred} Deferred for the validation process
+            */
+            Shared.validateChapterDetailDelete = function(detailNodeId) {
+               if(!detailNodeId)
+               {
+                   return null;
+               }
+
+               var def = new jQuery.Deferred();
+               jQuery.ajax({ 
+                   url: "/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId, 
+                   type: "GET"
+               }).done(function(data) {
+                   if(data.canBeDeleted)
+                   {
+                       def.resolve();
+                   }
+                   else
+                   {
+                       def.reject(data.errorMessage);
+                   }
+               }).fail(function(xhr) {
+                   def.reject("");
+               });
+
+               return def.promise();
+           };
 
         }(Aika.Shared = Aika.Shared || {}));
     }(GoNorth.Aika = GoNorth.Aika || {}));
@@ -1482,6 +1631,14 @@
                         });
                     },
 
+                    /**
+                     * Checks if a node can be deleted
+                     * 
+                     * @returns {jQuery.Deferred} Deferred for the validation process
+                     */
+                    validateDelete: function() {
+                        return Aika.Shared.validateChapterDetailDelete(this.model.get("detailViewId"));
+                    },
 
                     /**
                      * Shows the loading indicator

@@ -92,6 +92,8 @@
 
             /**
              * Deserializes the data
+             * 
+             * @returns {string} Id of the selected quest
              */
             Actions.SetQuestStateAction.prototype.deserializeData = function() {
                 var actionData = this.nodeModel.get("actionData");
@@ -132,6 +134,10 @@
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", this.getObjectTypeName());
+                this.nodeModel.set("actionRelatedToObjectId", questId);
             }
 
             /**

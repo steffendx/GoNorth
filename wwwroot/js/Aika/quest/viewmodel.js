@@ -152,6 +152,17 @@
                     return self.chooseObjectDialog.openNpcSearch(Aika.Localization.QuestViewModel.ChooseNpc);                    
                 };
                 
+                // Opens the skill search dialog 
+                GoNorth.DefaultNodeShapes.openSkillSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.chooseObjectDialog.openSkillSearch(Aika.Localization.QuestViewModel.ChooseSkill);                    
+                };
             };
 
             Quest.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
@@ -433,6 +444,8 @@
                     self.isImplemented(data.isImplemented);
 
                     self.fieldManager.syncFieldIds(data);
+
+                    self.reloadFieldsForNodes(GoNorth.DefaultNodeShapes.Shapes.ObjectResourceQuest, self.id());
 
                     self.callOnQuestSaved();
                     self.isLoading(false);

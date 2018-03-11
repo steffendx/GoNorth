@@ -24,5 +24,10 @@ namespace GoNorth.Data.Kortisto
         [ListCompareAttribute(LabelKey = "InventoryChanged")]
         public List<KortistoInventoryItem> Inventory { get; set; }
 
+        /// <summary>
+        /// Skill
+        /// </summary>
+        [ListCompareAttribute(LabelKey = "SkillChanged")]
+        public List<KortistoNpcSkill> Skills { get; set; }
     }
 }

@@ -244,6 +244,110 @@
   },
 
   {
+    "outputFileName": "wwwroot/js/Evne/overview.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/flexFieldOverview.BaseViewModel.js",
+      "wwwroot/js/Evne/overview/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Evne/manageTemplates.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/flexFieldManageTemplates.BaseViewModel.js",
+      "wwwroot/js/Evne/manageTemplates/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Evne/skill.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+
+      "wwwroot/js/Shared/flexFieldUtil.js",
+
+      "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
+
+      "wwwroot/js/Shared/nodeGraph/questStates.js",
+      "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
+      "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
+
+      "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/groupCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseObjectValueCondition.js",
+      "wwwroot/js/Evne/skillForm/conditions/checkSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseQuestValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkQuestStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcAliveStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkGameTimeCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditionNode.js",
+      "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
+
+      "wwwroot/js/Shared/nodeGraph/actionNode.js",
+      "wwwroot/js/Shared/nodeGraph/actions/baseAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueChooseObjectAction.js",
+      "wwwroot/js/Evne/skillForm/actions/changeCurrentSkillValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changePlayerValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setObjectStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setPlayerStateAction.js",
+      "wwwroot/js/Evne/skillForm/actions/setTargetNpcStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/waitAction.js",
+
+      "wwwroot/js/Evne/skillForm/textNode.js",
+
+      "wwwroot/js/Evne/skillForm/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Evne/evneLang.de.js",
+    "inputFiles": [
+      "wwwroot/js/Evne/skillForm/skillLang.de.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Evne/evneLang.en.js",
+    "inputFiles": [
+      "wwwroot/js/Evne/skillForm/skillLang.en.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
     "outputFileName": "wwwroot/js/Kirja/page.viewmodel.js",
     "inputFiles": [
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
@@ -331,7 +435,7 @@
       "wwwroot/js/Shared/nodeGraph/actions/baseAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changeValueAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changeValueChooseObjectAction.js",
-      "wwwroot/js/Tale/dialogForm/actions/changePlayerValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changePlayerValueAction.js",
       "wwwroot/js/Tale/dialogForm/actions/changeNpcValueAction.js",
       "wwwroot/js/Tale/dialogForm/actions/changeInventoryAction.js",
       "wwwroot/js/Tale/dialogForm/actions/spawnItemInPlayerInventoryAction.js",
@@ -341,12 +445,24 @@
       "wwwroot/js/Shared/nodeGraph/actions/changeQuestValueAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/setQuestStateAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/addQuestTextAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/waitAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setObjectStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setPlayerStateAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/setNpcStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/learnForgetSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerLearnSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerForgetSkillAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/npcLearnSkillAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/npcForgetSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeSkillValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changePlayerSkillValueAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/changeNpcSkillValueAction.js",
 
       "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
       "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditions/groupCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditions/checkValueCondition.js",
-      "wwwroot/js/Tale/dialogForm/conditions/checkPlayerValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerValueCondition.js",
       "wwwroot/js/Tale/dialogForm/conditions/checkNpcValueCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditions/checkNpcAliveStateCondition.js",
       "wwwroot/js/Tale/dialogForm/conditions/checkInventoryCondition.js",
@@ -355,6 +471,15 @@
       "wwwroot/js/Shared/nodeGraph/conditions/checkChooseObjectValueCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditions/checkChooseQuestValueCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditions/checkQuestStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkGameTimeCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChoosePlayerSkillValueCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkChooseNpcSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerNotLearnedSkillCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkNpcLearnedSkillCondition.js",
+      "wwwroot/js/Tale/dialogForm/conditions/checkNpcNotLearnedSkillCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditionNode.js",
       "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
 
@@ -462,7 +587,13 @@
       "wwwroot/js/Shared/nodeGraph/conditions/checkChooseQuestValueCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditions/checkQuestStateCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditions/checkNpcAliveStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkGameTimeCondition.js",
       "wwwroot/js/Aika/quest/conditions/checkQuestMarkerCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChoosePlayerSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerNotLearnedSkillCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditionNode.js",
       "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
 
@@ -477,6 +608,12 @@
       "wwwroot/js/Aika/quest/actions/changeQuestInNpcDialogBaseAction.js",
       "wwwroot/js/Aika/quest/actions/changeQuestStateInNpcDialogAction.js",
       "wwwroot/js/Aika/quest/actions/changeQuestTextInNpcDialogAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/waitAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/learnForgetSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerLearnSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerForgetSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeSkillValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changePlayerSkillValueAction.js",
 
       "wwwroot/js/Aika/shared/finishNode.js",
       "wwwroot/js/Aika/shared/startNode.js",
@@ -568,6 +705,7 @@
       "wwwroot/js/ImplementationStatus/overview/implementationStatusNpcList.js",
       "wwwroot/js/ImplementationStatus/overview/implementationStatusDialogList.js",
       "wwwroot/js/ImplementationStatus/overview/implementationStatusItemList.js",
+      "wwwroot/js/ImplementationStatus/overview/implementationStatusSkillList.js",
       "wwwroot/js/ImplementationStatus/overview/implementationStatusQuestList.js",
       "wwwroot/js/ImplementationStatus/overview/implementationStatusMarkerList.js",
       "wwwroot/js/ImplementationStatus/overview/viewmodel.js"

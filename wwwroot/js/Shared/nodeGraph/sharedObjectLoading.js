@@ -18,12 +18,35 @@
             /// Object Resource for Map Marker
             Shapes.ObjectResourceMapMarker = 4;
 
+            /// Object Resource for Skills
+            Shapes.ObjectResourceSkill = 5;
+
 
             /// Cached loaded objects
             var loadedObjects = {};
 
             /// Deferreds for loading objects
             var objectsLoadingDeferreds = {};
+
+
+            /**
+             * Resets the loaded value for an object
+             * 
+             * @param {number} objectType Object Type
+             * @param {string} objectId Object Id
+             */
+            Shapes.resetSharedObjectLoading = function(objectType, objectId)
+            {
+                if(loadedObjects[objectType] && loadedObjects[objectType][objectId])
+                {
+                    loadedObjects[objectType][objectId] = null;
+                }
+
+                if(objectsLoadingDeferreds[objectType] && objectsLoadingDeferreds[objectType][objectId])
+                {
+                    objectsLoadingDeferreds[objectType][objectId] = null;
+                }
+            };
 
 
             /**

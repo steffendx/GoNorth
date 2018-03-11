@@ -164,6 +164,69 @@ namespace GoNorth.Services.Timeline
 
 
         /// <summary>
+        /// A new Evne Folder was created
+        /// </summary>
+        EvneFolderCreated = 65,
+
+        /// <summary>
+        /// An Evne Folder was deleted
+        /// </summary>
+        EvneFolderDeleted = 66,
+
+        /// <summary>
+        /// An Evne Folder was updated
+        /// </summary>
+        EvneFolderUpdated = 67,
+
+
+        /// <summary>
+        /// An Evne Skill Template was created
+        /// </summary>
+        EvneSkillTemplateCreated = 68,
+
+        /// <summary>
+        /// An Evne Skill Template was deleted
+        /// </summary>
+        EvneSkillTemplateDeleted = 69,
+
+        /// <summary>
+        /// An Evne Skill Template was updated
+        /// </summary>
+        EvneSkillTemplateUpdated = 70,
+
+        /// <summary>
+        /// An image was added to a Evne Skill Template
+        /// </summary>
+        EvneSkillTemplateImageUpload = 71,
+
+        /// <summary>
+        /// The fields of an Evne Skill template were distributed
+        /// </summary>
+        EvneSkillTemplateFieldsDistributed = 72,
+
+
+        /// <summary>
+        /// An Evne Skill was created
+        /// </summary>
+        EvneSkillCreated = 73,
+
+        /// <summary>
+        /// An Evne SKill was deleted
+        /// </summary>
+        EvneSkillDeleted = 74,
+
+        /// <summary>
+        /// An Evne SKill was updated
+        /// </summary>
+        EvneSkillUpdated = 75,
+
+        /// <summary>
+        /// An Image was added to an Evne Skill
+        /// </summary>
+        EvneSkillImageUpload = 76,
+
+
+        /// <summary>
         /// A Kirja page was created
         /// </summary>
         KirjaPageCreated = 17,
@@ -177,6 +240,16 @@ namespace GoNorth.Services.Timeline
         /// A Kirja page was updated
         /// </summary>
         KirjaPageUpdated = 19,
+
+        /// <summary>
+        /// A Kirja attachment was added
+        /// </summary>
+        KirjaAttachmentAdded = 63,
+        
+        /// <summary>
+        /// A Kirja attachment was deleted
+        /// </summary>
+        KirjaAttachmentDeleted = 64,
 
 
         /// <summary>
@@ -319,6 +392,11 @@ namespace GoNorth.Services.Timeline
         /// Implemented Item
         /// </summary>
         ImplementedItem = 58,
+
+        /// <summary>
+        /// Implemented Skill
+        /// </summary>
+        ImplementedSkill = 77,
 
         /// <summary>
         /// Implemented Quest

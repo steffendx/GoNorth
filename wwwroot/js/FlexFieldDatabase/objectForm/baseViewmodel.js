@@ -5,6 +5,7 @@
 
             /**
              * Object Form Base View Model
+             * @param {string} rootPage Root Page
              * @param {string} apiControllerName Api Controller name
              * @param {string} lockName Name of the resource used for the lock for an object of this type
              * @param {string} templateLockName Name of the resource used for the lock for a template of this type
@@ -12,10 +13,11 @@
              * @param {string} kartaApiMentionedMethod Method of the karta api which is used to load the maps in which the object is mentioned
              * @class
              */
-            ObjectForm.BaseViewModel = function(apiControllerName, lockName, templateLockName, kirjaApiMentionedMethod, kartaApiMarkedMethod)
+            ObjectForm.BaseViewModel = function(rootPage, apiControllerName, lockName, templateLockName, kirjaApiMentionedMethod, kartaApiMarkedMethod)
             {
                 GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldHandlingViewModel.apply(this);
 
+                this.rootPage = rootPage;
                 this.apiControllerName = apiControllerName;
 
                 this.lockName = lockName;
@@ -354,11 +356,22 @@
                         self.isLoading(false);
                     }
 
+                    self.runAfterSave(data);
+
                     self.callObjectGridRefresh();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
                 });
+            };
+
+            /**
+             * Runs logic after save
+             * 
+             * @param {object} data Returned data after save
+             */
+            ObjectForm.BaseViewModel.prototype.runAfterSave = function(data) {
+
             };
 
             /**
@@ -414,7 +427,7 @@
                 }).done(function(data) {
                     self.callObjectGridRefresh();
                     self.closeConfirmObjectDeleteDialog();
-                    window.close();
+                    window.location = self.rootPage;
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
@@ -544,6 +557,11 @@
              * Loads the karta maps
              */
             ObjectForm.BaseViewModel.prototype.loadKartaMaps = function() {
+                if(!this.kartaApiMarkedMethod)
+                {
+                    return;
+                }
+
                 this.loadingMarkedInKartaMaps(true);
                 this.errorLoadingMarkedInKartaMaps(false);
                 var self = this;
@@ -663,11 +681,19 @@
                     {
                         self.isReadonly(true);
                         self.lockedByUser(lockedUsername);
+                        self.setAdditionalDataToReadonly();
                     }
                 }).fail(function() {
                     self.errorOccured(true);
                     self.isReadonly(true);
                 });
+            };
+
+            /**
+             * Sets additional data to readonly
+             */
+            ObjectForm.BaseViewModel.prototype.setAdditionalDataToReadonly = function() {
+
             };
 
 

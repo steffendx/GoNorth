@@ -115,6 +115,9 @@
                         return null;
                     },
 
+                    /**
+                     * Resets the action data
+                     */
                     resetActionData: function() {
                         this.model.set("actionRelatedToObjectType", null);
                         this.model.set("actionRelatedToObjectId", null);
@@ -138,6 +141,19 @@
                         var actionContent = this.$box.find(".gn-actionNodeActionContent");
                         actionContent.html(currentAction.getContent());
                         currentAction.onInitialized(actionContent, this);
+                    },
+
+                    /**
+                     * Reloads the shared data
+                     * 
+                     * @param {number} objectType Object Type
+                     * @param {string} objectId Object Id
+                     */
+                    reloadSharedLoadedData: function(objectType, objectId) {
+                        if(this.model.get("actionRelatedToObjectId") == objectId)
+                        {
+                            this.syncActionData();
+                        }
                     },
 
 

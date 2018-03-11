@@ -7,6 +7,7 @@
             Localization.ViewModel.ChooseItem = "Choose item";
             Localization.ViewModel.ChooseQuest = "Choose quest";
             Localization.ViewModel.ChooseNpc = "Choose npc";
+            Localization.ViewModel.ChooseSkill = "Choose skill";
 
             // Text Lines
             GoNorth.DefaultNodeShapes.Localization.TypeNames["tale.PlayerText"] = "Player line";
@@ -32,7 +33,6 @@
             // Action
             Localization.Actions = {};
 
-            Localization.Actions.ChangePlayerValueLabel = "Change player value";
             Localization.Actions.ChangeNpcValueLabel = "Change npc value";
 
             Localization.Actions.ChooseItem = "<Choose item>";
@@ -42,10 +42,15 @@
             Localization.Actions.TransferItemToNpcInventoryLabel = "Give item to npc";
             Localization.Actions.ItemQuantity = "Quantity (blank = 1):"
 
+            Localization.Actions.SetNpcStateLabel = "Change npc state";
+
+            Localization.Actions.NpcLearnsSkillLabel = "Npc learns skill";
+            Localization.Actions.NpcForgetSkillLabel = "Npc forgets skill";
+
+            Localization.Actions.ChangeNpcSkillValueLabel = "Change npc skill value";
+            
             // Condition
             Localization.Conditions = {};
-            Localization.Conditions.CheckPlayerValueLabel = "Check player value";
-            Localization.Conditions.PlayerLabel = "Player";
             Localization.Conditions.CheckNpcValueLabel = "Check npc value";
             Localization.Conditions.NpcLabel = "Npc";
 
@@ -54,9 +59,19 @@
             Localization.Conditions.CheckNpcInventoryLabel = "Check npc inventory";
             Localization.Conditions.NpcInventoryLabel = "Npc inventory";
             Localization.Conditions.ChooseItem = "<Choose item>";
+            Localization.Conditions.OpenItemTooltip  = "Opens the chosen item";
             Localization.Conditions.ItemOperatorHasAtLeast = "has at least";
             Localization.Conditions.ItemOperatorHasMaximum = "hast at maximum";
             Localization.Conditions.ItemCount = "Cnt";
+
+            Localization.Conditions.CheckChooseNpcSkillValueLabel = "Check npc skill value";
+            Localization.Conditions.NpcSkillPrefix = "Npc ";
+
+            Localization.Conditions.CheckNpcLearnedSkillLabel = "Npc can use skill";
+            Localization.Conditions.CheckNpcLearnedSkillPrefixLabel = "Npc can use ";
+
+            Localization.Conditions.CheckNpcNotLearnedSkillLabel = "Npc can not use skill";
+            Localization.Conditions.CheckNpcNotLearnedSkillPrefixLabel = "Npc can not use ";
 
         }(Tale.Localization = Tale.Localization || {}));
     }(GoNorth.Tale = GoNorth.Tale || {}));

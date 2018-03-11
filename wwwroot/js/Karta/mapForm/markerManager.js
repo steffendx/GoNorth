@@ -265,6 +265,15 @@
                 },
 
                 /**
+                 * Deselects the current entry
+                 */
+                deselectCurrentEntry: function() {
+                    this.onEntrySelected(null);
+                    this.resetSelectionData();
+                    this.viewModel.setCurrentObjectId(null, null);
+                },
+
+                /**
                  * Selects an entry
                  * 
                  * @param {object} entry Entry to select
@@ -272,6 +281,12 @@
                 selectEntry: function(entry) {
                     if(this.viewModel.isReadonly())
                     {
+                        return;
+                    }
+
+                    if(this.viewModel.selectedMarkerObjectId() == entry.id)
+                    {
+                        this.deselectCurrentEntry();
                         return;
                     }
 

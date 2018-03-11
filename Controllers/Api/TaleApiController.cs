@@ -218,8 +218,8 @@ namespace GoNorth.Controllers.Api
 
             existingDialog.ProjectId = project.Id;
             existingDialog.Link = dialog.Link != null ? dialog.Link : new List<NodeLink>();
-            existingDialog.PlayerText = dialog.PlayerText != null ? dialog.PlayerText : new List<TaleTextNode>();
-            existingDialog.NpcText = dialog.NpcText != null ? dialog.NpcText : new List<TaleTextNode>();
+            existingDialog.PlayerText = dialog.PlayerText != null ? dialog.PlayerText : new List<TextNode>();
+            existingDialog.NpcText = dialog.NpcText != null ? dialog.NpcText : new List<TextNode>();
             existingDialog.Choice = dialog.Choice != null ? dialog.Choice : new List<TaleChoiceNode>();
             existingDialog.Action = dialog.Action != null ? dialog.Action : new List<ActionNode>();
             existingDialog.Condition = dialog.Condition != null ? dialog.Condition : new List<ConditionNode>();

@@ -7,6 +7,7 @@
             Localization.QuestViewModel = {};
             Localization.QuestViewModel.ChooseQuest = "Quest auswählen";
             Localization.QuestViewModel.ChooseNpc = "Npc auswählen";
+            Localization.QuestViewModel.ChooseSkill = "Fähigkeit auswählen";
 
             // Quest Text Node
             GoNorth.DefaultNodeShapes.Localization.TypeNames["aika.Text"] = "Text";

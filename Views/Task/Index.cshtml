@@ -106,13 +106,20 @@
     </div>
 
     <!-- Command Buttons -->
-    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openCreateTaskGroupDialog, disable: isLoading() || isReadonly()">
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openCreateTaskGroupDialog, disable: isLoading() || isReadonly() || !id(), attr: { title: !id() ? '@Localizer["SelectTaskBoard"]': '' }">
         <i class="glyphicon glyphicon-plus" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["CreateTaskGroup"]
     </button>
 
     <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
         <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
     </div>
+
+    @if(User.IsInRole(RoleNames.TaskBoardManager))
+    {
+        <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: !isLoading() && allBoards().length == 0">
+            @Localizer["NoOpenBoards"] <a asp-area="" asp-controller="Task" asp-action="ManageBoards">@Localizer["ClickHereManageBoards"]</a>@Localizer["ClickHereManageBoardsPostfix"]
+        </div>
+    }
 
     <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: isReadonly">
         <strong>@Localizer["Locked"]</strong> @Localizer["BoardIsClosed"]

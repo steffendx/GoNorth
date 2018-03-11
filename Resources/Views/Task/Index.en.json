@@ -5,6 +5,11 @@
 
     "CreateTaskGroup": "Create task group",
     "CreateTaskToolTip": "Create task",
+    
+    "NoOpenBoards": "No open task board exists at the moment.",
+    "ClickHereManageBoards": "Click here",
+    "ClickHereManageBoardsPostfix": " to create a new one or open an old task board.",
+    "SelectTaskBoard": "Please select a task board before creating a task group",
 
     "SwitchBoard": "Switch task board",
     "ManageBoards": "Manage task boards",

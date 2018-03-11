@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
+using GoNorth.Data.Evne;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Kortisto;
@@ -38,6 +39,16 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// Item Implementation Snapshot Db Access
         /// </summary>
         private readonly IStyrItemImplementationSnapshotDbAccess _itemSnapshotDbAccess;
+
+        /// <summary>
+        /// Skill Db Access
+        /// </summary>
+        private readonly IEvneSkillDbAccess _skillDbAccess;
+
+        /// <summary>
+        /// Skill Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IEvneSkillImplementationSnapshotDbAccess _skillSnapshotDbAccess;
 
         /// <summary>
         /// Dialog Db Access
@@ -81,6 +92,8 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="npcSnapshotDbAccess">Npc Implementation Snapshot Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="itemSnapshotDbAccess">Item Implementation Snapshot Db Access</param>
+        /// <param name="skillDbAccess">Skill Db Access</param>
+        /// <param name="skillSnapshotDbAccess">Skill Implementation Snapshot Db Access</param>
         /// <param name="dialogDbAccess">Dialog Db Access</param>
         /// <param name="dialogSnapshotDbAccess">Dialog Implementation Snapshot Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
@@ -89,13 +102,15 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="markerSnapshotDbAccess">Marker Db Access</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public GenericImplementationStatusComparer(IKortistoNpcDbAccess npcDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcSnapshotDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemImplementationSnapshotDbAccess itemSnapshotDbAccess, 
-                                                   ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, 
-                                                   IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
+                                                   IEvneSkillDbAccess skillDbAccess, IEvneSkillImplementationSnapshotDbAccess skillSnapshotDbAccess, ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, 
+                                                   IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
         {
             _npcDbAccess = npcDbAccess;
             _npcSnapshotDbAccess = npcSnapshotDbAccess;
             _itemDbAccess = itemDbAccess;
             _itemSnapshotDbAccess = itemSnapshotDbAccess;
+            _skillDbAccess = skillDbAccess;
+            _skillSnapshotDbAccess = skillSnapshotDbAccess;
             _dialogDbAccess = dialogDbAccess;
             _dialogSnapshotDbAccess = dialogSnapshotDbAccess;
             _questDbAccess = questDbAccess;
@@ -139,6 +154,24 @@ namespace GoNorth.Services.ImplementationStatusCompare
             StyrItem oldItem = await _itemSnapshotDbAccess.GetSnapshotById(itemId);
             
             return CompareObjects(currentItem, oldItem);
+        }
+        
+        /// <summary>
+        /// Compares a skill
+        /// </summary>
+        /// <param name="skillId">Id of the skill</param>
+        /// <param name="currentSkill">Current skill, if null the skill will be loaded</param>
+        /// <returns>Compare Result</returns>
+        public async Task<CompareResult> CompareSkill(string skillId, EvneSkill currentSkill = null)
+        {
+            if(currentSkill == null)
+            {
+                currentSkill = await _skillDbAccess.GetFlexFieldObjectById(skillId);
+            }
+
+            EvneSkill oldSkill = await _skillSnapshotDbAccess.GetSnapshotById(skillId);
+            
+            return CompareObjects(currentSkill, oldSkill);
         }
 
         /// <summary>
@@ -470,6 +503,12 @@ namespace GoNorth.Services.ImplementationStatusCompare
                 await ResolveItemNames(itemIds, differences);
             }
 
+            List<string> skillIds = CollectIds(differences, CompareDifferenceValue.ValueResolveType.ResolveSkillName);
+            if(skillIds.Count > 0)
+            {
+                await ResolveSkillNames(skillIds, differences);
+            }
+
             ResolveLanguageKeys(differences);
         }
 
@@ -523,16 +562,31 @@ namespace GoNorth.Services.ImplementationStatusCompare
         {
             itemIds = itemIds.Distinct().ToList();
             List<StyrItem> items = await _itemDbAccess.ResolveFlexFieldObjectNames(itemIds);
-            Dictionary<string, StyrItem> itemLookup = items.ToDictionary(i => i.Id);
-            FillItemNames(differences, itemLookup);
+            Dictionary<string, string> itemLookup = items.ToDictionary(i => i.Id, i => i.Name);
+            FillObjectNames(differences, itemLookup, CompareDifferenceValue.ValueResolveType.ResolveItemName, "ItemWasDeleted");
         }
 
         /// <summary>
-        /// Fills item names
+        /// Resolves skill names
+        /// </summary>
+        /// <param name="skillIds">Skill Ids to resolve</param>
+        /// <param name="differences">Differences to fill</param>
+        private async Task ResolveSkillNames(List<string> skillIds, List<CompareDifference> differences)
+        {
+            skillIds = skillIds.Distinct().ToList();
+            List<EvneSkill> skills = await _skillDbAccess.ResolveFlexFieldObjectNames(skillIds);
+            Dictionary<string, string> skillLookup = skills.ToDictionary(i => i.Id, i => i.Name);
+            FillObjectNames(differences, skillLookup, CompareDifferenceValue.ValueResolveType.ResolveSkillName, "SkillWasDeleted");
+        }
+
+        /// <summary>
+        /// Fills object names
         /// </summary>
         /// <param name="differences">Differences to fill</param>
-        /// <param name="itemLookup">Dictionary to get item names from</param>
-        private void FillItemNames(List<CompareDifference> differences, Dictionary<string, StyrItem> itemLookup)
+        /// <param name="objectLookup">Dictionary to get object names from</param>
+        /// <param name="objectType">Object type to resolve</param>
+        /// <param name="deletedMessage">Message used if object was deleted</param>
+        private void FillObjectNames(List<CompareDifference> differences, Dictionary<string, string> objectLookup, CompareDifferenceValue.ValueResolveType objectType, string deletedMessage)
         {
             if(differences == null)
             {
@@ -541,10 +595,10 @@ namespace GoNorth.Services.ImplementationStatusCompare
 
             foreach(CompareDifference curDifference in differences)
             {
-                FillSingleItemName(curDifference.Name, itemLookup);
-                FillSingleItemName(curDifference.NewValue, itemLookup);
-                FillSingleItemName(curDifference.OldValue, itemLookup);
-                FillItemNames(curDifference.SubDifferences, itemLookup);
+                FillSingleObjectName(curDifference.Name, objectLookup, objectType, deletedMessage);
+                FillSingleObjectName(curDifference.NewValue, objectLookup, objectType, deletedMessage);
+                FillSingleObjectName(curDifference.OldValue, objectLookup, objectType, deletedMessage);
+                FillObjectNames(curDifference.SubDifferences, objectLookup, objectType, deletedMessage);
             }
         }
 
@@ -552,21 +606,23 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// Fills a single item name
         /// </summary>
         /// <param name="value">Value to fill</param>
-        /// <param name="itemLookup">Dictionary to grab values from</param>
-        private void FillSingleItemName(CompareDifferenceValue value, Dictionary<string, StyrItem> itemLookup)
+        /// <param name="objectLookup">Dictionary to get object names from</param>
+        /// <param name="objectType">Object type to resolve</param>
+        /// <param name="deletedMessage">Message used if object was deleted</param>
+        private void FillSingleObjectName(CompareDifferenceValue value, Dictionary<string, string> objectLookup, CompareDifferenceValue.ValueResolveType objectType, string deletedMessage)
         {
-            if(value == null || value.ResolveType != CompareDifferenceValue.ValueResolveType.ResolveItemName)
+            if(value == null || value.ResolveType != objectType)
             {
                 return;
             }
 
-            if(itemLookup.ContainsKey(value.Value))
+            if(objectLookup.ContainsKey(value.Value))
             {
-                value.Value = itemLookup[value.Value].Name;
+                value.Value = objectLookup[value.Value];
             }
             else
             {
-                value.Value = _localizer["ItemWasDeleted"];
+                value.Value = _localizer[deletedMessage];
             }
         }
 

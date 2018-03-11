@@ -37,9 +37,26 @@
     "StyrItemUpdated": "The item <a href='/Styr/Item#id={1}'>{0}</a> was updated.",
     "StyrItemImageUpload": "The image of the item <a href='/Styr/Item#id={1}'>{0}</a> was updated.",
 
+    "EvneFolderCreated": "A new category {0} was created in Evne.",
+    "EvneFolderDeleted": "The category {0} was deleted in Evne.",
+    "EvneFolderUpdated": "The category {0} was updated in Evne.",
+
+    "EvneSkillTemplateCreated": "A new skill template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> was created.",
+    "EvneSkillTemplateDeleted": "The skill template {0} was deleted.",
+    "EvneSkillTemplateUpdated": "The skill template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> was updated.",
+    "EvneSkillTemplateImageUpload": "The image of the skill template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> was updated.",
+    "EvneSkillTemplateFieldsDistributed": "The fields of the skill template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> were distributed.",
+
+    "EvneSkillCreated": "A new skill <a href='/Evne/Skill#id={1}'>{0}</a> was created.",
+    "EvneSkillDeleted": "The skill {0} was deleted.",
+    "EvneSkillUpdated": "The skill <a href='/Evne/Skill#id={1}'>{0}</a> was updated.",
+    "EvneSkillImageUpload": "The image of the skill <a href='/Evne/Skill#id={1}'>{0}</a> was updated.",
+
     "KirjaPageCreated": "A new page <a href='/Kirja#id={1}'>{0}</a> was created in Kirja.",
     "KirjaPageDeleted": "The page {0} was deleted in Kirja.",
     "KirjaPageUpdated": "The page <a href='/Kirja#id={1}'>{0}</a> was updated in Kirja.",
+    "KirjaAttachmentAdded": "The file {2} was uploaded to the Kirja page <a href='/Kirja#id={1}'>{0}</a>.",
+    "KirjaAttachmentDeleted": "The file {2} was deleted in the Kirja page <a href='/Kirja#id={1}'>{0}</a>.",
 
     "KartaMapCreated": "A new map <a href='/Karta#id={1}'>{0}</a> was created.",
     "KartaMapDeleted": "The map {0} was deleted.",
@@ -74,6 +91,7 @@
 
     "ImplementedNpc": "The npc <a href='/Kortisto/Npc#id={0}'>{1}</a> was implemented.",
     "ImplementedItem": "The item <a href='/Styr/Item#id={0}'>{1}</a> was implemented.",
+    "ImplementedSkill": "The skill <a href='/Evne/Skill#id={0}'>{1}</a> was implemented.",
     "ImplementedQuest": "The quest <a href='/Aika/Quest#id={0}'>{1}</a> was implemented.",
     "ImplementedDialog": "The dialog <a href='/Tale#npcId={0}'>{1}</a> was implemented.",
     "ImplementedMarker": "A marker in the map <a href='/Karta#id={0}&zoomOnMarkerId={1}&zoomOnMarkerType={2}'>{3}</a> was implemented."

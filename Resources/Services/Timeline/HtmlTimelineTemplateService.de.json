@@ -37,9 +37,26 @@
     "StyrItemUpdated": "Das Item <a href='/Styr/Item#id={1}'>{0}</a> wurde aktualisiert.",
     "StyrItemImageUpload": "Das Bild des Item <a href='/Styr/Item#id={1}'>{0}</a> wurde geändert.",
 
+    "EvneFolderCreated": "Ein neue Kategorie {0} wurde in Evne angelegt.",
+    "EvneFolderDeleted": "Die Kategorie {0} wurde in Evne gelöscht.",
+    "EvneFolderUpdated": "Die Kategorie {0} wurde in Evne aktualisiert.",
+
+    "EvneSkillTemplateCreated": "Ein neues Fertigkeiten Template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> wurde angelegt.",
+    "EvneSkillTemplateDeleted": "Das Fertigkeiten Template {0} wurde gelöscht.",
+    "EvneSkillTemplateUpdated": "Das Fertigkeiten Template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> wurde aktualisiert.",
+    "EvneSkillTemplateImageUpload": "Das Bild des Fertigkeiten Template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> wurde geändert.",
+    "EvneSkillTemplateFieldsDistributed": "Die Felder des Fertigkeiten Template <a href='/Evne/Skill#template=1&id={1}'>{0}</a> wurden verteilt.",
+
+    "EvneSkillCreated": "Eine neue Fähigkeit <a href='/Evne/Skill#id={1}'>{0}</a> wurde angelegt.",
+    "EvneSkillDeleted": "Die Fähigkeit {0} wurde gelöscht.",
+    "EvneSkillUpdated": "Die Fähigkeit <a href='/Evne/Skill#id={1}'>{0}</a> wurde aktualisiert.",
+    "EvneSkillImageUpload": "Das Bild der Fähigkeit <a href='/Evne/Skill#id={1}'>{0}</a> wurde geändert.",
+
     "KirjaPageCreated": "Eine neue Seite <a href='/Kirja#id={1}'>{0}</a> wurde in Kirja angelegt.",
     "KirjaPageDeleted": "Die Seite {0} wurde in Kirja gelöscht.",
     "KirjaPageUpdated": "Die Seite <a href='/Kirja#id={1}'>{0}</a> wurde in Kirja aktualisiert.",
+    "KirjaAttachmentAdded": "Die Datei {2} wurde zur Kirja Seite <a href='/Kirja#id={1}'>{0}</a> hochgeladen.",
+    "KirjaAttachmentDeleted": "Die Datei {2} wurde von der Kirja Seite <a href='/Kirja#id={1}'>{0}</a> gelöscht.",
 
     "KartaMapCreated": "Eine neue Karte <a href='/Karta#id={1}'>{0}</a> wurde angelegt.",
     "KartaMapDeleted": "Die Karte {0} wurde gelöscht.",
@@ -74,6 +91,7 @@
 
     "ImplementedNpc": "Der Npc <a href='/Kortisto/Npc#id={0}'>{1}</a> wurde implementiert.",
     "ImplementedItem": "Das Item <a href='/Styr/Item#id={0}'>{1}</a> wurde implementiert.",
+    "ImplementedSkill": "Die Fähigkeit <a href='/Evne/Skill#id={0}'>{1}</a> wurde implementiert.",
     "ImplementedQuest": "Der Quest <a href='/Aika/Quest#id={0}'>{1}</a> wurde implementiert.",
     "ImplementedDialog": "Der Dialog <a href='/Tale#npcId={0}'>{1}</a> wurde implementiert.",
     "ImplementedMarker": "Eine Markierung in der Karte <a href='/Karta#id={0}&zoomOnMarkerId={1}&zoomOnMarkerType={2}'>{3}</a> wurde implementiert."

@@ -543,7 +543,18 @@ namespace GoNorth.Controllers.Api
         public async Task<IActionResult> FlexFieldObject(string id)
         {
             T flexFieldObject = await _objectDbAccess.GetFlexFieldObjectById(id);
+            flexFieldObject = StripObject(flexFieldObject);
             return Ok(flexFieldObject);
+        }
+
+        /// <summary>
+        /// Strips an object based on the rights of a user
+        /// </summary>
+        /// <param name="flexFieldObject">Flex field object to strip</param>
+        /// <returns>Stripped object</returns>
+        protected virtual T StripObject(T flexFieldObject)
+        {
+            return flexFieldObject;
         }
 
         /// <summary>

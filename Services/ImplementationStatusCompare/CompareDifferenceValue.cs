@@ -23,6 +23,11 @@ namespace GoNorth.Services.ImplementationStatusCompare
             ResolveItemName,
 
             /// <summary>
+            /// Value is a skill id and must be resolved
+            /// </summary>
+            ResolveSkillName,
+
+            /// <summary>
             /// Value is a language key and must be resolved
             /// </summary>
             LanguageKey

@@ -8,7 +8,7 @@ namespace GoNorth.Models.FlexFieldDatabaseModels
     public class ObjectFormViewModel
     {
         /// <summary>
-        /// Project Name
+        /// Localizer
         /// </summary>
         public IViewLocalizer Localizer { get; set; }
         

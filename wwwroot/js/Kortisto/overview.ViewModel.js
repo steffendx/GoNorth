@@ -22,7 +22,7 @@
 
                 this.availableTemplates = new ko.observableArray();
 
-                this.currentFolderId = new ko.observable(folderId);
+                this.currentFolderId = new ko.observable("");
                 var folderId = GoNorth.Util.getParameterFromHash("folderId");
                 if(folderId)
                 {

@@ -4,6 +4,7 @@
 
     "CanNotDeletePageMentionedInOtherPages": "This page is mentioned in the pages \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeletePageMarkedInKartaMap": "The page is marked in the maps \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteRootPage": "The root page can not be deleted",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file..",
     "CouldNotUploadImage": "Image could not be uploaded.",

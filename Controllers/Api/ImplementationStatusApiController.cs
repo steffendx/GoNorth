@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
+using GoNorth.Data.Evne;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Kortisto;
@@ -68,6 +69,16 @@ namespace GoNorth.Controllers.Api
         private readonly IStyrItemImplementationSnapshotDbAccess _itemSnapshotDbAccess;
 
         /// <summary>
+        /// Skill Db Access
+        /// </summary>
+        private readonly IEvneSkillDbAccess _skillDbAccess;
+
+        /// <summary>
+        /// Skill Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IEvneSkillImplementationSnapshotDbAccess _skillSnapshotDbAccess; 
+
+        /// <summary>
         /// Dialog Db Access
         /// </summary>
         private readonly ITaleDbAccess _dialogDbAccess;
@@ -120,6 +131,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="npcSnapshotDbAccess">Npc Implementation Snapshot Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="itemSnapshotDbAccess">Item Implementation Snapshot Db Access</param>
+        /// <param name="skillDbAccess">Skill Db Access</param>
+        /// <param name="skillSnapshotDbAccess">Skill Implementation Snapshot Db Access</param>
         /// <param name="dialogDbAccess">Dialog Db Access</param>
         /// <param name="dialogSnapshotDbAccess">Dialog Implementation Snapshot Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
@@ -130,14 +143,16 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ImplementationStatusApiController(IImplementationStatusComparer implementationStatusComparer, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcSnapshotDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemImplementationSnapshotDbAccess itemSnapshotDbAccess,
-                                                 ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, 
-                                                 ITimelineService timelineService, ILogger<ImplementationStatusApiController> logger, IStringLocalizerFactory localizerFactory)
+                                                 IEvneSkillDbAccess skillDbAccess, IEvneSkillImplementationSnapshotDbAccess skillSnapshotDbAccess, ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, 
+                                                 IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, ITimelineService timelineService, ILogger<ImplementationStatusApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _implementationStatusComparer = implementationStatusComparer;
             _npcDbAccess = npcDbAccess;
             _npcSnapshotDbAccess = npcSnapshotDbAccess;
             _itemDbAccess = itemDbAccess;
             _itemSnapshotDbAccess = itemSnapshotDbAccess;
+            _skillDbAccess = skillDbAccess;
+            _skillSnapshotDbAccess = skillSnapshotDbAccess;
             _dialogDbAccess = dialogDbAccess;
             _dialogSnapshotDbAccess = dialogSnapshotDbAccess;
             _questDbAccess = questDbAccess;
@@ -236,6 +251,52 @@ namespace GoNorth.Controllers.Api
 
             // Add Timeline entry
             await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedItem, item.Id, item.Name);
+
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// Returns the compare results for a skill
+        /// </summary>
+        /// <param name="skillId">Id of the skill</param>
+        /// <returns>Compare results</returns>
+        [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
+        [Authorize(Roles = RoleNames.Evne)]
+        [HttpGet]
+        public async Task<IActionResult> CompareSkill(string skillId)
+        {
+            CompareResult result = await _implementationStatusComparer.CompareSkill(skillId);
+            
+            FormattedCompareResponse response = await BuildFormattedResponse(result);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Flags a skill as implemented
+        /// </summary>
+        /// <param name="skillId">Id of the skill</param>
+        /// <returns>Result</returns>
+        [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
+        [Authorize(Roles = RoleNames.Evne)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> FlagSkillAsImplemented(string skillId)
+        {
+            // Check Data
+            EvneSkill skill = await _skillDbAccess.GetFlexFieldObjectById(skillId);
+            if(skill == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            // Flag skill as implemented
+            skill.IsImplemented = true;
+            await _skillSnapshotDbAccess.SaveSnapshot(skill);
+            await _skillDbAccess.UpdateFlexFieldObject(skill);
+
+            // Add Timeline entry
+            await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedSkill, skill.Id, skill.Name);
 
             return Ok();
         }

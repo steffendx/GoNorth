@@ -123,6 +123,12 @@
              * Creates a new kirja page for a marker
              */
             Map.KirjaMarkerManager.prototype.createNewKirjaMarker = function() {
+                if(this.markerSelectionMode == newKirjaPageSelectionMode)
+                {
+                    this.deselectCurrentEntry();
+                    return;
+                }
+
                 this.viewModel.setCurrentObjectId(newKirjaPageButtonId, this);
                 this.markerSelectionMode = newKirjaPageSelectionMode;
             };

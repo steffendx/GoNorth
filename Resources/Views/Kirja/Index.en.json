@@ -5,6 +5,7 @@
     "StopEditPage": "Stop editing",
     "SavePage": "Save",
     "DeletePage": "Delete",
+    "CanNotDeleteRootPage": "The root page can not be deleted",
 
     "Name": "Name",
 
@@ -12,6 +13,7 @@
     "InsertAikaQuestLink": "Add link to quest",
     "InsertKortistoNpcLink": "Add link to npc",
     "InsertStyrItemLink": "Add link to item",
+    "InsertEvneSkillLink": "Add link to skill",
 
     "AreYouSure": "Are you sure?",
     "AreYouSureYouWantToDeleteThePage": "Are you sure you want to delete the page?",
@@ -29,6 +31,7 @@
     "Quests": "Quests",
     "Npcs": "Npcs",
     "Items": "Items",
+    "Skills": "Skills",
     "Maps": "Maps",
     "MarkedInMapNTimes": "Page is marked in the map {{0}} times. No zoom on marker is possible.",
     "Attachments": "Attachments",

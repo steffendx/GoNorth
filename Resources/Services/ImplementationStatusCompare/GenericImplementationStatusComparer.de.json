@@ -5,6 +5,7 @@
     "BlankValue": "<leer>",
 
     "ItemWasDeleted": "<Item wurde gelöscht>",
+    "SkillWasDeleted": "<Fähigkeit wurde gelöscht>",
 
     "PropertyNameName": "Name",
     "PropertyNameInventory": "Inventar",
@@ -31,6 +32,7 @@
 
     "ImageFileChanged": "Bild geändert",
     "InventoryChanged": "Inventar Änderungen:",
+    "SkillChanged": "Fähigkeiten Änderungen:",
     "FlexFieldObjectFieldsChanged": "Feld Änderungen:",
     "NodeLinksChanged": "Knoten Verbindungen geändert:",
     "NodePlayerLinesChanged": "Spieler Zeilen Knoten geändert:",

@@ -67,5 +67,18 @@ namespace GoNorth.Data.Kortisto
             }).ToListAsync();
         }
 
+        /// <summary>
+        /// Returns the npcs which have learned a skill with only the main values
+        /// </summary>
+        /// <param name="skillId">Skill id</param>
+        /// <returns>Npcs</returns>
+        public async Task<List<KortistoNpc>> GetNpcsByLearnedSkill(string skillId)
+        {
+            return await _ObjectCollection.AsQueryable().Where(n => n.Skills.Any(s => s.SkillId == skillId)).OrderBy(n => n.Name).Select(n => new KortistoNpc {
+                Id = n.Id,
+                Name = n.Name
+            }).ToListAsync();
+        }
+
     }
 }

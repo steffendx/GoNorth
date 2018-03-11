@@ -30,6 +30,20 @@
                 },
 
                 /**
+                 * Returns true if a serializes exists for a target array name
+                 * 
+                 * @param {string} targetArrayName Target Array Name
+                 * @returns {bool} true if a serializer exists, else false
+                 */
+                hasDeserializerForArray: function(targetArrayName) {
+                    if(targetArrayName == linkName)
+                    {
+                        return true;
+                    }
+                    return !!this.nodeDeserializer[targetArrayName];
+                },
+
+                /**
                  * Serializes a graph
                  * 
                  * @returns {object} Serialized Objects

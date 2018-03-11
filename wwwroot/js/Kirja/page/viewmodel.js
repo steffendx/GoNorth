@@ -39,6 +39,8 @@
                     self.isDirty(true);
                 });
 
+                this.isDefault = new ko.observable(false);
+
                 this.showConfirmDirtyExitEdit = new ko.observable(false);
 
                 this.showConfirmDeleteDialog = new ko.observable(false);
@@ -66,6 +68,10 @@
                 this.loadingMentionedItems = new ko.observable(false);
                 this.loadingMentionedItemsError = new ko.observable(false);
 
+                this.mentionedSkills = new ko.observableArray();
+                this.loadingMentionedSkills = new ko.observable(false);
+                this.loadingMentionedSkillsError = new ko.observable(false);
+
                 this.markedInMaps = new ko.observableArray();
                 this.loadingMarkedInMaps = new ko.observable(false);
                 this.loadingMarkedInMapsError = new ko.observable(false);
@@ -79,7 +85,7 @@
                 this.attachmentToDelete = null;
 
                 var isNewPage = GoNorth.Util.getParameterFromHash("newPage") == "1";
-                if(this.id() || !GoNorth.Util.getParameterFromHash("newPage") == "1")
+                if(this.id() || !isNewPage)
                 {
                     this.loadPage();
                 }
@@ -157,6 +163,7 @@
 
                         self.pageName(data.name);
                         self.pageContent(data.content);
+                        self.isDefault(data.isDefault);
                         if(!self.id())
                         {
                             self.setId(data.id);
@@ -166,9 +173,10 @@
                         self.loadMentionedQuests(data.mentionedQuests);
                         self.loadMentionedNpcs(data.mentionedNpcs);
                         self.loadMentionedItems(data.mentionedItems);
+                        self.loadMentionedSkills(data.mentionedSkills);
                         self.loadMarkedInMaps();
 
-                        self.attachmentFiles(data.attachments);
+                        self.attachmentFiles(data.attachments ? data.attachments : []);
 
                         self.isDirty(false);
                         self.checkLock();
@@ -234,6 +242,20 @@
                             callback: function(htmlInsert) {
                                 self.linkDialogInsertHtmlCallback = htmlInsert;
                                 self.linkDialog.openItemSearch(GoNorth.Kirja.Page.toolbarButtonInsertStyrItemLinkTitle).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, false);
+                                });
+                            }
+                        };
+                    }
+
+                    if(GoNorth.Kirja.Page.hasEvneRights)
+                    {
+                        allKirjaButtons.insertSkillLink = {
+                            title: GoNorth.Kirja.Page.toolbarButtonInsertEvneSkillLinkTitle,
+                            icon: "glyphicon-flash",
+                            callback: function(htmlInsert) {
+                                self.linkDialogInsertHtmlCallback = htmlInsert;
+                                self.linkDialog.openSkillSearch(GoNorth.Kirja.Page.toolbarButtonInsertEvneSkillLinkTitle).then(function(selectedObject) {
                                     self.addLinkFromLinkDialog(selectedObject, false);
                                 });
                             }
@@ -421,6 +443,7 @@
                         self.loadMentionedQuests(savedPage.mentionedQuests);
                         self.loadMentionedNpcs(savedPage.mentionedNpcs);
                         self.loadMentionedItems(savedPage.mentionedItems);
+                        self.loadMentionedSkills(savedPage.mentionedSkills);
                         self.callPageRefreshGrid();
                         self.isDirty(false);
                         self.isLoading(false);
@@ -571,6 +594,43 @@
                         self.mentionedItems([]);
                         self.loadingMentionedItems(false);
                         self.loadingMentionedItemsError(true);
+                    });
+                },
+
+                /**
+                 * Loads the mentioned skills
+                 * @param {string[]} skillIds Skill Ids
+                 */
+                loadMentionedSkills: function(skillIds) {
+                    if(!GoNorth.Kirja.Page.hasEvneRights || !skillIds)
+                    {
+                        return;
+                    }
+
+                    this.loadingMentionedSkills(true);
+                    this.loadingMentionedSkillsError(false);
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/EvneApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify(skillIds), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(skillNames) {
+                        var loadedSkillNames = [];
+                        for(var curSkill = 0; curSkill < skillNames.length; ++curSkill)
+                        {
+                            loadedSkillNames.push({
+                                openLink: "/Evne/Skill#id=" + skillNames[curSkill].id,
+                                name: skillNames[curSkill].name
+                            });
+                        }
+                        self.mentionedSkills(loadedSkillNames);
+                        self.loadingMentionedSkills(false);
+                    }).fail(function(xhr) {
+                        self.mentionedSkills([]);
+                        self.loadingMentionedSkills(false);
+                        self.loadingMentionedSkillsError(true);
                     });
                 },
 

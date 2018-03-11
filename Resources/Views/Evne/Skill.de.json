@@ -1,0 +1,49 @@
+{
+    "Skill": "Fähigkeit",
+    "Template": "Template",
+
+    "Save": "Speichern",
+    "SaveAndDistributeFields": "Speichern & Felder an Fähigkeiten verteilen",
+    "IsImplemented": "Implementiert",
+    "IsNotImplementedTooltip": "Fähigkeit ist noch nicht implementiert.",
+    "MarkAsImplemented": "Als implementiert markieren",
+    "Cancel": "Abbrechen",
+    "Delete": "Löschen",
+
+    "Name": "Name",
+    "DropImageHere": "Bild für Fähigkeit hier ablegen oder klicken um ein Bild auszuwählen",
+
+    "SkillFlow": "Fähigkeitsfluss",
+    "TextNode": "Text",
+    "ActionNode": "Aktion",
+    "ConditionNode": "Bedingung",
+
+    "ReferencedInAikaQuests": "Referenziert in Aika Quests:",
+    
+    "MentionedInKirjaPages": "Erwähnt in Kirja Seiten:",
+
+    "MarkedInKartaMaps": "Markiert in Karta Karten:",
+    "MarkedInMapNTimes": "Fähigkeit ist in Karte {{0}} mal markiert. Kein Zoom auf Markierung möglich.",
+
+    "ReferencedInTaleDialogs": "Referenziert in Tale Dialogen:",
+
+    "LearnedByNpcs": "Gelernt durch Npcs:",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheObject": "Bist du sicher das die Fähigkeit gelöscht werden soll?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Bist du sicher das das Template gelöscht werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedTemplatePrefix": "Dieses Template wird gerade von ",
+    "LockedObjectPrefix": "Dieses Fähigkeit wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "NodeLang": "de",
+    "RichTextLocale": "de",
+    "DropzoneLocale": "de"
+}

@@ -72,7 +72,8 @@ namespace GoNorth.Data.TaskManagement
                 Id = b.Id,
                 Name = b.Name,
                 PlannedStart = b.PlannedStart,
-                PlannedEnd = b.PlannedEnd
+                PlannedEnd = b.PlannedEnd,
+                IsClosed = b.IsClosed
             }).ToListAsync();
             return taskBoards;
         }

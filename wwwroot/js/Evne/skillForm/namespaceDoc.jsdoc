@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Evne) {
+
+        /**
+         * Skill Form Namespace
+         * @namespace Skill
+         */
+        (function(Skill) {
+        }(Evne.Skill = Evne.Skill || {}));
+
+    }(GoNorth.Evne = GoNorth.Evne || {}));
+}(window.GoNorth = window.GoNorth || {}));

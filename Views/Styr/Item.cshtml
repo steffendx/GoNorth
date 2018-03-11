@@ -19,7 +19,7 @@
     <!-- Related objects -->
     <!-- ko if: !isTemplateMode() -->
     <hr>
-    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormRelatedObjects.cshtml", Localizer)
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormRelatedObjects.cshtml", new ObjectFormRelatedObjectsViewModel { Localizer = Localizer, HideKarta = false })
 
     @if(User.IsInRole(RoleNames.Kortisto))
     {

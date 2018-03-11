@@ -90,5 +90,12 @@ namespace GoNorth.Data.Kirja
         /// <param name="itemId">Item Id</param>
         /// <returns>List of Kirja page</returns>
         Task<List<KirjaPage>> GetPagesByItem(string itemId);
+
+        /// <summary>
+        /// Returns all pages a skill is mentioned in
+        /// </summary>
+        /// <param name="skillId">Skill Id</param>
+        /// <returns>List of Kirja page</returns>
+        Task<List<KirjaPage>> GetPagesBySkill(string skillId);
     }
 }

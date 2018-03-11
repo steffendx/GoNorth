@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.FlexFieldDatabaseModels
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Evne"];
+}
+
+<div id="gn-evneOverviewContainer">
+    <h2>@ViewData["Title"] <span data-bind="text: currentFolderNameDisplay"></span></h2>
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/Overview.cshtml", new OverviewViewModel { Localizer = Localizer, HasTemplatePermissions = User.IsInRole(RoleNames.EvneTemplateManager), ObjectIcon = "glyphicon-flash", ControllerName = "Evne", ApiControllerName = "EvneApi" })
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="~/js/Evne/overview.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Evne/overview.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Evne.Overview.ViewModel(), jQuery("#gn-evneOverviewContainer")[0]);
+        });
+    </script>
+}

@@ -1,0 +1,49 @@
+{
+    "Skill": "Skill",
+    "Template": "Template",
+
+    "Save": "Save",
+    "SaveAndDistributeFields": "Save & distribute fields to skills",
+    "IsImplemented": "Implemented",
+    "IsNotImplementedTooltip": "Skill is not implemented.",
+    "MarkAsImplemented": "Mark as implemented",
+    "Cancel": "Cancel",
+    "Delete": "Delete",
+
+    "Name": "Name",
+    "DropImageHere": "Drop image for skill here or click to choose an image",
+
+    "SkillFlow": "Skill flow",
+    "TextNode": "Text",
+    "ActionNode": "Action",
+    "ConditionNode": "Condition",
+
+    "ReferencedInAikaQuests": "Referenced in Aika quests:",
+    
+    "MentionedInKirjaPages": "Mentioned in Kirja pages:",
+
+    "MarkedInKartaMaps": "Marked in Karta maps:",
+    "MarkedInMapNTimes": "Skill is marked in the map {{0}} times. No zoom on marker is possible.",
+
+    "ReferencedInTaleDialogs": "Referenced in Tale dialogs:",
+
+    "LearnedByNpcs": "Learned by Npcs:",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheObject": "Are you sure you want to delete the skill?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedTemplatePrefix": "The template is currently beeing edited by ",
+    "LockedObjectPrefix": "The skill is currently beeing edited by ",
+    "LockedPostfix": ".",
+
+    "NodeLang": "en",
+    "RichTextLocale": "en",
+    "DropzoneLocale": "en"
+}

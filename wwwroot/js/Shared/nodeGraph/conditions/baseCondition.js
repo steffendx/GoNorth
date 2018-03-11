@@ -12,6 +12,9 @@
             /// Conditions that are related to quests
             Conditions.RelatedToObjectQuest = "Quest";
 
+            /// Conditions that are related to skills
+            Conditions.RelatedToObjectSkill = "Skill";
+
             /**
              * Base Condition
              * @class

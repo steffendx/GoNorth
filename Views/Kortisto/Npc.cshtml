@@ -39,7 +39,7 @@
     <!-- /ko -->
 
     <!-- Remove Item Dialog -->
-    <div class="modal fade" role="dialog" data-bind="modal: showConfirmItemRemoveDialog">
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmRemoveDialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -47,11 +47,12 @@
                     <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
                 </div>
                 <div class="modal-body">
-                    <p>@Localizer["AreYouSureYouWantToRemoveTheItem"]</p>
+                    <p data-bind="visible: isRemovingItem">@Localizer["AreYouSureYouWantToRemoveTheItem"]</p>
+                    <p data-bind="visible: !isRemovingItem()">@Localizer["AreYouSureYouWantToRemoveTheSkill"]</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-bind="click: removeItemFromInventory">@Localizer["Yes"]</button>
-                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmItemRemoveDialog">@Localizer["No"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: removeObject">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmRemoveDialog">@Localizer["No"]</button>
                 </div>
             </div>
         </div>
@@ -79,33 +80,58 @@
 
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormContent.cshtml", new ObjectFormViewModel { Localizer = Localizer, ApiControllerName = "KortistoApi", ObjectIcon = "glyphicon-user" } )
 
-    <h4>@Localizer["Inventory"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoadingInventory"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingInventoryError"></i></h4>
-    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: addItemToInventory, disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-plus"></i> @Localizer["AddItemToInventory"]</button>
-    <table class="table table-striped table-bordered gn-chooseObjectDialogTable">
-        <thead>
-            <tr>
-                <th class="gn-kortistoInventoryItemNameColumn">@Localizer["Name"]</th>
-                <th>@Localizer["Quantity"]</th>
-                <th>@Localizer["Equipped"]</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody data-bind="foreach: inventoryItems">
-            <tr>
-                <td class="gn-kortistoInventoryItemNameColumn"><a class="gn-clickable" data-bind="text: name, href: $root.buildItemUrl" target="_blank"></a></td>
-                <td><input type="text" data-bind="numeric: quantity, disable: $root.isReadonly" class="form-control"></td>
-                <td><label class="checkbox-inline"><input type="checkbox" data-bind="checked: isEquipped, disable: $root.isReadonly"></label></td>
-                <td><a class="gn-clickable" title="@Localizer["RemoveItemFromInventory"]" data-bind="click: function(item) { $root.openRemoveItemDialog(item); }, visible: !$root.isReadonly()"><i class="glyphicon glyphicon-trash"></i></a></td>
-            </tr>
-        </tbody>
-    </table>
+    @if(User.IsInRole(RoleNames.Styr))
+    {
+        <!-- Inventory -->
+        <h4>@Localizer["Inventory"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoadingInventory"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingInventoryError"></i></h4>
+        <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: addItemToInventory, disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-plus"></i> @Localizer["AddItemToInventory"]</button>
+        <table class="table table-striped table-bordered gn-chooseObjectDialogTable">
+            <thead>
+                <tr>
+                    <th class="gn-kortistoInventoryItemNameColumn">@Localizer["Name"]</th>
+                    <th>@Localizer["Quantity"]</th>
+                    <th>@Localizer["Equipped"]</th>
+                    <th class="gn-kortistoObjectTableActionColumn"></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: inventoryItems">
+                <tr>
+                    <td class="gn-kortistoInventoryItemNameColumn"><a class="gn-clickable" data-bind="text: name, href: $root.buildItemUrl" target="_blank"></a></td>
+                    <td><input type="text" data-bind="numeric: quantity, disable: $root.isReadonly" class="form-control"></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" data-bind="checked: isEquipped, disable: $root.isReadonly"></label></td>
+                    <td class="gn-kortistoObjectTableActionColumn"><a class="gn-clickable" title="@Localizer["RemoveItemFromInventory"]" data-bind="click: function(item) { $root.openRemoveItemDialog(item); }, visible: !$root.isReadonly()"><i class="glyphicon glyphicon-trash"></i></a></td>
+                </tr>
+            </tbody>
+        </table>
+    }
+
+    @if(User.IsInRole(RoleNames.Evne))
+    {
+        <!-- Skills -->
+        <h4>@Localizer["Skills"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoadingSkills"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingSkillsError"></i></h4>
+        <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: addSkill, disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-plus"></i> @Localizer["AddSkill"]</button>
+        <table class="table table-striped table-bordered gn-chooseObjectDialogTable">
+            <thead>
+                <tr>
+                    <th class="gn-kortistoSkillNameColumn">@Localizer["Name"]</th>
+                    <th class="gn-kortistoObjectTableActionColumn"></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: learnedSkills">
+                <tr>
+                    <td class="gn-kortistoSkillNameColumn"><a class="gn-clickable" data-bind="text: name, href: $root.buildSkillUrl" target="_blank"></a></td>
+                    <td class="gn-kortistoObjectTableActionColumn"><a class="gn-clickable" title="@Localizer["RemoveSkill"]" data-bind="click: function(skill) { $root.openRemoveSkillDialog(skill); }, visible: !$root.isReadonly()"><i class="glyphicon glyphicon-trash"></i></a></td>
+                </tr>
+            </tbody>
+        </table>
+    }
 
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormTagInput.cshtml", Localizer)
 
     <!-- Related objects -->
     <!-- ko if: !isTemplateMode() -->
     <hr>
-    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormRelatedObjects.cshtml", Localizer)
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormRelatedObjects.cshtml", new ObjectFormRelatedObjectsViewModel { Localizer = Localizer, HideKarta = false } )
     <!-- /ko -->
 </div>
 
@@ -125,8 +151,35 @@
 
     <script type="text/javascript">
         GoNorth.Kortisto.Npc.Localization = {
-            AddItemToInventory: "@Localizer["AddItemToInventory"]"
+            AddItemToInventory: "@Localizer["AddItemToInventory"]",
+            AddSkill: "@Localizer["AddSkill"]"
         };
+
+        @if(User.IsInRole(RoleNames.Styr))
+        {
+            <text>
+            GoNorth.Kortisto.Npc.hasStyrRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kortisto.Npc.hasStyrRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Evne))
+        {
+            <text>
+            GoNorth.Kortisto.Npc.hasEvneRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kortisto.Npc.hasEvneRights = false;
+            </text>
+        }
 
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Kortisto.Npc.ViewModel(), jQuery("#gn-kortistoNpcContainer")[0]);

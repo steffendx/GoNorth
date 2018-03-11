@@ -9,14 +9,21 @@
              */
             Npc.ViewModel = function()
             {
-                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "KortistoApi", "KortistoNpc", "KortistoTemplate", "GetPagesByNpc?npcId=", "GetMapsByNpcId?npcId=" ]);
+                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Kortisto", "KortistoApi", "KortistoNpc", "KortistoTemplate", "GetPagesByNpc?npcId=", "GetMapsByNpcId?npcId=" ]);
+
+                this.showConfirmRemoveDialog = new ko.observable(false);
+                this.isRemovingItem = new ko.observable(false);
 
                 this.objectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
                 this.inventoryItems = new ko.observableArray();
-                this.showConfirmItemRemoveDialog = new ko.observable(false);
                 this.itemToRemove = null;
                 this.isLoadingInventory = new ko.observable(false);
                 this.loadingInventoryError = new ko.observable(false);
+
+                this.learnedSkills = new ko.observableArray();
+                this.skillToRemove = null;
+                this.isLoadingSkills = new ko.observable(false);
+                this.loadingSkillsError = new ko.observable(false);
 
                 this.isPlayerNpc = new ko.observable(false);
 
@@ -46,9 +53,14 @@
                     this.isPlayerNpc(data.isPlayerNpc);
                 }
 
-                if(data.inventory)
+                if(Npc.hasStyrRights && data.inventory && data.inventory.length > 0)
                 {
                     this.loadInventory(data.inventory);
+                }
+
+                if(Npc.hasEvneRights && data.skills && data.skills.length > 0)
+                {
+                    this.loadSkills(data.skills);
                 }
             };
 
@@ -122,6 +134,46 @@
             };
 
             /**
+             * Loads the skills of the npc
+             * 
+             * @param {object[]} skills Skills of the npc
+             */
+            Npc.ViewModel.prototype.loadSkills = function(skills) {
+                var learnedSkillIds = [];
+                for(var curSkill = 0; curSkill < skills.length; ++curSkill )
+                {
+                    learnedSkillIds.push(skills[curSkill].skillId);
+                }
+
+                this.isLoadingSkills(true);
+                this.loadingSkillsError(false);
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/ResolveFlexFieldObjectNames", 
+                    headers: GoNorth.Util.generateAntiForgeryHeader(),
+                    data: JSON.stringify(learnedSkillIds), 
+                    type: "POST",
+                    contentType: "application/json"
+                }).done(function(skillNames) {
+                    var loadedSkills = [];
+                    for(var curSkill = 0; curSkill < skillNames.length; ++curSkill)
+                    {
+                        loadedSkills.push({
+                            id: skillNames[curSkill].id,
+                            name: skillNames[curSkill].name,
+                        });
+                    }
+
+                    self.learnedSkills(loadedSkills);
+                    self.isLoadingSkills(false);
+                }).fail(function(xhr) {
+                    self.learnedSkills([]);
+                    self.isLoadingSkills(false);
+                    self.loadingSkillsError(true);
+                });
+            };
+
+            /**
              * Sets Additional save data
              * 
              * @param {object} data Save data
@@ -129,7 +181,19 @@
              */
             Npc.ViewModel.prototype.setAdditionalSaveData = function(data) {
                 data.isPlayerNpc = this.isPlayerNpc();
-                data.inventory = [];
+                data.inventory = this.serializeInventory();
+                data.skills = this.serializeSkills();
+
+                return data;
+            };
+
+            /**
+             * Serializes the inventory
+             * 
+             * @returns {object[]} Serialized inventory
+             */
+            Npc.ViewModel.prototype.serializeInventory = function() {
+                var inventory = [];
                 var inventoryItems = this.inventoryItems();
                 for(var curItem = 0; curItem < inventoryItems.length; ++curItem)
                 {
@@ -144,11 +208,52 @@
                         quantity: quantity,
                         isEquipped: inventoryItems[curItem].isEquipped(),
                     };
-                    data.inventory.push(item);
+                    inventory.push(item);
                 }
 
-                return data;
+                return inventory;
             };
+
+            /**
+             * Serializes the skills
+             * 
+             * @returns {object[]} Serialized skills
+             */
+            Npc.ViewModel.prototype.serializeSkills = function() {
+                var skills = [];
+                var learnedSkills = this.learnedSkills();
+                for(var curSkill = 0; curSkill < learnedSkills.length; ++curSkill)
+                {
+                    var skill = {
+                        skillId: learnedSkills[curSkill].id
+                    };
+                    skills.push(skill);
+                }
+
+                return skills;
+            };
+
+
+
+            /**
+             * Checks if an object exists in a flex field array
+             * 
+             * @param {ko.observableArray} searchArray Array to search
+             * @param {object} objectToSearch Flex Field object to search
+             */
+            Npc.ViewModel.prototype.doesObjectExistInFlexFieldArray = function(searchArray, objectToSearch)
+            {
+                var searchObjects = searchArray();
+                for(var curObject = 0; curObject < searchObjects.length; ++curObject)
+                {
+                    if(searchObjects[curObject].id == objectToSearch.id)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
 
 
             /**
@@ -157,13 +262,9 @@
             Npc.ViewModel.prototype.addItemToInventory = function() {
                 var self = this;
                 this.objectDialog.openItemSearch(Npc.Localization.AddItemToInventory).then(function(item) {
-                    var inventoryItems = self.inventoryItems();
-                    for(var curItem = 0; curItem < inventoryItems.length; ++curItem)
+                    if(self.doesObjectExistInFlexFieldArray(self.inventoryItems, item))
                     {
-                        if(inventoryItems[curItem].id == item.id)
-                        {
-                            return;
-                        }
+                        return;
                     }
 
                     self.inventoryItems.push({
@@ -180,33 +281,25 @@
             };
 
             /**
-             * Removes an item from the inventory
-             * 
-             * @param {object} item Item to remove
+             * Opens a dialog to add a new skill
              */
-            Npc.ViewModel.prototype.openRemoveItemDialog = function(item) {
-                this.itemToRemove = item;
-                this.showConfirmItemRemoveDialog(true);
-            };
+            Npc.ViewModel.prototype.addSkill = function() {
+                var self = this;
+                this.objectDialog.openSkillSearch(Npc.Localization.AddSkill).then(function(skill) {
+                    if(self.doesObjectExistInFlexFieldArray(self.learnedSkills, skill))
+                    {
+                        return;
+                    }
 
-            /**
-             * Removes the item which should be removed from the inventory
-             */
-            Npc.ViewModel.prototype.removeItemFromInventory = function() {
-                if(this.itemToRemove)
-                {
-                    this.inventoryItems.remove(this.itemToRemove);
-                }
+                    self.learnedSkills.push({
+                        id: skill.id,
+                        name: skill.name
+                    });
 
-                this.closeConfirmItemRemoveDialog();
-            };
-
-            /**
-             * Closes the confirm item remove dialog
-             */
-            Npc.ViewModel.prototype.closeConfirmItemRemoveDialog = function() {
-                this.itemToRemove = null;
-                this.showConfirmItemRemoveDialog(false);
+                    self.learnedSkills.sort(function(skill1, skill2) {
+                        return skill1.name.localeCompare(skill2.name);
+                    });
+                });
             };
 
             /**
@@ -218,6 +311,67 @@
             Npc.ViewModel.prototype.buildItemUrl = function(item) {
                 return "/Styr/Item#id=" + item.id;
             };
+
+            /**
+             * Builds the url for a skill
+             * 
+             * @param {object} skill Skill which should be opened
+             * @returns {string} Url for the skill
+             */
+            Npc.ViewModel.prototype.buildSkillUrl = function(skill) {
+                return "/Evne/Skill#id=" + skill.id;
+            };
+
+            /**
+             * Removes an item from the inventory
+             * 
+             * @param {object} item Item to remove
+             */
+            Npc.ViewModel.prototype.openRemoveItemDialog = function(item) {
+                this.itemToRemove = item;
+                this.skillToRemove = null;
+                this.isRemovingItem(true);
+                this.showConfirmRemoveDialog(true);
+            };
+
+            /**
+             * Removes a skill
+             * 
+             * @param {object} skill Skill to remove
+             */
+            Npc.ViewModel.prototype.openRemoveSkillDialog = function(skill) {
+                this.skillToRemove = skill;
+                this.itemToRemove = null;
+                this.isRemovingItem(false);
+                this.showConfirmRemoveDialog(true);
+            };
+
+            /**
+             * Removes the object which should be removed
+             */
+            Npc.ViewModel.prototype.removeObject = function() {
+                if(this.itemToRemove)
+                {
+                    this.inventoryItems.remove(this.itemToRemove);
+                }
+
+                if(this.skillToRemove)
+                {
+                    this.learnedSkills.remove(this.skillToRemove);
+                }
+
+                this.closeConfirmRemoveDialog();
+            };
+
+            /**
+             * Closes the confirm remove dialog
+             */
+            Npc.ViewModel.prototype.closeConfirmRemoveDialog = function() {
+                this.itemToRemove = null;
+                this.skillToRemove = null;
+                this.showConfirmRemoveDialog(false);
+            };
+
 
             /**
              * Opens the tale dialog for the npc

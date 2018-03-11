@@ -15,6 +15,8 @@ It offers modules for:
  * Simple Task Tracker
 
 ## Deployment
+![Badge](https://leif-dev.visualstudio.com/_apis/public/build/definitions/31ab5f65-48ba-4e5b-a93d-590ba3af9850/2/badge)
+
 Please refer to the [wiki for deployment details](https://github.com/steffendx/GoNorth/wiki/Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?tabs=aspnetcore2x).
 
 ## Brief Overview
@@ -29,13 +31,13 @@ A similiar node system can be created for the different quests.
 Each quest will show the connections to Maps, Wiki pages and other objects to provide a view on the big picture while planning the quest.  
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Aika).
 
-### Npc and Item Planning (Kortisto and Styr)
-The web application provides functionality for planning Npcs and Items with flexible values. You can create templates and then create new Npcs or Items based on these templates:
+### Npc, Item and Skill Planning (Kortisto, Styr and Evne)
+The web application provides functionality for planning Npcs, Items and Skills with flexible values. You can create templates and then create new Npcs, Items and Skills based on these templates:
 
 ![Npc planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Kortisto.PNG?raw=true)
 
 Each object will display the different maps in which the Npc or Item is marked, the Wiki Pages in which its mentioned and all other connections. This way the user has a good overview what he or she has to consider when building the character or item.  
-More details can be found in the wiki for [npcs](https://github.com/steffendx/GoNorth/wiki/Kortisto) and [items](https://github.com/steffendx/GoNorth/wiki/Styr).
+More details can be found in the wiki for [npcs](https://github.com/steffendx/GoNorth/wiki/Kortisto), [items](https://github.com/steffendx/GoNorth/wiki/Styr) and [skills](https://github.com/steffendx/GoNorth/wiki/Evne).
 
 ### Dialog Planning (Tale)
 Using the dialog planning module a user can create the branching dialogs for the different game characters as a node system:

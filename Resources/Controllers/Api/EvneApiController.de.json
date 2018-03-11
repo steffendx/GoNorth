@@ -1,0 +1,12 @@
+{
+    "FolderNotEmpty": "Der Ordner ist nicht leer.",
+
+    "CanNotDeleteSkillReferencedInAikaQuest": "Die Fähigkeit wird in den Aika Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.", 
+    "CanNotDeleteSkillReferencedInTaleDialog": "Die Fähigkeit ist in den Tale Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteSkillMentionedInKirjaPage": "Die Fähigkeit wird in den Kirja Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteSkillLearnedByNpc": "Die Npcs \"{0}\" beherrschen die Fähigkeit. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+
+    "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
+    "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",
+    "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt."
+}

@@ -9,6 +9,12 @@
             /// Actions that are related to quests
             Actions.RelatedToObjectQuest = "Quest";
 
+            /// Actions that are related to skills
+            Actions.RelatedToObjectSkill = "Skill";
+
+            /// Actions that are related to items
+            Actions.RelatedToObjectItem = "Item";
+
             /**
              * Base Action
              * @class

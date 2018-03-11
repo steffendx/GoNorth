@@ -295,6 +295,12 @@
     border: 1px solid #945900;
 }
 
+.gn-evneTile {
+    color: #FFFFFF;
+    background-color: #00bb9c;
+    border: 1px solid #007e69;
+}
+
 .gn-kirjaTile {
     color: #FFFFFF;
     background-color: #006b24;
@@ -488,6 +494,14 @@
 /** Kortisto **/
 .gn-kortistoInventoryItemNameColumn {
     width: 50%;
+}
+
+.gn-kortistoSkillNameColumn {
+    width: 95%;
+}
+
+.gn-kortistoObjectTableActionColumn {
+    width: 5%;
 }
 
 /** Kirja **/
@@ -828,14 +842,6 @@
     pointer-events: auto;
     cursor: pointer;
     margin-left: 5px;
-}
-
-.gn-taleSelectItemAction {
-    display: block;
-    color: #FFFFFF;
-    margin-top: 8px;
-    padding-left: 5px;
-    pointer-events: auto;
 }
 
 .gn-taleSelectItemAction:hover {
@@ -1196,4 +1202,9 @@
 .gn-implementationCompareDialogResultLog {
     max-height: 600px;
     overflow-y: auto;
+}
+
+/** Evne **/
+.node .label.evne_Text, .gn-evneNodeText .gn-labelInsert {
+    color: #8c6;
 }

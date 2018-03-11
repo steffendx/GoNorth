@@ -58,7 +58,7 @@ namespace GoNorth.Data.Aika
         /// Text Nodes
         /// </summary>
         [ListCompareAttribute(LabelKey = "NodeTextChanged")]
-        public List<AikaTextNode> Text { get; set; }
+        public List<TextNode> Text { get; set; }
 
         /// <summary>
         /// Conditions

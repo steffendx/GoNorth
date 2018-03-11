@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Config;
 using GoNorth.Data.Aika;
+using GoNorth.Data.Evne;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
@@ -63,6 +64,14 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(StyrItemMongoDbAccess.StyrItemRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(StyrItemTagMongoDbAccess.StyrItemTagCollectionName, collectionNames);
             await CreateCollectionIfNotExists(StyrItemImplementationSnapshotMongoDbAccess.StyrItemImplementationSnapshotCollectionName, collectionNames);
+
+            await CreateCollectionIfNotExists(EvneFolderMongoDbAccess.EvneFolderCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(EvneSkillTemplateMongoDbAccess.EvneSkillTemplateCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(EvneSkillTemplateMongoDbAccess.EvneSkillTemplateRecyclingBinCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(EvneSkillMongoDbAccess.EvneSkillCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(EvneSkillMongoDbAccess.EvneSkillRecyclingBinCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(EvneSkillTagMongoDbAccess.EvneSkillTagCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(EvneSkillImplementationSnapshotMongoDbAccess.EvneSkillImplementationSnapshotCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageRecyclingBinCollectionName, collectionNames);

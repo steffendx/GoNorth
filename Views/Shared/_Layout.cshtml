@@ -4,6 +4,14 @@
 @inject IViewLocalizer Localizer
 @inject SignInManager<GoNorthUser> SignInManager
 
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,6 +33,7 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
+    <input type="hidden" id="__RequestVerificationToken" value="@GetAntiXsrfRequestToken()">
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -56,6 +65,10 @@
                     @if(User.IsInRole(RoleNames.Styr))
                     {
                         <li><a asp-area="" asp-controller="Styr" asp-action="Index">@Localizer["Styr"]</a></li>
+                    }
+                    @if(User.IsInRole(RoleNames.Evne))
+                    {
+                        <li><a asp-area="" asp-controller="Evne" asp-action="Index">@Localizer["Evne"]</a></li>
                     }
                     @if(User.IsInRole(RoleNames.Kirja))
                     {
@@ -90,11 +103,11 @@
         <script src="~/js/Shared/shared.lib.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery"
                 crossorigin="anonymous"
-                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
         </script>
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"

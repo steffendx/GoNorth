@@ -1,6 +1,6 @@
 {
-    "CanNotDeleteNonEmptyChapter": "A deleted chapter is not empty. To prevent errors in the story it must be cleared first.",
-    "CanNotDeleteNonEmptyChapterDetail": "A deleted detail view is not empty. To prevent errors in the story it must be cleared first.",
+    "CanNotDeleteNonEmptyChapter": "The chapter is not empty. To prevent errors in the story it must be cleared first.",
+    "CanNotDeleteNonEmptyChapterDetail": "The detail view is not empty. To prevent errors in the story it must be cleared first.",
 
     "CanNotDeleteQuestUsedInChapterDetail": "The quest is beeing used in the detail view \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteQuestMentionedInKirjaPage": "The quest is mentioned in the Kirja page \"{0}\". To prevent errors in the story it must be deleted there first.",

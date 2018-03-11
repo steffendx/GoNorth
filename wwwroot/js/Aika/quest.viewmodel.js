@@ -51,6 +51,17 @@
             },
 
             /**
+             * Opens the dialog to search for skills
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @param {function} createCallback Optional callback that will get triggered on hitting the new button, if none is provided the button will be hidden
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openSkillSearch: function(dialogTitle, createCallback) {
+                return this.openDialog(dialogTitle, this.searchSkills, createCallback, null);
+            },
+
+            /**
              * Opens the dialog to search for kirja pages
              * 
              * @param {string} dialogTitle Title of the dialog
@@ -321,6 +332,39 @@
 
 
             /**
+             * Searches Evne skills
+             * 
+             * @param {string} searchPattern Search Pattern
+             * @returns {jQuery.Deferred} Deferred for the result
+             */
+            searchSkills: function(searchPattern) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
+                    type: "GET"
+                }).done(function(data) {
+                    var result = {
+                        hasMore: data.hasMore,
+                        entries: []
+                    };
+
+                    for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
+                    {
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill#id=" + data.flexFieldObjects[curEntry].id));
+                    }
+
+                    def.resolve(result);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            },
+
+
+            /**
              * Searches aika quests
              * 
              * @param {string} searchPattern Search Pattern
@@ -446,6 +490,21 @@
                     this.flagAsImplementedMethodUrlPostfix = "FlagItemAsImplemented?itemId=" + id;
 
                     return this.loadCompareResult("CompareItem?itemId=" + id);
+                },
+
+                /**
+                 * Opens the compare dialog for a skill compare call
+                 * 
+                 * @param {string} id Id of the skill
+                 * @param {string} skillName Name of the skill to display in the title
+                 * @returns {jQuery.Deferred} Deferred that will get resolved after the object was marked as implemented
+                 */
+                openSkillCompare: function(id, skillName) {
+                    this.isOpen(true);
+                    this.objectName(skillName ? skillName : "");
+                    this.flagAsImplementedMethodUrlPostfix = "FlagSkillAsImplemented?skillId=" + id;
+
+                    return this.loadCompareResult("CompareSkill?skillId=" + id);
                 },
 
                 /**
@@ -1458,12 +1517,35 @@
             /// Object Resource for Map Marker
             Shapes.ObjectResourceMapMarker = 4;
 
+            /// Object Resource for Skills
+            Shapes.ObjectResourceSkill = 5;
+
 
             /// Cached loaded objects
             var loadedObjects = {};
 
             /// Deferreds for loading objects
             var objectsLoadingDeferreds = {};
+
+
+            /**
+             * Resets the loaded value for an object
+             * 
+             * @param {number} objectType Object Type
+             * @param {string} objectId Object Id
+             */
+            Shapes.resetSharedObjectLoading = function(objectType, objectId)
+            {
+                if(loadedObjects[objectType] && loadedObjects[objectType][objectId])
+                {
+                    loadedObjects[objectType][objectId] = null;
+                }
+
+                if(objectsLoadingDeferreds[objectType] && objectsLoadingDeferreds[objectType][objectId])
+                {
+                    objectsLoadingDeferreds[objectType][objectId] = null;
+                }
+            };
 
 
             /**
@@ -1587,6 +1669,10 @@
             this.nodePaper = new ko.observable();
         
             this.showConfirmNodeDeleteDialog = new ko.observable(false);
+            this.deleteLoading = new ko.observable(false);
+            this.deleteErrorOccured = new ko.observable(false);
+            this.deleteErrorAdditionalInformation =  new ko.observable("");
+            this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
             this.errorOccured = new ko.observable(false);
@@ -1653,18 +1739,50 @@
                 newNode.attr(".inPorts circle/magnet", "passive");
                 
                 var self = this;
-                newNode.onDelete = function() {
-                    return self.onDelete();
+                newNode.onDelete = function(node) {
+                    return self.onDelete(node);
                 };
+            },
+
+            /**
+             * Reloads the fields for nodes
+             * 
+             * @param {string} id Id of the object for which to reload the nodes
+             */
+            reloadFieldsForNodes: function(objectType, id) {
+                GoNorth.DefaultNodeShapes.Shapes.resetSharedObjectLoading(objectType, id);
+
+                if(!this.nodeGraph())
+                {
+                    return;
+                }
+
+                var paper = this.nodePaper();
+                var elements = this.nodeGraph().getElements();
+                for(var curElement = 0; curElement < elements.length; ++curElement)
+                {
+                    var view = paper.findViewByModel(elements[curElement]);
+                    if(view && view.reloadSharedLoadedData)
+                    {
+                        view.reloadSharedLoadedData(objectType, id);
+                    }
+                }
             },
 
 
             /**
              * Delete Callback if a user wants to delete a node
+             * 
+             * @param {object} node Node to delete
+             * @returns {jQuery.Deferred} Deferred that will be resolved if the user deletes the node
              */
-            onDelete: function() {
+            onDelete: function(node) {
+                this.deleteLoading(false);
+                this.deleteErrorOccured(false);
+                this.deleteErrorAdditionalInformation("");
                 this.showConfirmNodeDeleteDialog(true);
 
+                this.deleteNodeTarget = node;
                 this.deleteDeferred = new jQuery.Deferred();
                 return this.deleteDeferred.promise();
             },
@@ -1673,6 +1791,39 @@
              * Deletes the node for which the dialog is opened
              */
             deleteNode: function() {
+                if(!this.deleteNodeTarget || !this.deleteNodeTarget.validateDelete)
+                {
+                    this.resolveDeleteDeferred();
+                }
+                else
+                {
+                    var deleteDef = this.deleteNodeTarget.validateDelete();
+                    if(!deleteDef)
+                    {
+                        this.resolveDeleteDeferred();
+                    }
+                    else
+                    {
+                        var self = this;
+                        this.deleteLoading(true);
+                        this.deleteErrorOccured(false);
+                        this.deleteErrorAdditionalInformation(""); 
+                        deleteDef.done(function() {
+                            self.deleteLoading(false);
+                            self.resolveDeleteDeferred();
+                        }).fail(function(err) {
+                            self.deleteLoading(false);
+                            self.deleteErrorOccured(true);
+                            self.deleteErrorAdditionalInformation(err); 
+                        });
+                    }
+                }
+            },
+
+            /**
+             * Resolves the delete deferred
+             */
+            resolveDeleteDeferred: function() {
                 if(this.deleteDeferred)
                 {
                     this.deleteDeferred.resolve();
@@ -1691,6 +1842,10 @@
                     this.deleteDeferred = null;
                 }
                 this.showConfirmNodeDeleteDialog(false);
+                this.deleteLoading(false);
+                this.deleteErrorOccured(false);
+                this.deleteErrorAdditionalInformation("");
+                this.deleteNodeTarget = null;
             },
 
             /**
@@ -2057,6 +2212,9 @@
 
             /// Conditions that are related to quests
             Conditions.RelatedToObjectQuest = "Quest";
+
+            /// Conditions that are related to skills
+            Conditions.RelatedToObjectSkill = "Skill";
 
             /**
              * Base Condition
@@ -2575,7 +2733,7 @@
             /**
              * Returns the condition data as a display string
              * 
-             * @param {object} existingData Serialzied condition data
+             * @param {object} existingData Serialized condition data
              * @returns {jQuery.Deferred} Deferred for the loading process
              */
             Conditions.CheckValueCondition.prototype.getConditionString = function(existingData) {
@@ -3183,7 +3341,7 @@
         (function(Conditions) {
 
             /// Condition Type for checking the alive state of a npc to choose
-            var conditionTypeCheckNpcAliveStateState = 9;
+            var conditionTypeCheckNpcAliveState = 9;
 
 
             /// Npc state alive
@@ -3235,7 +3393,7 @@
              * @returns {number} Type of the condition
              */
             Conditions.CheckNpcAliveStateCondition.prototype.getType = function() {
-                return conditionTypeCheckNpcAliveStateState;
+                return conditionTypeCheckNpcAliveState;
             };
 
             /**
@@ -3348,7 +3506,7 @@
                 if(existingData)
                 {
                     conditionData.selectedNpcId(existingData.npcId);
-                    conditionData.selectedNpcState(existingData.state)
+                    conditionData.selectedNpcState(existingData.state);
 
                     if(existingData.npcId) 
                     {
@@ -3406,6 +3564,196 @@
             };
 
             GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckNpcAliveStateCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking the game time
+            var conditionTypeCheckGameTime = 12;
+
+            /// Game time Operator before
+            var gameTimeOperatorBefore = 0;
+
+            /// Game time Operator after
+            var gameTimeOperatorAfter = 1;
+
+            /// Game time operator label lookup
+            var gameTimeOperatorLabelLookup = { };
+            gameTimeOperatorLabelLookup[gameTimeOperatorBefore] = DefaultNodeShapes.Localization.Conditions.GameTimeOperatorBefore;
+            gameTimeOperatorLabelLookup[gameTimeOperatorAfter] = DefaultNodeShapes.Localization.Conditions.GameTimeOperatorAfter;
+
+            /**
+             * Check game time condition
+             * @class
+             */
+            Conditions.CheckGameTimeCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+            };
+
+            Conditions.CheckGameTimeCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+
+            /**
+             * Returns the template name for the condition
+             * 
+             * @returns {string} Template name
+             */
+            Conditions.CheckGameTimeCondition.prototype.getTemplateName = function() {
+                return "gn-nodeGameTimeCheck";
+            };
+            
+            /**
+             * Returns true if the condition can be selected in the dropdown list, else false
+             * 
+             * @returns {bool} true if the condition can be selected, else false
+             */
+            Conditions.CheckGameTimeCondition.prototype.canBeSelected = function() {
+                return true;
+            };
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckGameTimeCondition.prototype.getType = function() {
+                return conditionTypeCheckGameTime;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckGameTimeCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckGameTimeLabel;
+            };
+
+            /**
+             * Returns the objects on which an object depends
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {object[]} Objects on which the condition depends
+             */
+            Conditions.CheckGameTimeCondition.prototype.getConditionDependsOnObject = function(existingData) {
+                return [];
+            };
+
+            /**
+             * Creates a time operator object
+             * 
+             * @param {number} timeOperator Time operator
+             * @returns {object} Time operator object
+             */
+            Conditions.CheckGameTimeCondition.prototype.createTimeOperator = function(timeOperator)
+            {
+                return {
+                    operator: timeOperator,
+                    label: gameTimeOperatorLabelLookup[timeOperator]
+                };
+            };
+
+            /**
+             * Returns the data for the condition
+             * 
+             * @param {object} existingData Existing condition data
+             * @param {object} element Element to which the data belongs
+             * @returns {object} Condition data
+             */
+            Conditions.CheckGameTimeCondition.prototype.buildConditionData = function(existingData, element) {
+                var gameTimeHours = [];
+                for(var curHour = 0; curHour < 24; ++curHour)
+                {
+                    gameTimeHours.push(curHour);
+                }
+
+                var gameTimeMinutes = [];
+                for(var curMinute = 0; curMinute < 60; curMinute += 5)
+                {
+                    gameTimeMinutes.push(curMinute);
+                }
+                gameTimeMinutes.push(59);
+
+                var conditionData = {
+                    selectedGameTimeOperator: new ko.observable(),
+                    selectedGameTimeHour: new ko.observable(),
+                    selectedGameTimeMinutes: new ko.observable(),
+                    gameTimeOperators: [
+                        this.createTimeOperator(gameTimeOperatorBefore),
+                        this.createTimeOperator(gameTimeOperatorAfter)
+                    ],
+                    gameTimeHours: gameTimeHours,
+                    gameTimeMinutes: gameTimeMinutes
+                };
+
+                // Load existing data
+                if(existingData)
+                {
+                    conditionData.selectedGameTimeOperator(existingData.operator);
+                    conditionData.selectedGameTimeHour(existingData.hour);
+                    conditionData.selectedGameTimeMinutes(existingData.minutes)
+                }
+
+                return conditionData;
+            };
+
+            /**
+             * Serializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @returns {object} Serialized data
+             */
+            Conditions.CheckGameTimeCondition.prototype.serializeConditionData = function(conditionData) {
+                return {
+                    operator: conditionData.selectedGameTimeOperator(),
+                    hour: conditionData.selectedGameTimeHour(),
+                    minutes: conditionData.selectedGameTimeMinutes()
+                };
+            };
+
+            /**
+             * Returns the condition data as a display string
+             * 
+             * @param {object} existingData Serialzied condition data
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckGameTimeCondition.prototype.getConditionString = function(existingData) {
+                var def = new jQuery.Deferred();
+                
+                var conditionString = DefaultNodeShapes.Localization.Conditions.GameTime;
+                conditionString += " " + gameTimeOperatorLabelLookup[existingData.operator];
+                conditionString += " " + this.formatTwoDigits(existingData.hour) + ":" + this.formatTwoDigits(existingData.minutes);
+                def.resolve(conditionString);
+
+                return def.promise();
+            };
+
+            /**
+             * Formats a value as a two digit number
+             * 
+             * @param {number} number Number to format
+             * @returns {string} Number as two digit
+             */
+            Conditions.CheckGameTimeCondition.prototype.formatTwoDigits = function(number) {
+                if(!number) {
+                    return "00";
+                }
+
+                var numberFormated = number.toString();
+                if(numberFormated.length < 2)
+                {
+                    numberFormated = "0" + numberFormated;
+                }
+
+                return numberFormated;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckGameTimeCondition());
 
         }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -3649,6 +3997,452 @@
 (function(GoNorth) {
     "use strict";
     (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /**
+             * Check skill value condition where skill is chosen
+             * @class
+             */
+            Conditions.CheckChooseSkillValueCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckChooseObjectValueCondition.apply(this);
+            };
+
+            Conditions.CheckChooseSkillValueCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckChooseObjectValueCondition.prototype);
+
+            /**
+             * Returns the skill prefix
+             * 
+             * @returns {string} Skill Prefix
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getSkillPrefix = function() {
+                return "";
+            };
+
+            /**
+             * Returns the title of the field object used in the string representation
+             * 
+             * @param {object} loadedFieldObject Loaded Field object for returning name if necessary
+             * @returns {string} Title of the field object
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getObjectTitle = function(loadedFieldObject) {
+                return this.getSkillPrefix() + loadedFieldObject.name;
+            };
+
+            /**
+             * Opens the object search dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred for the choosing process
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.openObjectSearchDialog = function() {
+                return GoNorth.DefaultNodeShapes.openSkillSearchDialog();
+            };
+
+            
+            /**
+             * Returns the label used if no object name is selected to prompt the user to choose an object
+             * 
+             * @returns {string} Label used if no object name is selected to prompt the user to choose an object
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.ChooseSkillLabel;
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getObjectTypeName = function() {
+                return Conditions.RelatedToObjectSkill;
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Loads the skill
+             * 
+             * @param {object} objectId Optional object id
+             * @returns {jQuery.Deferred} Deferred for the async process
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.loadObject = function(objectId) {
+                var def = new jQuery.Deferred();
+                
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + objectId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking value of a skill to choose
+            var conditionTypeCheckChoosePlayerSkillValue = 13;
+
+            /**
+             * Check player skill value condition where skill is chosen
+             * @class
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckChooseSkillValueCondition.apply(this);
+            };
+
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckChooseSkillValueCondition.prototype);
+
+            /**
+             * Returns the skill prefix
+             * 
+             * @returns {string} Skill Prefix
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype.getSkillPrefix = function() {
+                return DefaultNodeShapes.Localization.Conditions.PlayerSkillPrefix;
+            };
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype.getType = function() {
+                return conditionTypeCheckChoosePlayerSkillValue;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckChoosePlayerSkillValueLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckChoosePlayerSkillValueCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /**
+             * Checks if a skill is learned or not
+             * @class
+             */
+            Conditions.CheckLearnedSkillCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Conditions.CheckLearnedSkillCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+            Conditions.CheckLearnedSkillCondition.prototype = jQuery.extend(Conditions.CheckLearnedSkillCondition.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the template name for the condition
+             * 
+             * @returns {string} Template name
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getTemplateName = function() {
+                return "gn-nodeConditionChooseSkillCheck";
+            };
+
+            /**
+             * Returns true if the condition can be selected in the dropdown list, else false
+             * 
+             * @returns {bool} true if the condition can be selected, else false
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.canBeSelected = function() {
+                return true;
+            };
+
+            /**
+             * Returns the object id for dependency checks
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {string} Object Id on which the condition depends
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getDependsOnObjectId = function(existingData) {
+                return this.getObjectId(existingData);
+            };
+
+            /**
+             * Returns the object id from existing condition data for request caching
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {string} Object Id for caching
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getObjectId = function(existingData) {
+                return existingData.selectedSkillId;
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Returns the data for the condition
+             * 
+             * @param {object} existingData Existing condition data
+             * @param {object} element Element to which the data belongs
+             * @returns {object} Condition data
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.buildConditionData = function(existingData, element) {
+                var conditionData = {
+                    selectedSkillId: new ko.observable(""),
+                    selectedSkillName: new ko.observable(DefaultNodeShapes.Localization.Conditions.ChooseSkillLabel)
+                }
+
+                if(existingData)
+                {
+                    conditionData.selectedSkillId(existingData.selectedSkillId);
+                }
+
+                var self = this;
+                conditionData.chooseSkill = function() {
+                    GoNorth.DefaultNodeShapes.openSkillSearchDialog().then(function(chosenSkill) {
+                        conditionData.selectedSkillId(chosenSkill.id);
+                        conditionData.selectedSkillName(chosenSkill.name);
+                    });
+                };
+
+                // Load field data
+                if(existingData && existingData.selectedSkillId)
+                {
+                    this.loadObjectShared(existingData).then(function(skill) {
+                        conditionData.selectedSkillName(skill.name);
+                    }).fail(function(xhr) {
+                        element.errorOccured(true);
+                    });
+                }
+
+                return conditionData;
+            };
+
+            /**
+             * Serializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @returns {object} Serialized data
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.serializeConditionData = function(conditionData) {
+                var serializedData = {
+                    selectedSkillId: conditionData.selectedSkillId()
+                };
+
+                return serializedData;
+            };
+
+            /**
+             * Returns the objects on which an object depends
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {object[]} Objects on which the condition depends
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getConditionDependsOnObject = function(existingData) {
+                if(!existingData || !existingData.selectedSkillId)
+                {
+                    return [];
+                }
+
+                return [{
+                    objectType: Conditions.RelatedToObjectSkill,
+                    objectId: existingData.selectedSkillId
+                }];
+            }
+
+            /**
+             * Loads the skill
+             * 
+             * @param {object} objectId Optional object id
+             * @returns {jQuery.Deferred} Deferred for the async process
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.loadObject = function(objectId) {
+                var def = new jQuery.Deferred();
+                
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + objectId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Returns the condition string prefix infront of the skill name
+             * 
+             * @returns {string} Condition String prefix
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getConditionStringPrefix = function() {
+                return "";
+            }
+
+            /**
+             * Returns the condition data as a display string
+             * 
+             * @param {object} existingData Serialized condition data
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getConditionString = function(existingData) {
+                var def = new jQuery.Deferred();
+                
+                // Check if data is valid
+                if(!existingData || !existingData.selectedSkillId)
+                {
+                    def.resolve(DefaultNodeShapes.Localization.Conditions.MissingInformations);
+                    return def.promise();
+                }
+
+                // Load data and build string
+                var self = this;
+                this.loadObjectShared(existingData).then(function(skill) {
+                    var conditionText = self.getConditionStringPrefix() + skill.name;                    
+                    def.resolve(conditionText);
+                }, function() {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking if the player has learned a skill
+            var conditionTypeCheckSkillPlayerLearned = 15;
+
+            /**
+             * Check if player has learned a skill
+             * @class
+             */
+            Conditions.CheckPlayerLearnedSkillCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.apply(this);
+            };
+
+            Conditions.CheckPlayerLearnedSkillCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckPlayerLearnedSkillCondition.prototype.getType = function() {
+                return conditionTypeCheckSkillPlayerLearned;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckPlayerLearnedSkillCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerLearnedSkillLabel;
+            };
+
+            /**
+             * Returns the condition string prefix infront of the skill name
+             * 
+             * @returns {string} Condition String prefix
+             */
+            Conditions.CheckPlayerLearnedSkillCondition.prototype.getConditionStringPrefix = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerLearnedSkillPrefixLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckPlayerLearnedSkillCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking if the player has not learned a skill
+            var conditionTypeCheckSkillPlayerNotLearned = 16;
+
+            /**
+             * Check if player has not learned a skill
+             * @class
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.apply(this);
+            };
+
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype.getType = function() {
+                return conditionTypeCheckSkillPlayerNotLearned;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerNotLearnedSkillLabel;
+            };
+
+            /**
+             * Returns the condition string prefix infront of the skill name
+             * 
+             * @returns {string} Condition String prefix
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype.getConditionStringPrefix = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerNotLearnedSkillPrefixLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckPlayerNotLearnedSkillCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
         (function(Shapes) {
 
             // Function needs to be set in view model to open condition dialog
@@ -3868,40 +4662,7 @@
                         this.model.set("size", { width: conditionWidth, height: conditionMinHeight + outPorts.length * conditionItemHeight});
                         var conditionTable = "<table class='gn-nodeConditionTable'>";
                         jQuery.each(conditions, function(key, condition) {
-                            var conditionText = "";
-                            if(condition.conditionElements && condition.conditionElements.length > 0)
-                            {
-                                conditionText = DefaultNodeShapes.Localization.Conditions.LoadingConditionText;
-
-                                var selectorString = ".gn-nodeConditionTableConditionCell>a[data-conditionid='" + condition.id + "']";
-                                var textDef = GoNorth.DefaultNodeShapes.Conditions.getConditionManager().getConditionString(condition.conditionElements, GoNorth.DefaultNodeShapes.Localization.Conditions.AndOperatorShort, false);
-                                textDef.then(function(generatedText) {
-                                    if(!generatedText) 
-                                    {
-                                        generatedText = DefaultNodeShapes.Localization.Conditions.EditCondition;
-                                    }
-                                    else 
-                                    { 
-                                        self.$box.find(selectorString).attr("title", generatedText);
-                                    }
-                                    self.$box.find(selectorString).text(generatedText);
-                                    conditionText = generatedText;  // Update condition text in case no async operation was necessary
-                                }, function(err) {
-                                    var errorText = DefaultNodeShapes.Localization.Conditions.ErrorLoadingConditionText;
-                                    if(err) 
-                                    {
-                                        errorText += ": " + err;
-                                    }
-                                    self.$box.find(selectorString).text(errorText);
-                                    self.$box.find(selectorString).attr("title", errorText);
-                                    conditionText = errorText;
-                                });
-                                allTextDeferreds.push(textDef);
-                            }
-                            else
-                            {
-                                conditionText = DefaultNodeShapes.Localization.Conditions.EditCondition;
-                            }
+                            var conditionText = self.buildConditionString(condition, allTextDeferreds);
                             conditionText = jQuery("<div></div>").text(conditionText).html();
 
                             conditionTable += "<tr>";
@@ -3961,6 +4722,89 @@
                             self.openConditionDialog(jQuery(this).data("conditionid"));
                         });
                     },
+
+                    /**
+                     * Builds a condition string and sets it
+                     * 
+                     * @param {object} condition Condition
+                     * @param {jQuery.Deferred[]} allTextDeferreds All Text Deferreds
+                     * @returns {string} Condition text
+                     */
+                    buildConditionString: function(condition, allTextDeferreds) {
+                        var conditionText = "";
+                        var self = this;
+                        if(condition.conditionElements && condition.conditionElements.length > 0)
+                        {
+                            conditionText = DefaultNodeShapes.Localization.Conditions.LoadingConditionText;
+
+                            var selectorString = ".gn-nodeConditionTableConditionCell>a[data-conditionid='" + condition.id + "']";
+                            var textDef = GoNorth.DefaultNodeShapes.Conditions.getConditionManager().getConditionString(condition.conditionElements, GoNorth.DefaultNodeShapes.Localization.Conditions.AndOperatorShort, false);
+                            textDef.then(function(generatedText) {
+                                if(!generatedText) 
+                                {
+                                    generatedText = DefaultNodeShapes.Localization.Conditions.EditCondition;
+                                }
+                                else 
+                                { 
+                                    self.$box.find(selectorString).attr("title", generatedText);
+                                }
+                                self.$box.find(selectorString).text(generatedText);
+                                conditionText = generatedText;  // Update condition text in case no async operation was necessary
+                            }, function(err) {
+                                var errorText = DefaultNodeShapes.Localization.Conditions.ErrorLoadingConditionText;
+                                if(err) 
+                                {
+                                    errorText += ": " + err;
+                                }
+                                self.$box.find(selectorString).text(errorText);
+                                self.$box.find(selectorString).attr("title", errorText);
+                                conditionText = errorText;
+                            });
+                            allTextDeferreds.push(textDef);
+                        }
+                        else
+                        {
+                            conditionText = DefaultNodeShapes.Localization.Conditions.EditCondition;
+                        }
+
+                        return conditionText;
+                    },
+
+                    /**
+                     * Reloads the shared data
+                     * 
+                     * @param {number} objectType Object Type
+                     * @param {string} objectId Object Id
+                     */
+                    reloadSharedLoadedData: function(objectType, objectId) {
+                        var conditions = this.model.get("conditions");
+                        var allTextDeferreds = [];
+                        for(var curCondition = 0; curCondition < conditions.length; ++curCondition)
+                        {
+                            var dependsOnObject = GoNorth.DefaultNodeShapes.Conditions.getConditionManager().getConditionElementsDependsOnObject(conditions[curCondition].conditionElements);
+                            for(var curDependency = 0; curDependency < dependsOnObject.length; ++curDependency)
+                            {
+                                if(dependsOnObject[curDependency].objectId == objectId)
+                                {
+                                    this.buildConditionString(conditions[curCondition], allTextDeferreds);
+                                }
+                            }
+                        }
+
+                        this.hideError();
+                        if(allTextDeferreds.length > 0)
+                        {
+                            this.showLoading();
+                            var self = this;
+                            jQuery.when.apply(jQuery, allTextDeferreds).then(function() {
+                                self.hideLoading();
+                            }, function() {
+                                self.hideLoading();
+                                self.showError();
+                            });
+                        }
+                    },
+
 
                     /**
                      * Shows the loading indicator
@@ -4572,6 +5416,9 @@
                         return null;
                     },
 
+                    /**
+                     * Resets the action data
+                     */
                     resetActionData: function() {
                         this.model.set("actionRelatedToObjectType", null);
                         this.model.set("actionRelatedToObjectId", null);
@@ -4595,6 +5442,19 @@
                         var actionContent = this.$box.find(".gn-actionNodeActionContent");
                         actionContent.html(currentAction.getContent());
                         currentAction.onInitialized(actionContent, this);
+                    },
+
+                    /**
+                     * Reloads the shared data
+                     * 
+                     * @param {number} objectType Object Type
+                     * @param {string} objectId Object Id
+                     */
+                    reloadSharedLoadedData: function(objectType, objectId) {
+                        if(this.model.get("actionRelatedToObjectId") == objectId)
+                        {
+                            this.syncActionData();
+                        }
                     },
 
 
@@ -4709,6 +5569,12 @@
 
             /// Actions that are related to quests
             Actions.RelatedToObjectQuest = "Quest";
+
+            /// Actions that are related to skills
+            Actions.RelatedToObjectSkill = "Skill";
+
+            /// Actions that are related to items
+            Actions.RelatedToObjectItem = "Item";
 
             /**
              * Base Action
@@ -5376,7 +6242,7 @@
              * @returns {string} Choose object label
              */
             Actions.ChangeQuestValueAction.prototype.getChooseLabel = function() {
-                return DefaultNodeShapes.Localization.Actions.ChooseQuestLabel
+                return DefaultNodeShapes.Localization.Actions.ChooseQuestLabel;
             };
 
             /**
@@ -5526,6 +6392,8 @@
 
             /**
              * Deserializes the data
+             * 
+             * @returns {string} Id of the selected quest
              */
             Actions.SetQuestStateAction.prototype.deserializeData = function() {
                 var actionData = this.nodeModel.get("actionData");
@@ -5566,6 +6434,10 @@
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", this.getObjectTypeName());
+                this.nodeModel.set("actionRelatedToObjectId", questId);
             }
 
             /**
@@ -5774,7 +6646,7 @@
             Actions.AddQuestTextAction.prototype.saveData = function() {
                 // The serialized data is also used in the Aika changeQuestTextInNpcDialogAction. If anything changes this must be taken into consideration.
                 
-               var questId = this.getObjectId();
+                var questId = this.getObjectId();
                 var questText = this.contentElement.find(".gn-nodeActionQuestText").val();
                 var serializeData = {
                     questId: questId,
@@ -6414,6 +7286,643 @@
 
         }(Aika.Actions = Aika.Actions || {}));
     }(GoNorth.Aika = GoNorth.Aika || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for waiting
+            var actionTypeWait = 14;
+
+
+            /// Wait Type for Waiting in Real Time
+            var waitTypeRealTime = 0;
+
+            /// Wait Type for Waiting in Game Time
+            var waitTypeGameTime = 1;
+
+
+            /// Wait unit for milliseconds
+            var waitUnitMilliseconds = 0;
+
+            /// Wait unit for seconds
+            var waitUnitSeconds = 1;
+            
+            /// Wait unit for minutes
+            var waitUnitMinutes = 2;
+
+            /// Wait unit for hours
+            var waitUnitHours = 3;
+            
+            /// Wait unit for days
+            var waitUnitDays = 4;
+
+
+
+            /**
+             * Wait Action
+             * @class
+             */
+            Actions.WaitAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.WaitAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.WaitAction.prototype.getContent = function() {
+                return  "<input type='text' class='gn-actionNodeWaitAmount'/>" + 
+                        "<select class='gn-actionNodeWaitType'></select>" +
+                        "<select class='gn-actionNodeWaitUnit'></select>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.WaitAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                this.contentElement.find(".gn-actionNodeWaitAmount").val("0");
+
+                var availableWaitTypes = [
+                    {
+                        label: DefaultNodeShapes.Localization.Actions.WaitTypeRealTime,
+                        value: waitTypeRealTime
+                    },
+                    {
+                        label: DefaultNodeShapes.Localization.Actions.WaitTypeGameTime,
+                        value: waitTypeGameTime
+                    }
+                ];
+                var waitType = contentElement.find(".gn-actionNodeWaitType");
+                GoNorth.Util.fillSelectFromArray(waitType, availableWaitTypes, function(waitType) { return waitType.value; }, function(waitType) { return waitType.label; });
+
+                var self = this;
+                waitType.on("change", function() {
+                    self.syncTimeUnits();
+                    self.serialize();
+                });
+
+                this.syncTimeUnits();
+                contentElement.find(".gn-actionNodeWaitUnit").on("change", function() {
+                    self.serialize();
+                });
+
+                var waitAmount = contentElement.find(".gn-actionNodeWaitAmount");
+                waitAmount.keydown(function(e) {
+                    GoNorth.Util.validateNumberKeyPress(waitAmount, e);
+                });
+
+                waitAmount.change(function(e) {
+                    if(self.isNumberValueSelected)
+                    {
+                        self.ensureNumberValue();
+                    }
+
+                    self.serialize();
+                });
+
+                this.deserialize();
+            };
+
+            /**
+             * Syncs the time units
+             */
+            Actions.WaitAction.prototype.syncTimeUnits = function() {
+                var availableUnits = [
+                    {
+                        label: DefaultNodeShapes.Localization.Actions.WaitUnitMilliseconds,
+                        value: waitUnitMilliseconds
+                    },
+                    {
+                        label: DefaultNodeShapes.Localization.Actions.WaitUnitSeconds,
+                        value: waitUnitSeconds
+                    },
+                    {
+                        label: DefaultNodeShapes.Localization.Actions.WaitUnitMinutes,
+                        value: waitUnitMinutes
+                    }
+                ];
+
+                if(this.contentElement.find(".gn-actionNodeWaitType").val() == waitTypeGameTime)
+                {
+                    availableUnits = [
+                        {
+                            label: DefaultNodeShapes.Localization.Actions.WaitUnitMinutes,
+                            value: waitUnitMinutes
+                        },
+                        {
+                            label: DefaultNodeShapes.Localization.Actions.WaitUnitHours,
+                            value: waitUnitHours
+                        },
+                        {
+                            label: DefaultNodeShapes.Localization.Actions.WaitUnitDays,
+                            value: waitUnitDays
+                        }
+                    ];
+                }
+
+                GoNorth.Util.fillSelectFromArray(this.contentElement.find(".gn-actionNodeWaitUnit"), availableUnits, function(waitType) { return waitType.value; }, function(waitType) { return waitType.label; });
+            };
+
+            /**
+             * Ensures the user entered a number if a number field was selected
+             */
+            Actions.WaitAction.prototype.ensureNumberValue = function() {
+                var parsedValue = parseFloat(this.contentElement.find(".gn-actionNodeWaitAmount").val());
+                if(isNaN(parsedValue))
+                {
+                    this.contentElement.find(".gn-actionNodeWaitAmount").val("0");
+                }
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.WaitAction.prototype.deserialize = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-actionNodeWaitAmount").val(data.waitAmount);
+                this.contentElement.find(".gn-actionNodeWaitType").find("option[value='" + data.waitType + "']").prop("selected", true);
+                this.syncTimeUnits();
+                this.contentElement.find(".gn-actionNodeWaitUnit").find("option[value='" + data.waitUnit + "']").prop("selected", true);
+            };
+
+            /**
+             * Saves the data
+             */
+            Actions.WaitAction.prototype.serialize = function() {
+                var waitAmount = parseFloat(this.contentElement.find(".gn-actionNodeWaitAmount").val());
+                if(isNaN(waitAmount))
+                {
+                    waitAmount = 0;
+                }
+
+                var waitType = this.contentElement.find(".gn-actionNodeWaitType").val();
+                var waitUnit = this.contentElement.find(".gn-actionNodeWaitUnit").val();
+
+                var serializeData = {
+                    waitAmount: waitAmount,
+                    waitType: waitType,
+                    waitUnit: waitUnit
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.WaitAction.prototype.buildAction = function() {
+                return new Actions.WaitAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.WaitAction.prototype.getType = function() {
+                return actionTypeWait;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.WaitAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WaitLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.WaitAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Learn or Forget a Skill Action
+             * @class
+             */
+            Actions.LearnForgetSkillAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.LearnForgetSkillAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.LearnForgetSkillAction.prototype = jQuery.extend(Actions.LearnForgetSkillAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.LearnForgetSkillAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeActionSelectSkill gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenSkill' title='" + DefaultNodeShapes.Localization.Actions.OpenSkillTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.LearnForgetSkillAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeActionSelectSkill").html(DefaultNodeShapes.Localization.Actions.ChooseSkillLabel);
+
+                var skillOpenLink = contentElement.find(".gn-nodeActionOpenSkill");
+
+                // Deserialize
+                var existingSkillId = this.deserializeData();
+                if(existingSkillId)
+                {
+                    skillOpenLink.show();
+
+                    actionNode.showLoading();
+                    actionNode.hideError();
+
+                    this.loadObjectShared(existingSkillId).then(function(skill) {
+                        contentElement.find(".gn-nodeActionSelectSkill").text(skill.name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var selectSkillAction = contentElement.find(".gn-nodeActionSelectSkill");
+                contentElement.find(".gn-nodeActionSelectSkill").on("click", function() {
+                    DefaultNodeShapes.openSkillSearchDialog().then(function(skill) {
+                        selectSkillAction.data("skillid", skill.id);
+                        selectSkillAction.text(skill.name);
+                        self.saveData();
+
+                        skillOpenLink.show();
+                    });
+                });
+
+                skillOpenLink.on("click", function() {
+                    if(selectSkillAction.data("skillid"))
+                    {
+                        window.open("/Evne/Skill#id=" + selectSkillAction.data("skillid"));
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             * 
+             * @returns {string} Id of the selected skill
+             */
+            Actions.LearnForgetSkillAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var skillId = "";
+                if(data.skillId)
+                {
+                    this.contentElement.find(".gn-nodeActionSelectSkill").data("skillid", data.skillId);
+                    skillId = data.skillId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeActionSelectSkill").data("skillid", "");
+                }
+
+                return skillId;
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.LearnForgetSkillAction.prototype.saveData = function() {
+                var skillId = this.getObjectId();
+                var serializeData = {
+                    skillId: skillId
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", this.getObjectTypeName());
+                this.nodeModel.set("actionRelatedToObjectId", skillId);
+            }
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Actions.LearnForgetSkillAction.prototype.getObjectTypeName = function() {
+                return Actions.RelatedToObjectSkill;
+            };
+
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.LearnForgetSkillAction.prototype.getObjectId = function() {
+                return this.contentElement.find(".gn-nodeActionSelectSkill").data("skillid");
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.LearnForgetSkillAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Loads the skill
+             * 
+             * @param {string} skillId Skill Id
+             * @returns {jQuery.Deferred} Deferred for the skill loading
+             */
+            Actions.LearnForgetSkillAction.prototype.loadObject = function(skillId) {
+                var def = new jQuery.Deferred();
+
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + skillId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for learning a new skill for the player
+            var actionTypePlayerLearnSkill = 18;
+
+            /**
+             * Player learn a new skill Action
+             * @class
+             */
+            Actions.PlayerLearnSkillAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.apply(this);
+            };
+
+            Actions.PlayerLearnSkillAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayerLearnSkillAction.prototype.buildAction = function() {
+                return new Actions.PlayerLearnSkillAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayerLearnSkillAction.prototype.getType = function() {
+                return actionTypePlayerLearnSkill;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayerLearnSkillAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.PlayerLearnSkillLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayerLearnSkillAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for forgetting a skill for the player
+            var actionTypePlayerForgetSkill = 19;
+
+            /**
+             * Player forget a skill Action
+             * @class
+             */
+            Actions.PlayerForgetSkillAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.apply(this);
+            };
+
+            Actions.PlayerForgetSkillAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayerForgetSkillAction.prototype.buildAction = function() {
+                return new Actions.PlayerForgetSkillAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayerForgetSkillAction.prototype.getType = function() {
+                return actionTypePlayerForgetSkill;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayerForgetSkillAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.PlayerForgetSkillLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayerForgetSkillAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+            
+            /**
+             * Change skill value Action
+             * @class
+             */
+            Actions.ChangeSkillValueAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.ChangeValueChooseObjectAction.apply(this);
+            };
+
+            Actions.ChangeSkillValueAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.ChangeValueChooseObjectAction.prototype);
+
+            /**
+             * Returns the choose object label
+             * 
+             * @returns {string} Choose object label
+             */
+            Actions.ChangeSkillValueAction.prototype.getChooseLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseSkillLabel;
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Actions.ChangeSkillValueAction.prototype.getObjectTypeName = function() {
+                return Actions.RelatedToObjectSkill;
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.ChangeSkillValueAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Opens the search dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred for the picking
+             */
+            Actions.ChangeSkillValueAction.prototype.openSearchDialog = function() {
+                return GoNorth.DefaultNodeShapes.openSkillSearchDialog();
+            };
+
+            /**
+             * Loads the skill
+             * 
+             * @returns {jQuery.Deferred} Deferred for the skill loading
+             */
+            Actions.ChangeSkillValueAction.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + this.nodeModel.get("objectId"), 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for changing a player skill value
+            var actionTypeChangePlayerSkillValue = 22;
+
+            /**
+             * Change skill value Action
+             * @class
+             */
+            Actions.ChangePlayerSkillValueAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.ChangeSkillValueAction.apply(this);
+            };
+
+            Actions.ChangePlayerSkillValueAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.ChangeSkillValueAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.ChangePlayerSkillValueAction.prototype.buildAction = function() {
+                return new Actions.ChangePlayerSkillValueAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.ChangePlayerSkillValueAction.prototype.getType = function() {
+                return actionTypeChangePlayerSkillValue;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.ChangePlayerSkillValueAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChangePlayerSkillValueLabel;
+            };
+
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ChangePlayerSkillValueAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
@@ -7141,6 +8650,17 @@
                     return self.chooseObjectDialog.openNpcSearch(Aika.Localization.QuestViewModel.ChooseNpc);                    
                 };
                 
+                // Opens the skill search dialog 
+                GoNorth.DefaultNodeShapes.openSkillSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.chooseObjectDialog.openSkillSearch(Aika.Localization.QuestViewModel.ChooseSkill);                    
+                };
             };
 
             Quest.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
@@ -7422,6 +8942,8 @@
                     self.isImplemented(data.isImplemented);
 
                     self.fieldManager.syncFieldIds(data);
+
+                    self.reloadFieldsForNodes(GoNorth.DefaultNodeShapes.Shapes.ObjectResourceQuest, self.id());
 
                     self.callOnQuestSaved();
                     self.isLoading(false);

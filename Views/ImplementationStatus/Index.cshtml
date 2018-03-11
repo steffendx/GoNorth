@@ -84,6 +84,11 @@
                     <li data-bind="css: { 'active': isItemListSelected }"><a class="gn-clickable" data-bind="click: selectItemList">@Localizer["Items"]</a></li>
                 }
 
+                @if(User.IsInRole(RoleNames.Evne))
+                {
+                    <li data-bind="css: { 'active': isSkillListSelected }"><a class="gn-clickable" data-bind="click: selectSkillList">@Localizer["Skills"]</a></li>
+                }
+
                 @if(User.IsInRole(RoleNames.Aika))
                 {
                     <li data-bind="css: { 'active': isQuestListSelected }"><a class="gn-clickable" data-bind="click: selectQuestList">@Localizer["Quests"]</a></li>
@@ -120,6 +125,15 @@
                     <h4>@Localizer["Items"]</h4>
 
                     <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: itemList }"></div>
+                </div>
+            }
+
+            @if(User.IsInRole(RoleNames.Evne))
+            {
+                <div data-bind="visible: isSkillListSelected" style="display: none">
+                    <h4>@Localizer["Skills"]</h4>
+
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: skillList }"></div>
                 </div>
             }
 
@@ -189,6 +203,19 @@
         {
             <text>
             GoNorth.ImplementationStatus.Overview.hasStyrRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Evne))
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasEvneRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.ImplementationStatus.Overview.hasEvneRights = false;
             </text>
         }
 

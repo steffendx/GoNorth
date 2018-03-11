@@ -110,7 +110,7 @@
                         <button type="button" class="btn btn-primary" data-bind="click: save, disable: isLoading() || isReadonly()" tabindex="3">
                             <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["SavePage"]
                         </button>
-                        <button type="button" class="btn btn-default" data-bind="click: openConfirmDeleteDialog, disable: isLoading() || isReadonly(), visible: id" tabindex="4">
+                        <button type="button" class="btn btn-default" data-bind="click: openConfirmDeleteDialog, disable: isLoading() || isReadonly() || isDefault(), visible: id, attr: { title: isDefault() ? '@Localizer["CanNotDeleteRootPage"]' : '' }" tabindex="4">
                             <i class="glyphicon glyphicon-trash" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["DeletePage"]
                         </button>
                         <button type="button" class="btn btn-default" data-bind="click: exitEditMode, disable: isLoading() || isReadonly()" tabindex="5">
@@ -156,6 +156,16 @@
                                     {
                                         <div>@Localizer["Items"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedItems"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedItemsError"></i></div>
                                         <ul data-bind="foreach: mentionedItems" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                            </li>
+                                        </ul>
+                                    }
+
+                                    @if(User.IsInRole(RoleNames.Evne))
+                                    {
+                                        <div>@Localizer["Skills"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedSkills"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedSkillsError"></i></div>
+                                        <ul data-bind="foreach: mentionedSkills" class="gn-kirjaSidebarList">
                                             <li>
                                                 <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
                                             </li>
@@ -247,6 +257,7 @@
         GoNorth.Kirja.Page.toolbarButtonInsertAikaQuestLinkTitle = "@Localizer["InsertAikaQuestLink"]";
         GoNorth.Kirja.Page.toolbarButtonInsertKortistoNpcLinkTitle = "@Localizer["InsertKortistoNpcLink"]";
         GoNorth.Kirja.Page.toolbarButtonInsertStyrItemLinkTitle = "@Localizer["InsertStyrItemLink"]";
+        GoNorth.Kirja.Page.toolbarButtonInsertEvneSkillLinkTitle = "@Localizer["InsertEvneSkillLink"]";
         
         GoNorth.Kirja.Page.kirjaMapMarkerCountTooltip = "@Localizer["MarkedInMapNTimes"]";
         
@@ -286,6 +297,19 @@
         {
             <text>
             GoNorth.Kirja.Page.hasStyrRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Evne))
+        {
+            <text>
+            GoNorth.Kirja.Page.hasEvneRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Page.hasEvneRights = false;
             </text>
         }
 

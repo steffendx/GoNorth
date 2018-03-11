@@ -12,6 +12,10 @@
             this.nodePaper = new ko.observable();
         
             this.showConfirmNodeDeleteDialog = new ko.observable(false);
+            this.deleteLoading = new ko.observable(false);
+            this.deleteErrorOccured = new ko.observable(false);
+            this.deleteErrorAdditionalInformation =  new ko.observable("");
+            this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
             this.errorOccured = new ko.observable(false);
@@ -78,18 +82,50 @@
                 newNode.attr(".inPorts circle/magnet", "passive");
                 
                 var self = this;
-                newNode.onDelete = function() {
-                    return self.onDelete();
+                newNode.onDelete = function(node) {
+                    return self.onDelete(node);
                 };
+            },
+
+            /**
+             * Reloads the fields for nodes
+             * 
+             * @param {string} id Id of the object for which to reload the nodes
+             */
+            reloadFieldsForNodes: function(objectType, id) {
+                GoNorth.DefaultNodeShapes.Shapes.resetSharedObjectLoading(objectType, id);
+
+                if(!this.nodeGraph())
+                {
+                    return;
+                }
+
+                var paper = this.nodePaper();
+                var elements = this.nodeGraph().getElements();
+                for(var curElement = 0; curElement < elements.length; ++curElement)
+                {
+                    var view = paper.findViewByModel(elements[curElement]);
+                    if(view && view.reloadSharedLoadedData)
+                    {
+                        view.reloadSharedLoadedData(objectType, id);
+                    }
+                }
             },
 
 
             /**
              * Delete Callback if a user wants to delete a node
+             * 
+             * @param {object} node Node to delete
+             * @returns {jQuery.Deferred} Deferred that will be resolved if the user deletes the node
              */
-            onDelete: function() {
+            onDelete: function(node) {
+                this.deleteLoading(false);
+                this.deleteErrorOccured(false);
+                this.deleteErrorAdditionalInformation("");
                 this.showConfirmNodeDeleteDialog(true);
 
+                this.deleteNodeTarget = node;
                 this.deleteDeferred = new jQuery.Deferred();
                 return this.deleteDeferred.promise();
             },
@@ -98,6 +134,39 @@
              * Deletes the node for which the dialog is opened
              */
             deleteNode: function() {
+                if(!this.deleteNodeTarget || !this.deleteNodeTarget.validateDelete)
+                {
+                    this.resolveDeleteDeferred();
+                }
+                else
+                {
+                    var deleteDef = this.deleteNodeTarget.validateDelete();
+                    if(!deleteDef)
+                    {
+                        this.resolveDeleteDeferred();
+                    }
+                    else
+                    {
+                        var self = this;
+                        this.deleteLoading(true);
+                        this.deleteErrorOccured(false);
+                        this.deleteErrorAdditionalInformation(""); 
+                        deleteDef.done(function() {
+                            self.deleteLoading(false);
+                            self.resolveDeleteDeferred();
+                        }).fail(function(err) {
+                            self.deleteLoading(false);
+                            self.deleteErrorOccured(true);
+                            self.deleteErrorAdditionalInformation(err); 
+                        });
+                    }
+                }
+            },
+
+            /**
+             * Resolves the delete deferred
+             */
+            resolveDeleteDeferred: function() {
                 if(this.deleteDeferred)
                 {
                     this.deleteDeferred.resolve();
@@ -116,6 +185,10 @@
                     this.deleteDeferred = null;
                 }
                 this.showConfirmNodeDeleteDialog(false);
+                this.deleteLoading(false);
+                this.deleteErrorOccured(false);
+                this.deleteErrorAdditionalInformation("");
+                this.deleteNodeTarget = null;
             },
 
             /**

@@ -211,6 +211,27 @@ namespace GoNorth.Controllers.Api
 
 
         /// <summary>
+        /// Strips an object based on the rights of a user
+        /// </summary>
+        /// <param name="flexFieldObject">Flex field object to strip</param>
+        /// <returns>Stripped object</returns>
+        protected override KortistoNpc StripObject(KortistoNpc flexFieldObject)
+        {
+            if(!User.IsInRole(RoleNames.Styr))
+            {
+                flexFieldObject.Inventory = new List<KortistoInventoryItem>();
+            }
+
+            if(!User.IsInRole(RoleNames.Evne))
+            {
+                flexFieldObject.Skills = new List<KortistoNpcSkill>();
+            }
+
+            return flexFieldObject;
+        }
+
+
+        /// <summary>
         /// Checks if a object is referenced before a delete
         /// </summary>
         /// <param name="id">Id</param>
@@ -282,8 +303,16 @@ namespace GoNorth.Controllers.Api
                 loadedFlexFieldObject.IsPlayerNpc = flexFieldObject.IsPlayerNpc;
             }
 
-            loadedFlexFieldObject.Inventory = flexFieldObject.Inventory;
+            if(User.IsInRole(RoleNames.Styr))
+            {
+                loadedFlexFieldObject.Inventory = flexFieldObject.Inventory;
+            }
 
+            if(User.IsInRole(RoleNames.Evne))
+            {
+                loadedFlexFieldObject.Skills = flexFieldObject.Skills;
+            }
+            
             return loadedFlexFieldObject;
         }
 
@@ -310,7 +339,7 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
-        /// Returns the npcs which have an item in their inventory with only the main items
+        /// Returns the npcs which have an item in their inventory with only the main values
         /// </summary>
         /// <param name="itemId">Item id</param>
         /// <returns>Npcs</returns>
@@ -318,6 +347,18 @@ namespace GoNorth.Controllers.Api
         public async Task<IActionResult> GetNpcsByItemInInventory(string itemId)
         {
             List<KortistoNpc> npcs = await ((IKortistoNpcDbAccess)_objectDbAccess).GetNpcsByItemInInventory(itemId);
+            return Ok(npcs);
+        }
+
+        /// <summary>
+        /// Returns the npcs which have learned a skill with only the main values
+        /// </summary>
+        /// <param name="skillId">Skill id</param>
+        /// <returns>Npcs</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetNpcsByLearnedSkill(string skillId)
+        {
+            List<KortistoNpc> npcs = await ((IKortistoNpcDbAccess)_objectDbAccess).GetNpcsByLearnedSkill(skillId);
             return Ok(npcs);
         }
 

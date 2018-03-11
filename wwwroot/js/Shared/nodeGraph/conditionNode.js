@@ -220,40 +220,7 @@
                         this.model.set("size", { width: conditionWidth, height: conditionMinHeight + outPorts.length * conditionItemHeight});
                         var conditionTable = "<table class='gn-nodeConditionTable'>";
                         jQuery.each(conditions, function(key, condition) {
-                            var conditionText = "";
-                            if(condition.conditionElements && condition.conditionElements.length > 0)
-                            {
-                                conditionText = DefaultNodeShapes.Localization.Conditions.LoadingConditionText;
-
-                                var selectorString = ".gn-nodeConditionTableConditionCell>a[data-conditionid='" + condition.id + "']";
-                                var textDef = GoNorth.DefaultNodeShapes.Conditions.getConditionManager().getConditionString(condition.conditionElements, GoNorth.DefaultNodeShapes.Localization.Conditions.AndOperatorShort, false);
-                                textDef.then(function(generatedText) {
-                                    if(!generatedText) 
-                                    {
-                                        generatedText = DefaultNodeShapes.Localization.Conditions.EditCondition;
-                                    }
-                                    else 
-                                    { 
-                                        self.$box.find(selectorString).attr("title", generatedText);
-                                    }
-                                    self.$box.find(selectorString).text(generatedText);
-                                    conditionText = generatedText;  // Update condition text in case no async operation was necessary
-                                }, function(err) {
-                                    var errorText = DefaultNodeShapes.Localization.Conditions.ErrorLoadingConditionText;
-                                    if(err) 
-                                    {
-                                        errorText += ": " + err;
-                                    }
-                                    self.$box.find(selectorString).text(errorText);
-                                    self.$box.find(selectorString).attr("title", errorText);
-                                    conditionText = errorText;
-                                });
-                                allTextDeferreds.push(textDef);
-                            }
-                            else
-                            {
-                                conditionText = DefaultNodeShapes.Localization.Conditions.EditCondition;
-                            }
+                            var conditionText = self.buildConditionString(condition, allTextDeferreds);
                             conditionText = jQuery("<div></div>").text(conditionText).html();
 
                             conditionTable += "<tr>";
@@ -313,6 +280,89 @@
                             self.openConditionDialog(jQuery(this).data("conditionid"));
                         });
                     },
+
+                    /**
+                     * Builds a condition string and sets it
+                     * 
+                     * @param {object} condition Condition
+                     * @param {jQuery.Deferred[]} allTextDeferreds All Text Deferreds
+                     * @returns {string} Condition text
+                     */
+                    buildConditionString: function(condition, allTextDeferreds) {
+                        var conditionText = "";
+                        var self = this;
+                        if(condition.conditionElements && condition.conditionElements.length > 0)
+                        {
+                            conditionText = DefaultNodeShapes.Localization.Conditions.LoadingConditionText;
+
+                            var selectorString = ".gn-nodeConditionTableConditionCell>a[data-conditionid='" + condition.id + "']";
+                            var textDef = GoNorth.DefaultNodeShapes.Conditions.getConditionManager().getConditionString(condition.conditionElements, GoNorth.DefaultNodeShapes.Localization.Conditions.AndOperatorShort, false);
+                            textDef.then(function(generatedText) {
+                                if(!generatedText) 
+                                {
+                                    generatedText = DefaultNodeShapes.Localization.Conditions.EditCondition;
+                                }
+                                else 
+                                { 
+                                    self.$box.find(selectorString).attr("title", generatedText);
+                                }
+                                self.$box.find(selectorString).text(generatedText);
+                                conditionText = generatedText;  // Update condition text in case no async operation was necessary
+                            }, function(err) {
+                                var errorText = DefaultNodeShapes.Localization.Conditions.ErrorLoadingConditionText;
+                                if(err) 
+                                {
+                                    errorText += ": " + err;
+                                }
+                                self.$box.find(selectorString).text(errorText);
+                                self.$box.find(selectorString).attr("title", errorText);
+                                conditionText = errorText;
+                            });
+                            allTextDeferreds.push(textDef);
+                        }
+                        else
+                        {
+                            conditionText = DefaultNodeShapes.Localization.Conditions.EditCondition;
+                        }
+
+                        return conditionText;
+                    },
+
+                    /**
+                     * Reloads the shared data
+                     * 
+                     * @param {number} objectType Object Type
+                     * @param {string} objectId Object Id
+                     */
+                    reloadSharedLoadedData: function(objectType, objectId) {
+                        var conditions = this.model.get("conditions");
+                        var allTextDeferreds = [];
+                        for(var curCondition = 0; curCondition < conditions.length; ++curCondition)
+                        {
+                            var dependsOnObject = GoNorth.DefaultNodeShapes.Conditions.getConditionManager().getConditionElementsDependsOnObject(conditions[curCondition].conditionElements);
+                            for(var curDependency = 0; curDependency < dependsOnObject.length; ++curDependency)
+                            {
+                                if(dependsOnObject[curDependency].objectId == objectId)
+                                {
+                                    this.buildConditionString(conditions[curCondition], allTextDeferreds);
+                                }
+                            }
+                        }
+
+                        this.hideError();
+                        if(allTextDeferreds.length > 0)
+                        {
+                            this.showLoading();
+                            var self = this;
+                            jQuery.when.apply(jQuery, allTextDeferreds).then(function() {
+                                self.hideLoading();
+                            }, function() {
+                                self.hideLoading();
+                                self.showError();
+                            });
+                        }
+                    },
+
 
                     /**
                      * Shows the loading indicator

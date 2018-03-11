@@ -167,15 +167,15 @@ namespace GoNorth.Data.Aika
         }
 
         /// <summary>
-        /// Returns whether a chapter detail is used in any other node 
+        /// Returns the count of nodes in which a node is used
         /// </summary>
         /// <param name="detailViewId">Detail View Id</param>
-        /// <param name="excludeNodeId">Node Id to exclude</param>
-        /// <returns>true if detail is still used, else false</returns>
-        public async Task<bool> IsDetailUsedInOtherNode(string detailViewId, string excludeNodeId)
+        /// <param name="excludeNodeId">Node Id to exclude, "" to use all</param>
+        /// <returns>Count of usage</returns>
+        public async Task<int> DetailUsedInNodesCount(string detailViewId, string excludeNodeId)
         {
-            bool isUsed = await _ChapterDetailCollection.AsQueryable().Where(d => d.Detail.Any(n => n.Id != excludeNodeId && n.DetailViewId == detailViewId)).AnyAsync();
-            return isUsed;
+            int useCount = await _ChapterDetailCollection.AsQueryable().Where(d => d.Detail.Any(n => n.Id != excludeNodeId && n.DetailViewId == detailViewId)).CountAsync();
+            return useCount;
         }
 
         /// <summary>

@@ -5,6 +5,7 @@
     "StopEditPage": "Bearbeiten beenden",
     "SavePage": "Speichern",
     "DeletePage": "Löschen",
+    "CanNotDeleteRootPage": "Die Wiki Startseite kann nicht gelöscht werden",
 
     "Name": "Name",
 
@@ -12,6 +13,7 @@
     "InsertAikaQuestLink": "Link zu Quest einfügen",
     "InsertKortistoNpcLink": "Link zu Npc einfügen",
     "InsertStyrItemLink": "Link zu Item einfügen",
+    "InsertEvneSkillLink": "Link zu Fähigkeit einfügen",
 
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteThePage": "Bist du sicher das du die Seite löschen willst?",
@@ -29,6 +31,7 @@
     "Quests": "Quests",
     "Npcs": "Npcs",
     "Items": "Items",
+    "Skills": "Fähigkeiten",
     "Maps": "Karten",
     "MarkedInMapNTimes": "Seite ist in Karte {{0}} mal markiert. Kein Zoom auf Markierung möglich.",
     "Attachments": "Anhänge",

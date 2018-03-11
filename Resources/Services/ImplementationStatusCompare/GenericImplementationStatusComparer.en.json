@@ -5,6 +5,7 @@
     "BlankValue": "<blank>",
 
     "ItemWasDeleted": "<Item was deleted>",
+    "SkillWasDeleted": "<Skill was deleted>",
 
     "PropertyNameName": "Name",
     "PropertyNameInventory": "Inventory",
@@ -31,6 +32,7 @@
 
     "ImageFileChanged": "Image changed",
     "InventoryChanged": "Inventory changes:",
+    "SkillChanged": "Skills changed:",
     "FlexFieldObjectFieldsChanged": "Field changes:",
     "NodeLinksChanged": "Node connection changes:",
     "NodePlayerLinesChanged": "Player line nodes changed:",

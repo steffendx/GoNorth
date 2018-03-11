@@ -161,7 +161,7 @@ namespace GoNorth.Data.Aika
         /// <returns>All Quests object is referenced in without detail information</returns>
         public async Task<List<AikaQuest>> GetQuestsObjectIsReferenced(string objectId)
         {
-            List<AikaQuest> quests = await _QuestCollection.AsQueryable().Where(q => q.Condition.Any(c => c.Conditions.Any(ce => ce.DependsOnObjects.Any(o => o.ObjectId == objectId)))).Select(q => new AikaQuest() {
+            List<AikaQuest> quests = await _QuestCollection.AsQueryable().Where(q => q.Action.Any(a => a.ActionRelatedToObjectId == objectId) || q.Condition.Any(c => c.Conditions.Any(ce => ce.DependsOnObjects.Any(o => o.ObjectId == objectId)))).Select(q => new AikaQuest() {
                 Id = q.Id,
                 Name = q.Name,
                 IsMainQuest = q.IsMainQuest

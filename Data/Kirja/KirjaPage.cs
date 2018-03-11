@@ -54,6 +54,11 @@ namespace GoNorth.Data.Kirja
         public List<string> MentionedItems { get; set; }
 
         /// <summary>
+        /// Mentioned Skills
+        /// </summary>
+        public List<string> MentionedSkills { get; set; }
+
+        /// <summary>
         /// Images that were uploaded to the article
         /// </summary>
         public List<string> UplodadedImages { get; set; }

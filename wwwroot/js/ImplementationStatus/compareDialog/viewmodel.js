@@ -54,6 +54,21 @@
                 },
 
                 /**
+                 * Opens the compare dialog for a skill compare call
+                 * 
+                 * @param {string} id Id of the skill
+                 * @param {string} skillName Name of the skill to display in the title
+                 * @returns {jQuery.Deferred} Deferred that will get resolved after the object was marked as implemented
+                 */
+                openSkillCompare: function(id, skillName) {
+                    this.isOpen(true);
+                    this.objectName(skillName ? skillName : "");
+                    this.flagAsImplementedMethodUrlPostfix = "FlagSkillAsImplemented?skillId=" + id;
+
+                    return this.loadCompareResult("CompareSkill?skillId=" + id);
+                },
+
+                /**
                  * Opens the compare dialog for a dialog compare call
                  * 
                  * @param {string} id Id of the dialog

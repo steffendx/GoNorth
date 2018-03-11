@@ -66,7 +66,7 @@
                         else
                         {
                             var self = this;
-                            this.model.onDelete().done(function() {
+                            this.model.onDelete(this).done(function() {
                                 self.model.remove();
                             });
                         }
@@ -144,6 +144,15 @@
                  */
                 removeBox: function(evt) {
                     this.$box.remove();
+                },
+
+                /**
+                 * Checks if a node can be deleted
+                 * 
+                 * @returns {jQuery.Deferred} Deferred for the validation process
+                 */
+                validateDelete: function() {
+                    return null;
                 }
             });
 

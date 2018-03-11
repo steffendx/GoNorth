@@ -4,7 +4,7 @@
         (function(Conditions) {
 
             /// Condition Type for checking the alive state of a npc to choose
-            var conditionTypeCheckNpcAliveStateState = 9;
+            var conditionTypeCheckNpcAliveState = 9;
 
 
             /// Npc state alive
@@ -56,7 +56,7 @@
              * @returns {number} Type of the condition
              */
             Conditions.CheckNpcAliveStateCondition.prototype.getType = function() {
-                return conditionTypeCheckNpcAliveStateState;
+                return conditionTypeCheckNpcAliveState;
             };
 
             /**
@@ -169,7 +169,7 @@
                 if(existingData)
                 {
                     conditionData.selectedNpcId(existingData.npcId);
-                    conditionData.selectedNpcState(existingData.state)
+                    conditionData.selectedNpcState(existingData.state);
 
                     if(existingData.npcId) 
                     {

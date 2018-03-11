@@ -51,6 +51,17 @@
             },
 
             /**
+             * Opens the dialog to search for skills
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @param {function} createCallback Optional callback that will get triggered on hitting the new button, if none is provided the button will be hidden
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openSkillSearch: function(dialogTitle, createCallback) {
+                return this.openDialog(dialogTitle, this.searchSkills, createCallback, null);
+            },
+
+            /**
              * Opens the dialog to search for kirja pages
              * 
              * @param {string} dialogTitle Title of the dialog
@@ -309,6 +320,39 @@
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
                         result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item#id=" + data.flexFieldObjects[curEntry].id));
+                    }
+
+                    def.resolve(result);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            },
+
+
+            /**
+             * Searches Evne skills
+             * 
+             * @param {string} searchPattern Search Pattern
+             * @returns {jQuery.Deferred} Deferred for the result
+             */
+            searchSkills: function(searchPattern) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
+                    type: "GET"
+                }).done(function(data) {
+                    var result = {
+                        hasMore: data.hasMore,
+                        entries: []
+                    };
+
+                    for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
+                    {
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill#id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);

@@ -269,7 +269,7 @@
             /**
              * Returns the condition data as a display string
              * 
-             * @param {object} existingData Serialzied condition data
+             * @param {object} existingData Serialized condition data
              * @returns {jQuery.Deferred} Deferred for the loading process
              */
             Conditions.CheckValueCondition.prototype.getConditionString = function(existingData) {

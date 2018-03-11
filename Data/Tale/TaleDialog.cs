@@ -36,13 +36,13 @@ namespace GoNorth.Data.Tale
         /// Player Text Lines
         /// </summary>
         [ListCompareAttribute(LabelKey = "NodePlayerLinesChanged")]
-        public List<TaleTextNode> PlayerText { get; set; }
+        public List<TextNode> PlayerText { get; set; }
 
         /// <summary>
         /// Npc Text Lines
         /// </summary>
         [ListCompareAttribute(LabelKey = "NodeNpcLinesChanged")]
-        public List<TaleTextNode> NpcText { get; set; }
+        public List<TextNode> NpcText { get; set; }
 
         /// <summary>
         /// Choices

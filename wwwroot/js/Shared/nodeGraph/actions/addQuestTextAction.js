@@ -123,7 +123,7 @@
             Actions.AddQuestTextAction.prototype.saveData = function() {
                 // The serialized data is also used in the Aika changeQuestTextInNpcDialogAction. If anything changes this must be taken into consideration.
                 
-               var questId = this.getObjectId();
+                var questId = this.getObjectId();
                 var questText = this.contentElement.find(".gn-nodeActionQuestText").val();
                 var serializeData = {
                     questId: questId,

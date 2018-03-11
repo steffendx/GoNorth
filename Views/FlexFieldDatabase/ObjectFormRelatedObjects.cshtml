@@ -1,10 +1,10 @@
-@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.FlexFieldDatabaseModels
 
-@model IViewLocalizer
+@model ObjectFormRelatedObjectsViewModel
 
 @if(User.IsInRole(RoleNames.Aika))
 {
-    <h4>@Model["ReferencedInAikaQuests"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInQuests"></i></h4>
+    <h4>@Model.Localizer["ReferencedInAikaQuests"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInQuests"></i></h4>
     <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInQuests">
         <li>
             <a class="gn-clickable" data-bind="text: name, href: $root.buildAikaQuestUrl" target="_blank"></a>
@@ -14,7 +14,7 @@
 
 @if(User.IsInRole(RoleNames.Kirja))
 {
-    <h4>@Model["MentionedInKirjaPages"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedInKirjaPages"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMentionedInKirjaPages"></i></h4>
+    <h4>@Model.Localizer["MentionedInKirjaPages"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedInKirjaPages"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMentionedInKirjaPages"></i></h4>
     <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: mentionedInKirjaPages">
         <li>
             <a class="gn-clickable" data-bind="text: name, href: $root.buildKirjaPageUrl" target="_blank"></a>
@@ -22,9 +22,9 @@
     </ul>
 }
 
-@if(User.IsInRole(RoleNames.Karta))
+@if(User.IsInRole(RoleNames.Karta) && !Model.HideKarta)
 {
-    <h4>@Model["MarkedInKartaMaps"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMarkedInKartaMaps"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMarkedInKartaMaps"></i></h4>
+    <h4>@Model.Localizer["MarkedInKartaMaps"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMarkedInKartaMaps"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingMarkedInKartaMaps"></i></h4>
     <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: markedInKartaMaps">
         <li>
             <a class="gn-clickable" data-bind="text: name, href: $root.buildKartaMapUrl" target="_blank"></a>
@@ -35,7 +35,7 @@
 
 @if(User.IsInRole(RoleNames.Tale))
 {
-    <h4>@Model["ReferencedInTaleDialogs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInTaleDialogs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInTaleDialogs"></i></h4>
+    <h4>@Model.Localizer["ReferencedInTaleDialogs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInTaleDialogs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInTaleDialogs"></i></h4>
     <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInTaleDialogs">
         <li>
             <a class="gn-clickable" data-bind="text: name, href: $root.buildTaleDialogUrl" target="_blank"></a>

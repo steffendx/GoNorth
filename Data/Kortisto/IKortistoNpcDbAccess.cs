@@ -23,10 +23,17 @@ namespace GoNorth.Data.Kortisto
 
 
         /// <summary>
-        /// Returns the npcs which have an item in their inventory with only the main items
+        /// Returns the npcs which have an item in their inventory with only the main values
         /// </summary>
         /// <param name="itemId">Item id</param>
         /// <returns>Npcs</returns>
         Task<List<KortistoNpc>> GetNpcsByItemInInventory(string itemId);
+
+        /// <summary>
+        /// Returns the npcs which have learned a skill with only the main values
+        /// </summary>
+        /// <param name="skillId">Skill id</param>
+        /// <returns>Npcs</returns>
+        Task<List<KortistoNpc>> GetNpcsByLearnedSkill(string skillId);
     }
 }

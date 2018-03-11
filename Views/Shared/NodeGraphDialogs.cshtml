@@ -11,11 +11,15 @@
                 <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
             </div>
             <div class="modal-body">
+                <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: deleteErrorOccured">
+                    <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]</span> <span data-bind="text: deleteErrorAdditionalInformation, visible: deleteErrorAdditionalInformation"></span>
+                </div>
+                
                 <p>@Localizer["AreYouSureYouWantToDeleteTheNode"]</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bind="click: deleteNode">@Localizer["Yes"]</button>
-                <button type="button" class="btn btn-default" data-bind="click: closeConfirmNodeDeleteDialog">@Localizer["No"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: deleteNode, disable: deleteLoading"><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: deleteLoading"></i> <span data-bind="visible: !deleteLoading()">@Localizer["Yes"]</span></button>
+                <button type="button" class="btn btn-default" data-bind="click: closeConfirmNodeDeleteDialog, disable: deleteLoading"><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: deleteLoading"></i> <span data-bind="visible: !deleteLoading()">@Localizer["No"]</span></button>
             </div>
         </div>
     </div>

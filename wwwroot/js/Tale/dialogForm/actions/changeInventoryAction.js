@@ -20,7 +20,10 @@
              * @returns {string} HTML Content of the action
              */
             Actions.ChangeInventoryAction.prototype.getContent = function() {
-                return  "<a class='gn-clickable gn-taleSelectItemAction gn-nodeNonClickableOnReadonly'></a>" +
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-taleSelectItemAction gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenItem' title='" + Tale.Localization.Actions.OpenItemTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
                         "<div class='gn-nodeActionText'>" + Tale.Localization.Actions.ItemQuantity + "</div>" +
                         "<input type='text' class='gn-taleItemQuantity'/>";
             };
@@ -35,10 +38,14 @@
                 this.contentElement = contentElement;
                 this.contentElement.find(".gn-taleSelectItemAction").text(Tale.Localization.Actions.ChooseItem);
 
+                var itemOpenLink = contentElement.find(".gn-nodeActionOpenItem");
+
                 // Deserialize
                 var existingItemId = this.deserializeData();
                 if(existingItemId)
                 {
+                    itemOpenLink.show();
+
                     actionNode.showLoading();
                     actionNode.hideError();
                     jQuery.ajax({ 
@@ -71,6 +78,8 @@
                         selectItemAction.data("itemid", item.id);
                         selectItemAction.text(item.name);
                         self.saveData();
+
+                        itemOpenLink.show();
                     });
                 });
 
@@ -82,6 +91,13 @@
                 itemQuantity.change(function(e) {
                     self.ensureNumberValue();
                     self.saveData();
+                });
+
+                itemOpenLink.on("click", function() {
+                    if(selectItemAction.data("itemid"))
+                    {
+                        window.open("/Styr/Item#id=" + selectItemAction.data("itemid"));
+                    }
                 });
             };
 
@@ -146,6 +162,10 @@
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem);
+                this.nodeModel.set("actionRelatedToObjectId", itemId);
             }
 
         }(Tale.Actions = Tale.Actions || {}));

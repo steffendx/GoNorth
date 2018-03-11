@@ -55,6 +55,17 @@ namespace GoNorth
 
 
         /// <summary>
+        /// Evne role
+        /// </summary>
+        public const string Evne = "Evne";
+
+        /// <summary>
+        /// Evne template manager role
+        /// </summary>
+        public const string EvneTemplateManager = "EvneTemplateManager";
+
+
+        /// <summary>
         /// Kirja role
         /// </summary>
         public const string Kirja = "Kirja";

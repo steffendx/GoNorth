@@ -252,6 +252,18 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
+        /// Returns all pages a skill is mentioned in
+        /// </summary>
+        /// <param name="skillId">Skill Id</param>
+        /// <returns>Pages</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetPagesBySkill(string skillId)
+        {
+            List<KirjaPage> pages = await _pageDbAccess.GetPagesBySkill(skillId);
+            return Ok(pages);
+        }
+
+        /// <summary>
         /// Creates a new page
         /// </summary>
         /// <param name="page">Create Page data</param>
@@ -351,6 +363,11 @@ namespace GoNorth.Controllers.Api
             }
 
             KirjaPage page = await _pageDbAccess.GetPageById(id);
+            if(page.IsDefault)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteRootPage"].Value);
+            }
+
             await _pageDbAccess.DeletePage(page);
             _logger.LogInformation("Page was deleted.");
 
@@ -515,6 +532,8 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.InternalServerError, _localizer["CouldNotUploadFile"]);
             }
 
+            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaAttachmentAdded, page.Name, page.Id, pageAttachment.OriginalFilename);
+
             return Ok(pageAttachment);
         }
 
@@ -596,6 +615,8 @@ namespace GoNorth.Controllers.Api
                 _logger.LogError(ex, "Could not delete attachment");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
+            
+            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaAttachmentDeleted, page.Name, page.Id, attachment.OriginalFilename);
 
             return Ok(pageId);
         }

@@ -2,5 +2,8 @@
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteTheNode": "Bist du sicher das der Knoten gelöscht werden soll?",
     "Yes": "Ja",
-    "No": "Nein"
+    "No": "Nein",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
 }

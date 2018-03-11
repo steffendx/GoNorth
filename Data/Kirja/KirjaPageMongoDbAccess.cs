@@ -199,5 +199,18 @@ namespace GoNorth.Data.Kirja
             }).ToListAsync();
         }
 
+        /// <summary>
+        /// Returns all pages a skill is mentioned in
+        /// </summary>
+        /// <param name="skillId">Skill Id</param>
+        /// <returns>List of Kirja page</returns>
+        public async Task<List<KirjaPage>> GetPagesBySkill(string skillId)
+        {
+            return await _PageCollection.AsQueryable().Where(p => p.MentionedSkills.Any(i => i == skillId)).Select(p => new KirjaPage() {
+                Id = p.Id,
+                Name = p.Name
+            }).ToListAsync();
+        }
+
     }
 }

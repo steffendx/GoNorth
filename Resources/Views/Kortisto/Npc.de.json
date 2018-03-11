@@ -25,6 +25,11 @@
     "RemoveItemFromInventory": "Item aus dem Inventar entfernen",
     "AreYouSureYouWantToRemoveTheItem": "Bist du sicher das das Item entfernt werden soll?",
 
+    "Skills": "Fähigkeiten",
+    "AddSkill": "Fähigkeit hinzufügen",
+    "RemoveSkill": "Fähigkeit entfernen", 
+    "AreYouSureYouWantToRemoveTheSkill": "Bist du sicher das die Fähigkeit entfernt werden soll?",
+
     "ReferencedInAikaQuests": "Referenziert in Aika Quests:",
 
     "MentionedInKirjaPages": "Erwähnt in Kirja Seiten:",

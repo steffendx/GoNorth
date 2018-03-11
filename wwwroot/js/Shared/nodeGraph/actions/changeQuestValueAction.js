@@ -50,7 +50,7 @@
              * @returns {string} Choose object label
              */
             Actions.ChangeQuestValueAction.prototype.getChooseLabel = function() {
-                return DefaultNodeShapes.Localization.Actions.ChooseQuestLabel
+                return DefaultNodeShapes.Localization.Actions.ChooseQuestLabel;
             };
 
             /**

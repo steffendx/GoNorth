@@ -36,6 +36,7 @@ using GoNorth.Services.TaskManagement;
 using GoNorth.Services.ImplementationStatusCompare;
 using Microsoft.AspNetCore.Localization;
 using GoNorth.Services.User;
+using GoNorth.Data.Evne;
 
 namespace GoNorth
 {
@@ -96,6 +97,8 @@ namespace GoNorth
 
             services.AddTransient<IStyrItemImageAccess, StyrFileSystemItemImageAccess>();
 
+            services.AddTransient<IEvneSkillImageAccess, EvneFileSystemSkillImageAccess>();
+
             services.AddTransient<IKirjaPageParserService, KirjaPageParserService>();
             services.AddTransient<IKirjaFileAccess, KirjaFileSystemAccess>();
 
@@ -131,6 +134,12 @@ namespace GoNorth
             services.AddScoped<IStyrItemDbAccess, StyrItemMongoDbAccess>();
             services.AddScoped<IStyrItemTagDbAccess, StyrItemTagMongoDbAccess>(); 
             services.AddScoped<IStyrItemImplementationSnapshotDbAccess, StyrItemImplementationSnapshotMongoDbAccess>();
+
+            services.AddScoped<IEvneFolderDbAccess, EvneFolderMongoDbAccess>();
+            services.AddScoped<IEvneSkillTemplateDbAccess, EvneSkillTemplateMongoDbAccess>();
+            services.AddScoped<IEvneSkillDbAccess, EvneSkillMongoDbAccess>();
+            services.AddScoped<IEvneSkillTagDbAccess, EvneSkillTagMongoDbAccess>();
+            services.AddScoped<IEvneSkillImplementationSnapshotDbAccess, EvneSkillImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<IKirjaPageDbAccess, KirjaPageMongoDbAccess>();
 

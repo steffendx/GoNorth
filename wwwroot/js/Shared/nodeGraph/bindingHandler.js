@@ -40,11 +40,93 @@
              */
             function updatePositionZoomDisplay(element, paper) {
                 var scale = paper.scale().sx;
-                var displayString = GoNorth.DefaultNodeShapes.Localization.NodeDisplay.Position + " " + roundToOneDigit(paper.translate().tx / scale) + "," + roundToOneDigit(paper.translate().ty / scale) + " ";
+                var displayString = GoNorth.DefaultNodeShapes.Localization.NodeDisplay.Position + " " + roundToOneDigit(-paper.translate().tx) + "," + roundToOneDigit(-paper.translate().ty) + " ";
                 displayString += GoNorth.DefaultNodeShapes.Localization.NodeDisplay.Zoom + " " + roundToOneDigit(scale);
 
-                jQuery(element).find(".gn-nodeGraphPositionZoomIndicator").text(displayString);
+                jQuery(element).find(".gn-nodeGraphPositionZoomIndicatorText").text(displayString);
             }
+
+            /**
+             * Updates the mini map
+             * 
+             * @param {object} element Element containing the node graph
+             * @param {object} paper Paper object
+             * @param {bool} showMiniMap true if the mini map is shown, else false
+             */
+            function updateMiniMap(element, paper, showMiniMap) {
+                if(!showMiniMap)
+                {
+                    return;
+                }
+
+                var miniMapContainer = jQuery(element).children(".gn-nodeGraphMiniMap");
+                var sourceSvg = jQuery(element).children("svg");
+                if(sourceSvg.length == 0)
+                {
+                    return;
+                }
+
+                // Get Positions and Viewports
+                var viewBoundingBox = paper.getContentBBox();
+                var scale = paper.scale().sx;
+                var position = paper.translate();
+                viewBoundingBox.x /= scale;
+                viewBoundingBox.y /= scale;
+                viewBoundingBox.width /= scale;
+                viewBoundingBox.height /= scale;
+                viewBoundingBox.x -= position.tx / scale;
+                viewBoundingBox.y -= position.ty / scale;
+                viewBoundingBox.right = viewBoundingBox.x + viewBoundingBox.width;
+                viewBoundingBox.bottom = viewBoundingBox.y + viewBoundingBox.height;
+
+                var parentElement = jQuery(element).parent();
+                var viewPortBoundingBox = {
+                    x: -position.tx / scale,
+                    y: -position.ty / scale,
+                    width: parentElement.width() / scale,
+                    height: parentElement.height() / scale
+                };
+
+                // Adjust view bounding box to always incoperate camera
+                if(viewPortBoundingBox.x < viewBoundingBox.x)
+                {
+                    viewBoundingBox.x = viewPortBoundingBox.x;
+                }
+                if(viewPortBoundingBox.x + viewPortBoundingBox.width > viewBoundingBox.right)
+                {
+                    viewBoundingBox.right = viewPortBoundingBox.x + viewPortBoundingBox.width;
+                }
+
+                if(viewPortBoundingBox.y < viewBoundingBox.y)
+                {
+                    viewBoundingBox.y = viewPortBoundingBox.y;
+                }
+                if(viewPortBoundingBox.y + viewPortBoundingBox.height > viewBoundingBox.bottom)
+                {
+                    viewBoundingBox.bottom = viewPortBoundingBox.y + viewPortBoundingBox.height;
+                }
+
+                // Get Node SVG and adjust it for mini map
+                viewBoundingBox.width = viewBoundingBox.right - viewBoundingBox.x;
+                viewBoundingBox.height = viewBoundingBox.bottom - viewBoundingBox.y;
+                var miniMap = jQuery(sourceSvg[0].outerHTML);
+                miniMap.attr("viewBox", viewBoundingBox.x + " " + viewBoundingBox.y + " " + viewBoundingBox.width + " " + viewBoundingBox.height);
+                miniMap.children(".joint-viewport").removeAttr("transform");
+                miniMap.find("rect").attr("fill-opacity", "1");
+                miniMap.find("rect").attr("fill", "#666");
+                miniMap.find("path").attr("fill", "none");
+                miniMap.find(".tool-options").remove();
+                miniMap.find(".tool-remove").remove();
+
+                // Add viewport
+                var viewPortStrokeWidth = viewBoundingBox.width / 400;
+                miniMap.children(".joint-viewport").append("<rect width='" + viewPortBoundingBox.width + "' height='" + viewPortBoundingBox.height + "' transform='translate(" + viewPortBoundingBox.x + "," + viewPortBoundingBox.y + ")' fill='none' stroke='#fff' style='stroke-width: " + viewPortStrokeWidth + "'></rect>");
+
+                miniMapContainer.html(miniMap[0].outerHTML);
+            }
+
+            // Create throttled version of update mini map
+            var throttledUpdatedMiniMap = GoNorth.Util.throttle(updateMiniMap, 35);
 
 
             /**
@@ -101,6 +183,22 @@
                         }
                     });
 
+                    // Add mini Map update events
+                    var showMiniMap = false;
+                    graph.on("change", function() {
+                        throttledUpdatedMiniMap(element, paper, showMiniMap);
+                    });
+                    graph.on("add", function() {
+                        throttledUpdatedMiniMap(element, paper, showMiniMap);
+                    });
+                    graph.on("remove", function() {
+                        throttledUpdatedMiniMap(element, paper, showMiniMap);
+                    });
+                    jQuery(window).resize(function() {
+                        throttledUpdatedMiniMap(element, paper, showMiniMap);
+                    });
+
+                    // Set Observables
                     var graphObs = valueAccessor();
                     if(ko.isObservable(graphObs))
                     {
@@ -127,6 +225,7 @@
                         {
                             paper.scale(newScale, newScale);
                             updatePositionZoomDisplay(element, paper);
+                            throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
 
                         event.preventDefault();
@@ -153,6 +252,7 @@
                         {
                             paper.translate(event.offsetX - dragStartPosition.x, event.offsetY - dragStartPosition.y);
                             updatePositionZoomDisplay(element, paper);
+                            throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
                     });
 
@@ -187,6 +287,7 @@
                         {
                             paper.translate(event.originalEvent.touches[0].screenX - dragStartPosition.x + dragStartTransform.x, event.originalEvent.touches[0].screenY - dragStartPosition.y + dragStartTransform.y);
                             updatePositionZoomDisplay(element, paper);
+                            throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
                         else if(dragStartDistance && event.originalEvent.touches && event.originalEvent.touches.length == 2)
                         {
@@ -196,6 +297,7 @@
                             {
                                 paper.scale(newScale, newScale);
                                 updatePositionZoomDisplay(element, paper);
+                                throttledUpdatedMiniMap(element, paper, showMiniMap);
                             }
                         }
                     });
@@ -210,7 +312,26 @@
                     // Styling
                     jQuery(element).addClass("gn-nodeGraph");
 
-                    jQuery(element).append("<div class='gn-nodeGraphPositionZoomIndicator'></div>");
+                    jQuery(element).append("<div class='gn-nodeGraphPositionZoomIndicator'><span class='gn-nodeGraphPositionZoomIndicatorText'></span><span><a class='gn-clickable gn-nodeGraphToogleMinimap' title='" + GoNorth.DefaultNodeShapes.Localization.NodeDisplay.ToogleMiniMap + "'><i class='glyphicon glyphicon-chevron-down'></i></a></span></div>");
+                    jQuery(element).append("<div class='gn-nodeGraphMiniMap' style='display: none'></div>");
+
+                    jQuery(element).find(".gn-nodeGraphToogleMinimap").click(function() {
+                        showMiniMap = !showMiniMap;
+                        if(showMiniMap)
+                        {
+                            jQuery(element).find(".gn-nodeGraphMiniMap").slideDown(200);
+                            jQuery(this).children("i").removeClass("glyphicon-chevron-down");
+                            jQuery(this).children("i").addClass("glyphicon-chevron-up");
+                            throttledUpdatedMiniMap(element, paper, showMiniMap);
+                        }
+                        else
+                        {
+                            jQuery(element).find(".gn-nodeGraphMiniMap").slideUp(200);
+                            jQuery(this).children("i").removeClass("glyphicon-chevron-up");
+                            jQuery(this).children("i").addClass("glyphicon-chevron-down");
+                        }
+                    });
+
                     updatePositionZoomDisplay(element, paper);
                 },
                 update: function (element, valueAccessor) {

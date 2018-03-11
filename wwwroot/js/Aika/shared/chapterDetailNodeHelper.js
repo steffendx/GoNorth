@@ -154,6 +154,38 @@
                 return loadDetailViewData(chapterNode, detailViewId);
             };
 
+            /**
+            * Checks if a chapter or chapter detail node can be deleted
+            * 
+            * @param {string} detailNodeId Detail Node id
+            * @returns {jQuery.Deferred} Deferred for the validation process
+            */
+            Shared.validateChapterDetailDelete = function(detailNodeId) {
+               if(!detailNodeId)
+               {
+                   return null;
+               }
+
+               var def = new jQuery.Deferred();
+               jQuery.ajax({ 
+                   url: "/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId, 
+                   type: "GET"
+               }).done(function(data) {
+                   if(data.canBeDeleted)
+                   {
+                       def.resolve();
+                   }
+                   else
+                   {
+                       def.reject(data.errorMessage);
+                   }
+               }).fail(function(xhr) {
+                   def.reject("");
+               });
+
+               return def.promise();
+           };
+
         }(Aika.Shared = Aika.Shared || {}));
     }(GoNorth.Aika = GoNorth.Aika || {}));
 }(window.GoNorth = window.GoNorth || {}));

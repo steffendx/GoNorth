@@ -9,7 +9,7 @@
          */
         Util.generateAntiForgeryHeader = function() {
             var headers = {};
-            headers["RequestVerificationToken"] = jQuery("input[name='__RequestVerificationToken']").val();
+            headers["RequestVerificationToken"] = jQuery("#__RequestVerificationToken").val();
 
             return headers;
         }
@@ -98,6 +98,36 @@
                 isValid = false;
             }
             return isValid;
+        }
+
+        /**
+         * Throttles the function execution
+         * @param {function} fn Function to throttle
+         * @param {number} threshold Throttle time in milliseconds
+         * @param {object} scope This scope for the function
+         * @returns {function} Throttled function
+         */
+        Util.throttle = function(fn, threshold, scope) {
+            threshold = threshold ? threshold : 250;
+            var last;
+            var deferTimer;
+            
+            return function() {
+                var context = scope || this;
+                var now = +new Date();
+                var args = arguments;
+                
+                if (last && now < last + threshold) {
+                    clearTimeout(deferTimer);
+                    deferTimer = setTimeout(function() {
+                        last = now;
+                        fn.apply(context, args);
+                    }, threshold);
+                } else {
+                    last = now;
+                    fn.apply(context, args);
+                }
+            };
         }
 
     }(GoNorth.Util = GoNorth.Util || {}));

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
+using GoNorth.Data.Evne;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Styr;
@@ -28,6 +29,14 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="currentItem">Current item, if null the item will be loaded</param>
         /// <returns>Compare Result</returns>
         Task<CompareResult> CompareItem(string itemId, StyrItem currentItem = null);
+
+        /// <summary>
+        /// Compares a skill
+        /// </summary>
+        /// <param name="skillId">Id of the skill</param>
+        /// <param name="currentSkill">Current skill, if null the skill will be loaded</param>
+        /// <returns>Compare Result</returns>
+        Task<CompareResult> CompareSkill(string skillId, EvneSkill currentSkill = null);
 
         /// <summary>
         /// Compares a dialog

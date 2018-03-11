@@ -6,6 +6,11 @@
     "CreateTaskGroup": "Aufgabengruppe erstellen",
     "CreateTaskToolTip": "Aufgabe erstellen",
 
+    "NoOpenBoards": "Es existiert kein offenes Aufgabenboard.",
+    "ClickHereManageBoards": "Hier klicken",
+    "ClickHereManageBoardsPostfix": " um ein neues Aufgabenboard anzulegen oder ein altes erneut zu öffnen.",
+    "SelectTaskBoard": "Bitte wähle ein Board aus um eine neue Aufgabengruppe anzulegen",
+
     "SwitchBoard": "Aufgabenboard wechseln",
     "ManageBoards": "Aufgabenboards verwalten",
 
