@@ -817,7 +817,7 @@ path.leaflet-interactive {
     cursor: pointer !important;
 }
 
-.leaflet-touch .leaflet-draw-toolbar .leaflet-draw-draw-colorpicker {
+.leaflet-touch .leaflet-draw-toolbar .leaflet-draw-draw-colorpicker, .leaflet-draw-toolbar .leaflet-draw-draw-colorpicker {
     background-position: -210px -1px;
 }
 
