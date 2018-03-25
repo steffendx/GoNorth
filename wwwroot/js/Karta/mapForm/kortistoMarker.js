@@ -72,10 +72,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.KortistoMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.KortistoMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.npcId = this.npcId;
                 return serializedObject;
             }

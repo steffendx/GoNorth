@@ -82,6 +82,7 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(KartaMarkerImplementationSnapshotMongoDbAccess.ItemMarkerCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KartaMarkerImplementationSnapshotMongoDbAccess.MapChangeMarkerCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KartaMarkerImplementationSnapshotMongoDbAccess.QuestMarkerCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(KartaMarkerImplementationSnapshotMongoDbAccess.NoteMarkerCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogRecyclingBinCollectionName, collectionNames);

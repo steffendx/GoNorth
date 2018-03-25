@@ -68,10 +68,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.KartaMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.KartaMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.mapId = this.mapId;
                 return serializedObject;
             }

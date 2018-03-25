@@ -49,6 +49,9 @@
 
             Localization.Actions.ChangeNpcSkillValueLabel = "Change npc skill value";
             
+            Localization.Actions.PersistDialogStateLabel = "Save dialog state";
+            Localization.Actions.PersistDialogStateWillContinueOnThisPointNextTalk = "The dialog will be continued from this node the next time the player talks to the npc.";
+
             // Condition
             Localization.Conditions = {};
             Localization.Conditions.CheckNpcValueLabel = "Check npc value";

@@ -45,6 +45,12 @@ namespace GoNorth.Data.Karta.Marker
         [ValueCompareAttribute]
         public int DeletedInChapter { get; set; }
 
+        /// <summary>
+        /// Geometry associated to the marker
+        /// </summary>
+        [ListCompareAttribute(LabelKey = "MarkerGeometryChanged")]
+        public List<MarkerGeometry> Geometry { get; set; }
+
 
         /// <summary>
         /// true if the object is implemented, else false

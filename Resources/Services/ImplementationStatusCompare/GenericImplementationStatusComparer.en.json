@@ -8,6 +8,7 @@
     "SkillWasDeleted": "<Skill was deleted>",
 
     "PropertyNameName": "Name",
+    "PropertyNameIsPlayerNpc": "Is Player",
     "PropertyNameInventory": "Inventory",
     "PropertyNameImageFile": "Image",
     "PropertyNameValue": "Value",
@@ -25,6 +26,7 @@
     "PropertyNameY": "Y-Coordinate",
     "PropertyNameAddedInChapter": "Added in chapter",
     "PropertyNameDeletedInChapter": "Deleted in chapter",
+    "PropertyNameGeoData": "Geometry data",
 
     "EntryRemoved": "Entry '{0}' removed.",
     "EntryAdded": "Entry '{0}' added.",
@@ -52,5 +54,12 @@
     "NodeTextChanged": "Text nodes changed:",
     "NodeAllDoneChanged": "All done nodes changed:",
     "NodeFinishChanged": "Finish nodes changed:",
-    "ChapterPixelCoordsChanged": "Chapter positions changed:"
+    "ChapterPixelCoordsChanged": "Chapter positions changed:",
+    "MarkerGeometryChanged": "Geometry changed:",
+    "PositionsChanged": "Geometry data changed:",
+    "GeometryPosition": "Position",
+    "GeometryPolygon": "Polygon",
+    "GeometryCircle": "Circle",
+    "GeometryLineString": "Line",
+    "GeometryRectangle": "Rectangle"
 }

@@ -65,6 +65,11 @@ namespace GoNorth.Data.Karta
         /// </summary>
         public List<MapChangeMapMarker> MapChangeMarker { get; set; }
 
+        /// <summary>
+        /// Note Marker
+        /// </summary>
+        public List<NoteMapMarker> NoteMarker { get; set; }
+
 
         /// <summary>
         /// Last modify Date

@@ -410,6 +410,7 @@ namespace GoNorth.Controllers.Api
                 anyChange = AdjustMapMarkerListForDeletedChapter(curMap.KirjaPageMarker, deletedChapter, minChapterNumber, maxChapterNumber, chapters) || anyChange;
                 anyChange = AdjustMapMarkerListForDeletedChapter(curMap.QuestMarker, deletedChapter, minChapterNumber, maxChapterNumber, chapters) || anyChange;
                 anyChange = AdjustMapMarkerListForDeletedChapter(curMap.MapChangeMarker, deletedChapter, minChapterNumber, maxChapterNumber, chapters) || anyChange;
+                anyChange = AdjustMapMarkerListForDeletedChapter(curMap.NoteMarker, deletedChapter, minChapterNumber, maxChapterNumber, chapters) || anyChange;
 
                 if(anyChange)
                 {

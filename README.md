@@ -62,6 +62,7 @@ A user can upload a high resolution map image to GoNorth which will then be tran
 ![Map planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Karta.PNG?raw=true)
 
 Each marker provides brief informations about the different objects and allow the users to jump of the detail page.  
+A user can add addtional geometry like rectangles or polygons to a marker to indicate the affected area of the marker.
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Karta).
 
 ## Implementation Status Tracking
@@ -103,6 +104,7 @@ GoNorth uses the following libraries:
  * [Bootstrap](https://getbootstrap.com/) licensed under MIT
  * [Knockout](http://knockoutjs.com/) licensed under MIT
  * [Leaflet](http://leafletjs.com/) licensed under BSD-License
+ * [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) licensed under MIT
  * [JointJS](https://www.jointjs.com) licensed under Mozilla Public License Version 2.0
  * [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) licensed under Apache License 2.0
  * [Moment](https://github.com/moment/moment) licensed under MIT
@@ -113,3 +115,4 @@ GoNorth uses the following libraries:
  * [bootstrap-wysiwyg](https://github.com/mindmup/bootstrap-wysiwyg) licensed under MIT
  * [bootstrap-tagsinput](https://github.com/bootstrap-tagsinput/bootstrap-tagsinput) licensed under MIT
  * [eonasdan-bootstrap-datetimepicker](https://github.com/Eonasdan/bootstrap-datetimepicker) licensed under MIT
+ * [Fantasy Name Generator](https://github.com/skeeto/fantasyname) licensed under The Unlicense

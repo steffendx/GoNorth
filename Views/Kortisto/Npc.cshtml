@@ -32,6 +32,40 @@
         </div>
     }
     
+    <!-- Set Name Gen Settings Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showNameGenSettingsDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["NameGenSettingsTitle"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info" style="display: none" data-bind="visible: !nameGenDialogTemplate()">
+                        @Localizer["YouWillNotBeAbleToUseNameGen"]
+                    </div>
+
+                    <form id="gn-nameGenTemplateForm">
+                        <div class="form-group">
+                            <label for="gn-nameGenTemplate">@Localizer["NameGenTemplate"] <i class="glyphicon glyphicon-warning-sign text-danger" style="display: none" data-bind="visible: nameGenTemplateError, attr: { title: nameGenTemplateErrorDescription }"></i></label>
+                            <input type="text" class="form-control" id="gn-nameGenTemplate" placeholder="@Localizer["NameGenTemplate"]" name="nameGenTemplate" data-bind="value: nameGenDialogTemplate, valueUpdate: 'input', enterPressed: saveNameGenSettings"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-nameGenSample">@Localizer["NameGenSample"] <a class="gn-clickable" data-bind="click: generateSampleNameGenName" title="@Localizer["NameGenGenerateNewSample"]"><i class="glyphicon glyphicon-retweet"></i></a></label>
+                            <input type="text" class="form-control" id="gn-nameGenSample" placeholder="@Localizer["NameGenSample"]" name="nameGenSample" data-bind="value: nameGenSample" readonly aria-readonly="true"/>
+                        </div>
+                    </form>
+                    
+                    <p>@Localizer["NameGenExplanation"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveNameGenSettings, disable: nameGenTemplateError, attr: { title: nameGenTemplateError() ? '@Localizer["NameGenFixErrorInTemplateBeforeSaving"]' : '' }">@Localizer["Ok"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeNameGenDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormDialogsButtons.cshtml", Localizer)
 
     <!-- ko with: objectDialog -->
@@ -72,6 +106,9 @@
             <i class="glyphicon glyphicon-comment"></i> @Localizer["Dialog"]
         </button>
     }
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" style="display: none" data-bind="click: openNameGenSettings, visible: isTemplateMode(), disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-cog"></i> @Localizer["NameGenSettings"]</button>
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: generateName, visible: !isTemplateMode(), disable: isLoading() || isReadonly() || !nameGenTemplate(), attr: { title: !nameGenTemplate() ? '@Localizer["NoNameGenTemplateTooltip"]' : '' }"><i class="glyphicon glyphicon-transfer"></i> @Localizer["GenerateName"]</button>
 
     @if(User.IsInRole(RoleNames.KortistoPlayerManager))
     {
@@ -141,9 +178,13 @@
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormBaseScripts.cshtml", Localizer)
 
     <environment include="Development">
+        <script src="~/lib/namegen/namegen.js"></script>
+        
         <script src="~/js/Kortisto/npc.viewmodel.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
+        <script src="~/lib/namegen/namegen.min.js"></script>
+
         <script src="~/js/Kortisto/npc.viewmodel.min.js" asp-append-version="true"></script>
     </environment>
     
@@ -152,7 +193,13 @@
     <script type="text/javascript">
         GoNorth.Kortisto.Npc.Localization = {
             AddItemToInventory: "@Localizer["AddItemToInventory"]",
-            AddSkill: "@Localizer["AddSkill"]"
+            AddSkill: "@Localizer["AddSkill"]",
+
+            NameGenMissingClosingBracket: "@Localizer["NameGenMissingClosingBracket"]",
+            NameGenUnbalancedBrackets: "@Localizer["NameGenUnbalancedBrackets"]",
+            NameGenUnexpectedPointyBracketInInput: "@Localizer["NameGenUnexpectedPointyBracketInInput"]",
+            NameGenUnexpectedRoundBracketInInput: "@Localizer["NameGenUnexpectedRoundBracketInInput"]",
+            NameGenUnknownError: "@Localizer["NameGenUnknownError"]"
         };
 
         @if(User.IsInRole(RoleNames.Styr))

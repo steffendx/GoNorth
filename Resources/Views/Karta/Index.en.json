@@ -24,6 +24,10 @@
 
     "ShowKartaMarker": "Show Karta markers",
 
+    "Notes": "Notes",
+    "NoteMarkerNewNote": "<New note>",
+    "ShowNoteMarker": "Show note markers",
+
     "ShowingMarkersOfObjectTooltip": "Currently showing associated markers",
 
     "WaitingOnNewMarker": "Waiting on markers",
@@ -43,10 +47,44 @@
 
     "YouAreEditingANonDefaultChapter": "You are currently not changing the default chapter. All changes are only valid from the current chapter onwards.",
 
+    "EditMarkerGeometryTooltip": "Edit marker geometry",
     "EditMarkerTooltip": "Edit marker",
     "MarkerIsNotImplementedTooltip": "Marker is not implemented",
     "MarkerIsImplementedTooltip": "Marker is implemented",
     "DeleteMarkerTooltip": "Delete marker",
+
+    "DrawCancelDrawing": "Cancel drawing",
+    "DrawFinishDrawing": "Finish drawing",
+    "Finish": "Finish",
+    "DrawDeleteLastPointDrawn": "Delete last point drawn",
+    "DrawDeleteLastPoint": "Delete last point",
+
+    "DrawPolyline": "Draw polyline",
+    "DrawPolygon": "Draw polygon",
+    "DrawRectangle": "Draw rectangle",
+    "DrawCircle": "Draw circle",
+
+    "DrawDragToDrawCircle": "Click and drag to draw circle.",
+    "DrawClickToStartShape": "Click to start drawing the shape.",
+    "DrawClickToContinueShape": "Click to continue drawing this shape.",
+    "DrawClickFirstPointToEndShape": "Click first point to close this shape.",
+    "DrawClickToStartLine": "Click to start drawing the line.",
+    "DrawClickToContinueLine": "Click to continue drawing this line.",
+    "DrawClickLastPointToEndLine": "Click last point to finish this line.",
+    "DrawDragToDrawRectangle": "Click and drag to draw circle.", 
+    "DrawReleaseMouseToFinishDrawing": "Release mouse to finish drawing.",
+
+    "GeometryData": "Geometry settings",
+    "Color": "Color",
+    "Delete": "Delete",
+    "AreYouSureYouWantToDeleteTheGeometry": "Are you sure you want to delete the geometry?",
+
+    "GeometryColorBlue": "Blue",
+    "GeometryColorRed": "Red",
+    "GeometryColorGreen": "Green",
+    "GeometryColorPurple": "Purple",
+    "GeometryColorWhite": "White",
+    "GeometryColorYellow": "Yellow",
 
     "Error": "Error:",
     "ErrorOccured": "An error occured.",

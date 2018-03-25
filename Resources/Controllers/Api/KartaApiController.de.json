@@ -4,6 +4,7 @@
     "MarkerTypeNpc": "Kortisto",
     "MarkerTypeQuest": "Aika",
     "MarkerTypeMapChange": "Karta",
+    "MarkerTypeNote": "Notiz",
 
     "CanNotDeleteMapMarkedInKartaMap": "Die Karte ist in den Karta Karten \"{0}\" markiert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
 

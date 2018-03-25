@@ -374,7 +374,7 @@
 
                         var marker = this.parseMarker(markers[curMarker], latLng);
                         this.viewModel.setMarkerDragCallback(marker);
-                        marker.setBaseDataFromSerialized(markers[curMarker]);
+                        marker.setBaseDataFromSerialized(markers[curMarker], map);
 
                         this.pushMarker(marker);
                     }
@@ -425,6 +425,18 @@
 
 
                 /**
+                 * Sets a markers edit geometry callback function
+                 * 
+                 * @param {object} marker Marker to set the edit geometry callback for
+                 */
+                setEditGeometryCallback: function(marker) {
+                    var self = this;
+                    marker.setEditGeometryCallback(function() {
+                        self.viewModel.enterGeometryEditMode(marker, self);
+                    });
+                },
+
+                /**
                  * Sets a markers edit callback function
                  * 
                  * @param {object} marker Marker to set the edit callback for
@@ -460,6 +472,7 @@
                  * @param {marker} marker Marker to push
                  */
                 pushMarker: function(marker) {
+                    this.setEditGeometryCallback(marker);
                     this.setEditCallback(marker);
                     this.setDeleteCallback(marker);
                     marker.setMapId(this.viewModel.id());
@@ -473,6 +486,22 @@
                     {
                         marker.addTo(this.markerLayer);
                     }
+                },
+
+
+                /**
+                 * Adds geometry to the layer
+                 * 
+                 * @param {object} geometry Geometry to push to the layer
+                 */
+                addGeometryToLayer: function(geometry)
+                {
+                    if(!this.markerLayer)
+                    {
+                        return;
+                    }
+
+                    this.markerLayer.addLayer(geometry);
                 },
 
 

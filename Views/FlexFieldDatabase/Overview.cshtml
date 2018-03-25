@@ -46,6 +46,14 @@
                     <div class="form-group">
                         <label for="gn-folderDisplayName">@Model.Localizer["Name"]</label>
                         <input type="text" class="form-control" id="gn-folderDisplayName" placeholder="@Model.Localizer["Name"]" name="folderDisplayName" data-bind="value: createEditFolderName, enterPressed: saveFolder" required/>
+                        <label for="gn-folderDescription">@Model.Localizer["Description"]</label>
+                        <textarea class="form-control gn-nonResizeable" id="gn-folderDescription" placeholder="@Model.Localizer["Description"]" name="folderDescription" data-bind="value: createEditFolderDescription"></textarea>
+                        <label for="gn-folderImage">@Model.Localizer["Image"]</label>
+                        <div id="gn-folderImage" data-bind="dropzone: createEditFolderUrl, dropzoneAutoProcess: false, dropzoneAcceptedFiles: 'image/*', dropzoneMaxFiles: 1, dropzoneHoverClass: 'gn-dropzoneFileHover', dropzoneAddedFile: folderImageAdded, dropzoneSuccess: folderSuccess, dropzoneError: folderError, dropzoneReceiveTriggerFunctions: receiveDropzoneTriggers" class="gn-flexFieldOverviewFolderDropzone" title="@Model.Localizer["DropFolderImageHere"]">
+                        </div>
+                        <div data-bind="visible: !hasFolderImageInQueue()" class="gn-flexFieldFolderUploadIndicatorImage">
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -120,9 +128,16 @@
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openEditFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["EditCategory"]"><i class="glyphicon glyphicon-pencil"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openDeleteFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["DeleteCategory"]"><i class="glyphicon glyphicon-trash"></i></a>
     </div>
-    <div class="gn-flexFieldOverviewTileIcon">
+    <!-- ko if: !imageFile -->
+    <div class="gn-flexFieldOverviewTileIcon" data-bind="attr: { title: description }">
         <i class="glyphicon glyphicon-folder-open"></i>
     </div>
+    <!-- /ko -->
+    <!-- ko if: imageFile -->
+    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewFolderImageContainer" data-bind="attr: { title: description }">
+        <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }">
+    </div>
+    <!-- /ko -->
     <div class="gn-flexFieldOverviewTileName" data-bind="text: name, attr: { title: name }">
     </div>
 </script>

@@ -38,6 +38,13 @@ namespace GoNorth.Data.Karta
         /// <returns>Marker snapshot</returns>
         Task<QuestMapMarker> GetQuestMarkerSnapshotById(string id);
 
+        /// <summary>
+        /// Returns an implementation snapshot of a Note Marker
+        /// </summary>
+        /// <param name="id">Id of the marker</param>
+        /// <returns>Marker snapshot</returns>
+        Task<NoteMapMarker> GetNoteMarkerSnapshotById(string id); 
+
 
         /// <summary>
         /// Saves a npc marker snapshot
@@ -67,6 +74,13 @@ namespace GoNorth.Data.Karta
         /// <returns>Task</returns>
         Task SaveQuestMarkerSnapshot(QuestMapMarker snapshot);
 
+        /// <summary>
+        /// Saves a note marker snapshot
+        /// </summary>
+        /// <param name="snapshot">Snapshot to save</param>
+        /// <returns>Task</returns>
+        Task SaveNoteMarkerSnapshot(NoteMapMarker snapshot);
+
 
         /// <summary>
         /// Deletes a npc marker snapshot
@@ -95,5 +109,12 @@ namespace GoNorth.Data.Karta
         /// <param name="id">Id of the snapshot</param>
         /// <returns>Task</returns>
         Task DeleteQuestMarkerSnapshot(string id); 
+
+        /// <summary>
+        /// Deletes a note marker
+        /// </summary>
+        /// <param name="id">Id of the snapshot</param>
+        /// <returns>Task</returns>
+        Task DeleteNoteMarkerSnapshot(string id);  
     }
 }

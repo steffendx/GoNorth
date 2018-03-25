@@ -77,6 +77,11 @@ namespace GoNorth.Data.Karta
                 map.MapChangeMarker = new List<MapChangeMapMarker>();
             }
 
+            if(map.NoteMarker == null)
+            {
+                map.NoteMarker = new List<NoteMapMarker>();
+            }
+
             await _MapCollection.InsertOneAsync(map);
 
             return map;
@@ -164,6 +169,7 @@ namespace GoNorth.Data.Karta
                 result.AddRange(ExtractNotImplementedMarkers(curMap, curMap.ItemMarker, MarkerType.Item));
                 result.AddRange(ExtractNotImplementedMarkers(curMap, curMap.MapChangeMarker, MarkerType.MapChange));
                 result.AddRange(ExtractNotImplementedMarkers(curMap, curMap.QuestMarker, MarkerType.Quest));
+                result.AddRange(ExtractNotImplementedMarkers(curMap, curMap.NoteMarker, MarkerType.Note));
             }
 
             return result;

@@ -303,6 +303,8 @@ namespace GoNorth.Controllers.Api
                 loadedFlexFieldObject.IsPlayerNpc = flexFieldObject.IsPlayerNpc;
             }
 
+            loadedFlexFieldObject.NameGenTemplate = flexFieldObject.NameGenTemplate;
+
             if(User.IsInRole(RoleNames.Styr))
             {
                 loadedFlexFieldObject.Inventory = flexFieldObject.Inventory;

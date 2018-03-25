@@ -49,6 +49,9 @@
 
             Localization.Actions.ChangeNpcSkillValueLabel = "Npc Fähigkeit Wert ändern";
 
+            Localization.Actions.PersistDialogStateLabel = "Dialogzustand speichern";
+            Localization.Actions.PersistDialogStateWillContinueOnThisPointNextTalk = "Der Dialog wird an diesem Punkt forgesetzt wenn der Npc das nächste mal angesprochen wird.";
+
             // Condition
             Localization.Conditions = {};
             Localization.Conditions.CheckNpcValueLabel = "Npc Wert prüfen";

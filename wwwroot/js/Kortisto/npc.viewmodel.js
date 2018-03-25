@@ -2131,6 +2131,18 @@
 
                 this.showMarkAsPlayerDialog = new ko.observable(false);
 
+                this.nameGenTemplate = new ko.observable("ss"); // Default Setting is very simple name
+                this.nameGenDialogTemplate = new ko.observable("");
+                this.showNameGenSettingsDialog = new ko.observable(false);
+                this.nameGenSample = new ko.observable("");
+                this.nameGenTemplateError = new ko.observable(false);
+                this.nameGenTemplateErrorDescription = new ko.observable("");
+
+                var self = this;
+                this.nameGenDialogTemplate.subscribe(function() {
+                    self.generateSampleNameGenName();
+                });
+
                 this.dialogExists = new ko.observable(false);
                 this.dialogImplemented = new ko.observable(false);
 
@@ -2154,6 +2166,8 @@
                 {
                     this.isPlayerNpc(data.isPlayerNpc);
                 }
+
+                this.nameGenTemplate(data.nameGenTemplate ? data.nameGenTemplate : "");
 
                 if(Npc.hasStyrRights && data.inventory && data.inventory.length > 0)
                 {
@@ -2283,6 +2297,7 @@
              */
             Npc.ViewModel.prototype.setAdditionalSaveData = function(data) {
                 data.isPlayerNpc = this.isPlayerNpc();
+                data.nameGenTemplate = this.nameGenTemplate();
                 data.inventory = this.serializeInventory();
                 data.skills = this.serializeSkills();
 
@@ -2509,6 +2524,103 @@
                 this.isPlayerNpc(true);
                 this.closeMarkAsPlayerDialog();
                 this.save();
+            };
+
+
+            /**
+             * Opens the name generator settings
+             */
+            Npc.ViewModel.prototype.openNameGenSettings = function() {
+                this.showNameGenSettingsDialog(true);
+                this.nameGenTemplateError(false);
+                this.nameGenTemplateErrorDescription("");
+                this.nameGenDialogTemplate(this.nameGenTemplate());
+            };
+
+            /**
+             * Saves the name generator settings
+             */
+            Npc.ViewModel.prototype.saveNameGenSettings = function() {
+                if(this.nameGenTemplateError())
+                {
+                    return;
+                }
+
+                this.nameGenTemplate(this.nameGenDialogTemplate());
+                this.closeNameGenDialog();
+            };
+
+            /**
+             * Generates a sample name for the name gen settings
+             */
+            Npc.ViewModel.prototype.generateSampleNameGenName = function() {
+                this.nameGenTemplateError(false);
+                this.nameGenTemplateErrorDescription("");
+                if(!this.nameGenDialogTemplate())
+                {
+                    this.nameGenSample("");
+                    return;
+                }
+
+                try
+                {
+                    this.nameGenSample(this.createRandomName(this.nameGenDialogTemplate()));
+                }
+                catch(e)
+                {
+                    this.nameGenSample("");
+                    this.nameGenTemplateError(true);
+                    switch(e.message)
+                    {
+                    case "MISSING_CLOSING_BRACKET":
+                        this.nameGenTemplateErrorDescription(GoNorth.Kortisto.Npc.Localization.NameGenMissingClosingBracket)
+                        break;
+                    case "UNBALANCED_BRACKETS":
+                        this.nameGenTemplateErrorDescription(GoNorth.Kortisto.Npc.Localization.NameGenUnbalancedBrackets)
+                        break;
+                    case "UNEXPECTED_<_IN_INPUT":
+                        this.nameGenTemplateErrorDescription(GoNorth.Kortisto.Npc.Localization.NameGenUnexpectedPointyBracketInInput)
+                        break;
+                    case "UNEXPECTED_)_IN_INPUT":
+                        this.nameGenTemplateErrorDescription(GoNorth.Kortisto.Npc.Localization.NameGenUnexpectedRoundBracketInInput)
+                        break;
+                    default:
+                        this.nameGenTemplateErrorDescription(GoNorth.Kortisto.Npc.Localization.NameGenUnknownError)
+                    }
+                }
+            };
+
+            /**
+             * Closes the name generator settings
+             */
+            Npc.ViewModel.prototype.closeNameGenDialog = function() {
+                this.showNameGenSettingsDialog(false);
+            };
+
+
+            /**
+             * Generates a new name for the npc
+             */
+            Npc.ViewModel.prototype.generateName = function() {
+                this.objectName(this.createRandomName(this.nameGenTemplate()));
+            };
+            
+            /**
+             * Creates a random name
+             * 
+             * @returns {string} Random Name 
+             */
+            Npc.ViewModel.prototype.createRandomName = function(template) {
+                var generator = NameGen.compile(template);
+                var name = generator.toString();
+
+                // Capitalize first letter
+                if(name && name.length > 0)
+                {
+                    name = name.charAt(0).toUpperCase() + name.slice(1);
+                }
+
+                return name;
             };
 
         }(Kortisto.Npc = Kortisto.Npc || {}));

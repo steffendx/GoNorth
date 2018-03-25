@@ -467,6 +467,13 @@ namespace GoNorth.Controllers.Api
                 await _markerSnapshotDbAccess.SaveQuestMarkerSnapshot(marker);
                 await _mapDbAccess.UpdateMap(map);
             }
+            else if(markerType == MarkerType.Note && map.NoteMarker != null)
+            {
+                NoteMapMarker marker = map.NoteMarker.First(m => m.Id == markerId);
+                marker.IsImplemented = true;
+                await _markerSnapshotDbAccess.SaveNoteMarkerSnapshot(marker);
+                await _mapDbAccess.UpdateMap(map);
+            }
 
             // Add Timeline entry
             await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedMarker, mapId, markerId, markerType.ToString(), map.Name);

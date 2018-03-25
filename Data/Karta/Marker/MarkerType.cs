@@ -28,6 +28,11 @@ namespace GoNorth.Data.Karta.Marker
         /// <summary>
         /// Kirja Marker
         /// </summary>
-        KirjaPage
+        KirjaPage,
+
+        /// <summary>
+        /// Note Marker
+        /// </summary>
+        Note
     };
 }

@@ -69,10 +69,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.KirjaMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.KirjaMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.pageId = this.pageId;
                 return serializedObject;
             }

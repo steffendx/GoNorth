@@ -7,6 +7,9 @@
     "EditCategory": "Edit category",
     "DeleteCategory": "Delete category",
     "Name": "Name",    
+    "Description": "Description",
+    "Image": "Image",
+    "DropFolderImageHere": "Drop a folder image here or click to choose a folder image",
     "Yes": "Yes",
     "No": "No",
     "Save": "Save",
@@ -24,5 +27,7 @@
     "OnlyEmptyFoldersCanBeDeleted": "Note: Only empty categories can be deleted.",
 
     "Error": "Error",
-    "ErrorOccured": "An error occured."
+    "ErrorOccured": "An error occured.",
+
+    "DropzoneLocale": "en"
 }

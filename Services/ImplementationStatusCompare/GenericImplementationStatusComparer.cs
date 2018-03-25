@@ -259,6 +259,14 @@ namespace GoNorth.Services.ImplementationStatusCompare
                     currentMarker = loadingMap.QuestMarker.First(m => m.Id == markerId);
                 }
             }
+            else if(markerType == MarkerType.Note)
+            {
+                oldMarker = await _markerSnapshotDbAccess.GetNoteMarkerSnapshotById(markerId);
+                if(loadingMap != null && loadingMap.NoteMarker != null)
+                {
+                    currentMarker = loadingMap.NoteMarker.First(m => m.Id == markerId);
+                }
+            }
             
             return CompareObjects(currentMarker, oldMarker);
         }

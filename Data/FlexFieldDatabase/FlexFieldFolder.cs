@@ -24,5 +24,15 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// Name of the folder
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Description of the folder
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Image File
+        /// </summary>
+        public string ImageFile { get; set; }
     }
 }

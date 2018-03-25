@@ -101,12 +101,60 @@
                             <label for="gn-markerName">@Localizer["Name"]</label>
                             <input type="text" class="form-control" id="gn-markerName" placeholder="@Localizer["Name"]" name="markerName" data-bind="value: dialogMarkerName, enterPressed: saveMarkerName" required/>
                         </div>
+                        <div class="form-group" style="display: none" data-bind="visible: showMarkerNameDialogDescription">
+                            <label for="gn-markerDescription">@Localizer["Description"]</label>
+                            <textarea class="form-control gn-nonResizeable" id="gn-markerDescription" placeholder="@Localizer["Description"]" name="markerDescription" data-bind="value: dialogMarkerDescription"></textarea>
+                        </div>
                     </form>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bind="click: saveMarkerName">@Localizer["Save"]</button>
                     <button type="button" class="btn btn-default" data-bind="click: closeMarkerNameDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Geometry Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showGeometrySettingDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["GeometryData"]</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="gn-markerGeometryForm">
+                        <div class="form-group">
+                            <label for="gn-markerColor">@Localizer["Color"]</label>
+                            <select type="text" class="form-control" id="gn-markerColor" name="markerColor" data-bind="value: selectedGeometryColor, options: availableGeometryColors, optionsText: 'name', optionsValue: 'color'"></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="gn-kartaGeometryDeleteButton btn btn-default" data-bind="click: openDeleteGeometryDialog">@Localizer["Delete"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: saveMarkerGeometrySettings">@Localizer["Save"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeMarkerGeometrySettingsDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Geometry Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmGeometryDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheGeometry"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteGeometry">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmGeometryDeleteDialog">@Localizer["No"]</button>
                 </div>
             </div>
         </div>
@@ -193,6 +241,8 @@
             }
 
             <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: kartaMarkerManager.isLayerVisible">@Localizer["ShowKartaMarker"]</label>
+        
+            <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: noteMarkerManager.isLayerVisible">@Localizer["ShowNoteMarker"]</label>
         </div>
     </div>
 
@@ -219,6 +269,8 @@
             }
 
             <div data-bind="template: { name: 'gn-kartaMarkerManager', data: kartaMarkerManager }"></div>
+
+            <div data-bind="template: { name: 'gn-kartaMarkerManager', data: noteMarkerManager }"></div>
         </div>
         <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
             <!-- ko if: mapLoaded -->
@@ -231,14 +283,13 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
-    <environment include="Development">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha256-kdEnCVOWosn3TNsGslxB8ffuKdrZoGQdIdPwh7W1CsE=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha256-kdEnCVOWosn3TNsGslxB8ffuKdrZoGQdIdPwh7W1CsE=" crossorigin="anonymous" asp-fallback-test="typeof L != 'undefined'" asp-fallback-src="~/lib/leaflet/dist/leaflet.js"></script>
+    <script src="~/lib/leaflet-draw/dist/leaflet.draw.js"></script>
 
+    <environment include="Development">
         <script src="~/js/Karta/map.viewmodel.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha256-kdEnCVOWosn3TNsGslxB8ffuKdrZoGQdIdPwh7W1CsE=" crossorigin="anonymous"></script>
-
         <script src="~/js/Karta/map.viewmodel.min.js" asp-append-version="true"></script>
     </environment>
 
@@ -257,15 +308,48 @@
 
             KartaMarkerTitle: "@Localizer["Karta"]",
             
+            NoteMarkerTitle: "@Localizer["Notes"]",
+            NoteMarkerNewNote: "@Localizer["NoteMarkerNewNote"]",
+
             EditingDefaultChapter: "@Localizer["EditingDefaultChapter"]",
 
+            EditMarkerGeometryTooltip: "@Localizer["EditMarkerGeometryTooltip"]",
             EditMarkerTooltip: "@Localizer["EditMarkerTooltip"]",
             MarkerIsNotImplementedTooltip: "@Localizer["MarkerIsNotImplementedTooltip"]",
             MarkerIsImplementedTooltip: "@Localizer["MarkerIsImplementedTooltip"]",
             DeleteMarkerTooltip: "@Localizer["DeleteMarkerTooltip"]",
 
+            GeometryColorBlue: "@Localizer["GeometryColorBlue"]",
+            GeometryColorRed: "@Localizer["GeometryColorRed"]",
+            GeometryColorGreen: "@Localizer["GeometryColorGreen"]",
+            GeometryColorPurple: "@Localizer["GeometryColorPurple"]",
+            GeometryColorWhite: "@Localizer["GeometryColorWhite"]",
+            GeometryColorYellow: "@Localizer["GeometryColorYellow"]",
+
             ErrorOccured: "@Localizer["ErrorOccured"]"
         };
+
+        L.drawLocal.draw.toolbar.actions.title = "@Localizer["DrawCancelDrawing"]";
+        L.drawLocal.draw.toolbar.actions.text = "@Localizer["Cancel"]";
+        L.drawLocal.draw.toolbar.finish.title = "@Localizer["DrawFinishDrawing"]";
+        L.drawLocal.draw.toolbar.finish.text = "@Localizer["Finish"]";
+        L.drawLocal.draw.toolbar.undo.title = "@Localizer["DrawDeleteLastPointDrawn"]";
+        L.drawLocal.draw.toolbar.undo.text = "@Localizer["DrawDeleteLastPoint"]";
+
+        L.drawLocal.draw.toolbar.buttons.polyline = "@Localizer["DrawPolyline"]";
+        L.drawLocal.draw.toolbar.buttons.polygon = "@Localizer["DrawPolygon"]";
+        L.drawLocal.draw.toolbar.buttons.rectangle = "@Localizer["DrawRectangle"]";
+        L.drawLocal.draw.toolbar.buttons.circle = "@Localizer["DrawCircle"]";
+
+        L.drawLocal.draw.handlers.circle.tooltip.start = "@Localizer["DrawDragToDrawCircle"]";
+        L.drawLocal.draw.handlers.polygon.tooltip.start = "@Localizer["DrawClickToStartShape"]";
+        L.drawLocal.draw.handlers.polygon.tooltip.cont = "@Localizer["DrawClickToContinueShape"]";
+        L.drawLocal.draw.handlers.polygon.tooltip.end = "@Localizer["DrawClickFirstPointToEndShape"]";
+        L.drawLocal.draw.handlers.polyline.tooltip.start = "@Localizer["DrawClickToStartLine"]";
+        L.drawLocal.draw.handlers.polyline.tooltip.cont = "@Localizer["DrawClickToContinueLine"]";
+        L.drawLocal.draw.handlers.polyline.tooltip.end = "@Localizer["DrawClickLastPointToEndLine"]";
+        L.drawLocal.draw.handlers.rectangle.tooltip.start = "@Localizer["DrawDragToDrawRectangle"]";
+        L.drawLocal.draw.handlers.simpleshape.tooltip.end = "@Localizer["DrawReleaseMouseToFinishDrawing"]";
 
         @if(User.IsInRole(RoleNames.Aika))
         {
@@ -300,5 +384,6 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha256-LcmP8hlMTofQrGU6W2q3tUnDnDZ1QVraxfMkP060ekM=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha256-LcmP8hlMTofQrGU6W2q3tUnDnDZ1QVraxfMkP060ekM=" crossorigin="anonymous" asp-fallback-test-call="leaflet-layer" asp-fallback-test-property="position" asp-fallback-test-value="relative" asp-fallback-href="~/lib/leaflet/dist/leaflet.css">
+    <link rel="stylesheet" href="~/lib/leaflet-draw/dist/leaflet.draw.css" />
 }

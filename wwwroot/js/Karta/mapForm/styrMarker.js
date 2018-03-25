@@ -72,10 +72,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.StyrMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.StyrMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.itemId = this.itemId;
                 return serializedObject;
             }

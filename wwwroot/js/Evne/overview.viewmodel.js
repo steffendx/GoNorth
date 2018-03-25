@@ -58,8 +58,16 @@
 
                 this.showFolderCreateEditDialog = new ko.observable(false);
                 this.createEditFolderName = new ko.observable();
+                this.createEditFolderDescription = new ko.observable();
                 this.createEditFolderError = new ko.observable();
                 this.editFolderId = new ko.observable("");
+                this.hasFolderImageInQueue = new ko.observable(false);
+                this.editFolderImageId = new ko.observable("");
+                this.createEditFolderUrl = new ko.computed(function() {
+                    return "/api/" + this.apiControllerName + "/UploadFolderImage?id=" + this.editFolderImageId();
+                }, this); 
+                this.clearFolderFiles = null;
+                this.processFolderQueue = null;
                 
                 this.dialogLoading = new ko.observable(false);
 
@@ -267,6 +275,8 @@
                             id: folder.id,
                             parentId: folder.parentFolderId,
                             name: folder.name,
+                            description: folder.description,
+                            imageFile: folder.imageFile,
                             tileUrl: "#folderId=" + folder.id
                         });
 
@@ -390,6 +400,7 @@
                 openCreateFolderDialog: function() {
                     this.showFolderCreateEditDialog(true);
                     this.createEditFolderName("");
+                    this.createEditFolderDescription("");
                     this.resetSharedCreateEditDialog();
                     this.editFolderId("");
                 },
@@ -402,6 +413,7 @@
                 openEditFolderDialog: function(folder) {
                     this.showFolderCreateEditDialog(true);
                     this.createEditFolderName(folder.name);
+                    this.createEditFolderDescription(folder.description ? folder.description : "");
                     this.resetSharedCreateEditDialog();
                     this.editFolderId(folder.id);
                 },
@@ -410,7 +422,10 @@
                  * Resets the shared create / edit folder values
                  */
                 resetSharedCreateEditDialog: function() {
+                    this.editFolderImageId("");
                     this.createEditFolderError("");
+                    this.clearFolderFiles();
+                    this.hasFolderImageInQueue(false);
                     this.dialogLoading(false);
                     GoNorth.Util.setupValidation("#gn-folderCreateEditForm");
                 },
@@ -421,6 +436,24 @@
                 closeCreateEditFolderDialog: function() {
                     this.showFolderCreateEditDialog(false);
                     this.dialogLoading(false);
+                },
+
+                /**
+                 * Receives the dropzone trigger functions
+                 * 
+                 * @param {function} clearFiles Clears all files from the dropzone if triggered
+                 * @param {function} processQueue Processes the queue when triggered
+                 */
+                receiveDropzoneTriggers: function(clearFiles, processQueue) {
+                    this.clearFolderFiles = clearFiles;
+                    this.processFolderQueue = processQueue;
+                },
+
+                /**
+                 * Function is triggered after a folder image is added
+                 */
+                folderImageAdded: function() {
+                    this.hasFolderImageInQueue(true);
                 },
 
                 /**
@@ -435,6 +468,7 @@
                      // Send data
                      var requestFolder = {
                         name: this.createEditFolderName(),
+                        description: this.createEditFolderDescription(),
                         parentId: this.currentFolderId()
                     };
 
@@ -452,13 +486,37 @@
                         data: JSON.stringify(requestFolder), 
                         type: "POST",
                         contentType: "application/json"
-                    }).done(function(data) {
-                        self.closeCreateEditFolderDialog();
-                        self.loadPage();
+                    }).done(function(folderId) {
+                        if(self.hasFolderImageInQueue())
+                        {
+                            self.editFolderImageId(folderId);
+                            self.processFolderQueue();
+                        }
+                        else
+                        {
+                            self.folderSuccess();
+                        }
                     }).fail(function(xhr) {
-                        self.dialogLoading(false);
-                        self.createEditFolderError(xhr.responseJSON);
+                        self.folderError(xhr);
                     });
+                },
+
+                /**
+                 * Handles a folder create success
+                 */
+                folderSuccess: function() {
+                    this.closeCreateEditFolderDialog();
+                    this.loadPage();
+                },
+
+                /**
+                 * Handles a folder create error
+                 * 
+                 * @param {object} xhr The xhr object for reading error messages
+                 */
+                folderError: function(xhr) {
+                    this.dialogLoading(false);
+                    this.createEditFolderError(xhr.responseJSON);
                 },
 
                 /**

@@ -6,6 +6,24 @@
             /// Popup max width
             var popupMaxWidth = 600;
 
+            /// Geometry Types
+            var geometryTypes = {
+                /// Polygon
+                polygon: 0,
+
+                /// Circle
+                circle: 1,
+
+                /// Line String
+                lineString: 2,
+
+                /// Rectangle
+                rectangle: 3
+            };
+
+            /// Geometry Id Range
+            var geometryIdRange = 100;
+
             /**
              * Base Karta Marker
              * 
@@ -16,6 +34,7 @@
                 this.marker = null;
                 this.id = "";
                 this.mapId = "";
+                this.editGeometryCallback = null;
                 this.editCallback = null;
                 this.deleteCallback = null;
 
@@ -35,6 +54,8 @@
                 this.compareDialog = null;
 
                 this.popupContentObject = null;
+
+                this.markerGeometry = [];
             }
 
             Map.BaseMarker.prototype = {
@@ -83,6 +104,7 @@
                             if(!self.isDisabled)
                             {
                                 content += "<div class='gn-kartaPopupButtons'>";
+                                content += "<a class='gn-clickable gn-kartaEditMarkerGeometryButton' title='" + Map.Localization.EditMarkerGeometryTooltip + "'><i class='glyphicon glyphicon-record'></i></a>";
                                 if(self.editCallback)
                                 {
                                     content += "<a class='gn-clickable gn-kartaEditMarkerButton' title='" + Map.Localization.EditMarkerTooltip + "'><i class='glyphicon glyphicon-pencil'></i></a>";
@@ -106,6 +128,10 @@
                             content = "<div>" + content + "</div>";
 
                             var jQueryContent = jQuery(content);
+                            jQueryContent.find(".gn-kartaEditMarkerGeometryButton").click(function() {
+                                self.callEditGeometry();
+                            });
+
                             jQueryContent.find(".gn-kartaEditMarkerButton").click(function() {
                                 self.callEdit();
                             });
@@ -140,6 +166,16 @@
                     var popup = this.marker.getPopup();
                     popup.setContent(content);
                     popup.update();
+                },
+                
+                /**
+                 * Closes the popup
+                 */
+                closePopup: function() {
+                    if(this.marker)
+                    {
+                        this.marker.closePopup();
+                    }
                 },
 
                 /**
@@ -394,6 +430,23 @@
 
 
                 /**
+                 * Calls the edit geometry callback
+                 */
+                callEditGeometry: function() {
+                    if(this.editGeometryCallback)
+                    {
+                        this.editGeometryCallback();
+                    }
+                },
+
+                /**
+                 * Sets the edit geometry callback
+                 */
+                setEditGeometryCallback: function(callback) {
+                    this.editGeometryCallback = callback;
+                },
+
+                /**
                  * Calls the edit callback
                  */
                 callEdit: function() {
@@ -436,6 +489,14 @@
                  */
                 addTo: function(map) {
                     this.marker.addTo(map);
+
+                    if(this.markerGeometry)
+                    {
+                        for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                        {
+                            this.markerGeometry[curGeo].addTo(map);
+                        }
+                    }
                 },
 
                 /**
@@ -445,6 +506,20 @@
                  */
                 removeFrom: function(map) {
                     this.marker.removeFrom(map);
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        this.markerGeometry[curGeo].removeFrom(map);
+                    }
+                },
+
+
+                /**
+                 * Checks if the marker is equal to a marker on the map
+                 * 
+                 * @param {object} marker Marker on the map
+                 */
+                isMarker: function(marker) {
+                    return this.marker != null && this.marker == marker;
                 },
 
 
@@ -478,9 +553,145 @@
 
 
                 /**
-                 * Serializes the base data
+                 * Adds geometry to the marker
+                 * 
+                 * @param {object} geometry Geometry to add to the marker
                  */
-                serializeBaseData: function() {
+                addGeometry: function(geometry) {
+                    this.markerGeometry.push(geometry);
+                },
+
+                /**
+                 * Moves the geometry marker
+                 * 
+                 * @param {object} latLngOffset Lat/Lng Offset
+                 */
+                moveGeometry: function(latLngOffset) {
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        if(this.markerGeometry[curGeo] instanceof L.Rectangle)
+                        {
+                            var latLngs = this.offsetLatLngsCollection(latLngOffset, this.markerGeometry[curGeo].getLatLngs());
+                            this.markerGeometry[curGeo].setLatLngs(latLngs);
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Circle)
+                        {
+                            var center = this.markerGeometry[curGeo].getLatLng();
+                            center.lat += latLngOffset.lat;
+                            center.lng += latLngOffset.lng;
+                            this.markerGeometry[curGeo].setLatLng(center);
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Polygon)
+                        {
+                            var latLngs = this.offsetLatLngsCollection(latLngOffset, this.markerGeometry[curGeo].getLatLngs());
+                            this.markerGeometry[curGeo].setLatLngs(latLngs);
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Polyline)
+                        {
+                            var latLngs = this.offsetLatLngs(latLngOffset, this.markerGeometry[curGeo].getLatLngs());
+                            this.markerGeometry[curGeo].setLatLngs(latLngs);
+                        }
+
+                        if(this.markerGeometry[curGeo].editing && this.markerGeometry[curGeo].editing.enabled())
+                        {
+                            this.markerGeometry[curGeo].editing.updateMarkers();
+                        }
+                    }
+                },
+
+                /**
+                 * Offsets an array of arrays of lat/lngs
+                 * 
+                 * @param {object} latLngOffset Lat/Lng Offset
+                 * @param {object} latLngs Array of lat/lngs
+                 * @returns {object[][]} Offset lat/lng coordinates
+                 */
+                offsetLatLngsCollection: function(latLngOffset, latLngs) {
+                    for(var curCoord = 0; curCoord < latLngs.length; ++curCoord)
+                    {
+                        latLngs[curCoord] = this.offsetLatLngs(latLngOffset, latLngs[curCoord]);
+                    }
+
+                    return latLngs;
+                },
+
+                /**
+                 * Offsets an array of lat/lngs
+                 * 
+                 * @param {object} latLngOffset Lat/Lng Offset
+                 * @param {object} latLngs Array of lat/lngs
+                 * @returns {object[]} Offset lat/lng coordinates
+                 */
+                offsetLatLngs: function(latLngOffset, latLngs) {
+                    for(var curCoord = 0; curCoord < latLngs.length; ++curCoord)
+                    {
+                        latLngs[curCoord].lat += latLngOffset.lat;
+                        latLngs[curCoord].lng += latLngOffset.lng;
+                    }
+
+                    return latLngs;
+                },
+
+                /**
+                 * Removes a geometry from the marker
+                 * 
+                 * @param {object} geometry Geometry to remove from the marker
+                 * @param {object} map Map object
+                 */
+                removeGeometry: function(geometry, map) {
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        if(this.markerGeometry[curGeo] == geometry)
+                        {
+                            this.markerGeometry[curGeo].removeFrom(map);
+                            this.markerGeometry.splice(curGeo, 1);
+                            return;
+                        }
+                    }
+                },
+
+                /**
+                 * Enables the geometry edit mode
+                 * 
+                 * @param {boolean} allowEdit true wenn bearbeiten erlaubt ist, sonst false
+                 * @param {function} editCallback Callback Function that gets called on edit
+                 * @param {function} clickCallback Callback Function that gets called on click
+                 */
+                setGeometryEditMode: function(allowEdit, editCallback, clickCallback) {
+                    jQuery.each(this.markerGeometry, function(index, marker) {
+                        if(marker.editing)
+                        {
+                            if(!marker.options.editing)
+                            {
+                                marker.options.editing = {};
+                            }
+                            
+                            if(allowEdit)
+                            {
+                                marker.editing.enable();
+                                marker.on("edit", editCallback);
+                                marker.on("click", function() { clickCallback(marker); });
+                                jQuery(marker.getElement()).addClass("gn-kartaGeometryEditable");
+                            }
+                            else
+                            {
+                                marker.editing.disable();
+                                marker.off("edit");
+                                marker.off("click");
+                                jQuery(marker.getElement()).removeClass("gn-kartaGeometryEditable");
+                            }
+                        }
+                    });
+                },
+
+
+                /**
+                 * Serializes the base data
+                 * 
+                 * @param {object} map Map object
+                 * @returns {object} Serialized Base Data
+                 */
+                serializeBaseData: function(map) {
                     var serializedData = {
                         id: this.id,
                         x: this.x,
@@ -488,7 +699,8 @@
                         addedInChapter: this.addedInChapter,
                         chapterPixelCoords: this.chapterPixelCoords,
                         deletedInChapter: this.deletedInChapter,
-                        isImplemented: this.isImplemented
+                        isImplemented: this.isImplemented,                      
+                        geometry: this.serializeGeometry(map)
                     };
 
                     return serializedData;
@@ -498,8 +710,9 @@
                  * Sets the base data from a serialized data
                  * 
                  * @param {object} serializedData Serialized data
+                 * @param {object} map Map object
                  */
-                setBaseDataFromSerialized: function(serializedData) {
+                setBaseDataFromSerialized: function(serializedData, map) {
                     this.id = serializedData.id;
                     this.x = serializedData.x;
                     this.y = serializedData.y;
@@ -507,6 +720,151 @@
                     this.chapterPixelCoords = serializedData.chapterPixelCoords;
                     this.deletedInChapter = serializedData.deletedInChapter ? serializedData.deletedInChapter : -1;
                     this.isImplemented = serializedData.isImplemented;
+                    this.deserializeGeometry(serializedData.geometry, map);
+                },
+
+                /**
+                 * Serializes the geometry
+                 * 
+                 * @param {object} map Map object
+                 */
+                serializeGeometry: function(map) {
+                    var serializedMarkers = [];
+
+                    if(!this.markerGeometry)
+                    {
+                        return serializedMarkers;
+                    }
+
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        var geoType = this.markerGeometry[curGeo].toGeoJSON().geometry.type;
+                        var latLngs = null;
+                        var radius = null;
+                        if(this.markerGeometry[curGeo] instanceof L.Rectangle)
+                        {
+                            var bounds = this.markerGeometry[curGeo].getBounds();
+                            latLngs = [ bounds.getNorthEast(), bounds.getSouthWest() ];
+                            geoType = "Rectangle";
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Circle)
+                        {
+                            var center = this.markerGeometry[curGeo].getLatLng();
+                            radius = this.markerGeometry[curGeo].getRadius();
+                            latLngs = [ center ];
+                            geoType = "Circle";
+                        }
+                        else if(geoType == "Polygon")
+                        {
+                            latLngs = this.markerGeometry[curGeo].getLatLngs()[0];
+                        }
+                        else
+                        {
+                            latLngs = this.markerGeometry[curGeo].getLatLngs();
+                        }
+                        var serializedCoordinates = this.projectGeometryPositions(curGeo * geometryIdRange, latLngs, map);
+
+                        if(radius != null)
+                        {
+                            var radiusPos = {
+                                id: serializedCoordinates[0].id + 1,
+                                x: serializedCoordinates[0].x + radius,
+                                y: serializedCoordinates[0].y
+                            };
+                            serializedCoordinates.push(radiusPos);
+                        }
+
+                        var serializedData = {
+                            id: this.markerGeometry[curGeo].id,
+                            geoType: geoType,
+                            positions: serializedCoordinates,
+                            color: this.markerGeometry[curGeo].options.color
+                        };
+                        serializedMarkers.push(serializedData);
+                    }
+
+                    return serializedMarkers;
+                },
+
+                /**
+                 * Projects the geometry positions
+                 * @param {number} startId Start Id
+                 * @param {object[]} positions Positions
+                 * @param {object} map Map object
+                 * @returns {object[]} projectedPositions
+                 */
+                projectGeometryPositions: function(startId, positions, map)
+                {
+                    var positionId = startId;
+                    var serializedCoordinates = [];
+                    for(var curCoord = 0; curCoord < positions.length; ++curCoord)
+                    {
+                        var pixelPos = map.project(positions[curCoord], map.getMaxZoom());
+                        pixelPos.id = positionId;
+                        serializedCoordinates.push(pixelPos);
+                        ++positionId;
+                    }
+
+                    return serializedCoordinates;
+                },
+
+                /**
+                 * Deserializes the geometry data
+                 * 
+                 * @param {object[]} geometry Serialized geometry
+                 * @param {object} map Map object
+                 */
+                deserializeGeometry: function(geometry, map) {
+                    this.markerGeometry = [];
+                    if(!geometry)
+                    {
+                        return;
+                    }
+
+                    for(var curGeo = 0; curGeo < geometry.length; ++curGeo)
+                    {
+                        var geoLayer = null;
+                        if(geometry[curGeo].geoType == geometryTypes.polygon)
+                        {
+                            geoLayer = new L.Polygon(this.unprojectGeometryPositions(geometry[curGeo].positions, map));
+                        }
+                        else if(geometry[curGeo].geoType == geometryTypes.circle)
+                        {
+                            var radius = geometry[curGeo].positions[1].x - geometry[curGeo].positions[0].x;
+                            geoLayer = new L.Circle(this.unprojectGeometryPositions([ geometry[curGeo].positions[0] ], map)[0], { radius: radius });
+                        }
+                        else if(geometry[curGeo].geoType == geometryTypes.lineString)
+                        {
+                            geoLayer = new L.Polyline(this.unprojectGeometryPositions(geometry[curGeo].positions, map));
+                        }
+                        else if(geometry[curGeo].geoType == geometryTypes.rectangle)
+                        {
+                            geoLayer = new L.Rectangle(this.unprojectGeometryPositions(geometry[curGeo].positions, map));
+                        }
+
+                        if(geoLayer)
+                        {
+                            geoLayer.id = geometry[curGeo].id;
+                            geoLayer.setStyle({ fillColor: geometry[curGeo].color, color: geometry[curGeo].color, cursor: 'default' });
+                            this.markerGeometry.push(geoLayer);
+                        }
+                    }
+                },
+
+                /**
+                 * Unprojects the geometry positions
+                 * @param {object[]} positions Positions
+                 * @param {object} map Map object
+                 */
+                unprojectGeometryPositions: function(positions, map)
+                {
+                    var unprojectedPositions = [];
+                    for(var curPos = 0; curPos < positions.length; ++curPos)
+                    {
+                        var pos = map.unproject([ positions[curPos].x, positions[curPos].y ], map.getMaxZoom());
+                        unprojectedPositions.push(pos);
+                    }
+                    return unprojectedPositions;
                 }
             };
 

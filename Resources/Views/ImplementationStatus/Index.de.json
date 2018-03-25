@@ -16,6 +16,7 @@
     "MarkerTypeItem": "Item",
     "MarkerTypeMapChange": "Kartenwechsel",
     "MarkerTypeQuest": "Quest",
+    "MarkerTypeNote": "Notiz",
 
     "PreviousPage": "Vorherige Seite",
     "NextPage": "Nächste Seite",

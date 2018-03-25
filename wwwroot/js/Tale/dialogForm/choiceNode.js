@@ -241,7 +241,7 @@
                             if(choices[curChoice].id == choiceId)
                             {
                                 choices[curChoice].isRepeatable = !choices[curChoice].isRepeatable;
-                                jQuery(".gn-taleChoiceToogleIsRepeatable[data-choiceid='" + choiceId + "']").toggleClass("gn-taleChoiceIsRepeatable");
+                                this.$box.find(".gn-taleChoiceToogleIsRepeatable[data-choiceid='" + choiceId + "']").toggleClass("gn-taleChoiceIsRepeatable");
                                 return;
                             }
                         }

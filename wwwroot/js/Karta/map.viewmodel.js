@@ -216,6 +216,129 @@
     (function(Karta) {
         (function(Map) {
 
+            /**
+             * Leaflet Draw Color Picker
+             * @class L.Draw.ColorPicker
+             */
+            L.Draw.ColorPicker = L.Draw.Feature.extend({
+                /// Statics
+                statics: {
+                    TYPE: 'colorpicker'
+                },
+
+                /// Options
+                options: {
+                    availableGeometryColors: [],
+                    viewModel: null
+                },
+
+                /**
+                 * Initalizes the color picker
+                 * 
+                 * @param {object} map Map Object
+                 * @param {object} options Options Object
+                 */
+                initialize: function (map, options) {
+                    // Save the type so super can fire, need to do this as cannot do this.TYPE :(
+                    this.type = L.Draw.ColorPicker.TYPE;
+
+                    L.Draw.Feature.prototype.initialize.call(this, map, options);
+                },
+
+                /**
+                 * Overwrites the actions
+                 */
+                overwriteAction: function() {
+                    var actions = [];
+                    var colorPickerSelf = this;
+                    jQuery.each(this.options.availableGeometryColors, function(index, color) {
+                        actions.push({
+                            title: color.name,
+                            text: color.name,
+                            callback: function() { this.pickColor(color.color); },
+                            context: colorPickerSelf
+                        });
+                    });
+                    return actions;
+                },
+
+                /**
+                 * Picks a color
+                 * 
+                 * @param {string} color The picked color
+                 */
+                pickColor: function(color) {
+                    this.options.viewModel.mapGeometryToolbar.options.draw.rectangle.shapeOptions.color = color;
+                    this.options.viewModel.mapGeometryToolbar.options.draw.polyline.shapeOptions.color = color;
+                    this.options.viewModel.mapGeometryToolbar.options.draw.polygon.shapeOptions.color = color;
+                    this.options.viewModel.mapGeometryToolbar.options.draw.circle.shapeOptions.color = color;
+                    this.disable();
+                }
+            });
+
+        }(Karta.Map = Karta.Map || {}));
+    }(GoNorth.Karta = GoNorth.Karta || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Karta) {
+        (function(Map) {
+
+            /**
+             * Adds the colorpicker to the draw toolbar
+             */
+            Map.addColorpickerToDrawToolbar = function() {
+                var originalFunc = L.DrawToolbar.prototype.getActions;
+                L.DrawToolbar.prototype.getActions = function(handler) {
+                    var allActions = originalFunc.apply(this, arguments);
+                    if(handler.overwriteAction)
+                    {
+                        allActions = handler.overwriteAction();
+                    }
+                    return allActions;
+                };
+
+                L.DrawToolbar.include({
+                    getModeHandlers: function (map) {
+                        return [
+                            {
+                                enabled: this.options.polyline,
+                                handler: new L.Draw.Polyline(map, this.options.polyline),
+                                title: L.drawLocal.draw.toolbar.buttons.polyline
+                            },
+                            {
+                                enabled: this.options.polygon,
+                                handler: new L.Draw.Polygon(map, this.options.polygon),
+                                title: L.drawLocal.draw.toolbar.buttons.polygon
+                            },
+                            {
+                                enabled: this.options.rectangle,
+                                handler: new L.Draw.Rectangle(map, this.options.rectangle),
+                                title: L.drawLocal.draw.toolbar.buttons.rectangle
+                            },
+                            {
+                                enabled: this.options.circle,
+                                handler: new L.Draw.Circle(map, this.options.circle),
+                                title: L.drawLocal.draw.toolbar.buttons.circle
+                            },
+                            {
+                                enabled: this.options.colorPicker,
+                                handler: new L.Draw.ColorPicker(map, this.options.colorPicker),
+                                title: L.drawLocal.draw.toolbar.buttons.circle
+                            }
+                        ];
+                    }
+                });
+            };
+
+        }(Karta.Map = Karta.Map || {}));
+    }(GoNorth.Karta = GoNorth.Karta || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Karta) {
+        (function(Map) {
+
             if(typeof ko !== "undefined")
             {
                 /// Tile Size
@@ -372,6 +495,24 @@
             /// Popup max width
             var popupMaxWidth = 600;
 
+            /// Geometry Types
+            var geometryTypes = {
+                /// Polygon
+                polygon: 0,
+
+                /// Circle
+                circle: 1,
+
+                /// Line String
+                lineString: 2,
+
+                /// Rectangle
+                rectangle: 3
+            };
+
+            /// Geometry Id Range
+            var geometryIdRange = 100;
+
             /**
              * Base Karta Marker
              * 
@@ -382,6 +523,7 @@
                 this.marker = null;
                 this.id = "";
                 this.mapId = "";
+                this.editGeometryCallback = null;
                 this.editCallback = null;
                 this.deleteCallback = null;
 
@@ -401,6 +543,8 @@
                 this.compareDialog = null;
 
                 this.popupContentObject = null;
+
+                this.markerGeometry = [];
             }
 
             Map.BaseMarker.prototype = {
@@ -449,6 +593,7 @@
                             if(!self.isDisabled)
                             {
                                 content += "<div class='gn-kartaPopupButtons'>";
+                                content += "<a class='gn-clickable gn-kartaEditMarkerGeometryButton' title='" + Map.Localization.EditMarkerGeometryTooltip + "'><i class='glyphicon glyphicon-record'></i></a>";
                                 if(self.editCallback)
                                 {
                                     content += "<a class='gn-clickable gn-kartaEditMarkerButton' title='" + Map.Localization.EditMarkerTooltip + "'><i class='glyphicon glyphicon-pencil'></i></a>";
@@ -472,6 +617,10 @@
                             content = "<div>" + content + "</div>";
 
                             var jQueryContent = jQuery(content);
+                            jQueryContent.find(".gn-kartaEditMarkerGeometryButton").click(function() {
+                                self.callEditGeometry();
+                            });
+
                             jQueryContent.find(".gn-kartaEditMarkerButton").click(function() {
                                 self.callEdit();
                             });
@@ -506,6 +655,16 @@
                     var popup = this.marker.getPopup();
                     popup.setContent(content);
                     popup.update();
+                },
+                
+                /**
+                 * Closes the popup
+                 */
+                closePopup: function() {
+                    if(this.marker)
+                    {
+                        this.marker.closePopup();
+                    }
                 },
 
                 /**
@@ -760,6 +919,23 @@
 
 
                 /**
+                 * Calls the edit geometry callback
+                 */
+                callEditGeometry: function() {
+                    if(this.editGeometryCallback)
+                    {
+                        this.editGeometryCallback();
+                    }
+                },
+
+                /**
+                 * Sets the edit geometry callback
+                 */
+                setEditGeometryCallback: function(callback) {
+                    this.editGeometryCallback = callback;
+                },
+
+                /**
                  * Calls the edit callback
                  */
                 callEdit: function() {
@@ -802,6 +978,14 @@
                  */
                 addTo: function(map) {
                     this.marker.addTo(map);
+
+                    if(this.markerGeometry)
+                    {
+                        for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                        {
+                            this.markerGeometry[curGeo].addTo(map);
+                        }
+                    }
                 },
 
                 /**
@@ -811,6 +995,20 @@
                  */
                 removeFrom: function(map) {
                     this.marker.removeFrom(map);
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        this.markerGeometry[curGeo].removeFrom(map);
+                    }
+                },
+
+
+                /**
+                 * Checks if the marker is equal to a marker on the map
+                 * 
+                 * @param {object} marker Marker on the map
+                 */
+                isMarker: function(marker) {
+                    return this.marker != null && this.marker == marker;
                 },
 
 
@@ -844,9 +1042,145 @@
 
 
                 /**
-                 * Serializes the base data
+                 * Adds geometry to the marker
+                 * 
+                 * @param {object} geometry Geometry to add to the marker
                  */
-                serializeBaseData: function() {
+                addGeometry: function(geometry) {
+                    this.markerGeometry.push(geometry);
+                },
+
+                /**
+                 * Moves the geometry marker
+                 * 
+                 * @param {object} latLngOffset Lat/Lng Offset
+                 */
+                moveGeometry: function(latLngOffset) {
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        if(this.markerGeometry[curGeo] instanceof L.Rectangle)
+                        {
+                            var latLngs = this.offsetLatLngsCollection(latLngOffset, this.markerGeometry[curGeo].getLatLngs());
+                            this.markerGeometry[curGeo].setLatLngs(latLngs);
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Circle)
+                        {
+                            var center = this.markerGeometry[curGeo].getLatLng();
+                            center.lat += latLngOffset.lat;
+                            center.lng += latLngOffset.lng;
+                            this.markerGeometry[curGeo].setLatLng(center);
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Polygon)
+                        {
+                            var latLngs = this.offsetLatLngsCollection(latLngOffset, this.markerGeometry[curGeo].getLatLngs());
+                            this.markerGeometry[curGeo].setLatLngs(latLngs);
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Polyline)
+                        {
+                            var latLngs = this.offsetLatLngs(latLngOffset, this.markerGeometry[curGeo].getLatLngs());
+                            this.markerGeometry[curGeo].setLatLngs(latLngs);
+                        }
+
+                        if(this.markerGeometry[curGeo].editing && this.markerGeometry[curGeo].editing.enabled())
+                        {
+                            this.markerGeometry[curGeo].editing.updateMarkers();
+                        }
+                    }
+                },
+
+                /**
+                 * Offsets an array of arrays of lat/lngs
+                 * 
+                 * @param {object} latLngOffset Lat/Lng Offset
+                 * @param {object} latLngs Array of lat/lngs
+                 * @returns {object[][]} Offset lat/lng coordinates
+                 */
+                offsetLatLngsCollection: function(latLngOffset, latLngs) {
+                    for(var curCoord = 0; curCoord < latLngs.length; ++curCoord)
+                    {
+                        latLngs[curCoord] = this.offsetLatLngs(latLngOffset, latLngs[curCoord]);
+                    }
+
+                    return latLngs;
+                },
+
+                /**
+                 * Offsets an array of lat/lngs
+                 * 
+                 * @param {object} latLngOffset Lat/Lng Offset
+                 * @param {object} latLngs Array of lat/lngs
+                 * @returns {object[]} Offset lat/lng coordinates
+                 */
+                offsetLatLngs: function(latLngOffset, latLngs) {
+                    for(var curCoord = 0; curCoord < latLngs.length; ++curCoord)
+                    {
+                        latLngs[curCoord].lat += latLngOffset.lat;
+                        latLngs[curCoord].lng += latLngOffset.lng;
+                    }
+
+                    return latLngs;
+                },
+
+                /**
+                 * Removes a geometry from the marker
+                 * 
+                 * @param {object} geometry Geometry to remove from the marker
+                 * @param {object} map Map object
+                 */
+                removeGeometry: function(geometry, map) {
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        if(this.markerGeometry[curGeo] == geometry)
+                        {
+                            this.markerGeometry[curGeo].removeFrom(map);
+                            this.markerGeometry.splice(curGeo, 1);
+                            return;
+                        }
+                    }
+                },
+
+                /**
+                 * Enables the geometry edit mode
+                 * 
+                 * @param {boolean} allowEdit true wenn bearbeiten erlaubt ist, sonst false
+                 * @param {function} editCallback Callback Function that gets called on edit
+                 * @param {function} clickCallback Callback Function that gets called on click
+                 */
+                setGeometryEditMode: function(allowEdit, editCallback, clickCallback) {
+                    jQuery.each(this.markerGeometry, function(index, marker) {
+                        if(marker.editing)
+                        {
+                            if(!marker.options.editing)
+                            {
+                                marker.options.editing = {};
+                            }
+                            
+                            if(allowEdit)
+                            {
+                                marker.editing.enable();
+                                marker.on("edit", editCallback);
+                                marker.on("click", function() { clickCallback(marker); });
+                                jQuery(marker.getElement()).addClass("gn-kartaGeometryEditable");
+                            }
+                            else
+                            {
+                                marker.editing.disable();
+                                marker.off("edit");
+                                marker.off("click");
+                                jQuery(marker.getElement()).removeClass("gn-kartaGeometryEditable");
+                            }
+                        }
+                    });
+                },
+
+
+                /**
+                 * Serializes the base data
+                 * 
+                 * @param {object} map Map object
+                 * @returns {object} Serialized Base Data
+                 */
+                serializeBaseData: function(map) {
                     var serializedData = {
                         id: this.id,
                         x: this.x,
@@ -854,7 +1188,8 @@
                         addedInChapter: this.addedInChapter,
                         chapterPixelCoords: this.chapterPixelCoords,
                         deletedInChapter: this.deletedInChapter,
-                        isImplemented: this.isImplemented
+                        isImplemented: this.isImplemented,                      
+                        geometry: this.serializeGeometry(map)
                     };
 
                     return serializedData;
@@ -864,8 +1199,9 @@
                  * Sets the base data from a serialized data
                  * 
                  * @param {object} serializedData Serialized data
+                 * @param {object} map Map object
                  */
-                setBaseDataFromSerialized: function(serializedData) {
+                setBaseDataFromSerialized: function(serializedData, map) {
                     this.id = serializedData.id;
                     this.x = serializedData.x;
                     this.y = serializedData.y;
@@ -873,6 +1209,151 @@
                     this.chapterPixelCoords = serializedData.chapterPixelCoords;
                     this.deletedInChapter = serializedData.deletedInChapter ? serializedData.deletedInChapter : -1;
                     this.isImplemented = serializedData.isImplemented;
+                    this.deserializeGeometry(serializedData.geometry, map);
+                },
+
+                /**
+                 * Serializes the geometry
+                 * 
+                 * @param {object} map Map object
+                 */
+                serializeGeometry: function(map) {
+                    var serializedMarkers = [];
+
+                    if(!this.markerGeometry)
+                    {
+                        return serializedMarkers;
+                    }
+
+                    for(var curGeo = 0; curGeo < this.markerGeometry.length; ++curGeo)
+                    {
+                        var geoType = this.markerGeometry[curGeo].toGeoJSON().geometry.type;
+                        var latLngs = null;
+                        var radius = null;
+                        if(this.markerGeometry[curGeo] instanceof L.Rectangle)
+                        {
+                            var bounds = this.markerGeometry[curGeo].getBounds();
+                            latLngs = [ bounds.getNorthEast(), bounds.getSouthWest() ];
+                            geoType = "Rectangle";
+                        }
+                        else if(this.markerGeometry[curGeo] instanceof L.Circle)
+                        {
+                            var center = this.markerGeometry[curGeo].getLatLng();
+                            radius = this.markerGeometry[curGeo].getRadius();
+                            latLngs = [ center ];
+                            geoType = "Circle";
+                        }
+                        else if(geoType == "Polygon")
+                        {
+                            latLngs = this.markerGeometry[curGeo].getLatLngs()[0];
+                        }
+                        else
+                        {
+                            latLngs = this.markerGeometry[curGeo].getLatLngs();
+                        }
+                        var serializedCoordinates = this.projectGeometryPositions(curGeo * geometryIdRange, latLngs, map);
+
+                        if(radius != null)
+                        {
+                            var radiusPos = {
+                                id: serializedCoordinates[0].id + 1,
+                                x: serializedCoordinates[0].x + radius,
+                                y: serializedCoordinates[0].y
+                            };
+                            serializedCoordinates.push(radiusPos);
+                        }
+
+                        var serializedData = {
+                            id: this.markerGeometry[curGeo].id,
+                            geoType: geoType,
+                            positions: serializedCoordinates,
+                            color: this.markerGeometry[curGeo].options.color
+                        };
+                        serializedMarkers.push(serializedData);
+                    }
+
+                    return serializedMarkers;
+                },
+
+                /**
+                 * Projects the geometry positions
+                 * @param {number} startId Start Id
+                 * @param {object[]} positions Positions
+                 * @param {object} map Map object
+                 * @returns {object[]} projectedPositions
+                 */
+                projectGeometryPositions: function(startId, positions, map)
+                {
+                    var positionId = startId;
+                    var serializedCoordinates = [];
+                    for(var curCoord = 0; curCoord < positions.length; ++curCoord)
+                    {
+                        var pixelPos = map.project(positions[curCoord], map.getMaxZoom());
+                        pixelPos.id = positionId;
+                        serializedCoordinates.push(pixelPos);
+                        ++positionId;
+                    }
+
+                    return serializedCoordinates;
+                },
+
+                /**
+                 * Deserializes the geometry data
+                 * 
+                 * @param {object[]} geometry Serialized geometry
+                 * @param {object} map Map object
+                 */
+                deserializeGeometry: function(geometry, map) {
+                    this.markerGeometry = [];
+                    if(!geometry)
+                    {
+                        return;
+                    }
+
+                    for(var curGeo = 0; curGeo < geometry.length; ++curGeo)
+                    {
+                        var geoLayer = null;
+                        if(geometry[curGeo].geoType == geometryTypes.polygon)
+                        {
+                            geoLayer = new L.Polygon(this.unprojectGeometryPositions(geometry[curGeo].positions, map));
+                        }
+                        else if(geometry[curGeo].geoType == geometryTypes.circle)
+                        {
+                            var radius = geometry[curGeo].positions[1].x - geometry[curGeo].positions[0].x;
+                            geoLayer = new L.Circle(this.unprojectGeometryPositions([ geometry[curGeo].positions[0] ], map)[0], { radius: radius });
+                        }
+                        else if(geometry[curGeo].geoType == geometryTypes.lineString)
+                        {
+                            geoLayer = new L.Polyline(this.unprojectGeometryPositions(geometry[curGeo].positions, map));
+                        }
+                        else if(geometry[curGeo].geoType == geometryTypes.rectangle)
+                        {
+                            geoLayer = new L.Rectangle(this.unprojectGeometryPositions(geometry[curGeo].positions, map));
+                        }
+
+                        if(geoLayer)
+                        {
+                            geoLayer.id = geometry[curGeo].id;
+                            geoLayer.setStyle({ fillColor: geometry[curGeo].color, color: geometry[curGeo].color, cursor: 'default' });
+                            this.markerGeometry.push(geoLayer);
+                        }
+                    }
+                },
+
+                /**
+                 * Unprojects the geometry positions
+                 * @param {object[]} positions Positions
+                 * @param {object} map Map object
+                 */
+                unprojectGeometryPositions: function(positions, map)
+                {
+                    var unprojectedPositions = [];
+                    for(var curPos = 0; curPos < positions.length; ++curPos)
+                    {
+                        var pos = map.unproject([ positions[curPos].x, positions[curPos].y ], map.getMaxZoom());
+                        unprojectedPositions.push(pos);
+                    }
+                    return unprojectedPositions;
                 }
             };
 
@@ -950,10 +1431,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.KirjaMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.KirjaMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.pageId = this.pageId;
                 return serializedObject;
             }
@@ -1035,10 +1517,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.KortistoMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.KortistoMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.npcId = this.npcId;
                 return serializedObject;
             }
@@ -1116,10 +1599,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.KartaMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.KartaMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.mapId = this.mapId;
                 return serializedObject;
             }
@@ -1201,10 +1685,11 @@
             /**
              * Serializes the marker
              * 
+             * @param {object} map Map
              * @returns {object} Serialized data
              */
-            Map.StyrMarker.prototype.serialize = function() {
-                var serializedObject = this.serializeBaseData();
+            Map.StyrMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
                 serializedObject.itemId = this.itemId;
                 return serializedObject;
             }
@@ -1291,6 +1776,88 @@
                 var serializedObject = this.serializeBaseData();
                 serializedObject.questId = this.questId;
                 serializedObject.name = this.name;
+                return serializedObject;
+            }
+
+        }(Karta.Map = Karta.Map || {}));
+    }(GoNorth.Karta = GoNorth.Karta || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Karta) {
+        (function(Map) {
+
+            /**
+             * Note Marker
+             * 
+             * @param {string} name Name of the marker
+             * @param {string} description Description of the marker
+             * @param {object} latLng Coordinates of the marker
+             * @class
+             */
+            Map.NoteMarker = function(name, description, latLng) 
+            {
+                Map.BaseMarker.apply(this);
+                
+                this.name = name;
+                this.description = description;
+
+                this.isTrackingImplementationStatus = true;
+
+                this.serializePropertyName = "NoteMarker";
+
+                this.initMarker(latLng);
+            }
+
+            Map.NoteMarker.prototype = jQuery.extend({ }, Map.BaseMarker.prototype)
+
+            /**
+             * Returns the icon url
+             * 
+             * @return {string} Icon Url
+             */
+            Map.NoteMarker.prototype.getIconUrl = function() {
+                return "/img/karta/noteMarker.png";
+            }
+
+            /**
+             * Returns the icon retina url
+             * 
+             * @return {string} Icon Retina Url
+             */
+            Map.NoteMarker.prototype.getIconRetinaUrl = function() {
+                return "/img/karta/noteMarker_2x.png";
+            }
+
+            /**
+             * Loads the content
+             * 
+             * @returns {jQuery.Deferred} Deferred
+             */
+            Map.NoteMarker.prototype.loadContent = function() {
+                var def = new jQuery.Deferred();
+        
+                // setTimeout is required to prevent the content to be overwritten with loading circle again
+                var self = this;
+                setTimeout(function() {
+                    var noteHtml = "<h4 class='gn-kartaNoteMarkerTitle'>" + jQuery("<div></div>").text(self.name).html() + "</h4>";
+                    noteHtml +=  "<div class='gn-kartaPopupContent'>" + jQuery("<div></div>").text(self.description).html() + "</div>";
+                    def.resolve(noteHtml);
+                }, 1);
+                
+                return def.promise();
+            }
+
+            /**
+             * Serializes the marker
+             * 
+             * @param {object} map Map
+             * @returns {object} Serialized data
+             */
+            Map.NoteMarker.prototype.serialize = function(map) {
+                var serializedObject = this.serializeBaseData(map);
+                serializedObject.name = this.name;
+                serializedObject.description = this.description;
                 return serializedObject;
             }
 
@@ -1673,7 +2240,7 @@
 
                         var marker = this.parseMarker(markers[curMarker], latLng);
                         this.viewModel.setMarkerDragCallback(marker);
-                        marker.setBaseDataFromSerialized(markers[curMarker]);
+                        marker.setBaseDataFromSerialized(markers[curMarker], map);
 
                         this.pushMarker(marker);
                     }
@@ -1724,6 +2291,18 @@
 
 
                 /**
+                 * Sets a markers edit geometry callback function
+                 * 
+                 * @param {object} marker Marker to set the edit geometry callback for
+                 */
+                setEditGeometryCallback: function(marker) {
+                    var self = this;
+                    marker.setEditGeometryCallback(function() {
+                        self.viewModel.enterGeometryEditMode(marker, self);
+                    });
+                },
+
+                /**
                  * Sets a markers edit callback function
                  * 
                  * @param {object} marker Marker to set the edit callback for
@@ -1759,6 +2338,7 @@
                  * @param {marker} marker Marker to push
                  */
                 pushMarker: function(marker) {
+                    this.setEditGeometryCallback(marker);
                     this.setEditCallback(marker);
                     this.setDeleteCallback(marker);
                     marker.setMapId(this.viewModel.id());
@@ -1772,6 +2352,22 @@
                     {
                         marker.addTo(this.markerLayer);
                     }
+                },
+
+
+                /**
+                 * Adds geometry to the layer
+                 * 
+                 * @param {object} geometry Geometry to push to the layer
+                 */
+                addGeometryToLayer: function(geometry)
+                {
+                    if(!this.markerLayer)
+                    {
+                        return;
+                    }
+
+                    this.markerLayer.addLayer(geometry);
                 },
 
 
@@ -2443,6 +3039,132 @@
     (function(Karta) {
         (function(Map) {
 
+            /// New Note Button Id
+            var newNoteButtonId = "NewNote";
+
+            /**
+             * Note Marker Manager
+             * 
+             * @param {object} viewModel Viewmodel to which the manager belongs
+             * @class
+             */
+            Map.NoteMarkerManager = function(viewModel) 
+            {
+                Map.MarkerManager.apply(this, [ viewModel ]);
+
+                this.title = GoNorth.Karta.Map.Localization.NoteMarkerTitle;
+
+                this.markerType = "Note";
+
+                this.hideSearchBar = true;
+                this.hidePaging = true;
+
+                this.additionalButtons.push({
+                    buttonId: newNoteButtonId,
+                    title: GoNorth.Karta.Map.Localization.NoteMarkerNewNote,
+                    callback: this.createNewNoteMarker
+                });
+            }
+
+            Map.NoteMarkerManager.prototype = jQuery.extend({ }, Map.MarkerManager.prototype)
+
+            /**
+             * Sends the entries request
+             * 
+             * @returns {jQuery.Deferred} Deferred for the async call
+             */
+            Map.NoteMarkerManager.prototype.sendEntriesRequest = function() {
+                var def = new jQuery.Deferred();
+                def.resolve({
+                    entries: [],
+                    hasMore: false
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Sets the create mode for creating a new note marker
+             */
+            Map.NoteMarkerManager.prototype.createNewNoteMarker = function() {
+                if(this.viewModel.selectedMarkerObjectId() == newNoteButtonId)
+                {
+                    this.deselectCurrentEntry();
+                    return;
+                }
+
+                this.viewModel.setCurrentObjectId(newNoteButtonId, this);
+            };
+
+            /**
+             * Creates a new marker
+             * 
+             * @param {string} objectId Object Id
+             * @param {object} latLng Lat/Long Position
+             */
+            Map.NoteMarkerManager.prototype.createMarker = function(objectId, latLng) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                this.viewModel.openMarkerNameDialog("", true).then(function(name, description) {
+                    var marker = new Map.NoteMarker(name, description, latLng);
+                    self.pushMarker(marker);
+                    def.resolve(marker);
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Sets a markers edit callback function
+             * 
+             * @param {object} marker Marker to set the edit callback for
+             */
+            Map.NoteMarkerManager.prototype.setEditCallback = function(marker) {
+                var self = this;
+                marker.setEditCallback(function() {
+                    self.viewModel.openMarkerNameDialog(marker.name, true, marker.description).then(function(name, description) {
+                        if(marker.name == name && marker.description == description)
+                        {
+                            return;
+                        }
+
+                        marker.name = name;
+                        marker.description = description;
+
+                        // Update popup
+                        if(marker.marker.getPopup())
+                        {
+                            jQuery(marker.marker.getPopup().getElement()).find(".gn-kartaNoteMarkerTitle").text(name);
+                            jQuery(marker.marker.getPopup().getElement()).find(".gn-kartaPopupContent").text(description);
+                        }
+
+                        self.viewModel.saveMarker(marker);
+                    });
+                });
+            };
+
+            /**
+             * Parses a marker
+             * 
+             * @param {object} unparsedMarker Unparsed marker
+             * @param {object} latLng Lat/Long Position
+             */
+            Map.NoteMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
+                return new Map.NoteMarker(unparsedMarker.name, unparsedMarker.description, latLng);
+            };
+
+        }(Karta.Map = Karta.Map || {}));
+    }(GoNorth.Karta = GoNorth.Karta || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Karta) {
+        (function(Map) {
+
+            /// Default Geometry color
+            var defaultGeometryColor = "#0000CC";
+
             /**
              * Map View Model
              * @class
@@ -2466,6 +3188,7 @@
                 this.lockedByUser = new ko.observable("");
 
                 this.map = null;
+                this.mapGeometryToolbar = null;
 
                 this.currentMapName = new ko.observable(Karta.Map.Localization.Karta);
                 this.mapUrlTemplate = new ko.computed(function() {
@@ -2483,6 +3206,7 @@
                 this.styrMarkerManager = new Map.StyrMarkerManager(this);
                 this.kartaMarkerManager = new Map.KartaMarkerManager(this);
                 this.aikaMarkerManager = new Map.AikaMarkerManager(this);
+                this.noteMarkerManager = new Map.NoteMarkerManager(this);
 
                 this.selectedMarkerObjectId = new ko.observable("");
                 this.currentValidManager = null;
@@ -2493,11 +3217,47 @@
 
                 this.showMarkerNameDialog = new ko.observable(false);
                 this.dialogMarkerName = new ko.observable("");
+                this.showMarkerNameDialogDescription = new ko.observable(false);
+                this.dialogMarkerDescription = new ko.observable("");
                 this.dialogMarkerNameDef = null;
                 
                 this.compareDialog = new GoNorth.ImplementationStatus.CompareDialog.ViewModel();
 
+                this.isInGeometryEditMode = new ko.observable(false);
+                this.geometryEditMarker = null;
+                this.geometryEditMarkerManager = null;
 
+                this.showGeometrySettingDialog = new ko.observable(false);
+                this.showConfirmGeometryDeleteDialog = new ko.observable(false);
+                this.availableGeometryColors = [
+                    {
+                        name: GoNorth.Karta.Map.Localization.GeometryColorBlue,
+                        color: defaultGeometryColor,
+                    },
+                    {
+                        name: GoNorth.Karta.Map.Localization.GeometryColorRed,
+                        color: "#CC0000",
+                    },
+                    {
+                        name: GoNorth.Karta.Map.Localization.GeometryColorGreen,
+                        color: "#008800",
+                    },
+                    {
+                        name: GoNorth.Karta.Map.Localization.GeometryColorPurple,
+                        color: "#66008e",
+                    },
+                    {
+                        name: GoNorth.Karta.Map.Localization.GeometryColorWhite,
+                        color: "#FFFFFF",
+                    },
+                    {
+                        name: GoNorth.Karta.Map.Localization.GeometryColorYellow,
+                        color: "#FDFF00",
+                    }
+                ];
+                this.selectedGeometryColor = new ko.observable("");
+                this.editGeometry = null;
+                
                 this.selectedChapter = new ko.observable(null);
                 this.chapters = new ko.observableArray();
 
@@ -2569,6 +3329,7 @@
                     this.styrMarkerManager.checkPreSelection(this.preSelectType, this.preSelectId);
                     this.kartaMarkerManager.checkPreSelection(this.preSelectType, this.preSelectId);
                     this.aikaMarkerManager.checkPreSelection(this.preSelectType, this.preSelectId);
+                    this.noteMarkerManager.checkPreSelection(this.preSelectType, this.preSelectId);
 
                     this.preSelectType = null;
                     this.preSelectId = null;
@@ -2588,6 +3349,7 @@
                     this.styrMarkerManager.checkZoomOnMarker(this.zoomOnMarkerType, this.zoomOnMarkerId);
                     this.kartaMarkerManager.checkZoomOnMarker(this.zoomOnMarkerType, this.zoomOnMarkerId);
                     this.aikaMarkerManager.checkZoomOnMarker(this.zoomOnMarkerType, this.zoomOnMarkerId);
+                    this.noteMarkerManager.checkZoomOnMarker(this.zoomOnMarkerType, this.zoomOnMarkerId);
 
                     this.zoomOnMarkerType = null;
                     this.zoomOnMarkerId = null;
@@ -2604,15 +3366,19 @@
                     this.styrMarkerManager.createLayerForMap(map);
                     this.kartaMarkerManager.createLayerForMap(map);
                     this.aikaMarkerManager.createLayerForMap(map);
+                    this.noteMarkerManager.createLayerForMap(map);
 
                     this.kirjaMarkerManager.parseUnparsedMarkers(map);
                     this.kortistoMarkerManager.parseUnparsedMarkers(map);
                     this.styrMarkerManager.parseUnparsedMarkers(map);
                     this.kartaMarkerManager.parseUnparsedMarkers(map);
                     this.aikaMarkerManager.parseUnparsedMarkers(map);
+                    this.noteMarkerManager.parseUnparsedMarkers(map);
 
                     this.checkPreSelection();
                     this.checkZoomOnMarker();
+
+                    this.initEditGeometryToolbar(map);
                 },
                 
 
@@ -2748,6 +3514,7 @@
                     this.styrMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
                     this.kartaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
                     this.aikaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
+                    this.noteMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
                 },
 
                 /**
@@ -2791,6 +3558,7 @@
                     this.styrMarkerManager.resetMarkers();
                     this.kartaMarkerManager.resetMarkers();
                     this.aikaMarkerManager.resetMarkers();
+                    this.noteMarkerManager.resetMarkers();
                     this.loadMap(id);
                 },
 
@@ -2821,6 +3589,7 @@
                             self.styrMarkerManager.parseMarkers(map.itemMarker, self.map);
                             self.kartaMarkerManager.parseMarkers(map.mapChangeMarker, self.map);
                             self.aikaMarkerManager.parseMarkers(map.questMarker, self.map);
+                            self.noteMarkerManager.parseMarkers(map.noteMarker, self.map);
                         }
                         else
                         {
@@ -2829,6 +3598,7 @@
                             self.styrMarkerManager.setUnparsedMarkers(map.itemMarker);
                             self.kartaMarkerManager.setUnparsedMarkers(map.mapChangeMarker);
                             self.aikaMarkerManager.setUnparsedMarkers(map.questMarker);
+                            self.noteMarkerManager.setUnparsedMarkers(map.noteMarker);
                         }
 
                         if(!self.mapLoaded())
@@ -2846,6 +3616,7 @@
                             self.styrMarkerManager.adjustMarkersToChapter(chapterNumber, self.map);
                             self.kartaMarkerManager.adjustMarkersToChapter(chapterNumber, self.map);
                             self.aikaMarkerManager.adjustMarkersToChapter(chapterNumber, self.map);
+                            self.noteMarkerManager.adjustMarkersToChapter(chapterNumber, self.map);
                         }
 
                         self.isLoading(false);
@@ -3012,7 +3783,14 @@
                  * @param {map} map Map
                  */
                 saveNewMarkerPos: function(marker, map) {
+                    var oldPosition = map.unproject([ marker.x, marker.y ], map.getMaxZoom());
+                    var newPosition = marker.getLatLng();
+                    var offsetDiff = { 
+                        lat: newPosition.lat - oldPosition.lat,
+                        lng: newPosition.lng - oldPosition.lng
+                    };
                     this.setMarkerPixelPosition(marker, map, false);
+                    marker.moveGeometry(offsetDiff);
 
                     this.saveMarker(marker);
                 },
@@ -3029,7 +3807,7 @@
                     }
 
                     var request = {};
-                    request[marker.serializePropertyName] = marker.serialize();
+                    request[marker.serializePropertyName] = marker.serialize(this.map);
 
                     // Saves the markers
                     this.isLoading(true);
@@ -3065,6 +3843,11 @@
                  * Selects an object id which is valid
                  */
                 setCurrentObjectId: function(objectId, markerManager) {
+                    if(this.isInGeometryEditMode())
+                    {
+                        this.leaveGeometryEditMode()
+                    }
+
                     this.selectedMarkerObjectId(objectId);
                     if(this.currentValidManager && this.currentValidManager != markerManager)
                     {
@@ -3078,10 +3861,15 @@
                  * Opens the marker name dialog
                  * 
                  * @param {string} existingName Existing name in case of edit
+                 * @param {bool} showDescription true if a description field should be shown, else false
+                 * @param {string} existingDescription Existing description in case of edit
+                 * @returns {jQuery.Deferred} Deferred which will be resolve with the name and description if the user saves
                  */
-                openMarkerNameDialog: function(existingName) {
+                openMarkerNameDialog: function(existingName, showDescription, existingDescription) {
                     this.showMarkerNameDialog(true);
                     this.dialogMarkerName(existingName ? existingName : "");
+                    this.showMarkerNameDialogDescription(showDescription ? true : false);
+                    this.dialogMarkerDescription(showDescription && existingDescription ? existingDescription : "");
                     this.dialogMarkerNameDef = new jQuery.Deferred();
                     
                     GoNorth.Util.setupValidation("#gn-markerNameForm");
@@ -3100,7 +3888,7 @@
 
                     if(this.dialogMarkerNameDef != null)
                     {
-                        this.dialogMarkerNameDef.resolve(this.dialogMarkerName());
+                        this.dialogMarkerNameDef.resolve(this.dialogMarkerName(), this.dialogMarkerDescription());
                         this.dialogMarkerNameDef = null;
                     }
 
@@ -3113,12 +3901,208 @@
                 closeMarkerNameDialog: function() {
                     this.showMarkerNameDialog(false);
                     this.dialogMarkerName("");
+                    this.showMarkerNameDialogDescription(false);
+                    this.dialogMarkerDescription("");
 
                     if(this.dialogMarkerNameDef != null)
                     {
                         this.dialogMarkerNameDef.reject();
                         this.dialogMarkerNameDef = null;
                     }
+                },
+
+
+                /**
+                 * Inits the edit geometry toolbar
+                 * 
+                 * @param {object} map Map object
+                 */
+                initEditGeometryToolbar: function(map) {
+                    Map.addColorpickerToDrawToolbar();
+
+                    this.mapGeometryToolbar = new L.Control.Draw({
+                        position: 'topleft',
+                        draw: {
+                            rectangle: {
+                                showArea: false,
+                                shapeOptions: {
+                                    color: defaultGeometryColor
+                                }
+                            },
+                            polyline: {
+                                showLength: false,
+                                shapeOptions: {
+                                    color: defaultGeometryColor
+                                }
+                            },
+                            polygon: {
+                                showArea: false,
+                                showLength: false,
+                                shapeOptions: {
+                                    color: defaultGeometryColor
+                                }
+                            },
+                            circle: {
+                                showRadius: false,
+                                shapeOptions: {
+                                    color: defaultGeometryColor
+                                }
+                            },
+                            colorPicker: {
+                                availableGeometryColors: this.availableGeometryColors,
+                                viewModel: this
+                            },
+                            circlemarker: false,
+                            marker: false
+                        },
+                        edit: false
+                    });
+
+                    var self = this;
+                    map.on("layerremove", function(layerEvent) {
+                        if(self.geometryEditMarker != null && self.geometryEditMarker.isMarker(layerEvent.layer))
+                        {
+                            self.leaveGeometryEditMode();
+                        }
+                    });
+
+                    map.on(L.Draw.Event.CREATED, function (event) {
+                        if(!self.geometryEditMarker)
+                        {
+                            return;
+                        }
+
+                        var layer = event.layer;
+                        
+                        self.isLoading(true);
+                        self.errorOccured(false);
+                        jQuery.ajax({
+                            url: "/api/KartaApi/GetNewMapMarkerId",
+                            type: "GET"
+                        }).done(function(id) {
+                            layer.id = id;
+                            self.geometryEditMarker.addGeometry(layer);
+                            self.geometryEditMarkerManager.addGeometryToLayer(layer);
+
+                            if(!layer.options.editing)
+                            {
+                                layer.options.editing = {};
+                            }
+                            layer.editing.enable();
+                            layer.on("edit", function() {
+                                self.saveMarker(self.geometryEditMarker);
+                            });
+                            layer.on("click", function() {
+                                self.openGeometrySettingsDialog(layer);
+                            });
+                            jQuery(layer.getElement()).addClass("gn-kartaGeometryEditable");
+
+                            self.saveMarker(self.geometryEditMarker);
+                        }).fail(function() {
+                            self.isLoading(false);
+                            self.errorOccured(true);
+                        });
+                    });
+                },
+
+                /**
+                 * Enters the geometry edit mode
+                 * 
+                 * @param {object} marker Marker for which the geometry is edited
+                 * @param {object} markerManager Marker Manager to which the marker belongs
+                 */
+                enterGeometryEditMode: function(marker, markerManager) {
+                    this.resetMarkerObjectData();
+
+                    if(this.geometryEditMarker)
+                    {
+                        this.geometryEditMarker.setGeometryEditMode(false);
+                    }
+
+                    if(!this.isInGeometryEditMode())
+                    {
+                        this.map.addControl(this.mapGeometryToolbar);
+                    }
+
+                    marker.closePopup();
+                    this.geometryEditMarker = marker;
+                    this.geometryEditMarkerManager = markerManager;
+                    this.isInGeometryEditMode(true);
+
+                    var self = this;
+                    marker.setGeometryEditMode(true, function() {
+                        self.saveMarker(self.geometryEditMarker);
+                    }, function(layer) {
+                        self.openGeometrySettingsDialog(layer);
+                    });
+                },
+
+                /**
+                 * Leaves the geometry edit mode
+                 */
+                leaveGeometryEditMode: function() {
+                    if(this.isInGeometryEditMode())
+                    {
+                        this.map.removeControl(this.mapGeometryToolbar);
+                    }
+
+                    this.geometryEditMarker.setGeometryEditMode(false);
+
+                    this.geometryEditMarker = null;
+                    this.geometryEditMarkerManager = null;
+                    this.isInGeometryEditMode(false);
+                },
+
+                /**
+                 * Opens the geometry settings dialog
+                 * 
+                 * @param {object} layer Layer to edit
+                 */
+                openGeometrySettingsDialog: function(layer) {
+                    this.showGeometrySettingDialog(true);
+                    this.selectedGeometryColor(layer.options.color)
+                    this.editGeometry = layer;
+                },
+
+                /**
+                 * Opens the delete geometry dialog
+                 */
+                openDeleteGeometryDialog: function() {
+                    this.showConfirmGeometryDeleteDialog(true);
+                },
+
+                /**
+                 * Deletes the geometry
+                 */
+                deleteGeometry: function() {
+                    this.geometryEditMarker.removeGeometry(this.editGeometry, this.map);
+                    this.saveMarker(this.geometryEditMarker);
+                    this.closeConfirmGeometryDeleteDialog();
+                    this.closeMarkerGeometrySettingsDialog();
+                },
+
+                /**
+                 * Closes the confirm geometry delete dialog
+                 */
+                closeConfirmGeometryDeleteDialog: function() {
+                    this.showConfirmGeometryDeleteDialog(false);
+                },
+
+                /**
+                 * Saves the marker geometry settings
+                 */
+                saveMarkerGeometrySettings: function() {
+                    this.editGeometry.setStyle({ fillColor: this.selectedGeometryColor(), color: this.selectedGeometryColor() });
+                    this.saveMarker(this.geometryEditMarker);
+                    this.closeMarkerGeometrySettingsDialog();
+                },
+
+                /**
+                 * Closes the marker geometry settings dialog
+                 */
+                closeMarkerGeometrySettingsDialog: function() {
+                    this.showGeometrySettingDialog(false);
+                    this.editGeometry = null;
                 },
 
 
@@ -3143,6 +4127,7 @@
                             self.styrMarkerManager.disable();
                             self.kartaMarkerManager.disable();
                             self.aikaMarkerManager.disable();
+                            self.noteMarkerManager.disable();
                         }
                     }).fail(function() {
                         self.errorOccured(true);

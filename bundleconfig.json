@@ -54,6 +54,18 @@
   },
 
   {
+    "outputFileName": "wwwroot/lib/namegen/namegen.min.js",
+    "inputFiles": [
+      "wwwroot/lib/namegen/namegen.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
     "outputFileName": "wwwroot/js/Shared/shared.lib.js",
     "inputFiles": [
       "wwwroot/lib/moment/locale/de.js",
@@ -386,6 +398,8 @@
     "outputFileName": "wwwroot/js/Karta/map.viewmodel.js",
     "inputFiles": [
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
+      "wwwroot/js/Karta/mapForm/leafletDrawColorpicker.js",
+      "wwwroot/js/Karta/mapForm/leafletDrawToolbarExtensions.js",
       "wwwroot/js/Karta/mapForm/map.knockout.binding.js",
       "wwwroot/js/Karta/mapForm/baseMarker.js",
       "wwwroot/js/Karta/mapForm/kirjaMarker.js",
@@ -393,12 +407,14 @@
       "wwwroot/js/Karta/mapForm/kartaMarker.js",
       "wwwroot/js/Karta/mapForm/styrMarker.js",
       "wwwroot/js/Karta/mapForm/aikaMarker.js",
+      "wwwroot/js/Karta/mapForm/noteMarker.js",
       "wwwroot/js/Karta/mapForm/markerManager.js",
       "wwwroot/js/Karta/mapForm/kirjaMarkerManager.js",
       "wwwroot/js/Karta/mapForm/kortistoMarkerManager.js",
       "wwwroot/js/Karta/mapForm/styrMarkerManager.js",
       "wwwroot/js/Karta/mapForm/aikaMarkerManager.js",
       "wwwroot/js/Karta/mapForm/kartaMarkerManager.js",
+      "wwwroot/js/Karta/mapForm/noteMarkerManager.js",
       "wwwroot/js/Karta/mapForm/viewmodel.js"
     ],
     "minify": {
@@ -457,6 +473,7 @@
       "wwwroot/js/Shared/nodeGraph/actions/changeSkillValueAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changePlayerSkillValueAction.js",
       "wwwroot/js/Tale/dialogForm/actions/changeNpcSkillValueAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/persistDialogStateAction.js",
 
       "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
       "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",

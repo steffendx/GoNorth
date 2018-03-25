@@ -17,6 +17,10 @@ namespace GoNorth.Data.Kortisto
         [ValueCompareAttribute]
         public bool IsPlayerNpc { get; set; }
 
+        /// <summary>
+        /// Template of the Name Gen
+        /// </summary>
+        public string NameGenTemplate { get; set; }
 
         /// <summary>
         /// Inventory Items

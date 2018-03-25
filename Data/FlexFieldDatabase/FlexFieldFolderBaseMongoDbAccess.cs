@@ -100,13 +100,14 @@ namespace GoNorth.Data.FlexFieldDatabase
         }
 
         /// <summary>
-        /// Updates a folder
+        /// Updates a folder 
         /// </summary>
         /// <param name="folder">Folder</param>
         /// <returns>Task</returns>
         public async Task UpdateFolder(FlexFieldFolder folder)
         {
-            await _FolderCollection.UpdateOneAsync(Builders<FlexFieldFolder>.Filter.Eq(f => f.Id, folder.Id), Builders<FlexFieldFolder>.Update.Set(p => p.Name, folder.Name));
+            await _FolderCollection.UpdateOneAsync(Builders<FlexFieldFolder>.Filter.Eq(f => f.Id, folder.Id), 
+                                                   Builders<FlexFieldFolder>.Update.Set(p => p.Name, folder.Name).Set(p => p.Description, folder.Description).Set(p => p.ImageFile, folder.ImageFile));
         }
 
         /// <summary>

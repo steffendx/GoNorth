@@ -8,6 +8,7 @@
     "SkillWasDeleted": "<Fähigkeit wurde gelöscht>",
 
     "PropertyNameName": "Name",
+    "PropertyNameIsPlayerNpc": "Ist Spieler",
     "PropertyNameInventory": "Inventar",
     "PropertyNameImageFile": "Bild",
     "PropertyNameValue": "Wert",
@@ -25,6 +26,7 @@
     "PropertyNameY": "Y-Koordinate",
     "PropertyNameAddedInChapter": "In Kapitel hinzugefügt",
     "PropertyNameDeletedInChapter": "In Kapitel gelöscht",
+    "PropertyNameGeoData": "Geometrie Daten",
 
     "EntryRemoved": "Eintrag '{0}' entfernt.",
     "EntryAdded": "Eintrag '{0}' hinzugefügt.",
@@ -52,5 +54,12 @@
     "NodeTextChanged": "Text Knoten geändert:",
     "NodeAllDoneChanged": "Alles erledigt Knoten geändert:",
     "NodeFinishChanged": "Abschluss Knoten geändert:",
-    "ChapterPixelCoordsChanged": "Kapitelpositionen geändert:"
+    "ChapterPixelCoordsChanged": "Kapitelpositionen geändert:",
+    "MarkerGeometryChanged": "Geometrie geändert:",
+    "PositionsChanged": "Geometrie Daten geändert:",
+    "GeometryPosition": "Position",
+    "GeometryPolygon": "Polygon",
+    "GeometryCircle": "Kreis",
+    "GeometryLineString": "Linie",
+    "GeometryRectangle": "Rechteck"
 }

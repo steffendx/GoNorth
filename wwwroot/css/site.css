@@ -188,6 +188,10 @@
     cursor: pointer;
 }
 
+.gn-nonResizeable {
+    resize: none;
+}
+
 .gn-tagInput {
     height: 38px;
     line-height: 28px !important;
@@ -365,6 +369,12 @@
     margin-top: 5px;
 }
 
+.gn-flexFieldOverviewFolderImageContainer {
+    height: 93px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+
 .gn-flexFieldOverviewObjectImage {
     max-width: 100%;
     max-height: 100%;
@@ -390,6 +400,23 @@
     -webkit-box-shadow: 0px 0px 30px -8px rgba(200,200,200,1);
     -moz-box-shadow: 0px 0px 30px -8px rgba(200,200,200,1);
     box-shadow: 0px 0px 30px -8px rgba(200,200,200,1);
+}
+
+.gn-flexFieldOverviewFolderDropzone {
+    width: 100%;
+    height: 165px;
+}
+
+.gn-flexFieldOverviewFolderDropzone .dz-preview {
+    margin: 0px !important;
+}
+
+.gn-flexFieldFolderUploadIndicatorImage {
+    position: absolute;
+    bottom: 60px;
+    left: calc(50% - 34px);
+    font-size: 68px;
+    pointer-events: none;
 }
 
 .gn-flexFieldOverviewFolderButtons {
@@ -655,6 +682,7 @@
     font-size: 12px;
     padding-top: 25px;
     margin-top: 10px;
+    min-height: 70px !important;
 }
 
 .gn-kirjaSidebarOpenOverview {
@@ -772,8 +800,25 @@
     text-align: right;
 }
 
-.gn-kartaEditMarkerButton, .gn-kartaMarkAsImplementedMarkerButton {
+.gn-kartaEditMarkerGeometryButton, .gn-kartaEditMarkerButton, .gn-kartaMarkAsImplementedMarkerButton {
     margin-right: 5px;
+}
+
+.gn-kartaGeometryDeleteButton {
+    float: left;
+}
+
+path.leaflet-interactive {
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+}
+
+.gn-kartaGeometryEditable {
+    cursor: pointer !important;
+}
+
+.leaflet-touch .leaflet-draw-toolbar .leaflet-draw-draw-colorpicker {
+    background-position: -210px -1px;
 }
 
 /** Tale **/

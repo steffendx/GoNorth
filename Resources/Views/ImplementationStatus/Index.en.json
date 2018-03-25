@@ -16,6 +16,7 @@
     "MarkerTypeItem": "Item",
     "MarkerTypeMapChange": "Map change",
     "MarkerTypeQuest": "Quest",
+    "MarkerTypeNote": "Note",
 
     "PreviousPage": "Previous page",
     "NextPage": "Next page",

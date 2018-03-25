@@ -34,6 +34,11 @@ namespace GoNorth.Controllers.Api
             public string Name { get; set; }
 
             /// <summary>
+            /// Description
+            /// </summary>
+            public string Description { get; set; }
+
+            /// <summary>
             /// Parent Folder Id
             /// </summary>
             public string ParentId { get; set; }
@@ -291,7 +296,8 @@ namespace GoNorth.Controllers.Api
                 FlexFieldFolder newFolder = new FlexFieldFolder {
                     ProjectId = project.Id,
                     ParentFolderId = folder.ParentId,
-                    Name = folder.Name
+                    Name = folder.Name,
+                    Description = folder.Description
                 };
                 newFolder = await _folderDbAccess.CreateFolder(newFolder);
                 await _timelineService.AddTimelineEntry(FolderCreatedEvent, folder.Name);
@@ -323,6 +329,8 @@ namespace GoNorth.Controllers.Api
 
             await _folderDbAccess.DeleteFolder(folder);
             _logger.LogInformation("Folder was deleted.");
+
+            _imageAccess.CheckAndDeleteUnusedImage(folder.ImageFile);
 
             await _timelineService.AddTimelineEntry(FolderDeletedEvent, folder.Name);
             return Ok(id);
@@ -356,12 +364,65 @@ namespace GoNorth.Controllers.Api
         {
             FlexFieldFolder loadedFolder = await _folderDbAccess.GetFolderById(id);
             loadedFolder.Name = folder.Name;
+            loadedFolder.Description = folder.Description;
 
             await _folderDbAccess.UpdateFolder(loadedFolder);
             _logger.LogInformation("Folder was updated.");
             await _timelineService.AddTimelineEntry(FolderUpdatedEvent, folder.Name);
 
             return Ok(id);
+        }
+
+        
+        /// <summary>
+        /// Uploads an image to a flex field folder
+        /// </summary>
+        /// <param name="id">Id of the flex field folder</param>
+        /// <returns>Image Name</returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadFolderImage(string id)
+        {
+            // Validate Date
+            string validateResult = this.ValidateImageUploadData();
+            if(validateResult != null)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer[validateResult]);
+            }
+
+            IFormFile uploadFile = Request.Form.Files[0];
+            FlexFieldFolder targetFolder = await _folderDbAccess.GetFolderById(id);
+            if(targetFolder == null)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CouldNotUploadImage"]);
+            }
+
+            // Save Image
+            string objectImageFile = string.Empty;
+            try
+            {
+                using(Stream imageStream = _imageAccess.CreateFlexFieldObjectImage(uploadFile.FileName, out objectImageFile))
+                {
+                    uploadFile.CopyTo(imageStream);
+                }
+
+                string oldImageFile = targetFolder.ImageFile;
+                targetFolder.ImageFile = objectImageFile;
+
+                await _folderDbAccess.UpdateFolder(targetFolder);
+
+                if(!string.IsNullOrEmpty(oldImageFile))
+                {
+                    _imageAccess.CheckAndDeleteUnusedImage(oldImageFile);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not upload image");
+                return StatusCode((int)HttpStatusCode.InternalServerError, _localizer["CouldNotUploadImage"]);
+            }
+
+            return Ok(objectImageFile);
         }
 
 

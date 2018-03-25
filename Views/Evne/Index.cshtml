@@ -16,6 +16,9 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
+    <script src="~/lib/dropzone/dist/min/dropzone.min.js"></script>
+    <script src="~/js/Localization/dropzone.locales.@(Localizer["DropzoneLocale"]).js"></script>
+
     <environment include="Development">
         <script src="~/js/Evne/overview.viewmodel.js" asp-append-version="true"></script>
     </environment>
@@ -27,4 +30,8 @@
             ko.applyBindings(new GoNorth.Evne.Overview.ViewModel(), jQuery("#gn-evneOverviewContainer")[0]);
         });
     </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/dropzone/dist/min/dropzone.min.css" />
 }

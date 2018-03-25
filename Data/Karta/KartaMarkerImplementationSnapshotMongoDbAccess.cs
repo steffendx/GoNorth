@@ -32,6 +32,11 @@ namespace GoNorth.Data.Karta
         /// Collection Name of the Quest Marker Snapshot Collection
         /// </summary>
         public const string QuestMarkerCollectionName = "KartaQuestMarkerImplementationSnapshot";
+        
+        /// <summary>
+        /// Collection Name of the Note Marker Snapshot Collection
+        /// </summary>
+        public const string NoteMarkerCollectionName = "KartaNoteMarkerImplementationSnapshot";
 
 
         /// <summary>
@@ -53,6 +58,11 @@ namespace GoNorth.Data.Karta
         /// Quest Marker Snapshot Collection
         /// </summary>
         protected IMongoCollection<QuestMapMarker> _QuestMarkerSnapshotCollection;
+        
+        /// <summary>
+        /// Note Marker Snapshot Collection
+        /// </summary>
+        protected IMongoCollection<NoteMapMarker> _NoteMarkerSnapshotCollection;
 
         /// <summary>
         /// Constructor
@@ -64,6 +74,7 @@ namespace GoNorth.Data.Karta
             _ItemMarkerSnapshotCollection = _Database.GetCollection<ItemMapMarker>(ItemMarkerCollectionName);
             _MapChangeMarkerSnapshotCollection = _Database.GetCollection<MapChangeMapMarker>(MapChangeMarkerCollectionName);
             _QuestMarkerSnapshotCollection = _Database.GetCollection<QuestMapMarker>(QuestMarkerCollectionName);
+            _NoteMarkerSnapshotCollection = _Database.GetCollection<NoteMapMarker>(NoteMarkerCollectionName);
         }
 
         /// <summary>
@@ -116,6 +127,16 @@ namespace GoNorth.Data.Karta
         public async Task<QuestMapMarker> GetQuestMarkerSnapshotById(string id)
         {
             return await GetMarkerSnapshotById(_QuestMarkerSnapshotCollection, id);
+        }
+        
+        /// <summary>
+        /// Returns an implementation snapshot of a Note Marker
+        /// </summary>
+        /// <param name="id">Id of the marker</param>
+        /// <returns>Marker snapshot</returns>
+        public async Task<NoteMapMarker> GetNoteMarkerSnapshotById(string id)
+        {
+            return await GetMarkerSnapshotById(_NoteMarkerSnapshotCollection, id);
         }
 
 
@@ -183,6 +204,16 @@ namespace GoNorth.Data.Karta
             await SaveMarkerSnapshot(_QuestMarkerSnapshotCollection, snapshot);
         }
 
+        /// <summary>
+        /// Saves a note marker snapshot
+        /// </summary>
+        /// <param name="snapshot">Snapshot to save</param>
+        /// <returns>Task</returns>
+        public async Task SaveNoteMarkerSnapshot(NoteMapMarker snapshot)
+        {
+            await SaveMarkerSnapshot(_NoteMarkerSnapshotCollection, snapshot);
+        }
+
 
         /// <summary>
         /// Deletes a snapshot
@@ -233,6 +264,16 @@ namespace GoNorth.Data.Karta
         public async Task DeleteQuestMarkerSnapshot(string id)
         {
             await DeleteMarkerSnapshot(_QuestMarkerSnapshotCollection, id);
+        }
+        
+        /// <summary>
+        /// Deletes a note marker
+        /// </summary>
+        /// <param name="id">Id of the snapshot</param>
+        /// <returns>Task</returns>
+        public async Task DeleteNoteMarkerSnapshot(string id)
+        {
+            await DeleteMarkerSnapshot(_NoteMarkerSnapshotCollection, id);
         }
     }
 }

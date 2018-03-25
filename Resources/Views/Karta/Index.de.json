@@ -24,6 +24,10 @@
 
     "ShowKartaMarker": "Karta Markierungen anzeigen",
 
+    "Notes": "Notizen",
+    "NoteMarkerNewNote": "<Neue Notiz>",
+    "ShowNoteMarker": "Notiz Markierungen anzeigen",
+
     "ShowingMarkersOfObjectTooltip": "Zugehörige Markierungen werden aktuell angezeigt",
 
     "WaitingOnNewMarker": "Warte auf neuen Marker",
@@ -43,10 +47,44 @@
 
     "YouAreEditingANonDefaultChapter": "Du bearbeitest aktuell nicht die Markierungen des Standardkapitel. Alle Änderungen gelten erst ab dem ausgewählten Kapitel.",
 
+    "EditMarkerGeometryTooltip": "Geometrie der Markierung bearbeiten",
     "EditMarkerTooltip": "Markierung bearbeiten",
     "MarkerIsNotImplementedTooltip": "Markierung ist noch nicht implementiert",
     "MarkerIsImplementedTooltip": "Markierung ist implementiert",
     "DeleteMarkerTooltip": "Markierung löschen",
+
+    "DrawCancelDrawing": "Zeichnen abbrechen",
+    "DrawFinishDrawing": "Zeichnen abschliessen",
+    "Finish": "Abschliessen",
+    "DrawDeleteLastPointDrawn": "Letzten gezeichneten Punkt löschen",
+    "DrawDeleteLastPoint": "Letzten Punkt löschen",
+
+    "DrawPolyline": "Polylinie zeichnen",
+    "DrawPolygon": "Polygon zeichnen",
+    "DrawRectangle": "Rechteck zeichnen",
+    "DrawCircle": "Kreis zeichnen",
+
+    "DrawDragToDrawCircle": "Klicken und ziehen um einen Kreis zu malen.",
+    "DrawClickToStartShape": "Klicken um die Form zu beginnen.",
+    "DrawClickToContinueShape": "Klicken um einen weiteren Punkt einzufügen.",
+    "DrawClickFirstPointToEndShape": "Auf den ersten Punkt klicken um die Form abzuschließen.",
+    "DrawClickToStartLine": "Klicken um die Linie zu beginnen.",
+    "DrawClickToContinueLine": "Klicken um einen weiteren Punkt einzufügen.",
+    "DrawClickLastPointToEndLine": "Auf den letzten Punkt klicken um die Linie abzuschließen.",
+    "DrawDragToDrawRectangle": "Klicken und ziehen um ein Rechteck zu malen.", 
+    "DrawReleaseMouseToFinishDrawing": "Maus loslassen um das Zeichnen abzuschließen.",
+
+    "GeometryData": "Geometrie Einstellungen",
+    "Color": "Farbe",
+    "Delete": "Löschen",
+    "AreYouSureYouWantToDeleteTheGeometry": "Bist du sicher das du die Geometrie löschen willst?",
+
+    "GeometryColorBlue": "Blau",
+    "GeometryColorRed": "Rot",
+    "GeometryColorGreen": "Grün",
+    "GeometryColorPurple": "Lila",
+    "GeometryColorWhite": "Weiss",
+    "GeometryColorYellow": "Gelb",
 
     "Error": "Fehler:",
     "ErrorOccured": "Es ist ein Fehler aufgetreten.",

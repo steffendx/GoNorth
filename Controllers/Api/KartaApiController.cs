@@ -54,6 +54,11 @@ namespace GoNorth.Controllers.Api
             /// Map Change marker
             /// </summary>
             public MapChangeMapMarker MapChangeMarker { get; set; }
+            
+            /// <summary>
+            /// Note  marker
+            /// </summary>
+            public NoteMapMarker NoteMarker { get; set; }
         };
 
         /// <summary>
@@ -407,6 +412,11 @@ namespace GoNorth.Controllers.Api
                 ScaleMapMarker(curMarker, scaleX, scaleY);
             }
 
+            foreach(MapMarker curMarker in map.NoteMarker)
+            {
+                ScaleMapMarker(curMarker, scaleX, scaleY);
+            }
+
             try
             {
                 await _mapDbAccess.UpdateMap(map);
@@ -446,6 +456,18 @@ namespace GoNorth.Controllers.Api
             {
                 curCoords.X *= scaleX;
                 curCoords.Y *= scaleY;
+            }
+
+            if(marker.Geometry != null)
+            {
+                foreach(MarkerGeometry curGeom in marker.Geometry)
+                {
+                    foreach(MarkerGeometryPosition curPos in curGeom.Positions)
+                    {
+                        curPos.X *= scaleX;
+                        curPos.Y *= scaleY;
+                    }
+                }
             }
         }
 
@@ -643,6 +665,29 @@ namespace GoNorth.Controllers.Api
                     map.MapChangeMarker.Add(markerRequest.MapChangeMarker);
                 }
             }
+            else if(markerRequest.NoteMarker != null)
+            {
+                if(map.NoteMarker == null)
+                {
+                    map.NoteMarker = new List<NoteMapMarker>();    
+                }
+
+                markerId = markerRequest.NoteMarker.Id;
+                markerType = MarkerType.Note.ToString();
+                
+                NoteMapMarker existingMarker = map.NoteMarker.FirstOrDefault(m => m.Id == markerRequest.NoteMarker.Id);
+                if(existingMarker != null)
+                {
+                    CopyBaseMarkerAttributes(existingMarker, markerRequest.NoteMarker);
+                    existingMarker.Name = markerRequest.NoteMarker.Name;
+                    existingMarker.Description = markerRequest.NoteMarker.Description;
+                    existingMarker.IsImplemented = false;
+                }
+                else
+                {
+                    map.NoteMarker.Add(markerRequest.NoteMarker);
+                }
+            }
             await _mapDbAccess.UpdateMap(map);
 
             string localizedMarkerType = _localizer["MarkerType" + markerType].Value;
@@ -695,6 +740,11 @@ namespace GoNorth.Controllers.Api
                 DeleteMarkerFromList(map.MapChangeMarker, markerId);
                 await _markerImplementationSnapshotDbAccess.DeleteMapChangeMarkerSnapshot(markerId);
             }
+            else if(markerType == MarkerType.Note)
+            {
+                DeleteMarkerFromList(map.NoteMarker, markerId);
+                await _markerImplementationSnapshotDbAccess.DeleteNoteMarkerSnapshot(markerId);
+            }
             await _mapDbAccess.UpdateMap(map);
 
             string localizedMarkerType = _localizer["MarkerType" + markerType.ToString()].Value;
@@ -729,6 +779,7 @@ namespace GoNorth.Controllers.Api
             targetMarker.AddedInChapter = sourceMarker.AddedInChapter;
             targetMarker.ChapterPixelCoords = sourceMarker.ChapterPixelCoords;
             targetMarker.DeletedInChapter = sourceMarker.DeletedInChapter;
+            targetMarker.Geometry = sourceMarker.Geometry;
         }
 
 
