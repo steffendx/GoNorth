@@ -9,6 +9,8 @@ It offers modules for:
  * Planning Npcs and their different values
  * Planning dialogs of Npcs as Node System of dialog branches
  * Planning Items and their different values
+ * Planning Skills and their different values
+ * Exporting of Npcs, Dialogs, Items and skills
  * Wiki component with tight integration into the other modules
  * Map component to position Quest marker, Npcs, Items, Wiki pages and map changes
  * Tracking your implementation status and showing changed values after change to already implemented object
@@ -45,8 +47,17 @@ Using the dialog planning module a user can create the branching dialogs for the
 ![Dialog planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Tale.PNG?raw=true)
 
 GoNorth provides different dialog nodes for player or npc lines, player choices, conditions or actions.  
-It is planned to implement a script export for these node systems.  
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Tale).
+
+### Exporting
+GoNorth supports exporting Npcs, Dialogs, Skills and Items to JSON and scripts.
+
+![Dialog planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/ScriptExporting.png?raw=true)
+
+The scripts can be adjusted using a template system with different placeholders for values, learned skills, inventory and dialogs.  
+For better localization support strings can be exported as language keys and localizable language files can be exported.  
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Export).
+
 
 ### Wiki Component (Kirja)
 Kirja is the wiki component of GoNorth. Apart from allowing the user to write wiki pages it also features a tight integration into the other systems:
@@ -90,7 +101,8 @@ I've tested the web application using Chrome and Firefox. The portal might have 
 
 ## Plans for the future
 The next steps which I will implement in the future are:
- * Exporting of Npcs, Items and Dialogs to scripts 
+ * Usability improvments
+ * I am very open for feature requests and good ideas
 
 ## License
 GoNorth is open source and released under the [MIT LICENSE](LICENSE).
@@ -116,3 +128,4 @@ GoNorth uses the following libraries:
  * [bootstrap-tagsinput](https://github.com/bootstrap-tagsinput/bootstrap-tagsinput) licensed under MIT
  * [eonasdan-bootstrap-datetimepicker](https://github.com/Eonasdan/bootstrap-datetimepicker) licensed under MIT
  * [Fantasy Name Generator](https://github.com/skeeto/fantasyname) licensed under The Unlicense
+ * [Ace Editor](https://ace.c9.io/) licensed under BSD-License

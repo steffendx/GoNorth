@@ -1,0 +1,1 @@
+GameTimeManager:new():get_cur_total_minute() {{Tale_Condition_Time_Operator}} {{Tale_Condition_Time_TotalMinutes}}

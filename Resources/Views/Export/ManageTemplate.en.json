@@ -1,0 +1,26 @@
+{
+    "ManageTemplate": "Manage template",
+
+    "TemplateBasedOnParent": "No custom template is saved for this object. The parent template will be used. Click here to load the parent template.",
+
+    "Save": "Save",
+    "Delete": "Delete",
+
+    "ChildObjectsHavingCustomizedTemplate": "The following child objects have a customized export template. You might need to update these as well.",
+    "Template": "(Template)",
+
+    "Placeholders": "Placeholders",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",
+    "AllObjectsUsingThisTemplateWillUseParentTemplate": "If you delete this template all associated objects will use the parent template again.",
+    "Yes": "Yes",
+    "No": "No",
+
+    "Error": "Error:",
+    "ErrorOccured": "Error occured.",
+    
+    "Locked": "Locked",
+    "LockedPrefix": "The template is currently being edited by",
+    "LockedPostfix": "."
+}

@@ -1,0 +1,1 @@
+BaseNpc_PersistDialogState(this, "{{Tale_ChildNode_Function}}")

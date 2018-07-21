@@ -8,6 +8,7 @@ bootstrapWysiwyg.local.fontSizeNormal = "Normal";
 bootstrapWysiwyg.local.fontSizeSmall = "Small";
 
 bootstrapWysiwyg.local.header = "Format as header [Ctrl + H]";
+bootstrapWysiwyg.local.subHeader = "Format as  sub-header [Strg + G]";
 
 bootstrapWysiwyg.local.bold = "Bold [Ctrl + B]";
 bootstrapWysiwyg.local.italic = "Italic [Ctrl + I]";
@@ -30,6 +31,20 @@ bootstrapWysiwyg.local.hyperlinkAdd = "Add";
 bootstrapWysiwyg.local.removeHyperlink = "Remove link";
 
 bootstrapWysiwyg.local.insertPicture = "Insert image";
+
+bootstrapWysiwyg.local.table = "Add table";
+bootstrapWysiwyg.local.columns = "Columns";
+bootstrapWysiwyg.local.rows = "Rows";
+bootstrapWysiwyg.local.addHeaderRow = "Add header row";
+bootstrapWysiwyg.local.tableAdd = "Add";
+bootstrapWysiwyg.local.onlyAvailableInsideTable = "This command is only available inside of tables.";
+bootstrapWysiwyg.local.tableAddRowAfter = "Add new row after selected row";
+bootstrapWysiwyg.local.tableAddRowBefore = "Add new row before selected row";
+bootstrapWysiwyg.local.tableRemoveRow = "Remove row";
+bootstrapWysiwyg.local.tableAddColumnAfter = "Add column after selected column";
+bootstrapWysiwyg.local.tableAddColumnBefore = "Add column before selected column";
+bootstrapWysiwyg.local.tableRemoveColumn = "Remove column";
+bootstrapWysiwyg.local.tableAddHeaderRow = "Add header row";
 
 bootstrapWysiwyg.local.undo = "Undo [Ctrl + Z]";
 bootstrapWysiwyg.local.redo = "Redo [Ctrl + Y]";

@@ -1,0 +1,1 @@
+BaseNpc_UnlearnSkill(playerNpc, "{{Tale_Action_Skill_Value_ScriptName}}")

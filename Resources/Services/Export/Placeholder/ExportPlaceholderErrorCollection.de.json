@@ -1,0 +1,21 @@
+{
+    "FlexFieldMissing": "Das Feld '{0}' konnte nicht in '{1}' gefunden werden.",
+
+    "DialogRootNodeCountNotOne": "Es gibt {0} Rootknoten im Dialog. Es muss exakt einen Rootknoten als Start für den Dialog vorhanden sein.",
+    "DialogUnknownNodeType": "Es wurde ein unbekannter Dialog Knoten verwendet.",
+    "DialogUnknownFunctionGenerationCondition": "Es wurde eine unbekannte Dialog Funktions Generierungs Regel gefunden.",
+    "DialogNodeHasNoChildForFunction": "Es muss eine Dialog Schritt Funktion für einen neuen Dialog Schritt generiert werden ohne das ein Kindknoten vorliegt. Im Template sollte eine Prüfung ob ein Kindknoten vorliegen eingeführt werden.",
+    "DialogInfinityLoop": "Im Dialog existiert ein Knoten der zu einer Endloss Schleife führt ohne Möglichkeit den Dialog abzubrechen. Der Dialog muss überprüft werden.",
+    "DialogConditionMissing": "Es muss eine Dialog Schritt Bedingung generiert werden ohne das eine Bedingung im Dialog vorliegt. Im Template sollte eine Prüfung ob eine Bedingung vorliegt eingeführt werden.",
+    "DialogUnknownConditionTypeError": "Ein unbekannter Bedingungstyp '{0}' wurde gefunden. Die Bedingung kann nicht generiert werden.",
+    "DialogUnknownGroupOperator": "Ein unbekannter Gruppierungs-Operator '{0}' wurde gefunden. Die Bedingung kann nicht korrekt generiert werden.",
+    "DialogUnknownConditionOperator": "Ein unbekannter Operator '{0}' wurde gefunden. Die Bedingung kann nicht korrekt generiert werden.",
+    "DialogFlexFielNotFoundDefaultWillBeUsed": "Ein Feld mit dem zusätzlichen Skriptnamen '{0}' wurde referenziert aber nicht gefunden. Der Standardname '{1}' wird verwendet.",
+    "DialogItemNotFoundError": "Ein referenziertes Item konnte nicht gefunden werden. Das Item wurde wahrscheinlich gelöscht.",
+    "DialogQuestNotFoundError": "Ein referenzierter Quest konnte nicht gefunden werden. Der Quest wurde wahrscheinlich gelöscht.",
+    "DialogSkillNotFoundError": "Ein referenzierter Skill konnte nicht gefunden werden. Der Skill wurde wahrscheinlich gelöscht.",
+    "DialogUnknownActionTypeError": "Ein unbekannter Aktionstyp '{0}' wurde gefunden. Die Aktion kann nicht generiert werden.",
+    "DialogUnknownActionOperator": "Ein unbekannter Operator '{0}' wurde gefunden. Die Aktion kann nicht korrekt generiert werden.",
+
+    "NoPlayerNpcExistsError": "Es existiert kein Spieler Npc."
+}

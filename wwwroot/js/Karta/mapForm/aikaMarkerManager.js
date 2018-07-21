@@ -181,6 +181,11 @@
                             jQuery(marker.marker.getPopup().getElement()).find(".gn-kartaPopupContent").text(name)
                         }
 
+                        if(marker.marker.getElement())
+                        {
+                            jQuery(marker.marker.getElement()).find(".gn-kartaIconLabel").text(name);
+                        }
+
                         self.viewModel.saveMarker(marker);
                     });
                 });

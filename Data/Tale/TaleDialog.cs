@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GoNorth.Data.ImplementationSnapshot;
 using GoNorth.Data.NodeGraph;
+using GoNorth.Services.Export.Json;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Tale
@@ -19,11 +20,13 @@ namespace GoNorth.Data.Tale
         /// <summary>
         /// Id of the project to which the dialog belongs
         /// </summary>
+        [JsonExportIgnoreAttribute]
         public string ProjectId { get; set; }
 
         /// <summary>
         /// Id of the object the dialog belongs to
         /// </summary>
+        [JsonExportIgnoreAttribute]
         public string RelatedObjectId { get; set; }
 
         /// <summary>

@@ -170,6 +170,11 @@
             {
                 var self = this;
                 this.loadObjectShared(existingData).then(function(fieldObject) {
+                    if(!fieldObject)
+                    {
+                        return;
+                    }
+
                     self.fieldObjectId = fieldObject.id;
                     var filteredFields = GoNorth.Util.getFilteredFieldsForScript(fieldObject.fields);
                     for(var curField = 0; curField < filteredFields.length; ++curField)

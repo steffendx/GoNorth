@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GoNorth.Config;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
+using GoNorth.Data.Exporting;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
@@ -42,6 +43,7 @@ namespace GoNorth.Data
         {
             List<string> collectionNames = await GetExistingCollections();
             await CreateCollectionIfNotExists(UserMongoDbAccess.UserCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(UserPreferencesMongoDbAccess.UserPreferencesCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(TimelineMongoDbAccess.TimelineCollectionName, collectionNames);
 
@@ -94,6 +96,11 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(AikaQuestMongoDbAccess.AikaQuestRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(AikaQuestImplementationSnapshotMongoDbAccess.AikaQuestImplementationSnapshotCollectionName, collectionNames);
             
+            await CreateCollectionIfNotExists(ExportTemplateMongoDbAccess.ExportTemplateCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(ExportTemplateMongoDbAccess.ExportTemplateRecyclingBinCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(LanguageKeyMongoDbAccess.LanguageKeyIdCounterCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(LanguageKeyMongoDbAccess.LanguageKeyCollectionName, collectionNames);
+
             await CreateCollectionIfNotExists(TaskBoardMongoDbAccess.TaskBoardCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(LockServiceMongoDbAccess.LockCollectionName, collectionNames);

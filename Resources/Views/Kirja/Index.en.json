@@ -25,6 +25,9 @@
     "WaitingOnNewPage": "Waiting on new page",
     "DialogWillCloseOnSaveOfNewPage": "This dialog will close as soon as the page is saved or the window is closed. If you save the new page a link will be inserted.<br/><b>Note:</b> This page will be saved in this case.",
 
+    "InsertTableOfContent": "Add table of content",
+    "TableOfContent": "Table of content",
+
     "ToogleSidebar": "Click here to open or close the sidebar",
     "Connections": "Connections",
     "MentionedInPages": "Mentioned in Kirja page",
@@ -45,7 +48,7 @@
     "PageNotFound": "The page was not found.",
 
     "Locked": "Locked",
-    "LockedPrefix": "The page is currently beeing edited by ",
+    "LockedPrefix": "The page is currently being edited by ",
     "LockedPostfix": ".",
     
     "RichTextLocale": "en",

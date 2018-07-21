@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GoNorth.Data.ImplementationSnapshot;
+using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.FlexFieldDatabase
@@ -8,7 +9,7 @@ namespace GoNorth.Data.FlexFieldDatabase
     /// <summary>
     /// Flex Field Object
     /// </summary>
-    public class FlexFieldObject : IHasModifiedData, IImplementationComparable, IImplementationSnapshotable, IImplementationStatusTrackingObject
+    public class FlexFieldObject : IHasModifiedData, IImplementationComparable, IImplementationSnapshotable, IImplementationStatusTrackingObject, IFlexFieldExportable
     {
         /// <summary>
         /// Id
@@ -41,6 +42,11 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// </summary>
         [ValueCompareAttribute(LabelKey = "", TextKey = "ImageFileChanged")]
         public string ImageFile { get; set; }
+
+        /// <summary>
+        /// Thumbnail Image File
+        /// </summary>
+        public string ThumbnailImageFile { get; set; }
 
         /// <summary>
         /// Fields

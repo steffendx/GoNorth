@@ -16,6 +16,13 @@ namespace GoNorth.Data.FlexFieldDatabase
         Stream CreateFlexFieldObjectImage(string originalFilename, out string filename);
 
         /// <summary>
+        /// Creates a new empty Flex Field Object Thumbnail image
+        /// </summary>
+        /// <param name="thumbnailImage">Generated Filename</param>
+        /// <returns>Stream to write to</returns>
+        Stream CreateFlexFieldThumbnailImage(string thumbnailImage);
+
+        /// <summary>
         /// Opens a Flex Field Object image
         /// </summary>
         /// <param name="filename">Filename of the image</param>

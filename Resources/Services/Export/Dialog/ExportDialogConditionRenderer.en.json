@@ -1,0 +1,15 @@
+{
+    "PlaceholderDesc_Tale_Conditions_Start": "Start of the list of conditions that have a child node. Must be closed using Tale_Conditions_End.",
+    "PlaceholderDesc_Tale_Conditions_End": "End of the list of conditions that have a child node.",
+    "PlaceholderDesc_Tale_AllConditions_Start": "Start of the list of all conditions. This includes the one that dont have a child. Must be closed using Tale_AllConditions_End.",
+    "PlaceholderDesc_Tale_AllConditions_End": "End of the list of all conditions. This includes the one that dont have a child.",
+    "PlaceholderDesc_Tale_Conditions_Else_Start": "Start of the content for the else part of the condition. This will only be rendered if the else part has a child. Must be closed using Tale_Conditions_Else_End.",
+    "PlaceholderDesc_Tale_Conditions_Else_End": "End of the content for the else part of the condition.",
+    "PlaceholderDesc_Tale_Condition_Id": "Id of the current condition. This will stay constant even if the order of the conditions is changed.",
+    "PlaceholderDesc_Tale_Condition_Index": "Index of the current condition.",
+    "PlaceholderDesc_Tale_Condition_IsFirst_Start": "Start of the content that will only be rendered if the current condition is the first one in the list. Must be closed using Tale_Condition_IsFirst_End.",
+    "PlaceholderDesc_Tale_Condition_IsFirst_End": "End of the content that will only be rendered if the current condition is the first one in the list.",
+    "PlaceholderDesc_Tale_Condition_IsNotFirst_Start": "Start of the content that will only be rendered if the current condition is not the first one in the list. Must be closed using Tale_Condition_IsNotFirst_End.",
+    "PlaceholderDesc_Tale_Condition_IsNotFirst_End": "End of the content that will only be rendered if the current condition is not the first one in the list.",
+    "PlaceholderDesc_Tale_Condition": "Script text of the condition."
+}

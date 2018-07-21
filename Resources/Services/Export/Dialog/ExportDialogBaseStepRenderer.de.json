@@ -1,0 +1,16 @@
+{
+    "PlaceholderDesc_Tale_ChildNode_Function": "Wird durch den Namen der Funktion des Kindknoten ersetzt.",
+    "PlaceholderDesc_Tale_ChildNode_HasFunction_Start": "Start des Inhalts der nur gerendert wird wenn der Kindknoten des aktuellen Knoten eine neue Funktion beginnt. Wenn der Knoten keinen Kindknoten besitzt wird der Inhalt nicht gerendert. Muss mit Tale_ChildNode_HasFunction_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_ChildNode_HasFunction_End": "Ende des Inhalts der nur gerendert wird wenn der Kindknoten des aktuellen Knoten eine neue Funktion beginnt.",
+    "PlaceholderDesc_Tale_ChildNode_HasNoFunction_Start": "Start des Inhalts der nur gerendert wird wenn der Kindknoten des aktuellen Knoten keine neue Funktion beginnt. Wenn der Knoten keinen Kindknoten besitzt wird der Inhalt gerendert. Muss mit Tale_ChildNode_HasNoFunction_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_ChildNode_HasNoFunction_End": "Ende des Inhalts der nur gerendert wird wenn der Kindknoten des aktuellen Knoten keine neue Funktion beginnt.",
+    "PlaceholderDesc_Tale_Node_Id": "Eindeutige Id für den aktuellen Knoten",
+    "PlaceholderDesc_Tale_HasChild_Start": "Start des Inhaltes der nur gerendert wird wenn der aktuelle Dialog Knoten einen Kindknoten hat. Muss mit Tale_HasChild_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_HasChild_End": "Ende des Inhaltes der nur gerendert wird wenn der aktuelle Dialog Knoten einen Kindknoten hat.",
+    "PlaceholderDesc_Tale_HasNoChild_Start": "Start des Inhaltes der nur gerendert wird wenn der aktuelle Dialog Knoten keinen Kindknoten hat. Muss mit Tale_HasNoChild_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_HasNoChild_End": "Ende des Inhaltes der nur gerendert wird wenn der aktuelle Dialog Knoten keinen Kindknoten hat.",
+    "PlaceholderDesc_Tale_IsChildNodeOfType(<<TypeName>>)_Start": "Start des Inhaltes der nur gerendert wird wenn der Kindknoten des aktuellen Knoten von einem bestimmten Typen ist. Möglichen Typen für <<TypeName>> sind playertext, npctext, choice, condition oder action. Muss mit Tale_IsChildNodeOfType_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_IsChildNodeOfType_End": "Ende des Inhaltes der nur gerendert wird wenn der Kindknoten des aktuellen Knoten von einem bestimmten Typen ist.",
+    "PlaceholderDesc_Tale_IsChildNodeNotOfType(<<TypeName>>)_Start": "Start des Inhaltes der nur gerendert wird wenn der Kindknoten des aktuellen Knoten nicht von einem bestimmten Typen ist. Möglichen Typen für <<TypeName>> sind playertext, npctext, choice, condition oder action. Muss mit Tale_IsChildNodeNotOfType_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_IsChildNodeNotOfType_End": "Ende des Inhaltes der nur gerendert wird wenn der Kindknoten des aktuellen Knoten nicht von einem bestimmten Typen ist."
+}

@@ -53,8 +53,14 @@
              */
             Map.StyrMarkerManager.prototype.createMarker = function(objectId, latLng) {
                 var def = new jQuery.Deferred();
-                
-                var marker = new Map.StyrMarker(objectId, latLng);
+                var itemName = "";
+                var item = this.findEntryById(objectId);
+                if(item) 
+                {
+                    itemName = item.name;
+                }
+
+                var marker = new Map.StyrMarker(objectId, itemName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
 
@@ -68,7 +74,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.StyrMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.StyrMarker(unparsedMarker.itemId, latLng);
+                return new Map.StyrMarker(unparsedMarker.itemId, unparsedMarker.itemName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));

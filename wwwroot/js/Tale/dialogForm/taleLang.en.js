@@ -52,6 +52,9 @@
             Localization.Actions.PersistDialogStateLabel = "Save dialog state";
             Localization.Actions.PersistDialogStateWillContinueOnThisPointNextTalk = "The dialog will be continued from this node the next time the player talks to the npc.";
 
+            Localization.Actions.OpenShopLabel = "Open shop";
+            Localization.Actions.WillOpenAShopForTheCurrentNpc = "A trade will be started with the current npc.";
+
             // Condition
             Localization.Conditions = {};
             Localization.Conditions.CheckNpcValueLabel = "Check npc value";

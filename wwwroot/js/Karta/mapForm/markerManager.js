@@ -248,6 +248,25 @@
                 },
 
                 /**
+                 * Finds an entry bd id
+                 * 
+                 * @param {string} id Id to search
+                 * @returns {object} Entry with matching id
+                 */
+                findEntryById: function(id) {
+                    var entries = this.loadedEntries();
+                    for(var curEntry = 0; curEntry < entries.length; ++curEntry)
+                    {
+                        if(entries[curEntry].id == id)
+                        {
+                            return entries[curEntry];
+                        }
+                    }
+
+                    return null;
+                },
+
+                /**
                  * Resets the selection data
                  */
                 resetSelectionData: function() {

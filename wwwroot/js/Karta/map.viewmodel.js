@@ -347,6 +347,9 @@
                 /// Pow of two to reach tile size (2^8 = 256)
                 var TileSizePowOfTwo = 8;
 
+                /// Default Zoom Level
+                var defaultZoom = 2;
+
                 function unwrapIfObservable(obs) {
                     if(ko.isObservable(obs))
                     {
@@ -435,7 +438,7 @@
                     map.setMaxBounds(mapTileBounds);
 
                     var mapCenter = map.unproject([imageWidth * 0.5, imageHeight * 0.5], 0);
-                    map.setView(mapCenter, 0);
+                    map.setView(mapCenter, Math.min(defaultZoom, maxZoom));
 
                     if(ko.isObservable(obs)) 
                     {
@@ -572,19 +575,7 @@
                  * @param {object} latLng Coordinates of the marker
                  */
                 initMarker: function(latLng) {
-
-                    var markerIcon = new L.Icon({
-                        iconUrl: this.getIconUrl(),
-                        iconRetinaUrl: this.getIconRetinaUrl(),
-                        shadowUrl: "/img/karta/markerShadow.png",
-
-                        iconAnchor: [ 12, 41 ],
-                        iconSize: [ 25, 41 ],
-                        popupAnchor: [ 1, -43 ],
-                        shadowSize: [ 41, 41 ],
-                        tooltipAnchor: [ 16, -28 ]
-                    });
-
+                    var markerIcon = this.buildIcon();
                     this.marker = L.marker(latLng, { draggable: !this.isDisabled, icon: markerIcon });
                     
                     var self = this;
@@ -644,6 +635,49 @@
                     {
                         maxWidth: popupMaxWidth
                     });
+                },
+
+                /**
+                 * Builds the marker icon
+                 * 
+                 * @returns {object} Marker Icon
+                 */
+                buildIcon: function() {
+                    var iconUrl = this.getIconUrl();
+                    if((window.devicePixelRatio || (window.screen.deviceXDPI / window.screen.logicalXDPI)) > 1)
+                    {
+                        iconUrl = this.getIconRetinaUrl();
+                    }
+
+                    var iconLabel = this.getIconLabel();
+                    if(!iconLabel)
+                    {
+                        iconLabel = "";
+                    }
+
+                    var markerIcon = new L.DivIcon({
+                        iconAnchor: [ 12, 41 ],
+                        iconSize: [ 25, 41 ],
+                        popupAnchor: [ 1, -43 ],
+                        shadowSize: [ 41, 41 ],
+                        tooltipAnchor: [ 16, -28 ],
+                        
+                        className: "gn-kartaIcon",
+                        html: "<img class='gn-kartaIconShadowImage' src='/img/karta/markerShadow.png'/>"+
+                              "<img src='" + iconUrl + "' style='width: 25px; height: 41px;'/>"+
+                              "<div class='gn-kartaIconLabel'>" + iconLabel + "</div>"
+                    })
+
+                    return markerIcon;
+                },
+
+                /**
+                 * Returns the icon label
+                 * 
+                 * @returns {string} Icon Label
+                 */
+                getIconLabel: function() {
+                    return "";
                 },
 
                 /**
@@ -1369,14 +1403,16 @@
              * Kirja Marker
              * 
              * @param {object} pageId Id of the kirja page
+             * @param {string} pageName Name of the page
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.KirjaMarker = function(pageId, latLng) 
+            Map.KirjaMarker = function(pageId, pageName, latLng) 
             {
                 Map.BaseMarker.apply(this);
 
                 this.pageId = pageId;
+                this.pageName = pageName;
 
                 this.isTrackingImplementationStatus = false;
 
@@ -1403,6 +1439,15 @@
              */
             Map.KirjaMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/kirjaMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.KirjaMarker.prototype.getIconLabel = function() {
+                return this.pageName;
             }
 
             /**
@@ -1437,6 +1482,7 @@
             Map.KirjaMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
                 serializedObject.pageId = this.pageId;
+                serializedObject.pageName = this.pageName;
                 return serializedObject;
             }
 
@@ -1452,14 +1498,16 @@
              * Kortisto Marker
              * 
              * @param {object} npcId Id of the Npc
+             * @param {string} npcName Name of the npc
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.KortistoMarker = function(npcId, latLng) 
+            Map.KortistoMarker = function(npcId, npcName, latLng) 
             {
                 Map.BaseMarker.apply(this);
                 
                 this.npcId = npcId;
+                this.npcName = npcName;
 
                 this.isTrackingImplementationStatus = true;
 
@@ -1486,6 +1534,15 @@
              */
             Map.KortistoMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/kortistoMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.KortistoMarker.prototype.getIconLabel = function() {
+                return this.npcName;
             }
 
             /**
@@ -1523,6 +1580,7 @@
             Map.KortistoMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
                 serializedObject.npcId = this.npcId;
+                serializedObject.npcName = this.npcName;
                 return serializedObject;
             }
 
@@ -1538,14 +1596,16 @@
              * Karta Marker
              * 
              * @param {object} mapId Id of the karta map
+             * @param {string} mapName Name of the karta map
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.KartaMarker = function(mapId, latLng) 
+            Map.KartaMarker = function(mapId, mapName, latLng) 
             {
                 Map.BaseMarker.apply(this);
 
-                this.mapId = mapId;
+                this.mapChangeId = mapId;
+                this.mapName = mapName;
 
                 this.isTrackingImplementationStatus = true;
 
@@ -1575,6 +1635,15 @@
             }
 
             /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.KartaMarker.prototype.getIconLabel = function() {
+                return this.mapName;
+            }
+
+            /**
              * Loads the content
              * 
              * @returns {jQuery.Deferred} Deferred
@@ -1584,9 +1653,9 @@
 
                 var self = this;
                 jQuery.ajax({
-                    url: "/api/KartaApi/Map?id=" + this.mapId
+                    url: "/api/KartaApi/Map?id=" + this.mapChangeId
                 }).done(function(map) {
-                    var mapHtml = "<h4><a href='#id=" + self.mapId + "'>" + map.name + "</a></h4>";
+                    var mapHtml = "<h4><a href='#id=" + self.mapChangeId + "'>" + map.name + "</a></h4>";
 
                     def.resolve(mapHtml);
                 }).fail(function() {
@@ -1604,7 +1673,8 @@
              */
             Map.KartaMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
-                serializedObject.mapId = this.mapId;
+                serializedObject.mapId = this.mapChangeId;
+                serializedObject.mapName = this.mapName;
                 return serializedObject;
             }
 
@@ -1620,14 +1690,16 @@
              * Styr Marker
              * 
              * @param {object} itemId Id of the Item
+             * @param {string} itemName Name of the item
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.StyrMarker = function(itemId, latLng) 
+            Map.StyrMarker = function(itemId, itemName, latLng) 
             {
                 Map.BaseMarker.apply(this);
                 
                 this.itemId = itemId;
+                this.itemName = itemName;
 
                 this.isTrackingImplementationStatus = true;
 
@@ -1654,6 +1726,15 @@
              */
             Map.StyrMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/styrMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.StyrMarker.prototype.getIconLabel = function() {
+                return this.itemName;
             }
 
             /**
@@ -1691,6 +1772,7 @@
             Map.StyrMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
                 serializedObject.itemId = this.itemId;
+                serializedObject.itemName = this.itemName;
                 return serializedObject;
             }
 
@@ -1742,6 +1824,15 @@
              */
             Map.AikaMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/aikaMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.AikaMarker.prototype.getIconLabel = function() {
+                return this.name;
             }
 
             /**
@@ -1827,6 +1918,15 @@
              */
             Map.NoteMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/noteMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.NoteMarker.prototype.getIconLabel = function() {
+                return this.name;
             }
 
             /**
@@ -2111,6 +2211,25 @@
                         self.errorOccured(true);
                         self.isLoading(false);
                     });
+                },
+
+                /**
+                 * Finds an entry bd id
+                 * 
+                 * @param {string} id Id to search
+                 * @returns {object} Entry with matching id
+                 */
+                findEntryById: function(id) {
+                    var entries = this.loadedEntries();
+                    for(var curEntry = 0; curEntry < entries.length; ++curEntry)
+                    {
+                        if(entries[curEntry].id == id)
+                        {
+                            return entries[curEntry];
+                        }
+                    }
+
+                    return null;
                 },
 
                 /**
@@ -2510,7 +2629,14 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KirjaMarkerManager.prototype.createMarkerFromExistingPage = function(def, pageId, latLng) {
-                var marker = new Map.KirjaMarker(pageId, latLng);
+                var pageName = "";
+                var page = this.findEntryById(pageId);
+                if(page) 
+                {
+                    pageName = page.name;
+                }
+
+                var marker = new Map.KirjaMarker(pageId, pageName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
             };
@@ -2530,7 +2656,7 @@
                     self.viewModel.showWaitOnPageDialog(false);
                 };
                 newPage.newKirjaPageSaved = function(id, name) {
-                    var marker = new Map.KirjaMarker(id, latLng);
+                    var marker = new Map.KirjaMarker(id, name, latLng);
                     self.pushMarker(marker);
 
                     self.viewModel.showWaitOnPageDialog(false);
@@ -2560,7 +2686,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KirjaMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.KirjaMarker(unparsedMarker.pageId, latLng);
+                return new Map.KirjaMarker(unparsedMarker.pageId, unparsedMarker.pageName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));
@@ -2621,8 +2747,14 @@
              */
             Map.KortistoMarkerManager.prototype.createMarker = function(objectId, latLng) {
                 var def = new jQuery.Deferred();
+                var npcName = "";
+                var npc = this.findEntryById(objectId);
+                if(npc) 
+                {
+                    npcName = npc.name;
+                }
                 
-                var marker = new Map.KortistoMarker(objectId, latLng);
+                var marker = new Map.KortistoMarker(objectId, npcName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
 
@@ -2636,7 +2768,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KortistoMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.KortistoMarker(unparsedMarker.npcId, latLng);
+                return new Map.KortistoMarker(unparsedMarker.npcId, unparsedMarker.npcName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));
@@ -2697,8 +2829,14 @@
              */
             Map.StyrMarkerManager.prototype.createMarker = function(objectId, latLng) {
                 var def = new jQuery.Deferred();
-                
-                var marker = new Map.StyrMarker(objectId, latLng);
+                var itemName = "";
+                var item = this.findEntryById(objectId);
+                if(item) 
+                {
+                    itemName = item.name;
+                }
+
+                var marker = new Map.StyrMarker(objectId, itemName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
 
@@ -2712,7 +2850,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.StyrMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.StyrMarker(unparsedMarker.itemId, latLng);
+                return new Map.StyrMarker(unparsedMarker.itemId, unparsedMarker.itemName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));
@@ -2901,6 +3039,11 @@
                             jQuery(marker.marker.getPopup().getElement()).find(".gn-kartaPopupContent").text(name)
                         }
 
+                        if(marker.marker.getElement())
+                        {
+                            jQuery(marker.marker.getElement()).find(".gn-kartaIconLabel").text(name);
+                        }
+
                         self.viewModel.saveMarker(marker);
                     });
                 });
@@ -3013,8 +3156,14 @@
              */
             Map.KartaMarkerManager.prototype.createMarker = function(objectId, latLng) {
                 var def = new jQuery.Deferred();
-                
-                var marker = new Map.KartaMarker(objectId, latLng);
+                var mapName = "";
+                var map = this.findEntryById(objectId);
+                if(map) 
+                {
+                    mapName = map.name;
+                }
+
+                var marker = new Map.KartaMarker(objectId, mapName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
 
@@ -3028,7 +3177,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KartaMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.KartaMarker(unparsedMarker.mapId, latLng);
+                return new Map.KartaMarker(unparsedMarker.mapId, unparsedMarker.mapName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));
@@ -3139,6 +3288,11 @@
                             jQuery(marker.marker.getPopup().getElement()).find(".gn-kartaPopupContent").text(description);
                         }
 
+                        if(marker.marker.getElement())
+                        {
+                            jQuery(marker.marker.getElement()).find(".gn-kartaIconLabel").text(name);
+                        }
+
                         self.viewModel.saveMarker(marker);
                     });
                 });
@@ -3207,6 +3361,8 @@
                 this.kartaMarkerManager = new Map.KartaMarkerManager(this);
                 this.aikaMarkerManager = new Map.AikaMarkerManager(this);
                 this.noteMarkerManager = new Map.NoteMarkerManager(this);
+
+                this.showMarkerLabels = new ko.observable(true);
 
                 this.selectedMarkerObjectId = new ko.observable("");
                 this.currentValidManager = null;

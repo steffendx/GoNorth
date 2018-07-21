@@ -83,19 +83,7 @@
                  * @param {object} latLng Coordinates of the marker
                  */
                 initMarker: function(latLng) {
-
-                    var markerIcon = new L.Icon({
-                        iconUrl: this.getIconUrl(),
-                        iconRetinaUrl: this.getIconRetinaUrl(),
-                        shadowUrl: "/img/karta/markerShadow.png",
-
-                        iconAnchor: [ 12, 41 ],
-                        iconSize: [ 25, 41 ],
-                        popupAnchor: [ 1, -43 ],
-                        shadowSize: [ 41, 41 ],
-                        tooltipAnchor: [ 16, -28 ]
-                    });
-
+                    var markerIcon = this.buildIcon();
                     this.marker = L.marker(latLng, { draggable: !this.isDisabled, icon: markerIcon });
                     
                     var self = this;
@@ -155,6 +143,49 @@
                     {
                         maxWidth: popupMaxWidth
                     });
+                },
+
+                /**
+                 * Builds the marker icon
+                 * 
+                 * @returns {object} Marker Icon
+                 */
+                buildIcon: function() {
+                    var iconUrl = this.getIconUrl();
+                    if((window.devicePixelRatio || (window.screen.deviceXDPI / window.screen.logicalXDPI)) > 1)
+                    {
+                        iconUrl = this.getIconRetinaUrl();
+                    }
+
+                    var iconLabel = this.getIconLabel();
+                    if(!iconLabel)
+                    {
+                        iconLabel = "";
+                    }
+
+                    var markerIcon = new L.DivIcon({
+                        iconAnchor: [ 12, 41 ],
+                        iconSize: [ 25, 41 ],
+                        popupAnchor: [ 1, -43 ],
+                        shadowSize: [ 41, 41 ],
+                        tooltipAnchor: [ 16, -28 ],
+                        
+                        className: "gn-kartaIcon",
+                        html: "<img class='gn-kartaIconShadowImage' src='/img/karta/markerShadow.png'/>"+
+                              "<img src='" + iconUrl + "' style='width: 25px; height: 41px;'/>"+
+                              "<div class='gn-kartaIconLabel'>" + iconLabel + "</div>"
+                    })
+
+                    return markerIcon;
+                },
+
+                /**
+                 * Returns the icon label
+                 * 
+                 * @returns {string} Icon Label
+                 */
+                getIconLabel: function() {
+                    return "";
                 },
 
                 /**

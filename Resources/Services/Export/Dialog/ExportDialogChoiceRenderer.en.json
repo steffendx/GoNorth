@@ -1,0 +1,16 @@
+{
+    "PlaceholderDesc_Tale_Choices_Start": "Start of the list of choices. Must be closed using Tale_Choices_End.",
+    "PlaceholderDesc_Tale_Choices_End": "End of the list of choices.",
+    "PlaceholderDesc_Tale_Choice_Id": "Id of the current choice. This will stay constant even if the order of the choices is changed.",
+    "PlaceholderDesc_Tale_Choice_Index": "Index of the current choice",
+    "PlaceholderDesc_Tale_Choice_HasCondition_Start": "Start of the content that will only be rendered if the current choice has a condition. Must be closed using Tale_Choice_HasCondition_End.",
+    "PlaceholderDesc_Tale_Choice_HasCondition_End": "End of the content that will only be rendered if the current choice has a condition.",
+    "PlaceholderDesc_Tale_Choice_Condition": "Condition for the choice to be available.",
+    "PlaceholderDesc_Tale_Choice_Text": "Text of the current choice",
+    "PlaceholderDesc_Tale_Choice_Text_LangKey": "Language key for the current choice text",
+    "PlaceholderDesc_Tale_Choice_Text_Preview": "Preview for the text of the current choice. All line breaks will be removed and the text will be cut if it is to long. This placeholder is intended to be used in comments to increase the readability of the dialog if language keys are used.",
+    "PlaceholderDesc_Tale_Choice_IsRepeatable_Start": "Start of the content that will only be rendered if the current choice can be repeated. Must be closed using Tale_Choice_IsRepeatable_End.",
+    "PlaceholderDesc_Tale_Choice_IsRepeatable_End": "End of the content that will only be rendered if the current choice can be repeated.",
+    "PlaceholderDesc_Tale_Choice_IsNotRepeatable_Start": "Start of the content that will only be rendered if the current choice can not be repeated. Must be closed using Tale_Choice_IsNotRepeatable_End.",
+    "PlaceholderDesc_Tale_Choice_IsNotRepeatable_End": "End of the content that will only be rendered if the current choice can not be repeated."
+}

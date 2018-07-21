@@ -445,6 +445,9 @@
             /// Link Dialog Page Size
             var linkDialogPageSize = 15;
 
+            /// Scroll Offset
+            var headerScrollOffset = 45;
+
             /// Kirja Id Url Prefix
             var kirjaIdUrlPrefx = "/Kirja#id=";
 
@@ -477,6 +480,10 @@
                 this.pageContent.subscribe(function() {
                     self.isDirty(true);
                 });
+                this.pageContentTransformed = new ko.computed(function() {
+                    var pageContent = this.pageContent();
+                    return this.transformPageContent(pageContent);
+                }, this);
 
                 this.isDefault = new ko.observable(false);
 
@@ -548,6 +555,13 @@
                         self.switchPage(GoNorth.Util.getParameterFromHash("id"));
                     }
                     self.blockPageReload = false;
+                }
+
+                // Access function for scrolling in the table of content
+                Page.scrollToHeader = function(id) {
+                    jQuery('html, body').animate({
+                        scrollTop: Math.max(0, jQuery(".gn-header_" + id).offset().top - headerScrollOffset)
+                    }, 250);
                 }
             };
 
@@ -634,6 +648,14 @@
                     var self = this;
 
                     var allKirjaButtons = {};
+                    allKirjaButtons.insertTableOfContent = {
+                        title: GoNorth.Kirja.Page.toolbarButtonInsertTableOfContentTitle,
+                        icon: "glyphicon-list-alt",
+                        callback: function(htmlInsert) {
+                            htmlInsert("<br/><span contenteditable='false'><gn-kirjaTableOfContent></gn-kirjaTableOfContent></span><br/>")
+                        }
+                    };
+
                     allKirjaButtons.insertWikiLink = {
                         title: GoNorth.Kirja.Page.toolbarButtonInsertKirjaLinkTitle,
                         icon: "glyphicon-book",
@@ -702,6 +724,110 @@
                     }
 
                     return allKirjaButtons;
+                },
+
+                /**
+                 * Transforms the page content, adding table of contents etc.
+                 * 
+                 * @param {string} pageContent Page Content
+                 * @returns {string} Transformed page content
+                 */
+                transformPageContent: function(pageContent) {
+                    var jQueryContent = jQuery("<div>" + pageContent + "</div>");
+
+                    var headers = this.transformHeaders(jQueryContent);
+                    var self = this;
+                    jQueryContent.find("gn-kirjaTableOfContent").each(function() {
+                        jQuery(this).replaceWith(self.buildTableOfContent(headers))
+                    });
+
+                    return jQueryContent.html();
+                },
+
+                /**
+                 * Transform headers
+                 * 
+                 * @param {object} jQueryContent jQuery Content
+                 * @returns {object[]} Headers
+                 */
+                transformHeaders: function(jQueryContent) {
+                    var headers = [];
+                    var currentMainHeader = null;
+
+                    var curHeader = 0;
+                    jQueryContent.find("h4,h5").each(function() {
+                        var headerContent = this.outerHTML;
+                        headerContent = "<span class='gn-header_" + curHeader + "'>" + headerContent + "</span>";
+
+                        var headerName = jQuery(this).text();
+                        if(jQuery(this).prop("tagName").toLowerCase() == "h4")
+                        {
+                            currentMainHeader = {
+                                name: headerName,
+                                id: curHeader,
+                                subHeaders: []
+                            }
+                            headers.push(currentMainHeader);
+                        }
+                        else
+                        {
+                            var header = {
+                                name: headerName,
+                                id: curHeader
+                            }
+
+                            if(currentMainHeader)
+                            {
+                                currentMainHeader.subHeaders.push(header);
+                            }
+                            else
+                            {
+                                headers.push(header);
+                            }
+                        }
+
+                        jQuery(this).replaceWith(headerContent);
+                        ++curHeader;
+                    });
+
+                    return headers;
+                },
+
+                /**
+                 * Builds the table of content
+                 * 
+                 * @param {object[]} headers Headers 
+                 * @returns {string} Table of content html
+                 */
+                buildTableOfContent: function(headers) {
+                    var tableOfContentHtml = "<div class='gn-kirjaTableOfContentTransformed'>";
+                    tableOfContentHtml += "<div class='gn-kirjaTableOfContentTransformedHeader'>" + GoNorth.Kirja.Page.tableOfContent + "</div>";
+                    tableOfContentHtml += this.buildTableOfContentForHeaders(headers);
+                    tableOfContentHtml += "</div>";
+
+                    return tableOfContentHtml;
+                },
+
+                /**
+                 * Returns the table of content for headers
+                 * 
+                 * @param {objec[]} headers Header to build
+                 * @returns {string} Html for the table of content
+                 */
+                buildTableOfContentForHeaders: function(headers)
+                {
+                    var tableOfContentHtml = "<ul>";
+                    for(var curHeader = 0; curHeader < headers.length; ++curHeader)
+                    {
+                        tableOfContentHtml += "<li><a class='gn-clickable' onclick='GoNorth.Kirja.Page.scrollToHeader(" + headers[curHeader].id + ")'>" + headers[curHeader].name + "<a>";
+                        if(headers[curHeader].subHeaders && headers[curHeader].subHeaders.length > 0)
+                        {
+                            tableOfContentHtml += this.buildTableOfContentForHeaders(headers[curHeader].subHeaders);
+                        }
+                    }
+                    tableOfContentHtml += "</ul>";
+
+                    return tableOfContentHtml;
                 },
 
                 /**
@@ -1122,7 +1248,15 @@
                 setId: function(id) {
                     this.id(id);
                     this.blockPageReload = true;
-                    window.location.hash = "id=" + id;
+                    var hashValue = "#id=" + id;
+                    if(window.location.hash)
+                    {
+                        window.location.hash = hashValue; 
+                    }
+                    else
+                    {
+                        window.location.replace(hashValue);
+                    }
                 },
 
 

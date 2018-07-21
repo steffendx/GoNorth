@@ -7,11 +7,28 @@
     "IsImplemented": "Implementiert",
     "IsNotImplementedTooltip": "Item ist noch nicht implementiert.",
     "MarkAsImplemented": "Als implementiert markieren",
+    "ManageTemplate": "Export Template",
+    "Export": "Exportieren",
+    "Script": "Skript",
+    "JSON": "JSON",
+    "LanguageFile": "Sprachdatei",
+    "RegenerateLanguageKeys": "Sprachschlüssel neu erstellen",
     "Cancel": "Abbrechen",
     "Delete": "Löschen",
 
     "Name": "Name",
     "DropImageHere": "Bild für Item hier ablegen oder klicken um ein Bild auszuwählen",
+    "OpenImageInFullSize": "Bild in voller Größe öffnen",
+
+    "ExportResult": "Export Ergebnis",
+    "Warning": "Warnung:",
+    "ExportErrorsOccured": "Es sind Fehler beim Export aufgetreten.",
+    "ExportErrorsCountPrefix": "(",
+    "ExportErrorsCountPostfix": "x)",
+    "Download": "Herunterladen",
+    "CopyToClipboard": "In die Zwischenablage kopieren",
+    "SuccessfullyCopiedToClipboard": "Code wurde in die zwischenablage kopiert",
+    "Ok": "Ok",
 
     "ReferencedInAikaQuests": "Referenziert in Aika Quests:",
     
@@ -27,6 +44,9 @@
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteTheObject": "Bist du sicher das das Item gelöscht werden soll?",
     "AreYouSureYouWantToDeleteTheTemplate": "Bist du sicher das das Template gelöscht werden soll?",
+    "AreYouSureYouWantToRegenerateTheLanguageKeys": "Bist du sicher das die Sprachschlüssel neu generiert werden sollen? Dies ist beispielsweise nützlich wenn sich der Name des Objektes geändert hat.",
+    "DeletingThisTemplateWillAlsoDeleteExportTemplate": "Wenn du dieses Template löscht wird auch das zugehörige Export Template gelöscht. Es wird in diesem Fall wieder das Item Standard Export Template verwendet werden.",
+    "ExistingLanguageKeysWillChange": "Wenn die Sprachschlüssel neu generiert werden können sich die Schlüssel ändern. Hierdurch könnten bereits bestehenden Übersetzungen angepasst werden müssen.",
     "Yes": "Ja",
     "No": "Nein",
 

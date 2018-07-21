@@ -61,6 +61,12 @@ namespace GoNorth.Data.Karta
         Task<List<KartaMap>> GetAllProjectMapsWithFullDetail(string projectId);
 
         /// <summary>
+        /// Returns all maps
+        /// </summary>
+        /// <returns>All Maps</returns>
+        Task<List<KartaMap>> GetAllMaps();
+
+        /// <summary>
         /// Returns all maps for a project without detail information
         /// </summary>
         /// <param name="projectId">Project Id for which to request the maps</param>

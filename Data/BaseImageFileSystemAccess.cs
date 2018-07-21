@@ -38,13 +38,23 @@ namespace GoNorth.Data
         /// <returns>Stream to write to</returns>
         protected Stream BaseCreateFile(string originalFilename, out string filename)
         {
+            filename = Guid.NewGuid().ToString() + Path.GetExtension(originalFilename);
+            return BaseCreateFileByGivenName(filename);
+        }
+
+        /// <summary>
+        /// Creates a new empty file with a given name
+        /// </summary>
+        /// <param name="filename">Generated Filename</param>
+        /// <returns>Stream to write to</returns>
+        protected Stream BaseCreateFileByGivenName(string filename)
+        {
             string imgFolder = GetFolder();
             if(!Directory.Exists(imgFolder))
             {
                 Directory.CreateDirectory(imgFolder);
             }
 
-            filename = Guid.NewGuid().ToString() + Path.GetExtension(originalFilename);
             return new FileStream(Path.Combine(imgFolder, filename), FileMode.Create);
         }
 

@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Tale_FunctionName": "Name of the function thats beeing generated.",
+    "PlaceholderDesc_Tale_Function_ParentPreview": "Text preview of the parent nodes that lead to this function. This placeholder is intended to be used in a comment to increase readability.",
+    "PlaceholderDesc_Tale_StepContent": "Content of the step thats beeing generated. If there are multiple steps that are not generating a new function these will all be added here.",
+    "PlaceholderDesc_Tale_FunctionContent": "Content of the function thats beeing generated. If there are multiple steps that are not generating a new function these will all be added here."
+}

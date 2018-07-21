@@ -19,25 +19,37 @@
                  * @param {string} name Name of the field
                  */
                 addSingleLineField: function(name) {
-                    this.addField(ObjectForm.FlexFieldTypeSingleLine, name);
+                    return this.addField(ObjectForm.FlexFieldTypeSingleLine, name);
                 },
 
                 /**
                  * Adds a multi line field to the manager
                  * 
                  * @param {string} name Name of the field
+                 * @returns {FlexFieldBase} New field
                  */
                 addMultiLineField: function(name) {
-                    this.addField(ObjectForm.FlexFieldTypeMultiLine, name);
+                    return this.addField(ObjectForm.FlexFieldTypeMultiLine, name);
                 },
 
                 /**
                  * Adds a number field to the manager
                  * 
                  * @param {string} name Name of the field
+                 * @returns {FlexFieldBase} New field
                  */
                 addNumberField: function(name) {
-                    this.addField(ObjectForm.FlexFieldTypeNumber, name);
+                    return this.addField(ObjectForm.FlexFieldTypeNumber, name);
+                },
+                
+                /**
+                 * Adds a option field to the manager
+                 * 
+                 * @param {string} name Name of the field
+                 * @returns {FlexFieldBase} New field
+                 */
+                addOptionField: function(name) {
+                    return this.addField(ObjectForm.FlexFieldTypeOption, name);
                 },
 
                 /**
@@ -45,6 +57,7 @@
                  * 
                  * @param {int} fieldType Type of the field
                  * @param {string} name Name of the field
+                 * @returns {FlexFieldBase} New field
                  */
                 addField: function(fieldType, name) {
                     var field = this.resolveFieldByType(fieldType);
@@ -55,6 +68,7 @@
 
                     field.name(name);
                     this.fields.push(field);
+                    return field;
                 },
 
                 /**
@@ -71,6 +85,8 @@
                         return new ObjectForm.MultiLineFlexField();
                     case ObjectForm.FlexFieldTypeNumber:
                         return new ObjectForm.NumberFlexField();
+                    case ObjectForm.FlexFieldTypeOption:
+                        return new ObjectForm.OptionFlexField();
                     }
 
                     return null;
@@ -80,7 +96,7 @@
                 /**
                  * Deletes a field
                  * 
-                 * @param {IFlexField} field Field to delete
+                 * @param {FlexFieldBase} field Field to delete
                  */
                 deleteField: function(field) {
                     this.fields.remove(field);
@@ -90,7 +106,7 @@
                 /**
                  * Moves a field up
                  * 
-                 * @param {IFlexField} field Field to move up
+                 * @param {FlexFieldBase} field Field to move up
                  */
                 moveFieldUp: function(field) {
                     var fieldIndex = this.fields.indexOf(field);
@@ -105,7 +121,7 @@
                 /**
                  * Moves a field down
                  * 
-                 * @param {IFlexField} field Field to move down
+                 * @param {FlexFieldBase} field Field to move down
                  */
                 moveFieldDown: function(field) {
                     var fieldIndex = this.fields.indexOf(field);
@@ -174,9 +190,11 @@
                     {
                         var serializedValue = {
                             id: fields[curField].id(),
+                            createdFromTemplate: fields[curField].createdFromTemplate(),
                             fieldType: fields[curField].getType(),
                             name: fields[curField].name(),
                             value: fields[curField].serializeValue(),
+                            additionalConfiguration: fields[curField].serializeAdditionalConfiguration(),
                             scriptSettings: fields[curField].scriptSettings.serialize()
                         };
                         serializedValues.push(serializedValue);
@@ -196,8 +214,10 @@
                     {
                         var deserializedField = this.resolveFieldByType(serializedValues[curField].fieldType);
                         deserializedField.id(serializedValues[curField].id);
+                        deserializedField.createdFromTemplate(serializedValues[curField].createdFromTemplate);
                         deserializedField.name(serializedValues[curField].name);
                         deserializedField.deserializeValue(serializedValues[curField].value);
+                        deserializedField.deserializeAdditionalConfiguration(serializedValues[curField].additionalConfiguration);
                         deserializedField.scriptSettings.deserialize(serializedValues[curField].scriptSettings);
                         fields.push(deserializedField);
                     }
@@ -222,6 +242,17 @@
                         fields[curField].id(fieldLookup[fields[curField].name()]);
                     }
                 },
+
+                /**
+                 * Flags all fields as created from template
+                 */
+                flagFieldsAsCreatedFromTemplate: function() {
+                    var fields = this.fields();
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        fields[curField].createdFromTemplate(true);
+                    }
+                }
             }
 
         }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));

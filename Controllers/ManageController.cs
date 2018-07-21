@@ -261,6 +261,16 @@ namespace GoNorth.Controllers
             return RedirectToAction(nameof(ChangePassword));
         }
 
+        /// <summary>
+        /// Preferences view
+        /// </summary>
+        /// <returns>View</returns>
+        [HttpGet]
+        public IActionResult Preferences()
+        {
+            return View();
+        }
+
         #region Helpers
 
         /// <summary>

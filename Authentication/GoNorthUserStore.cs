@@ -17,15 +17,22 @@ namespace GoNorth.Authentication
         /// <summary>
         /// User DB Access
         /// </summary>
-        private IUserDbAccess _UserDbAccess;
+        private readonly IUserDbAccess _UserDbAccess;
+
+        /// <summary>
+        /// User Preferences Db Access
+        /// </summary>
+        private readonly IUserPreferencesDbAccess _UserPreferencesDbAccess;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="userDbAccess">User Database Access</param>
-        public GoNorthUserStore(IUserDbAccess userDbAccess)
+        /// <param name="userPreferencesDbAccess">User Preferences Database Access</param>
+        public GoNorthUserStore(IUserDbAccess userDbAccess, IUserPreferencesDbAccess userPreferencesDbAccess)
         {
             _UserDbAccess = userDbAccess;
+            _UserPreferencesDbAccess = userPreferencesDbAccess;
         }
 
         /// <summary>
@@ -58,6 +65,7 @@ namespace GoNorth.Authentication
         public async Task<IdentityResult> DeleteAsync(GoNorthUser user, CancellationToken cancellationToken)
         {
             await _UserDbAccess.DeleteUser(user);
+            await _UserPreferencesDbAccess.DeleteUserPreferences(user.Id);
             return IdentityResult.Success;
         }
 

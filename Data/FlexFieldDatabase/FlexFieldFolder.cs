@@ -34,5 +34,10 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// Image File
         /// </summary>
         public string ImageFile { get; set; }
+
+        /// <summary>
+        /// Thumbnail Image File
+        /// </summary>
+        public string ThumbnailImageFile { get; set; }
     }
 }

@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Tale_TextLine": "Text line that is said",
+    "PlaceholderDesc_Tale_TextLine_LangKey": "Language Key for the text line that is said",
+    "PlaceholderDesc_Tale_TextLine_Preview": "Preview for the textline that is said. All line breaks will be removed and the text will be cut if it is to long. This placeholder is intended to be used in comments to increase the readability of the dialog if language keys are used."
+}

@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Manage) {
+
+        /**
+         * Preferences Namespace
+         * @namespace Preferences
+         */
+        (function(Preferences) {
+        }(Manage.Preferences = Manage.Preferences || {}));
+        
+    }(GoNorth.Manage = GoNorth.Manage || {}));
+}(window.GoNorth = window.GoNorth || {}));

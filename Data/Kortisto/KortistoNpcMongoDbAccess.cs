@@ -37,20 +37,22 @@ namespace GoNorth.Data.Kortisto
         /// <summary>
         /// Returns the player npc
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <returns>Npc</returns>
-        public async Task<KortistoNpc> GetPlayerNpc()
+        public async Task<KortistoNpc> GetPlayerNpc(string projectId)
         {
-            KortistoNpc npc = await _ObjectCollection.Find(n => n.IsPlayerNpc).FirstOrDefaultAsync();
+            KortistoNpc npc = await _ObjectCollection.Find(n => n.ProjectId == projectId && n.IsPlayerNpc).FirstOrDefaultAsync();
             return npc;
         }
 
         /// <summary>
         /// Resets the player flag to false for all npcs
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <returns>Task</returns>
-        public async Task ResetPlayerFlagForAllNpcs()
+        public async Task ResetPlayerFlagForAllNpcs(string projectId)
         {
-            UpdateResult result = await _ObjectCollection.UpdateManyAsync(Builders<KortistoNpc>.Filter.Empty, Builders<KortistoNpc>.Update.Set(n => n.IsPlayerNpc, false));
+            UpdateResult result = await _ObjectCollection.UpdateManyAsync(n => n.ProjectId == projectId, Builders<KortistoNpc>.Update.Set(n => n.IsPlayerNpc, false));
         }
 
 

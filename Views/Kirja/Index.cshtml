@@ -221,7 +221,7 @@
     </div>
 
     <div data-bind="if: !isEditMode()">
-        <div data-bind="html: pageContent" class="gn-kirjaPageContent gn-kirjaPageContentFormats">
+        <div data-bind="html: pageContentTransformed" class="gn-kirjaPageContent gn-kirjaPageContentFormats">
         </div>
     </div>
     <div data-bind="if: isEditMode, visible: isEditMode" style="display: none">
@@ -253,6 +253,7 @@
     <script type="text/javascript">
         Dropzone.autoDiscover = false;
 
+        GoNorth.Kirja.Page.toolbarButtonInsertTableOfContentTitle = "@Localizer["InsertTableOfContent"]";
         GoNorth.Kirja.Page.toolbarButtonInsertKirjaLinkTitle = "@Localizer["InsertKirjaLink"]";
         GoNorth.Kirja.Page.toolbarButtonInsertAikaQuestLinkTitle = "@Localizer["InsertAikaQuestLink"]";
         GoNorth.Kirja.Page.toolbarButtonInsertKortistoNpcLinkTitle = "@Localizer["InsertKortistoNpcLink"]";
@@ -260,6 +261,8 @@
         GoNorth.Kirja.Page.toolbarButtonInsertEvneSkillLinkTitle = "@Localizer["InsertEvneSkillLink"]";
         
         GoNorth.Kirja.Page.kirjaMapMarkerCountTooltip = "@Localizer["MarkedInMapNTimes"]";
+
+        GoNorth.Kirja.Page.tableOfContent = "@Localizer["TableOfContent"]";
         
         @if(User.IsInRole(RoleNames.Aika))
         {
@@ -340,4 +343,10 @@
     <environment exclude="Development">
         <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.css" />
     </environment>
+
+    <style>
+        gn-kirjaTableOfContent::after {
+            content: "@Localizer["TableOfContent"]"
+        }
+    </style>
 }

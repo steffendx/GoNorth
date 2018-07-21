@@ -50,8 +50,8 @@
     "ErrorOccured": "An error occured.",
 
     "Locked": "Locked",
-    "LockedTaskGroupPrefix": "This task group is currently beeing edited by ",
-    "LockedTaskPrefix": "This task is currently beeing edited by ",
+    "LockedTaskGroupPrefix": "This task group is currently being edited by ",
+    "LockedTaskPrefix": "This task is currently being edited by ",
     "LockedPostfix": ".",
     "BoardIsClosed": "The board is already closed.",
 

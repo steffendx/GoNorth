@@ -14,6 +14,10 @@
                 this.showFieldCreateEditDialog = new ko.observable(false);
                 this.isEditingField = new ko.observable(false);
                 this.createEditFieldName = new ko.observable("");
+                this.createEditFieldAdditionalConfigurationDisabled = new ko.observable(false);
+                this.createEditFieldHasAdditionalConfiguration = new ko.observable(false);
+                this.createEditFieldAdditionalConfiguration = new ko.observable("");
+                this.createEditFieldAdditionalConfigurationLabel = new ko.observable("");
                 this.createEditFieldDeferred = null;
 
                 this.showConfirmFieldDeleteDialog = new ko.observable(false);
@@ -66,15 +70,33 @@
                     });
                 },
 
+                /**
+                 * Adds an option field to the object
+                 */
+                addOptionField: function() {
+                    var self = this;
+                    this.openCreateEditFieldDialog(false, "", true, "", GoNorth.FlexFieldDatabase.Localization.OptionFieldAdditionalConfigurationLabel, false).done(function(name, additionalConfiguration) {
+                        var optionField = self.fieldManager.addOptionField(name);
+                        optionField.setAdditionalConfiguration(additionalConfiguration);
+                        self.onFieldAdded();
+                    });
+                },
+
 
                 /**
-                 * Renames a field
+                 * Edits a field
                  * 
-                 * @param {IFlexField} field Object Field
+                 * @param {FlexFieldBase} field Object Field
                  */
-                renameField: function(field) {
-                    this.openCreateEditFieldDialog(true, field.name()).done(function(name) {
+                editField: function(field) {
+                    var disableAdditionalConfig = !field.allowEditingAdditionalConfigForTemplateFields() && field.createdFromTemplate();
+                    this.openCreateEditFieldDialog(true, field.name(), field.hasAdditionalConfiguration(), field.getAdditionalConfiguration(), field.getAdditionalConfigurationLabel(), disableAdditionalConfig).done(function(name, additionalConfiguration) {
                         field.name(name);
+
+                        if(field.hasAdditionalConfiguration())
+                        {
+                            field.setAdditionalConfiguration(additionalConfiguration);
+                        }
                     });
                 },
 
@@ -84,9 +106,13 @@
                  * 
                  * @param {bool} isEdit true if its an edit operation, else false
                  * @param {string} existingName Existing name of the field
+                 * @param {bool} hasAdditionalConfiguration true if additional configuration is required for the field
+                 * @param {string} existingAdditionalConfiguration Existing additional Configuration
+                 * @param {string} additionalConfigurationLabel Label for the additional configuration
+                 * @param {bool} disableAdditionalConfiguration true if the additional configuration should be disabled, else false
                  * @returns {jQuery.Deferred} Deferred which will be resolved once the user presses save
                  */
-                openCreateEditFieldDialog: function(isEdit, existingName) {
+                openCreateEditFieldDialog: function(isEdit, existingName, hasAdditionalConfiguration, existingAdditionalConfiguration, additionalConfigurationLabel, disableAdditionalConfiguration) {
                     this.createEditFieldDeferred = new jQuery.Deferred();
 
                     this.isEditingField(isEdit);
@@ -97,6 +123,14 @@
                     else
                     {
                         this.createEditFieldName("");
+                    }
+
+                    this.createEditFieldHasAdditionalConfiguration(hasAdditionalConfiguration ? true : false);
+                    if(hasAdditionalConfiguration)
+                    {
+                        this.createEditFieldAdditionalConfigurationDisabled(disableAdditionalConfiguration)
+                        this.createEditFieldAdditionalConfigurationLabel(additionalConfigurationLabel);
+                        this.createEditFieldAdditionalConfiguration(existingAdditionalConfiguration ? existingAdditionalConfiguration : "");
                     }
 
                     GoNorth.Util.setupValidation("#gn-fieldCreateEditForm");
@@ -116,7 +150,12 @@
 
                     if(this.createEditFieldDeferred)
                     {
-                        this.createEditFieldDeferred.resolve(this.createEditFieldName());
+                        var additionalConfiguration = null;
+                        if(this.createEditFieldHasAdditionalConfiguration())
+                        {
+                            additionalConfiguration = this.createEditFieldAdditionalConfiguration();
+                        }
+                        this.createEditFieldDeferred.resolve(this.createEditFieldName(), additionalConfiguration);
                     }
                     this.createEditFieldDeferred = null;
                     this.showFieldCreateEditDialog(false);
@@ -138,7 +177,7 @@
                 /**
                  * Moves a field up
                  * 
-                 * @param {IFlexField} field Field to move up
+                 * @param {FlexFieldBase} field Field to move up
                  */
                 moveFieldUp: function(field) {
                     this.fieldManager.moveFieldUp(field);
@@ -147,7 +186,7 @@
                 /**
                  * Moves a field down
                  * 
-                 * @param {IFlexField} field Field to move down
+                 * @param {FlexFieldBase} field Field to move down
                  */
                 moveFieldDown: function(field) {
                     this.fieldManager.moveFieldDown(field);
@@ -157,7 +196,7 @@
                 /**
                  * Opens the delete field dialog
                  * 
-                 * @param {IFlexField} field Field to delete
+                 * @param {FlexFieldBase} field Field to delete
                  */
                 openConfirmDeleteFieldDialog: function(field) {
                     this.showConfirmFieldDeleteDialog(true);
@@ -184,7 +223,7 @@
                 /**
                  * Opens the script settings for a field
                  * 
-                 * @param {IFlexField} field Field for which the settings should be opened
+                 * @param {FlexFieldBase} field Field for which the settings should be opened
                  */
                 openScriptSettings: function(field) {
                     this.showFieldScriptSettingsDialog(true);

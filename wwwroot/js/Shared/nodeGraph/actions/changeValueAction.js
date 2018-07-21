@@ -145,6 +145,12 @@
 
                 var self = this;
                 this.loadObjectShared().then(function(fieldObject) {
+                    if(!fieldObject)
+                    {
+                        actionNode.hideLoading();
+                        return;
+                    }
+
                     // Set related object data
                     self.nodeModel.set("actionRelatedToObjectType", self.getObjectTypeName());
                     self.nodeModel.set("actionRelatedToObjectId", fieldObject.id);

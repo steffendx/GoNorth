@@ -23,16 +23,23 @@
     "NoNameGenTemplateTooltip": "No name template exists.",
     "NameGenSample": "Sample",
     "NameGenGenerateNewSample": "Generate a new sample.",
-    "NameGenFixErrorInTemplateBeforeSaving": "You have to fix the error in the template before beeing able to save it.",
+    "NameGenFixErrorInTemplateBeforeSaving": "You have to fix the error in the template before being able to save it.",
     "NameGenMissingClosingBracket": "A closing bracket is missing",
     "NameGenUnbalancedBrackets": "The brackets are not balanced",
     "NameGenUnexpectedPointyBracketInInput": "Unexpected '<' bracket in input",
     "NameGenUnexpectedRoundBracketInInput": "Unexpected '(' bracket in input",
     "NameGenUnknownError": "Unknown error",
+    "ManageTemplate": "Export template",
+    "Export": "Export",
+    "Script": "Script",
+    "JSON": "JSON",
+    "LanguageFile": "Language file",
+    "RegenerateLanguageKeys": "Regenerate language keys",
     "Ok": "Ok",
 
     "Name": "Name",
     "DropImageHere": "Drop image for npc here or click to choose an image",
+    "OpenImageInFullSize": "Open image in full size",
 
     "Inventory": "Inventory",
     "AddItemToInventory": "Add item",
@@ -46,6 +53,15 @@
     "RemoveSkill": "Remove skill",
     "AreYouSureYouWantToRemoveTheSkill": "Are you sure you want to remove the skill?",
 
+    "ExportResult": "Export result",
+    "Warning": "Warning:",
+    "ExportErrorsOccured": "Errors occured during exporting.",
+    "ExportErrorsCountPrefix": "(",
+    "ExportErrorsCountPostfix": "x)",
+    "Download": "Download",
+    "CopyToClipboard": "Copy to clipboard",
+    "SuccessfullyCopiedToClipboard": "Code was copied to clipboard",
+
     "ReferencedInAikaQuests": "Referenced in Aika quests:",
 
     "MentionedInKirjaPages": "Mentioned in Kirja pages:",
@@ -58,6 +74,9 @@
     "AreYouSure": "Are you sure?",
     "AreYouSureYouWantToDeleteTheObject": "Are you sure you want to delete the npc?",
     "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",
+    "AreYouSureYouWantToRegenerateTheLanguageKeys": "Are you sure you want to regenerate the language keys? This can be useful if the name of the object was changed for example.",
+    "DeletingThisTemplateWillAlsoDeleteExportTemplate": "If you delete this template the associated export template will also be deleted. The npc default export template will be used in this case.",
+    "ExistingLanguageKeysWillChange": "If the language keys are regenerated the existing keys can change. Existing translations might need to be changed.",
     "Yes": "Yes",
     "No": "No",
 
@@ -67,8 +86,8 @@
     "ErrorOccured": "An error occured.",
 
     "Locked": "Locked",
-    "LockedTemplatePrefix": "The template is currently beeing edited by ",
-    "LockedObjectPrefix": "The npc is currently beeing edited by ",
+    "LockedTemplatePrefix": "The template is currently being edited by ",
+    "LockedObjectPrefix": "The npc is currently being edited by ",
     "LockedPostfix": ".",
 
     "RichTextLocale": "en",

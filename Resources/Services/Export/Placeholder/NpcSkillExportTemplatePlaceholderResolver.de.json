@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Npc_Skills": "Fähigkeiten des Npcs. Wird auf Basis des Skill Listen Templates generiert.",
+    "PlaceholderDesc_Skills_Start": "Start der Fähigkeiten List. Die Liste muss mit Skills_End abgeschlossen werden. Die Attribute der Fähigkeiten können genutzt über die FlexField Platzhalter verwendet werden. Hierbei muss jedoch CurSkill_ statt FlexField_ genutzt werden.",
+    "PlaceholderDesc_Skills_End": "Ende der Fähigkeiten List.",
+    "PlaceholderDesc_CurSkill_Index": "Null-basierter Index der Fähigkeit innerhalb der Fähigkeiten Liste."
+}

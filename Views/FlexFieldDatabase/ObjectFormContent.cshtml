@@ -21,12 +21,16 @@
                     <i class="glyphicon @Model.ObjectIcon gn-flexFieldObjectFormImagePlaceholder"></i>
                 <!-- /ko -->
                 <!-- ko if: imageFilename -->
-                    <img class="gn-flexFieldObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFilename() }">
+                    <img class="gn-flexFieldObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + (thumbnailImageFilename() ? thumbnailImageFilename() : imageFilename()) }">
                 <!-- /ko -->
                 <!-- ko if: id -->
                     <div class="gn-flexFieldObjectFormImageDropzone" data-bind="dropzone: objectImageUploadUrl, dropzoneAcceptedFiles: 'image/*', dropzoneMaxFiles: 1, dropzoneHoverClass: 'gn-dropzoneFileHover', dropzoneDisable: isReadonly, dropzoneSuccess: function(imageFile) { $root.imageUploaded(imageFile); }, dropzoneError: function(errorMessage, xhr) { $root.imageUploadError(errorMessage, xhr); }, dropzoneAddedFile: function() { $root.resetErrorState(); }"></div>
                 <!-- /ko -->
             </div>
+
+            <!-- ko if: imageFilename -->
+                <a target="_blank" title="@Model.Localizer["OpenImageInFullSize"]" data-bind="attr: { href: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFilename() }" class="gn-flexFieldObjectFormOpenImageLink"><i class="glyphicon glyphicon-eye-open"></i></a>
+            <!-- /ko -->
         </div>
         <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
             <form id="gn-objectForm">

@@ -1,0 +1,17 @@
+{
+    "PlaceholderDesc_Tale_Action_WaitAmount": "Wartedauer",
+    "PlaceholderDesc_Tale_Action_WaitType_RealTime_Start": "Start des Inhalts der nur gerendert wird wenn die Warteart Echtzeit ist. Muss mit Tale_Action_WaitType_RealTime_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_WaitType_RealTime_End": "Ende des Inhalts der nur gerendert wird wenn die Warteart Echtzeit ist.",
+    "PlaceholderDesc_Tale_Action_WaitType_GameTime_Start": "Start des Inhalts der nur gerendert wird wenn die Warteart Spielzeit ist. Muss mit Tale_Action_WaitType_GameTime_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_WaitType_GameTime_End": "Ende des Inhalts der nur gerendert wird wenn die Warteart Spielzeit ist.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Milliseconds_Start": "Start des Inhalts der nur gerendert wird wenn die Zeit Einheit Millisekunden ist. Muss mit Tale_Action_WaitUnit_Milliseconds_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Milliseconds_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Millisekunden ist.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Seconds_Start": "Start des Inhalts der nur gerendert wird wenn die Zeit Einheit Sekunden ist. Muss mit Tale_Action_WaitUnit_Seconds_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Seconds_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Sekunden ist.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Minutes_Start": "Start des Inhalts der nur gerendert wird wenn die Zeit Einheit Minuten ist. Muss mit Tale_Action_WaitUnit_Minutes_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Minutes_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Minuten ist.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Hours_Start": "Start des Inhalts der nur gerendert wird wenn die Zeit Einheit Stunden ist. Muss mit Tale_Action_WaitUnit_Hours_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Hours_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Stunden ist.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Days_Start": "Start des Inhalts der nur gerendert wird wenn die Zeit Einheit Tage ist. Muss mit Tale_Action_WaitUnit_Days_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Days_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Tage ist."
+}

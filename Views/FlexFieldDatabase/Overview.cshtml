@@ -125,6 +125,7 @@
 
 <script type="text/html" id="gn-folderTemplate">
     <div class="gn-flexFieldOverviewFolderButtons">
+        <a data-bind="visible: imageFile, attr: { href: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }" target="_blank" title="@Model.Localizer["OpenImageInFullSize"]"><i class="glyphicon glyphicon-eye-open"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openEditFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["EditCategory"]"><i class="glyphicon glyphicon-pencil"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openDeleteFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["DeleteCategory"]"><i class="glyphicon glyphicon-trash"></i></a>
     </div>
@@ -135,7 +136,7 @@
     <!-- /ko -->
     <!-- ko if: imageFile -->
     <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewFolderImageContainer" data-bind="attr: { title: description }">
-        <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }">
+        <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + thumbnailImage }">
     </div>
     <!-- /ko -->
     <div class="gn-flexFieldOverviewTileName" data-bind="text: name, attr: { title: name }">
@@ -150,7 +151,7 @@
     <!-- /ko -->
     <!-- ko if: imageFile -->
     <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewObjectImageContainer">
-        <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }">
+        <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + thumbnailImage }">
     </div>
     <!-- /ko -->
     <div class="gn-flexFieldOverviewTileName" data-bind="text: name, attr: { title: name }">

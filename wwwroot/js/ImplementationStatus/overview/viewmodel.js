@@ -64,29 +64,24 @@
                 this.markerList = new Overview.ImplementationStatusMarkerList(nonLocalizedMarkerTypes, this.isLoading, this.errorOccured, this.compareDialog);
 
                 // Select first list user has access to
-                if(GoNorth.ImplementationStatus.Overview.hasKortistoRights)
+                var existingListType = parseInt(GoNorth.Util.getParameterFromHash("listType"));
+                var preSelected = false;
+                if(!isNaN(existingListType))
                 {
-                    this.selectNpcList();
+                    preSelected = this.selectListByType(existingListType);
                 }
-                else if(GoNorth.ImplementationStatus.Overview.hasTaleRights)
+
+                if(!preSelected)
                 {
-                    this.selectDialogList();
+                    this.selectFirstListWithRights();
                 }
-                else if(GoNorth.ImplementationStatus.Overview.hasStyrRights)
-                {
-                    this.selectItemList();
-                }
-                else if(GoNorth.ImplementationStatus.Overview.hasEvneRights)
-                {
-                    this.selectSkillList();
-                }
-                else if(GoNorth.ImplementationStatus.Overview.hasAikaRights)
-                {
-                    this.selectQuestList();
-                }
-                else if(GoNorth.ImplementationStatus.Overview.hasKartaRights)
-                {
-                    this.selectMarkerList();
+                
+                var self = this;
+                window.onhashchange = function() {
+                    var listType = parseInt(GoNorth.Util.getParameterFromHash("listType"));
+                    if(!isNaN(listType) && listType != self.currentListToShow()) {
+                        self.selectListByType(listType);
+                    }
                 }
             };
 
@@ -95,7 +90,7 @@
                  * Selects the npc list
                  */
                 selectNpcList: function() {
-                    this.currentListToShow(listTypeNpc);
+                    this.setCurrentListToShow(listTypeNpc);
                     this.npcList.init();
                 },
 
@@ -103,7 +98,7 @@
                  * Selects the dialog list
                  */
                 selectDialogList: function() {
-                    this.currentListToShow(listTypeDialog);
+                    this.setCurrentListToShow(listTypeDialog);
                     this.dialogList.init();
                 },
 
@@ -111,7 +106,7 @@
                  * Selects the item list
                  */
                 selectItemList: function() {
-                    this.currentListToShow(listTypeItem);
+                    this.setCurrentListToShow(listTypeItem);
                     this.itemList.init();
                 },
 
@@ -119,7 +114,7 @@
                  * Selects the item list
                  */
                 selectSkillList: function() {
-                    this.currentListToShow(listTypeSkill);
+                    this.setCurrentListToShow(listTypeSkill);
                     this.skillList.init();
                 },
 
@@ -127,7 +122,7 @@
                  * Selects the quest list
                  */
                 selectQuestList: function() {
-                    this.currentListToShow(listTypeQuest);
+                    this.setCurrentListToShow(listTypeQuest);
                     this.questList.init();
                 },
 
@@ -135,8 +130,98 @@
                  * Selects the marker list
                  */
                 selectMarkerList: function() {
-                    this.currentListToShow(listTypeMarker);
+                    this.setCurrentListToShow(listTypeMarker);
                     this.markerList.init();
+                },
+
+
+                /**
+                 * Sets the current list to show
+                 * 
+                 * @param {number} listType List Type to select
+                 */
+                setCurrentListToShow: function(listType) {
+                    this.currentListToShow(listType);
+                    var hashValue = "#listType=" + listType;
+                    if(window.location.hash)
+                    {
+                        window.location.hash = hashValue; 
+                    }
+                    else
+                    {
+                        window.location.replace(hashValue);
+                    }
+                },
+
+                /**
+                 * Selects the first list the user has access to
+                 */
+                selectFirstListWithRights: function() {
+                    if(GoNorth.ImplementationStatus.Overview.hasKortistoRights)
+                    {
+                        this.selectNpcList();
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasTaleRights)
+                    {
+                        this.selectDialogList();
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasStyrRights)
+                    {
+                        this.selectItemList();
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasEvneRights)
+                    {
+                        this.selectSkillList();
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasAikaRights)
+                    {
+                        this.selectQuestList();
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasKartaRights)
+                    {
+                        this.selectMarkerList();
+                    }
+                },
+
+                /**
+                 * Selects a list type by the type
+                 * 
+                 * @param {number} listType List Type to select
+                 * @returns {bool} true if the List can be selected, else false
+                 */
+                selectListByType: function(listType) {
+                    if(GoNorth.ImplementationStatus.Overview.hasKortistoRights && listType == listTypeNpc)
+                    {
+                        this.selectNpcList();
+                        return true;
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasTaleRights && listType == listTypeDialog)
+                    {
+                        this.selectDialogList();
+                        return true;
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasStyrRights && listType == listTypeItem)
+                    {
+                        this.selectItemList();
+                        return true;
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasEvneRights && listType == listTypeSkill)
+                    {
+                        this.selectSkillList();
+                        return true;
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasAikaRights && listType == listTypeQuest)
+                    {
+                        this.selectQuestList();
+                        return true;
+                    }
+                    else if(GoNorth.ImplementationStatus.Overview.hasKartaRights && listType == listTypeMarker)
+                    {
+                        this.selectMarkerList();
+                        return true;
+                    }
+
+                    return false;
                 }
             };
 

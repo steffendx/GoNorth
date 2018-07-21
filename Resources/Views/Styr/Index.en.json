@@ -10,6 +10,7 @@
     "Description": "Description",
     "Image": "Image",
     "DropFolderImageHere": "Drop a folder image here or click to choose a folder image", 
+    "OpenImageInFullSize": "Open image in full size",
     "Yes": "Yes",
     "No": "No",
     "Save": "Save",

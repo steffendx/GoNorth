@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.FlexFieldDatabaseModels
 
-@model IViewLocalizer
+@model ObjectFormButtonsViewModel
 
 <!-- Delete Object Dialog -->
 <div class="modal fade" role="dialog" data-bind="modal: showConfirmObjectDeleteDialog">
@@ -8,14 +9,72 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">@Model["AreYouSure"]</h4>
+                <h4 class="modal-title">@Model.Localizer["AreYouSure"]</h4>
             </div>
             <div class="modal-body">
-                <p><span data-bind="if: !isTemplateMode()">@Model["AreYouSureYouWantToDeleteTheObject"]</span><span data-bind="if: isTemplateMode">@Model["AreYouSureYouWantToDeleteTheTemplate"]</span></p>
+                <p><span data-bind="if: !isTemplateMode()">@Model.Localizer["AreYouSureYouWantToDeleteTheObject"]</span><span data-bind="if: isTemplateMode">@Model.Localizer["AreYouSureYouWantToDeleteTheTemplate"]</span></p>
+                <p style="display: none" class="gn-flexFieldObjectFormCustomizedExportTemplateWarningOnDelete" data-bind="visible: showCustomizedExportTemplateWarningOnDelete">@Model.Localizer["DeletingThisTemplateWillAlsoDeleteExportTemplate"]</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bind="click: deleteObject">@Model["Yes"]</button>
-                <button type="button" class="btn btn-default" data-bind="click: closeConfirmObjectDeleteDialog">@Model["No"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: deleteObject">@Model.Localizer["Yes"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: closeConfirmObjectDeleteDialog">@Model.Localizer["No"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Regenerate language keys dialog -->
+<div class="modal fade" role="dialog" data-bind="modal: showConfirmRegenerateLanguageKeysDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Model.Localizer["AreYouSure"]</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Model.Localizer["AreYouSureYouWantToRegenerateTheLanguageKeys"]</p>
+                <p class="gn-flexFieldObjectFormLangaugeKeysWarningOnDelete">@Model.Localizer["ExistingLanguageKeysWillChange"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bind="click: regenerateLanguageKeys">@Model.Localizer["Yes"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: closeConfirmRegenerateLanguageKeysDialog">@Model.Localizer["No"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Result Dialog -->
+<div class="modal fade" role="dialog" data-bind="modal: showExportResultDialog">
+    <div class="modal-dialog gn-flexFieldObjectExportResultDialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Model.Localizer["ExportResult"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning" role="alert" data-bind="visible: exportResultErrors().length > 0">
+                    <strong>@Model.Localizer["Warning"]</strong> @Model.Localizer["ExportErrorsOccured"]
+                    <ul data-bind="foreach: exportResultErrors" class="gn-flexFieldObjectExportResultErrorList">
+                        <li><span data-bind="text: message"></span> <span data-bind="visible: count > 1">@Model.Localizer["ExportErrorsCountPrefix"]<span data-bind="text: count"></span>@Model.Localizer["ExportErrorsCountPostfix"]</span></li>
+                    </ul>
+                </div>
+                <p>
+                    <button type="button" class="btn btn-primary" data-bind="click: function() { exportDownload(@((int)@Model.ExportTemplateType)); }">
+                        <i class="glyphicon glyphicon-export"></i> @Model.Localizer["Download"]
+                    </button>
+                    <span class="gn-flexFieldExportResultCopyToClipboardToolTipContainer">
+                        <button type="button" class="btn btn-default" data-bind="click: function() { copyExportCodeToClipboard() }">
+                            <span class="gn-flexFieldExportResultCopyToClipboardToolTipText" style="display: none" data-bind="visible: exportShowSuccessfullyCopiedTooltip">@Model.Localizer["SuccessfullyCopiedToClipboard"]</span>
+                            <i class="glyphicon glyphicon-paperclip"></i> @Model.Localizer["CopyToClipboard"]
+                        </button>
+                    </span>
+                </p>
+                <p>
+                    <textarea type="text" id="gn-flexFieldObjectExportResultTextarea" class="form-control gn-flexFieldObjectExportResultTextarea" data-bind="value: exportResultContent" readonly="readonly"></textarea>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bind="click: closeExportResultDialog">@Model.Localizer["Ok"]</button>
             </div>
         </div>
     </div>
@@ -32,11 +91,11 @@
 
 <!-- Command Buttons -->
 <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: save, disable: isLoading() || isReadonly()">
-    <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Model["Save"]
+    <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Model.Localizer["Save"]
 </button>
 
 <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: saveAndDistributeFields, disable: isLoading() || isReadonly(), visible: isTemplateMode" style="display: none">
-    <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Model["SaveAndDistributeFields"]
+    <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Model.Localizer["SaveAndDistributeFields"]
 </button>
 
 @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldAddButton.cshtml")
@@ -44,7 +103,30 @@
 @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
 {
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openCompareDialog, disable: isLoading() || isReadonly() || isImplemented(), visible: !isTemplateMode() && id()">
-        <span data-bind="visible: isImplemented()" style="display: none"><i class="glyphicon glyphicon-ok text-success"></i> @Model["IsImplemented"]</span>
-        <span data-bind="visible: !isImplemented()" title="@Model["IsNotImplementedTooltip"]"><i class="glyphicon glyphicon-remove text-danger"></i> @Model["MarkAsImplemented"]</span>
+        <span data-bind="visible: isImplemented()" style="display: none"><i class="glyphicon glyphicon-ok text-success"></i> @Model.Localizer["IsImplemented"]</span>
+        <span data-bind="visible: !isImplemented()" title="@Model.Localizer["IsNotImplementedTooltip"]"><i class="glyphicon glyphicon-remove text-danger"></i> @Model.Localizer["MarkAsImplemented"]</span>
     </button>
+}
+
+@if(User.IsInRole(RoleNames.ManageExportTemplates))
+{
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: function() { openExportTemplate(@((int)@Model.ExportTemplateType)); }, disable: isLoading(), visible: id">
+        <i class="glyphicon glyphicon-export"></i> @Model.Localizer["ManageTemplate"]
+    </button>
+}
+
+@if(User.IsInRole(RoleNames.ExportObjects))
+{
+    <div class="dropdown gn-inlineDropdown" data-bind="visible: id() && !isTemplateMode()">
+        <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-exportButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="disable: isLoading() || isReadonly()">
+            <i class="glyphicon glyphicon-export"></i> @Model.Localizer["Export"] <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="gn-exportButton">
+            <li><a class="gn-clickable" data-bind="click: function() { exportObject(@((int)@Model.ExportTemplateType), 'Script'); }">@Model.Localizer["Script"]</a></li>
+            <li><a class="gn-clickable" data-bind="click: function() { exportObject(@((int)@Model.ExportTemplateType), 'JSON'); }">@Model.Localizer["JSON"]</a></li>
+            <li><a class="gn-clickable" data-bind="click: function() { exportObject(@((int)@Model.ExportTemplateType), 'LanguageFile'); }">@Model.Localizer["LanguageFile"]</a></li>
+            <li class="divider"></li>
+            <li><a class="gn-clickable" data-bind="click: openConfirmRegenerateLanguageKeysDialog">@Model.Localizer["RegenerateLanguageKeys"]</a></li>
+        </ul>
+    </div>
 }

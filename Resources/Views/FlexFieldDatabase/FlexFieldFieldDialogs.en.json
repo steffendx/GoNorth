@@ -12,5 +12,7 @@
     
     "FieldScriptSetting": "Field script settings",
     "DontExportToScript": "Dont export to script",
-    "AdditionalScriptNames": "Additional script names (Comma separated)"
+    "AdditionalScriptNames": "Additional script names (Comma separated)",
+
+    "ConfigCanOnlyBeEditedInTemplate": "This setting can only be changed in the template"
 }

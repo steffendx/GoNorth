@@ -1,0 +1,15 @@
+{
+    "PlaceholderDesc_Object_Name": "Name des Objekts das exportiert wird",
+    "PlaceholderDesc_LanguageKeys_Start": "Start der Sprachschlüssel Liste. Muss mit LanguageKeys_End beendet werden.",
+    "PlaceholderDesc_LanguageKeys_End": "Ende der Sprachschlüssel Liste.",
+    "PlaceholderDesc_LanguageKeys_IsFirst_Start": "Start des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel der Erste ist. Muss mit LanguageKeys_IsFirst_End abgeschlossen werden.",
+    "PlaceholderDesc_LanguageKeys_IsFirst_End": "Ende des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel der Erste ist.",
+    "PlaceholderDesc_LanguageKeys_IsNotFirst_Start": "Start des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel nicht der Erste ist. Muss mit LanguageKeys_IsNotFirst_End abgeschlossen werden.",
+    "PlaceholderDesc_LanguageKeys_IsNotFirst_End": "Ende des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel nicht der Erste ist.",
+    "PlaceholderDesc_LanguageKeys_IsLast_Start": "Start des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel der Letzte ist. Muss mit LanguageKeys_IsLast_End abgeschlossen werden.",
+    "PlaceholderDesc_LanguageKeys_IsLast_End": "Ende des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel der Letzte ist.",
+    "PlaceholderDesc_LanguageKeys_IsNotLast_Start": "Start des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel nicht der Letzte ist. Muss mit LanguageKeys_IsNotLast_End abgeschlossen werden.",
+    "PlaceholderDesc_LanguageKeys_IsNotLast_End": "Ende des Inhaltes der nur gerendert wird wenn der aktuelle Sprachschlüssel nicht der Letzte ist.",
+    "PlaceholderDesc_LanguageKey_Key": "Schlüssel des aktuellen Sprachschlüssels.",
+    "PlaceholderDesc_LanguageKey_Text": "Text des aktuellen Sprachschlüssels."
+}

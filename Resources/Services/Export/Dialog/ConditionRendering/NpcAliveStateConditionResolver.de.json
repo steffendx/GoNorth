@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Tale_Condition_State_Alive_Start": "Start des Inhalts der nur gerendert wird wenn der Npc am leben sein muss. Muss mit Tale_Condition_State_Alive_End beendet werden.",
+    "PlaceholderDesc_Tale_Condition_State_Alive_End": "Ende des Inhalts der nur gerendert wird wenn der Npc am leben sein muss.",
+    "PlaceholderDesc_Tale_Condition_State_Dead_Start": "Start des Inhalts der nur gerendert wird wenn der Npc tot sein muss. Muss mit Tale_Condition_State_Dead_End beendet werden.",
+    "PlaceholderDesc_Tale_Condition_State_Dead_End": "Ende des Inhalts der nur gerendert wird wenn der Npc tot sein muss."
+}

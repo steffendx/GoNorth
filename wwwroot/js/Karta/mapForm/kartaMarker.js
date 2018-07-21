@@ -7,14 +7,16 @@
              * Karta Marker
              * 
              * @param {object} mapId Id of the karta map
+             * @param {string} mapName Name of the karta map
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.KartaMarker = function(mapId, latLng) 
+            Map.KartaMarker = function(mapId, mapName, latLng) 
             {
                 Map.BaseMarker.apply(this);
 
-                this.mapId = mapId;
+                this.mapChangeId = mapId;
+                this.mapName = mapName;
 
                 this.isTrackingImplementationStatus = true;
 
@@ -44,6 +46,15 @@
             }
 
             /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.KartaMarker.prototype.getIconLabel = function() {
+                return this.mapName;
+            }
+
+            /**
              * Loads the content
              * 
              * @returns {jQuery.Deferred} Deferred
@@ -53,9 +64,9 @@
 
                 var self = this;
                 jQuery.ajax({
-                    url: "/api/KartaApi/Map?id=" + this.mapId
+                    url: "/api/KartaApi/Map?id=" + this.mapChangeId
                 }).done(function(map) {
-                    var mapHtml = "<h4><a href='#id=" + self.mapId + "'>" + map.name + "</a></h4>";
+                    var mapHtml = "<h4><a href='#id=" + self.mapChangeId + "'>" + map.name + "</a></h4>";
 
                     def.resolve(mapHtml);
                 }).fail(function() {
@@ -73,7 +84,8 @@
              */
             Map.KartaMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
-                serializedObject.mapId = this.mapId;
+                serializedObject.mapId = this.mapChangeId;
+                serializedObject.mapName = this.mapName;
                 return serializedObject;
             }
 

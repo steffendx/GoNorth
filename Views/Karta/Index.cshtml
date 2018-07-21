@@ -243,6 +243,8 @@
             <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: kartaMarkerManager.isLayerVisible">@Localizer["ShowKartaMarker"]</label>
         
             <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: noteMarkerManager.isLayerVisible">@Localizer["ShowNoteMarker"]</label>
+            
+            <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: showMarkerLabels">@Localizer["ShowMarkerLabels"]</label>
         </div>
     </div>
 
@@ -274,7 +276,7 @@
         </div>
         <div class="col-xs-12 col-sm-8 col-md-8 col-lg-9">
             <!-- ko if: mapLoaded -->
-            <div class="gn-kartaMap" data-bind="map: mapUrlTemplate, mapMaxZoom: mapMaxZoom, mapImageWidth: mapImageWidth, mapImageHeight: mapImageHeight, mapClick: addMarkerToMap, mapReady: mapReady"></div>
+            <div class="gn-kartaMap" data-bind="map: mapUrlTemplate, mapMaxZoom: mapMaxZoom, mapImageWidth: mapImageWidth, mapImageHeight: mapImageHeight, mapClick: addMarkerToMap, mapReady: mapReady, css: { 'gn-kartaShowLabels': showMarkerLabels }"></div>
             <!-- /ko -->
         </div>
     </div>

@@ -103,6 +103,11 @@
                             jQuery(marker.marker.getPopup().getElement()).find(".gn-kartaPopupContent").text(description);
                         }
 
+                        if(marker.marker.getElement())
+                        {
+                            jQuery(marker.marker.getElement()).find(".gn-kartaIconLabel").text(name);
+                        }
+
                         self.viewModel.saveMarker(marker);
                     });
                 });

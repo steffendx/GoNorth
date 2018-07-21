@@ -16,6 +16,8 @@ using System.Linq;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Tale;
+using GoNorth.Services.FlexFieldThumbnail;
+using GoNorth.Data.Exporting;
 
 namespace GoNorth.Controllers.Api
 {
@@ -118,7 +120,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
+        /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
+        /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="imageAccess">Skill Image Access</param>
+        /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db ACcess</param>
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
@@ -128,10 +133,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public EvneApiController(IEvneFolderDbAccess folderDbAccess, IEvneSkillTemplateDbAccess templateDbAccess, IEvneSkillDbAccess skillDbAccess, IProjectDbAccess projectDbAccess, IEvneSkillTagDbAccess tagDbAccess, 
-                                 IEvneSkillImageAccess imageAccess, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, UserManager<GoNorthUser> userManager, 
+        public EvneApiController(IEvneFolderDbAccess folderDbAccess, IEvneSkillTemplateDbAccess templateDbAccess, IEvneSkillDbAccess skillDbAccess, IProjectDbAccess projectDbAccess, IEvneSkillTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, ILanguageKeyDbAccess languageKeyDbAccess,
+                                 IEvneSkillImageAccess imageAccess, IEvneThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, UserManager<GoNorthUser> userManager, 
                                  IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<EvneApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, projectDbAccess, tagDbAccess, imageAccess, userManager, implementationStatusComparer, timelineService, logger, localizerFactory)
+                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, imageAccess, thumbnailService, userManager, implementationStatusComparer, timelineService, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;
             _taleDbAccess = taleDbAccess;
@@ -269,6 +274,16 @@ namespace GoNorth.Controllers.Api
             loadedFlexFieldObject.Link = flexFieldObject.Link != null ? flexFieldObject.Link : new List<NodeLink>();
 
             return Task.FromResult(loadedFlexFieldObject);
+        }
+
+        /// <summary>
+        /// Runs updates on markers
+        /// </summary>
+        /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <returns>Task</returns>
+        protected override Task RunMarkerUpdates(EvneSkill flexFieldObject)
+        {
+            return Task.CompletedTask;
         }
 
         /// <summary>

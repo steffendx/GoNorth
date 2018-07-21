@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Tale_TextLine": "Textzeile die gesagt wird",
+    "PlaceholderDesc_Tale_TextLine_LangKey": "Sprachschlüssel für die Textzeile die gesagt wird",
+    "PlaceholderDesc_Tale_TextLine_Preview": "Vorschau für den Text der gesagt wird. Dabei werden Zeilenumbrüche entfernt und zu langer Text abgeschnitten. Dieser Platzhalter ist gedacht um in Kommentaren eine Vorschau hinzuzufügen um die Lesbarkeit zu erhöhen wenn Sprachschlüssel genutzt werden."
+}

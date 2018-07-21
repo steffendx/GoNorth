@@ -14,12 +14,12 @@
              * @class
              */
             ObjectForm.MultiLineFlexField = function() {
-                ObjectForm.IFlexField.apply(this);
+                ObjectForm.FlexFieldBase.apply(this);
 
                 this.value = new ko.observable("");
             }
 
-            ObjectForm.MultiLineFlexField.prototype = jQuery.extend(true, {}, ObjectForm.IFlexField.prototype);
+            ObjectForm.MultiLineFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
 
             /**
              * Returns the type of the field

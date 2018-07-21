@@ -7,11 +7,28 @@
     "IsImplemented": "Implemented",
     "IsNotImplementedTooltip": "Item is not implemented.",
     "MarkAsImplemented": "Mark as implemented",
+    "ManageTemplate": "Export template",
+    "Export": "Export",
+    "Script": "Script",
+    "JSON": "JSON",
+    "LanguageFile": "Language file",
+    "RegenerateLanguageKeys": "Regenerate language keys",
     "Cancel": "Cancel",
     "Delete": "Delete",
 
     "Name": "Name",
     "DropImageHere": "Drop image for item here or click to choose an image",
+    "OpenImageInFullSize": "Open image in full size",
+
+    "ExportResult": "Export result",
+    "Warning": "Warning:",
+    "ExportErrorsOccured": "Errors occured during exporting.",
+    "ExportErrorsCountPrefix": "(",
+    "ExportErrorsCountPostfix": "x)",
+    "Download": "Download",
+    "CopyToClipboard": "Copy to clipboard",
+    "SuccessfullyCopiedToClipboard": "Code was copied to clipboard",
+    "Ok": "Ok",
 
     "ReferencedInAikaQuests": "Referenced in Aika quests:",
     
@@ -27,6 +44,9 @@
     "AreYouSure": "Are you sure?",
     "AreYouSureYouWantToDeleteTheObject": "Are you sure you want to delete the item?",
     "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",
+    "AreYouSureYouWantToRegenerateTheLanguageKeys": "Are you sure you want to regenerate the language keys? This can be useful if the name of the object was changed for example.",
+    "DeletingThisTemplateWillAlsoDeleteExportTemplate": "If you delete this template the associated export template will also be deleted. The item default export template will be used in this case.",
+    "ExistingLanguageKeysWillChange": "If the language keys are regenerated the existing keys can change. Existing translations might need to be changed.",
     "Yes": "Yes",
     "No": "No",
 
@@ -34,8 +54,8 @@
     "ErrorOccured": "An error occured.",
 
     "Locked": "Locked",
-    "LockedTemplatePrefix": "The template is currently beeing edited by ",
-    "LockedObjectPrefix": "The item is currently beeing edited by ",
+    "LockedTemplatePrefix": "The template is currently being edited by ",
+    "LockedObjectPrefix": "The item is currently being edited by ",
     "LockedPostfix": ".",
 
     "RichTextLocale": "en",

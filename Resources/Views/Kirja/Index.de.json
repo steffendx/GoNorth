@@ -25,6 +25,9 @@
     "WaitingOnNewPage": "Warte auf neue Seite",
     "DialogWillCloseOnSaveOfNewPage": "Dieser Dialog schließt sich sobald du die neue Seite gespeichert hast oder das Fenster schließt. Wenn die neue Seite gespeichert wird wird automatisch ein Link eingefügt.<br/><b>Hinweis:</b> Die Seite wird in diesem Fall gespeichert.",
 
+    "InsertTableOfContent": "Inhaltsverzeichnis einfügen",
+    "TableOfContent": "Inhaltsverzeichnis",
+
     "ToogleSidebar": "Hier klicken um die Seitenleiste zu öffnen oder schließen",
     "Connections": "Verknüpfungen",
     "MentionedInPages": "In Kirja Seiten erwähnt",

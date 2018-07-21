@@ -1,0 +1,21 @@
+{
+    "PlaceholderDesc_FlexField_Name": "Name of the Object",
+    "PlaceholderDesc_FlexField_Name_LangKey": "Language Key for the name of the object",
+    "PlaceholderDesc_FlexField_Value_NAME_OF_FIELD": "Value of a specific field. 'NAME_OF_FIELD' must be replaced with the actual name of the field. The name is not case-sensitive.",
+    "PlaceholderDesc_FlexField_LangKey_NAME_OF_FIELD": "Language key for the value of a specific field. 'NAME_OF_FIELD' must be replaced with the actual name of the field. The name is not case-sensitive.",
+    "PlaceholderDesc_FlexField_Field_List_Start": "Start of the attribute list. Will be replaced by the unused fields oder all fields placeholder when beeing integrated into an object.",
+    "PlaceholderDesc_FlexField_Field_List_End": "End of the attribute list. Will be replaced by the unused fields oder all fields placeholder when beeing integrated into an object.",
+    "PlaceholderDesc_FlexField_UnusedFields": "List of unused flex field values. The attribute list template will be used for this and the start and end placeholders will be replaced with the unused fields placeholders.",
+    "PlaceholderDesc_FlexField_UnusedFields_Start": "Start of the list of unused fields. Non used fields are all fields that were not referenced by name.",
+    "PlaceholderDesc_FlexField_UnusedFields_End": "End of the list of unused fields.",
+    "PlaceholderDesc_FlexField_AllFields": "List of all flex field values. The attribute list template will be used for this and the start and end placeholders will be replaced with the all fields placeholders.",
+    "PlaceholderDesc_FlexField_AllFields_Start": "Start of the list of all fields",
+    "PlaceholderDesc_FlexField_AllFields_End": "End of the list of all fields",
+    "PlaceholderDesc_FlexField_Field_Name": "Name of the field",
+    "PlaceholderDesc_FlexField_Field_Value": "Value of the field",
+    "PlaceholderDesc_FlexField_Field_LangKey": "Language key for the value of the field. Used if you want to use localization instead of hard coding a string value.",
+    "PlaceholderDesc_FlexField_Field_IsNumberField_Start": "Start of the content that will only be rendered if the current field is a number field. Must be closed with FlexField_Field_IsNumberField_End",
+    "PlaceholderDesc_FlexField_Field_IsNumberField_End": "End of the content that will only be rendered if the current field is a number field.",
+    "PlaceholderDesc_FlexField_Field_IsStringField_Start": "Start of the content that will only be rendered if the current field is a text field. Must be closed with FlexField_Field_IsStringField_End",
+    "PlaceholderDesc_FlexField_Field_IsStringField_End": "End of the content that will only be rendered if the current field is a text field."
+}

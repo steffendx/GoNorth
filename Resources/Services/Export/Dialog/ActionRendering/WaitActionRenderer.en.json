@@ -1,0 +1,17 @@
+{
+    "PlaceholderDesc_Tale_Action_WaitAmount": "Amount to wait",
+    "PlaceholderDesc_Tale_Action_WaitType_RealTime_Start": "Start of the content that will only be rendered if the wait type is realtime. Must be closed using Tale_Action_WaitType_RealTime_End.",
+    "PlaceholderDesc_Tale_Action_WaitType_RealTime_End": "End of the content that will only be rendered if the wait type is realtime.",
+    "PlaceholderDesc_Tale_Action_WaitType_GameTime_Start": "Start of the content that will only be rendered if the wait type is gametime. Must be closed using Tale_Action_WaitType_GameTime_End.",
+    "PlaceholderDesc_Tale_Action_WaitType_GameTime_End": "End of the content that will only be rendered if the wait type is gametime.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Milliseconds_Start": "Start of the content that will only be rendered if the wait unit is milliseconds. Must be closed using Tale_Action_WaitUnit_Milliseconds_End.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Milliseconds_End": "End of the content that will only be rendered if the wait unit is milliseconds.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Seconds_Start": "Start of the content that will only be rendered if the wait unit is seconds. Must be closed using Tale_Action_WaitUnit_Seconds_End.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Seconds_End": "End of the content that will only be rendered if the wait unit is seconds.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Minutes_Start": "Start of the content that will only be rendered if the wait unit is minutes. Must be closed using Tale_Action_WaitUnit_Minutes_End.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Minutes_End": "End of the content that will only be rendered if the wait unit is minutes.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Hours_Start": "Start of the content that will only be rendered if the wait unit is hours. Must be closed using Tale_Action_WaitUnit_Hours_End.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Hours_End": "End of the content that will only be rendered if the wait unit is hours.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Days_Start": "Start of the content that will only be rendered if the wait unit is days. Must be closed using Tale_Action_WaitUnit_Days_End.",
+    "PlaceholderDesc_Tale_Action_WaitUnit_Days_End": "End of the content that will only be rendered if the wait unit is days."
+}

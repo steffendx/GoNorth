@@ -1,0 +1,122 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.ExportViewModels
+
+@inject IViewLocalizer Localizer
+
+@model ManageTemplateViewModel
+
+@{
+    ViewData["Title"] = @Localizer["ManageTemplate"];
+}
+
+<div id="gn-exportManageTemplateContainer">
+    <!-- Delete Template Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmTemplateDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheTemplate"]</p>
+                    <p class="gn-exportManageTemplateWarningOnDelete">@Localizer["AllObjectsUsingThisTemplateWillUseParentTemplate"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteTemplate, disabled: isLoading">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeDeleteTemplateDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h2>
+        @ViewData["Title"] - <span data-bind="text: templateLabel"></span>
+        <span class="gn-exportManageTemplateLoading" style="display: none" data-bind="visible: isLoading"><i class="glyphicon glyphicon-refresh spinning"></i></span>
+        <span class="gn-exportManageTemplateInfoIcon" style="display: none" data-bind="visible: customizedObjectTemplateIsDefault" title="@Localizer["TemplateBasedOnParent"]"><a data-bind="href: parentTemplateUrl"><i class="glyphicon glyphicon-share"></i></a></span>
+    </h2>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin gn-exportManageTemplateChildObjectsList" style="display: none" data-bind="visible: customizedChildTemplates().length > 0">
+        @Localizer["ChildObjectsHavingCustomizedTemplate"]
+        <ul data-bind="foreach: customizedChildTemplates">
+            <li><a data-bind="href: function(childTemplate) { return $root.buildChildTemplateUrl(childTemplate); }"><span data-bind="text: objectName"></span> <span data-bind="visible: isObjectTemplate">@Localizer["Template"]</span></a></li>
+        </ul>
+    </div>
+
+    <!-- Command Buttons -->
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: save, disable: isLoading() || isReadonly()">
+        <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["Save"]
+    </button>
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin gn-buttonMarginLeft" data-bind="click: openDeleteTemplateDialog, visible: customizedObjectId() && !customizedObjectTemplateIsDefault(), disable: isLoading() || isReadonly()" style="display: none">
+        <i class="glyphicon glyphicon-trash"></i> @Localizer["Delete"]
+    </button>
+
+    <div class="row gn-defaultContentTopMargin">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <!-- Placeholders -->
+            <h4 class="gn-clickable" data-bind="click: tooglePlaceholderVisibility">
+                <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !arePlaceholdersExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: arePlaceholdersExpanded" style="display: none"></i> 
+                @Localizer["Placeholders"]
+            </h4>
+
+            <div data-bind="visible: arePlaceholdersExpanded" class="gn-exportManageTemplatePlaceholderContainer" style="display: none">
+                <table class="table table-striped table-bordered table-responsive gn-exportManageTemplatePlaceholderTable">
+                    <thead>
+                    <tr>
+                        <th>@Localizer["Name"]</th>
+                        <th>@Localizer["Description"]</th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach: templatePlaceholders">
+                        <tr>
+                            <td data-bind="text: name, attr: { title: name }"></td>
+                            <td data-bind="text: description, attr: { title: description }"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-exportManageTemplateCodeEditorContainer">
+            <div data-bind="codeEditor: templateCode, codeEditorTheme: '@Model.CodeEditorTheme', codeEditorMode: '@Model.ScriptLanguage', codeEditorReadonly: isReadonly" class="gn-exportManageTemplateCodeEditor"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/ace-builds/src-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-noconflict/ext-language_tools.js"></script>
+
+        <script src="~/js/Export/manageTemplate.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/ace-builds/src-min-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+
+        <script src="~/js/Export/manageTemplate.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.Export.ManageTemplate.templateTypeMapping = {};
+        @foreach(ExportTemplateTypeUrl curTemplateTypeUrl in Model.TemplateTypeUrls)
+        {
+            <text>
+            GoNorth.Export.ManageTemplate.templateTypeMapping[@((int)@curTemplateTypeUrl.TemplateType)] = "@curTemplateTypeUrl.FormUrl";
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Export.ManageTemplate.ViewModel(), jQuery("#gn-exportManageTemplateContainer")[0]);
+        });
+    </script>
+}

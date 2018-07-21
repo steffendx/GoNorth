@@ -115,7 +115,7 @@ namespace GoNorth.Services.Karta
         /// <summary>
         /// Ensures an image has a power of two size
         /// </summary>
-        /// <param name="map">Map which is beeing processed</param>
+        /// <param name="map">Map which is being processed</param>
         /// <param name="image">Image to format</param>
         private void EnsurePowerOfTwo(KartaMap map, Image<Rgba32> image)
         {

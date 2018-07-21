@@ -1,0 +1,1 @@
+{{Tale_Condition_State_Alive_Start}}BaseNpc_IsAlive({{Tale_Condition_Npc_Value_Id}}){{Tale_Condition_State_Alive_End}}{{Tale_Condition_State_Dead_Start}}BaseNpc_IsDead({{Tale_Condition_Npc_Value_Id}}){{Tale_Condition_State_Dead_End}}

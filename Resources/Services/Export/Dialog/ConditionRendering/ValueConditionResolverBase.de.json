@@ -1,0 +1,13 @@
+{
+    "PlaceholderDesc_Tale_Condition_ValueName": "Name des Feld dessen Wert geprüft wird",
+    "PlaceholderDesc_Tale_Condition_ValueOperator": "Vergleichsoperator der genutzt wird. Dieser wird auf Basis der verschiedenen Operator Templates generiert.",
+    "PlaceholderDesc_Tale_Condition_ValueOperator_IsPrimitive_Start": "Anfang des Inhalts der nur gerendert wird wenn der Operator ein primitiver Operator (=, !=, <, <=, ...) ist. Muss mit Tale_Condition_ValueOperator_IsPrimitive_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_ValueOperator_IsPrimitive_End": "Ende des Inhalts der nur gerendert wird wenn der Operator ein primitiver Operator (=, !=, <, <=, ...) ist.",
+    "PlaceholderDesc_Tale_Condition_ValueOperator_IsNonPrimitive_Start": "Anfang des Inhalts der nur gerendert wird wenn der Operator ein nicht-primitiver Operator (contains, startsWith, endsWith) ist. Muss mit Tale_Condition_ValueOperator_IsNonPrimitive_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_ValueOperator_IsNonPrimitive_End": "Ende des Inhalts der nur gerendert wird wenn der Operator ein nicht-primitiver Operator (contains, startsWith, endsWith) ist.",
+    "PlaceholderDesc_Tale_Condition_ValueIsNumber_Start": "Anfang des Inhalts der nur gerendert wird wenn das Feld das geprüft wird ein Zahlenfeld ist. Muss mit Tale_Condition_ValueIsNumber_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_ValueIsNumber_End": "Ende des Inhalts der nur gerendert wird wenn das Feld das geprüft wird ein Zahlenfeld ist.",
+    "PlaceholderDesc_Tale_Condition_ValueIsString_Start": "Anfang des Inhalts der nur gerendert wird wenn das Feld das geprüft wird ein Textfeld ist. Muss mit Tale_Condition_ValueIsString_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_ValueIsString_End": "Ende des Inhalts der nur gerendert wird wenn das Feld das geprüft wird ein Textfeld ist.",
+    "PlaceholderDesc_Tale_Condition_CompareValue": "Vergleichswert für die Operation."
+}

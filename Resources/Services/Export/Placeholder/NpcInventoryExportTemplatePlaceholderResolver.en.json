@@ -1,0 +1,11 @@
+{
+    "PlaceholderDesc_Npc_Inventory": "Inventory of the npc. The inventory template will be used for this.",
+    "PlaceholderDesc_Inventory_Start": "Start of the inventory item list. The list must be closed with Inventory_End. Attributes of the item can be used with the FlexField placeholders but using CurItem_ instead of FlexField_.",
+    "PlaceholderDesc_Inventory_End": "End of the inventory list.",
+    "PlaceholderDesc_CurItem_Index": "Zero based index of the current item in the inventory list.",
+    "PlaceholderDesc_CurItem_Is_Equipped_Start": "Start of the content that will only be rendered if the current item in the inventory list is equipped. Must be closed with CurItem_Is_Equipped_End",
+    "PlaceholderDesc_CurItem_Is_Equipped_End": "End of the content that will only be rendered if the current item in the inventory list is equipped.",
+    "PlaceholderDesc_CurItem_Quantity": "Quantity of the item in the inventory.",
+    "PlaceholderDesc_CurItem_Quantity_Not_Equal_One_Start": "Start of the content that will only be rendered if the quantity of current item in the inventory list is not equal to one. Must be closed with CurItem_Is_Equipped_End",
+    "PlaceholderDesc_CurItem_Quantity_Not_Equal_One_End": "End of the content that will only be rendered if the quantity of current item in the inventory list is not equal to one."
+}

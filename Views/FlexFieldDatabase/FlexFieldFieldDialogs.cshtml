@@ -37,6 +37,10 @@
                         <label for="gn-fieldName">@Localizer["Name"]</label>
                         <input type="text" class="form-control" id="gn-fieldName" placeholder="@Localizer["Name"]" name="fieldName" data-bind="value: createEditFieldName, enterPressed: saveField" required/>
                     </div>
+                    <div class="form-group" data-bind="visible: createEditFieldHasAdditionalConfiguration">
+                        <label for="gn-fieldAdditionalConfiguration" data-bind="text: createEditFieldAdditionalConfigurationLabel"></label>
+                        <textarea class="form-control gn-nonResizeable" id="gn-fieldAdditionalConfiguration" name="fieldAdditionalConfiguration" data-bind="value: createEditFieldAdditionalConfiguration, attr: { placeholder: createEditFieldAdditionalConfigurationLabel, title: createEditFieldAdditionalConfigurationDisabled() ? '@Localizer["ConfigCanOnlyBeEditedInTemplate"]' : '' }, disable: createEditFieldAdditionalConfigurationDisabled"></textarea>
+                    </div>
                 </form>
             </div>
             

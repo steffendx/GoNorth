@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Identity;
 using GoNorth.Data.User;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Services.ImplementationStatusCompare;
+using GoNorth.Services.FlexFieldThumbnail;
+using GoNorth.Data.Exporting;
 
 namespace GoNorth.Controllers.Api
 {
@@ -177,9 +179,24 @@ namespace GoNorth.Controllers.Api
         private readonly IFlexFieldObjectTagDbAccess _tagDbAccess;
 
         /// <summary>
+        /// Export Template Db Access
+        /// </summary>
+        private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
+
+        /// <summary>
+        /// Language Key Db Access
+        /// </summary>
+        private readonly ILanguageKeyDbAccess _languageKeyDbAccess;
+
+        /// <summary>
         /// Image Access
         /// </summary>
         private readonly IFlexFieldObjectImageAccess _imageAccess;
+
+        /// <summary>
+        /// Thumbnail Service
+        /// </summary>
+        private readonly IFlexFieldThumbnailService _thumbnailService;
 
         /// <summary>
         /// Implementation status comparer
@@ -214,22 +231,28 @@ namespace GoNorth.Controllers.Api
         /// <param name="objectDbAccess">Object Db Access</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
+        /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
+        /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="imageAccess">Image Access</param>
+        /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation Status Comparer</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public FlexFieldBaseApiController(IFlexFieldFolderDbAccess folderDbAccess, IFlexFieldObjectDbAccess<T> templateDbAccess, IFlexFieldObjectDbAccess<T> objectDbAccess, IProjectDbAccess projectDbAccess, IFlexFieldObjectTagDbAccess tagDbAccess, 
-                                          IFlexFieldObjectImageAccess imageAccess, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<FlexFieldBaseApiController<T>> logger, 
-                                          IStringLocalizerFactory localizerFactory)
+        public FlexFieldBaseApiController(IFlexFieldFolderDbAccess folderDbAccess, IFlexFieldObjectDbAccess<T> templateDbAccess, IFlexFieldObjectDbAccess<T> objectDbAccess, IProjectDbAccess projectDbAccess, IFlexFieldObjectTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
+                                          ILanguageKeyDbAccess languageKeyDbAccess, IFlexFieldObjectImageAccess imageAccess, IFlexFieldThumbnailService thumbnailService, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, 
+                                          ILogger<FlexFieldBaseApiController<T>> logger, IStringLocalizerFactory localizerFactory)
         {
             _folderDbAccess = folderDbAccess;
             _templateDbAccess = templateDbAccess;
             _objectDbAccess = objectDbAccess;
             _projectDbAccess = projectDbAccess;
             _tagDbAccess = tagDbAccess;
+            _exportTemplateDbAccess = exportTemplateDbAccess;
+            _languageKeyDbAccess = languageKeyDbAccess;
             _imageAccess = imageAccess;
+            _thumbnailService = thumbnailService;
             _userManager = userManager;
             _implementationStatusComparer = implementationStatusComparer;
             _timelineService = timelineService;
@@ -330,7 +353,15 @@ namespace GoNorth.Controllers.Api
             await _folderDbAccess.DeleteFolder(folder);
             _logger.LogInformation("Folder was deleted.");
 
-            _imageAccess.CheckAndDeleteUnusedImage(folder.ImageFile);
+            if(!string.IsNullOrEmpty(folder.ImageFile))
+            {
+                _imageAccess.CheckAndDeleteUnusedImage(folder.ImageFile);
+            }
+
+            if(!string.IsNullOrEmpty(folder.ThumbnailImageFile))
+            {
+                _imageAccess.CheckAndDeleteUnusedImage(folder.ThumbnailImageFile);
+            }
 
             await _timelineService.AddTimelineEntry(FolderDeletedEvent, folder.Name);
             return Ok(id);
@@ -373,6 +404,15 @@ namespace GoNorth.Controllers.Api
             return Ok(id);
         }
 
+        /// <summary>
+        /// Generates the Thumbnail Filename
+        /// </summary>
+        /// <param name="filename">Original Filename</param>
+        /// <returns>Thumbnail Filename</returns>
+        private string GenerateThumbnailFilename(string filename)
+        {
+            return Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + "_t" + Path.GetExtension(filename));
+        }
         
         /// <summary>
         /// Uploads an image to a flex field folder
@@ -406,14 +446,27 @@ namespace GoNorth.Controllers.Api
                     uploadFile.CopyTo(imageStream);
                 }
 
+                string thumbnailFilename = GenerateThumbnailFilename(objectImageFile);
+                if(!_thumbnailService.GenerateThumbnail(objectImageFile, thumbnailFilename))
+                {
+                    thumbnailFilename = null;
+                }
+
                 string oldImageFile = targetFolder.ImageFile;
+                string oldThumbnailImageFile = targetFolder.ThumbnailImageFile;
                 targetFolder.ImageFile = objectImageFile;
+                targetFolder.ThumbnailImageFile = thumbnailFilename;
 
                 await _folderDbAccess.UpdateFolder(targetFolder);
 
                 if(!string.IsNullOrEmpty(oldImageFile))
                 {
                     _imageAccess.CheckAndDeleteUnusedImage(oldImageFile);
+                }
+
+                if(!string.IsNullOrEmpty(oldThumbnailImageFile))
+                {
+                    _imageAccess.CheckAndDeleteUnusedImage(oldThumbnailImageFile);
                 }
             }
             catch(Exception ex)
@@ -518,8 +571,30 @@ namespace GoNorth.Controllers.Api
                 _imageAccess.CheckAndDeleteUnusedImage(template.ImageFile);
             }
 
+            if(!string.IsNullOrEmpty(template.ThumbnailImageFile))
+            {
+                _imageAccess.CheckAndDeleteUnusedImage(template.ThumbnailImageFile);
+            }
+
+            await DeleteExportTemplateIfExists(id);
+
             await _timelineService.AddTimelineEntry(TemplateDeletedEvent, template.Name);
             return Ok(id);
+        }
+
+        /// <summary>
+        /// Deletes an export template if it exists
+        /// </summary>
+        /// <param name="id">Id of the object thats deleted</param>
+        /// <returns>Task</returns>
+        private async Task DeleteExportTemplateIfExists(string id)
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            ExportTemplate exportTemplate = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(project.Id, id);
+            if(exportTemplate != null)
+            {
+                await _exportTemplateDbAccess.DeleteTemplate(exportTemplate);
+            }
         }
 
         /// <summary>
@@ -577,7 +652,19 @@ namespace GoNorth.Controllers.Api
             List<T> flexFieldObjects = await _objectDbAccess.GetFlexFieldObjectsByTemplate(id);
             foreach(T curObject in flexFieldObjects)
             {
+                // Update Additional Configuration
+                foreach(FlexField curField in curObject.Fields)
+                {
+                    FlexField templateField = template.Fields.FirstOrDefault(f => f.Name == curField.Name);
+                    if(templateField != null && templateField.AdditionalConfiguration != curField.AdditionalConfiguration)
+                    {
+                        curField.AdditionalConfiguration = templateField.AdditionalConfiguration;
+                    }
+                }
+
+                // Add new Fields
                 List<FlexField> newFields = template.Fields.Where(f => !curObject.Fields.Any(nf => nf.Name == f.Name)).ToList();
+                newFields.ForEach(f => f.CreatedFromTemplate = true);
                 if(newFields.Count > 0)
                 {
                     curObject.IsImplemented = false;
@@ -764,6 +851,8 @@ namespace GoNorth.Controllers.Api
             await _objectDbAccess.DeleteFlexFieldObject(flexFieldObject);
             _logger.LogInformation("Flex Field was deleted.");
 
+            await _languageKeyDbAccess.DeleteAllLanguageKeysInGroup(flexFieldObject.ProjectId, flexFieldObject.Id);
+
             await DeleteAdditionalFlexFieldObjectDependencies(flexFieldObject);
 
             await RemoveUnusedTags(flexFieldObject.Tags);
@@ -772,6 +861,13 @@ namespace GoNorth.Controllers.Api
             {
                 _imageAccess.CheckAndDeleteUnusedImage(flexFieldObject.ImageFile);
             }
+
+            if(!string.IsNullOrEmpty(flexFieldObject.ThumbnailImageFile))
+            {
+                _imageAccess.CheckAndDeleteUnusedImage(flexFieldObject.ThumbnailImageFile);
+            }
+
+            await DeleteExportTemplateIfExists(id);
 
             await _timelineService.AddTimelineEntry(ObjectDeletedEvent, flexFieldObject.Name);
             return Ok(id);
@@ -784,6 +880,13 @@ namespace GoNorth.Controllers.Api
         /// <param name="loadedFlexFieldObject">Loaded Flex Field Object</param>
         /// <returns>Updated flex field object</returns>
         protected abstract Task<T> RunAdditionalUpdates(T flexFieldObject, T loadedFlexFieldObject);
+
+        /// <summary>
+        /// Runs updates on markers
+        /// </summary>
+        /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <returns>Task</returns>
+        protected abstract Task RunMarkerUpdates(T flexFieldObject);
 
         /// <summary>
         /// Compares an object with the implementation snapshot
@@ -834,6 +937,8 @@ namespace GoNorth.Controllers.Api
 
             FlexFieldApiUtil.SetFieldIdsForNewFields(flexFieldObject.Fields);
 
+            bool nameChanged = loadedFlexFieldObject.Name != flexFieldObject.Name;
+
             loadedFlexFieldObject.Name = flexFieldObject.Name;
             loadedFlexFieldObject.Fields = flexFieldObject.Fields;
             loadedFlexFieldObject.Tags = flexFieldObject.Tags;
@@ -850,6 +955,11 @@ namespace GoNorth.Controllers.Api
             await AddNewTags(flexFieldObject.Tags.Except(oldTags, StringComparer.OrdinalIgnoreCase).ToList());
             await RemoveUnusedTags(oldTags.Except(flexFieldObject.Tags, StringComparer.OrdinalIgnoreCase).ToList());
             _logger.LogInformation("Tags were updated.");
+
+            if(nameChanged)
+            {
+                await RunMarkerUpdates(loadedFlexFieldObject);
+            }
 
             await _timelineService.AddTimelineEntry(ObjectUpdatedEvent, loadedFlexFieldObject.Name, loadedFlexFieldObject.Id);
 
@@ -911,8 +1021,16 @@ namespace GoNorth.Controllers.Api
                     uploadFile.CopyTo(imageStream);
                 }
 
+                string thumbnailFilename = GenerateThumbnailFilename(objectImageFile);
+                if(!_thumbnailService.GenerateThumbnail(objectImageFile, thumbnailFilename))
+                {
+                    thumbnailFilename = null;
+                }
+
                 string oldImageFile = targetFlexFieldObject.ImageFile;
+                string oldThumbnailImageFile = targetFlexFieldObject.ThumbnailImageFile;
                 targetFlexFieldObject.ImageFile = objectImageFile;
+                targetFlexFieldObject.ThumbnailImageFile = thumbnailFilename;
                 targetFlexFieldObject.IsImplemented = false;
 
                 await this.SetModifiedData(_userManager, targetFlexFieldObject);
@@ -922,6 +1040,11 @@ namespace GoNorth.Controllers.Api
                 if(!string.IsNullOrEmpty(oldImageFile))
                 {
                     _imageAccess.CheckAndDeleteUnusedImage(oldImageFile);
+                }
+
+                if(!string.IsNullOrEmpty(oldThumbnailImageFile))
+                {
+                    _imageAccess.CheckAndDeleteUnusedImage(oldThumbnailImageFile);
                 }
 
                 await _timelineService.AddTimelineEntry(timelineEvent, targetFlexFieldObject.Name, targetFlexFieldObject.Id);

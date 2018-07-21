@@ -209,6 +209,16 @@ namespace GoNorth.Data.Karta
         }
 
         /// <summary>
+        /// Returns all maps
+        /// </summary>
+        /// <returns>All Maps</returns>
+        public async Task<List<KartaMap>> GetAllMaps()
+        {
+            List<KartaMap> maps = await _MapCollection.AsQueryable().ToListAsync();
+            return maps;
+        }
+
+        /// <summary>
         /// Returns all maps for a project without detail information
         /// </summary>
         /// <param name="projectId">Project Id for which to request the maps</param>

@@ -1,0 +1,24 @@
+{
+    "TemplateOverview": "Export Templates",
+    
+    "Settings": "Settings",
+    "ScriptLanguage": "Script language",
+    "EscapeCharacter": "Escape character",
+    "CharactersNeedingEscaping": "Characters that need escaping",
+    "NewlineCharacter": "Newline characters",
+    "LanguageFileLanguage": "Languagefile language",
+    "LanguageEscapeCharacter": "Language escape character",
+    "LanguageCharactersNeedingEscaping": "Language characters that need escaping",
+    "LanguageNewlineCharacter": "Language newline characters",
+    
+    "FunctionGenerationConditions": "Dialog function generation",
+
+    "Name": "Name",
+    "Description": "Description",
+
+    "Save": "Save",
+    "Cancel": "Cancel",
+
+    "Error": "Error:",
+    "ErrorOccured": "Error occured."
+}

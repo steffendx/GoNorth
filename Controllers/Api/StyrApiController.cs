@@ -22,6 +22,9 @@ using GoNorth.Data.Styr;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Aika;
 using GoNorth.Services.ImplementationStatusCompare;
+using GoNorth.Services.FlexFieldThumbnail;
+using GoNorth.Data.Karta.Marker;
+using GoNorth.Data.Exporting;
 
 namespace GoNorth.Controllers.Api
 {
@@ -128,7 +131,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
+        /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
+        /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="imageAccess">Item Image Access</param>
+        /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
@@ -139,10 +145,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public StyrApiController(IStyrFolderDbAccess folderDbAccess, IStyrItemTemplateDbAccess templateDbAccess, IStyrItemDbAccess itemDbAccess, IProjectDbAccess projectDbAccess, IStyrItemTagDbAccess tagDbAccess, 
-                                 IStyrItemImageAccess imageAccess, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, 
+        public StyrApiController(IStyrFolderDbAccess folderDbAccess, IStyrItemTemplateDbAccess templateDbAccess, IStyrItemDbAccess itemDbAccess, IProjectDbAccess projectDbAccess, IStyrItemTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
+                                 ILanguageKeyDbAccess languageKeyDbAccess, IStyrItemImageAccess imageAccess, IStyrThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, 
                                  IKortistoNpcDbAccess kortistoNpcDbAccess, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<StyrApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                  : base(folderDbAccess, templateDbAccess, itemDbAccess, projectDbAccess, tagDbAccess, imageAccess, userManager, implementationStatusComparer, timelineService, logger, localizerFactory)
+                                  : base(folderDbAccess, templateDbAccess, itemDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, imageAccess, thumbnailService, userManager, implementationStatusComparer, timelineService, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;
             _taleDbAccess = taleDbAccess;
@@ -284,6 +290,39 @@ namespace GoNorth.Controllers.Api
         protected override Task<StyrItem> RunAdditionalUpdates(StyrItem flexFieldObject, StyrItem loadedFlexFieldObject)
         {
             return Task.FromResult(loadedFlexFieldObject);
+        }
+
+        /// <summary>
+        /// Runs updates on markers
+        /// </summary>
+        /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <returns>Task</returns>
+        protected override async Task RunMarkerUpdates(StyrItem flexFieldObject)
+        {
+            await SyncItemNameToMarkers(flexFieldObject.Id, flexFieldObject.Name);
+        }
+
+        /// <summary>
+        /// Syncs the item name to markers after an update
+        /// </summary>
+        /// <param name="id">Id of the item</param>
+        /// <param name="itemName">New item name</param>
+        /// <returns>Task</returns>
+        private async Task SyncItemNameToMarkers(string id, string itemName)
+        {
+            List<KartaMapMarkerQueryResult> markerResult = await _kartaMapDbAccess.GetAllMapsItemIsMarkedIn(id);
+            foreach(KartaMapMarkerQueryResult curMapQueryResult in markerResult)
+            {
+                KartaMap map = await _kartaMapDbAccess.GetMapById(curMapQueryResult.MapId);
+                foreach(ItemMapMarker curMarker in map.ItemMarker)
+                {
+                    if(curMarker.ItemId == id)
+                    {
+                        curMarker.ItemName = itemName;
+                    }
+                }
+                await _kartaMapDbAccess.UpdateMap(map);
+            }
         }
 
         /// <summary>

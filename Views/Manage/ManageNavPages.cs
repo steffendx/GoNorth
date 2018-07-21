@@ -23,6 +23,11 @@ namespace GoNorth.Views.Manage
         public static string ChangePassword => "ChangePassword";
 
         /// <summary>
+        /// Preferences
+        /// </summary>
+        public static string Preferences => "Preferences";
+
+        /// <summary>
         /// Index Nav Class
         /// </summary>
         /// <param name="viewContext">View Context</param>
@@ -35,5 +40,12 @@ namespace GoNorth.Views.Manage
         /// <param name="viewContext">View Context</param>
         /// <returns>Nav Class</returns>
         public static string ChangePasswordNavClass(ViewContext viewContext) => NavPagesBase.PageNavClass(viewContext, ChangePassword);
+        
+        /// <summary>
+        /// Preferences Nav Class
+        /// </summary>
+        /// <param name="viewContext">View Context</param>
+        /// <returns>Nav Class</returns>
+        public static string PreferencesNavClass(ViewContext viewContext) => NavPagesBase.PageNavClass(viewContext, Preferences);
     }
 }

@@ -1,0 +1,61 @@
+{
+    "FunctionGenerationCondition": "Dialog Funktions Generierung",
+
+    "NodeTypePlayerText": "Spieler Zeile",
+    "NodeTypeNpcText": "Npc Zeile",
+    "NodeTypeChoice": "Auswahl",
+    "NodeTypeCondition": "Bedingung",
+    "NodeTypeAction": "Aktion",
+
+    "ActionTypeChangePlayerValue":"Spielerwert ändern",
+    "ActionTypeChangeNpcValue":"Npcwert ändern",
+    "ActionTypeSpawnItemInPlayerInventory":"Item in Spieler Inventar spawnen",
+    "ActionTypeSpawnItemInNpcInventory":"Item in Npc Inventar spawnen",
+    "ActionTypeTransferItemToPlayerInventory":"Item an Spieler übergeben",
+    "ActionTypeTransferItemToNpcInventory":"Item an Npc übergeben",
+    "ActionTypeChangeQuestValue":"Quest Wert ändern",
+    "ActionTypeChangeQuestState":"Quest Zustand ändern",
+    "ActionTypeAddQuestText":"Text zu Quest hinzufügen",
+    "ActionTypeWait":"Warten",
+    "ActionTypeChangePlayerState":"Spieler Zustand ändern",
+    "ActionTypeChangeNpcState":"Npc Zustand ändern",
+    "ActionTypePlayerLearnSkill":"Spieler lernt Fähigkeit",
+    "ActionTypePlayerForgetSkill":"Spieler vergisst Fähigkeit",
+    "ActionTypeNpcLearnSkill":"Npc lernt Fähigkeit",
+    "ActionTypeNpcForgetSkill":"Npc vergisst Fähigkeit",
+    "ActionTypeChangePlayerSkillValue":"Spieler Fähigkeit Wert ändern",
+    "ActionTypeChangeNpcSkillValue":"Npc Fähgikeit Wert ändern",
+    "ActionTypePersistDialogState":"Dialogzustand speichern",
+    "ActionTypeOpenShop":"Handel öffnen",
+
+    "GenerationRules": "Regeln die eine Funktion generieren",
+    "PreventGenerationRules": "Regeln die Funktionsgenerierung verhindern",
+
+    "AddRule": "Regel hinzufügen",
+    "DeleteRuleTooltip": "Regel löschen",
+
+    "Condition": "Bedingung",
+
+    "ConditionMultipleParents": "Mehrere Elternknoten",
+    "ConditionParentNodeType": "Eltern Knotentyp",
+    "ConditionCurrentNodeType": "Knotentyp",
+    "ConditionChildNodeType": "Kind Knotentyp",
+    "ConditionParentActionType": "Eltern Aktionstyp",
+    "ConditionCurrentActionType": "Aktionstyp",
+    "ConditionChildActionType": "Kind Aktionstyp",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheRule": "Bist du sicher das die Regel gelöscht werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+    "UnknownConditionTypeUsed": "Ein unbekannter Bedingungstyp wurde verwendet.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Die Regeln werden gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "NodeLang": "en"
+}

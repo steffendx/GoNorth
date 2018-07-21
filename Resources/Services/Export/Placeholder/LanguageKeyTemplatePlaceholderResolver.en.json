@@ -1,0 +1,15 @@
+{
+    "PlaceholderDesc_Object_Name": "Name of the object that gets exported",
+    "PlaceholderDesc_LanguageKeys_Start": "Start of the list of language keys. Must be closed using LanguageKeys_End.",
+    "PlaceholderDesc_LanguageKeys_End": "End of the list of language keys.",
+    "PlaceholderDesc_LanguageKeys_IsFirst_Start": "Start of the content that is only rendered if the current language key is the first. Must be closed using LanguageKeys_IsFirst_End.",
+    "PlaceholderDesc_LanguageKeys_IsFirst_End": "End of the content that is only rendered if the current language key is the first.",
+    "PlaceholderDesc_LanguageKeys_IsNotFirst_Start": "Start of the content that is only rendered if the current language key is not the first. Must be closed using LanguageKeys_IsNotFirst_End.",
+    "PlaceholderDesc_LanguageKeys_IsNotFirst_End": "End of the content that is only rendered if the current language key is not the first.",
+    "PlaceholderDesc_LanguageKeys_IsLast_Start": "Start of the content that is only rendered if the current language key is the last. Must be closed using LanguageKeys_IsLast_End.",
+    "PlaceholderDesc_LanguageKeys_IsLast_End": "End of the content that is only rendered if the current language key is the last.",
+    "PlaceholderDesc_LanguageKeys_IsNotLast_Start": "Start of the content that is only rendered if the current language key is not the last. Must be closed using LanguageKeys_IsNotLast_End.",
+    "PlaceholderDesc_LanguageKeys_IsNotLast_End": "End of the content that is only rendered if the current language key is not the last.",
+    "PlaceholderDesc_LanguageKey_Key": "Key of the current language key.",
+    "PlaceholderDesc_LanguageKey_Text": "Text of current language key."
+}

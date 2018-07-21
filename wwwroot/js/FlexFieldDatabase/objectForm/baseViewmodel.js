@@ -64,6 +64,7 @@
 
                 this.objectName = new ko.observable("");
                 this.imageFilename = new ko.observable("");
+                this.thumbnailImageFilename = new ko.observable("");
                 this.objectTags = new ko.observableArray();
                 this.existingObjectTags = new ko.observableArray();
 
@@ -78,6 +79,15 @@
                 }, this);
 
                 this.showConfirmObjectDeleteDialog = new ko.observable(false);
+                this.showCustomizedExportTemplateWarningOnDelete = new ko.observable(false);
+
+                this.showConfirmRegenerateLanguageKeysDialog = new ko.observable(false);
+
+                this.showExportResultDialog = new ko.observable(false);
+                this.exportResultContent = new ko.observable("");
+                this.exportResultErrors = new ko.observableArray();
+                this.exportResultFormat = "";
+                this.exportShowSuccessfullyCopiedTooltip = new ko.observable(false);
 
                 this.referencedInQuests = new ko.observableArray();
                 this.loadingReferencedInQuests = new ko.observable(false);
@@ -97,8 +107,13 @@
 
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
-                
+
                 GoNorth.Util.setupValidation("#gn-objectFields");
+
+                if(this.id() && this.isTemplateMode())
+                {
+                    this.checkIfCustomizedExportTemplateExists();
+                }
             };
 
             
@@ -172,6 +187,26 @@
             };
 
             /**
+             * Checks if a customized export template exists
+             */
+            ObjectForm.BaseViewModel.prototype.checkIfCustomizedExportTemplateExists = function() {
+                if(!this.id())
+                {
+                    return;
+                }
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/ExportApi/DoesExportTemplateExistForObjectId?id=" + this.id(), 
+                    type: "GET"
+                }).done(function(data) {
+                    self.showCustomizedExportTemplateWarningOnDelete(data.doesTemplateExist);
+                }).fail(function(xhr) {
+                    self.errorOccured(true);
+                });
+            };
+
+            /**
              * Resets the error state
              */
             ObjectForm.BaseViewModel.prototype.resetErrorState = function() {
@@ -238,8 +273,15 @@
                     }
                     self.parseAdditionalData(data);
                     
+                    self.thumbnailImageFilename(data.thumbnailImageFile);
                     self.imageFilename(data.imageFile);
                     self.fieldManager.deserializeFields(data.fields);
+
+                    if(fromTemplate && !self.isTemplateMode())
+                    {
+                        self.fieldManager.flagFieldsAsCreatedFromTemplate();
+                    }
+
                     self.objectTags(data.tags);
                 }).fail(function(xhr) {
                     self.isLoading(false);
@@ -289,6 +331,11 @@
                     if(this.imageFilename())
                     {
                         requestObject.imageFile = this.imageFilename();
+                    }
+
+                    if(this.thumbnailImageFilename())
+                    {
+                        requestObject.thumbnailImageFile = this.thumbnailImageFilename();
                     }
                 }
 
@@ -490,6 +537,121 @@
                 this.openCompareDialogForObject().done(function() {
                     self.isImplemented(true);
                 });
+            };
+
+
+            /**
+             * Opens the export template
+             * 
+             * @param {number} templateType Type of the template
+             */
+            ObjectForm.BaseViewModel.prototype.openExportTemplate = function(templateType) {
+                if(!this.id())
+                {
+                    return;
+                }
+
+                var url = "/Export/ManageTemplate#templateType=" + templateType + "&customizedObjectId=" + this.id();
+                if(this.isTemplateMode())
+                {
+                    url += "&objectIsTemplate=1";
+                }
+                window.location = url;
+            };
+
+            /**
+             * Exports an object
+             * 
+             * @param {number} templateType Type of the template
+             * @param {string} exportFormat Format to export to (Script, JSON, Language)
+             */
+            ObjectForm.BaseViewModel.prototype.exportObject = function(templateType, exportFormat) {
+                this.exportResultFormat = exportFormat;
+                this.isLoading(true);
+                this.errorOccured(false);
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/ExportApi/ExportObject?exportFormat=" + exportFormat + "&id=" + this.id() + "&templateType=" + templateType, 
+                    type: "GET"
+                }).done(function(data) {
+                    self.isLoading(false);
+                    self.showExportResultDialog(true);
+                    self.exportResultContent(data.code);
+                    self.exportResultErrors(data.errors);
+                }).fail(function(xhr) {
+                    self.closeExportResultDialog();
+                    self.errorOccured(true);
+                    self.isLoading(false);
+                });
+            };
+
+            /**
+             * Closes the export result dialog
+             */
+            ObjectForm.BaseViewModel.prototype.closeExportResultDialog = function() {
+                this.showExportResultDialog(false);
+                this.exportResultContent("");
+                this.exportResultErrors([]);
+            }; 
+
+            /**
+             * Downloads an export result
+             * 
+             * @param {number} templateType Type of the template
+             */
+            ObjectForm.BaseViewModel.prototype.exportDownload = function(templateType) {
+                window.location = "/api/ExportApi/ExportObjectDownload?exportFormat=" + this.exportResultFormat + "&id=" + this.id() + "&templateType=" + templateType; 
+            };
+
+            /**
+             * Copies the export result to the clipboard
+             */
+            ObjectForm.BaseViewModel.prototype.copyExportCodeToClipboard = function() {
+                var exportResultField = jQuery("#gn-flexFieldObjectExportResultTextarea")[0];
+                exportResultField.select();
+                document.execCommand("copy");
+
+                this.exportShowSuccessfullyCopiedTooltip(true);
+                var self = this;
+                setTimeout(function() {
+                    self.exportShowSuccessfullyCopiedTooltip(false);
+                }, 1000);
+            };
+
+
+            /**
+             * Opens the confirm regenerate language keys dialog
+             */
+            ObjectForm.BaseViewModel.prototype.openConfirmRegenerateLanguageKeysDialog = function() {
+                this.showConfirmRegenerateLanguageKeysDialog(true);
+            };
+
+            /**
+             * Regenerates the language keys
+             */
+            ObjectForm.BaseViewModel.prototype.regenerateLanguageKeys = function() {
+                this.isLoading(true);
+                this.resetErrorState();
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/ExportApi/DeleteLanguageKeysByGroupId?groupId=" + this.id(), 
+                    headers: GoNorth.Util.generateAntiForgeryHeader(),
+                    type: "DELETE"
+                }).done(function(data) {
+                    self.isLoading(false);
+                    self.closeConfirmRegenerateLanguageKeysDialog();
+                }).fail(function(xhr) {
+                    self.isLoading(false);
+                    self.errorOccured(true);
+                    self.closeConfirmRegenerateLanguageKeysDialog();
+                });
+            };
+
+            /**
+             * Closes the confirm regenerate language keys dialog
+             */
+            ObjectForm.BaseViewModel.prototype.closeConfirmRegenerateLanguageKeysDialog = function() {
+                this.showConfirmRegenerateLanguageKeysDialog(false);
             };
 
 

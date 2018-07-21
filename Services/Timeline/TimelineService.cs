@@ -176,6 +176,13 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.ImplementedQuest, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Aika });
             _entryRoleFilter.Add(TimelineEvent.ImplementedDialog, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Tale });
             _entryRoleFilter.Add(TimelineEvent.ImplementedMarker, new List<string>() { RoleNames.ImplementationStatusTracker, RoleNames.Karta });
+
+            // Export
+            _entryRoleFilter.Add(TimelineEvent.ExportDefaultTemplateUpdated, new List<string>() { RoleNames.ManageExportTemplates });
+            _entryRoleFilter.Add(TimelineEvent.ExportObjectTemplateUpdated, new List<string>() { RoleNames.ManageExportTemplates });
+            _entryRoleFilter.Add(TimelineEvent.ExportObjectTemplateDeleted, new List<string>() { RoleNames.ManageExportTemplates });
+            _entryRoleFilter.Add(TimelineEvent.ExportSettingsUpdated, new List<string>() { RoleNames.ManageExportTemplates });
+            _entryRoleFilter.Add(TimelineEvent.ExportDialogFunctionGenerationConditionsUpdated, new List<string>() { RoleNames.ManageExportTemplates });
         }
 
         /// <summary>

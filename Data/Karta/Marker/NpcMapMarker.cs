@@ -12,5 +12,10 @@ namespace GoNorth.Data.Karta.Marker
         /// Id of the npc to display
         /// </summary>
         public string NpcId { get; set; }
+
+        /// <summary>
+        /// Name of the npc, used for quick loading of map name for npc label. Kept in sync by backend.
+        /// </summary>
+        public string NpcName { get; set; }
     }
 }

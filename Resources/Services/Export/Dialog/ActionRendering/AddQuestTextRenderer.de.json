@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Tale_Action_QuestText": "Text der zum Quest hinzugefügt wird.",
+    "PlaceholderDesc_Tale_Action_QuestText_LangKey": "Sprachschlüssel für den Text der zum Quest hinzugefügt wird.",
+    "PlaceholderDesc_Tale_Action_QuestText_Preview": "Vorschau für den Text der hinzugefügt wird. Dabei werden Zeilenumbrüche entfernt und zu langer Text abgeschnitten. Dieser Platzhalter ist gedacht um in Kommentaren eine Vorschau hinzuzufügen um die Lesbarkeit zu erhöhen wenn Sprachschlüssel genutzt werden."
+}

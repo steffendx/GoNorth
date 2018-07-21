@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_Tale_Condition_CompareOperator": "Vergleichsoperator für die Anzahl an Items. Wird anhand der Vergleichsoperator Templates geladen.",
+    "PlaceholderDesc_Tale_Condition_CompareOperatorIsAtLeast_Start": "Start des Inhalts der nur gerendert wird wenn der Vergleichsoperator \"hat mindestens\" ist. Muss mit Tale_Condition_CompareOperatorIsAtLeast_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_CompareOperatorIsAtLeast_End": "Ende des Inhalts der nur gerendert wird wenn der Vergleichsoperator \"hat mindestens\" ist.",
+    "PlaceholderDesc_Tale_Condition_CompareOperatorIsAtMaximum_Start": "Start des Inhalts der nur gerendert wird wenn der Vergleichsoperator \"hat maximal\" ist. Muss mit Tale_Condition_CompareOperatorIsAtMaximum_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_CompareOperatorIsAtMaximum_End": "Ende des Inhalts der nur gerendert wird wenn der Vergleichsoperator \"hat maximal\" ist.",
+    "PlaceholderDesc_Tale_Condition_Quantity": "Eingegebene Anzahl für die Prüfung"
+}

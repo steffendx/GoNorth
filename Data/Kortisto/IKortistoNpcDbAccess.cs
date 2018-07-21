@@ -12,14 +12,16 @@ namespace GoNorth.Data.Kortisto
         /// <summary>
         /// Returns the player npc
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <returns>Npc</returns>
-        Task<KortistoNpc> GetPlayerNpc();
+        Task<KortistoNpc> GetPlayerNpc(string projectId);
 
         /// <summary>
         /// Resets the player flag to false for all npcs
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <returns>Task</returns>
-        Task ResetPlayerFlagForAllNpcs();
+        Task ResetPlayerFlagForAllNpcs(string projectId);
 
 
         /// <summary>

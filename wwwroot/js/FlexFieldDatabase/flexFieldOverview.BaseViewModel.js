@@ -277,6 +277,7 @@
                             name: folder.name,
                             description: folder.description,
                             imageFile: folder.imageFile,
+                            thumbnailImage: folder.thumbnailImageFile ? folder.thumbnailImageFile : folder.imageFile,
                             tileUrl: "#folderId=" + folder.id
                         });
 
@@ -303,6 +304,7 @@
                                 parentId: flexFieldObject.parentFolderId,
                                 name: flexFieldObject.name,
                                 imageFile: flexFieldObject.imageFile,
+                                thumbnailImage: flexFieldObject.thumbnailImageFile ? flexFieldObject.thumbnailImageFile : flexFieldObject.imageFile,
                                 tileUrl: self.objectPageUrl + "#id=" + flexFieldObject.id
                             });
     

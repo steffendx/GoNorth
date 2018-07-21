@@ -92,8 +92,14 @@
              */
             Map.KartaMarkerManager.prototype.createMarker = function(objectId, latLng) {
                 var def = new jQuery.Deferred();
-                
-                var marker = new Map.KartaMarker(objectId, latLng);
+                var mapName = "";
+                var map = this.findEntryById(objectId);
+                if(map) 
+                {
+                    mapName = map.name;
+                }
+
+                var marker = new Map.KartaMarker(objectId, mapName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
 
@@ -107,7 +113,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KartaMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.KartaMarker(unparsedMarker.mapId, latLng);
+                return new Map.KartaMarker(unparsedMarker.mapId, unparsedMarker.mapName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));

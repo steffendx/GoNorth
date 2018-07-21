@@ -10,6 +10,7 @@ namespace GoNorth.Data
         /// <summary>
         /// Sets the database up
         /// </summary>
+        /// <returns>Task</returns>
         Task SetupDatabaseAsync();
     }
 }

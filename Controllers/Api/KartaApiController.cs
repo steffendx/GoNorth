@@ -368,6 +368,8 @@ namespace GoNorth.Controllers.Api
             int oldHeight = map.Height;
 
             // Rename map
+            bool nameChanged = map.Name != name;
+
             map.Name = name;
             await this.SetModifiedData(_userManager, map);
 
@@ -426,6 +428,11 @@ namespace GoNorth.Controllers.Api
                 _mapImageAccess.RollbackMapImages(map.Id);
                 _logger.LogError(ex, "Could not update map image.");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            if(nameChanged)
+            {
+                await SyncMapNameToMarkers(id, name);
             }
 
             // Clean rollback data
@@ -490,12 +497,42 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
+            bool hasNameChanged = map.Name != name;
+
             map.Name = name;
             await this.SetModifiedData(_userManager, map);
             await _mapDbAccess.RenameMap(map);
 
+            if(hasNameChanged)
+            {
+                await this.SyncMapNameToMarkers(id, name);
+            }
+
             await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapUpdated, name, id);
             return Ok(id);
+        }
+
+        /// <summary>
+        /// Syncs the map name to markers after an update
+        /// </summary>
+        /// <param name="id">Id of the map</param>
+        /// <param name="mapName">New map name</param>
+        /// <returns>Task</returns>
+        private async Task SyncMapNameToMarkers(string id, string mapName)
+        {
+            List<KartaMap> markerResult = await _mapDbAccess.GetAllMapsMapIsMarkedIn(id);
+            foreach(KartaMap curMap in markerResult)
+            {
+                KartaMap map = await _mapDbAccess.GetMapById(curMap.Id);
+                foreach(MapChangeMapMarker curMarker in map.MapChangeMarker)
+                {
+                    if(curMarker.MapId == id)
+                    {
+                        curMarker.MapName = mapName;
+                    }
+                }
+                await _mapDbAccess.UpdateMap(map);
+            }
         }
 
         /// <summary>

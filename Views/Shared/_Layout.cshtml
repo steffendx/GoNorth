@@ -82,6 +82,10 @@
                     {
                         <li><a asp-area="" asp-controller="ImplementationStatus" asp-action="Index">@Localizer["ImplementationStatus"]</a></li>
                     }
+                    @if(User.IsInRole(RoleNames.ManageExportTemplates))
+                    {
+                        <li><a asp-area="" asp-controller="Export" asp-action="Index">@Localizer["ExportSettings"]</a></li>
+                    }
                 </ul>
                 }
                 @await Html.PartialAsync("_LoginPartial")

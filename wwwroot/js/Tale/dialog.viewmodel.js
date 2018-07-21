@@ -2047,13 +2047,14 @@
              * 
              * @class
              */
-            ObjectForm.IFlexField = function() {
+            ObjectForm.FlexFieldBase = function() {
                 this.id = new ko.observable("");
+                this.createdFromTemplate = new ko.observable(false);
                 this.name = new ko.observable();
                 this.scriptSettings = new ObjectForm.FlexFieldScriptSettings();
             }
 
-            ObjectForm.IFlexField.prototype = {
+            ObjectForm.FlexFieldBase.prototype = {
                 /**
                  * Returns the type of the field
                  * 
@@ -2087,7 +2088,56 @@
                  * 
                  * @param {string} value Value to Deserialize
                  */
-                deserializeValue: function(value) { }
+                deserializeValue: function(value) { },
+
+                /**
+                 * Returns true if the field has additional configuration, else false
+                 * 
+                 * @returns {bool} true if the field has additional configuration, else false
+                 */
+                hasAdditionalConfiguration: function() { return false; },
+
+                /**
+                 * Returns the label for additional configuration
+                 * 
+                 * @returns {string} Additional Configuration
+                 */
+                getAdditionalConfigurationLabel: function() { return ""; },
+
+                /**
+                 * Returns true if the additional configuration can be edited for fields that were created based on template fields, else false
+                 * 
+                 * @returns {bool} true if the additional configuration can be edited for fields that were created based on template fields, else false
+                 */
+                allowEditingAdditionalConfigForTemplateFields: function() { return false; },
+
+                /**
+                 * Sets additional configuration
+                 * 
+                 * @param {string} configuration Additional Configuration
+                 */
+                setAdditionalConfiguration: function(configuration) { },
+
+                /**
+                 * Returns additional configuration
+                 * 
+                 * @returns {string} Additional Configuration
+                 */
+                getAdditionalConfiguration: function() { return ""; },
+
+                /**
+                 * Serializes the additional configuration
+                 * 
+                 * @returns {string} Serialized additional configuration
+                 */
+                serializeAdditionalConfiguration: function() { return ""; },
+
+                /**
+                 * Deserializes the additional configuration
+                 * 
+                 * @param {string} additionalConfiguration Serialized additional configuration
+                 */
+                deserializeAdditionalConfiguration: function(additionalConfiguration) { }
             }
 
         }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
@@ -2109,12 +2159,12 @@
              * @class
              */
             ObjectForm.MultiLineFlexField = function() {
-                ObjectForm.IFlexField.apply(this);
+                ObjectForm.FlexFieldBase.apply(this);
 
                 this.value = new ko.observable("");
             }
 
-            ObjectForm.MultiLineFlexField.prototype = jQuery.extend(true, {}, ObjectForm.IFlexField.prototype);
+            ObjectForm.MultiLineFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
 
             /**
              * Returns the type of the field
@@ -2170,12 +2220,12 @@
              * @class
              */
             ObjectForm.NumberFlexField = function() {
-                ObjectForm.IFlexField.apply(this);
+                ObjectForm.FlexFieldBase.apply(this);
 
                 this.value = new ko.observable(0.0);
             }
 
-            ObjectForm.NumberFlexField.prototype = jQuery.extend(true, {}, ObjectForm.IFlexField.prototype);
+            ObjectForm.NumberFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
 
             /**
              * Returns the type of the field
@@ -2220,6 +2270,134 @@
                 {
                     this.value(0.0);
                 }
+            }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
+             * Type of the object field
+             */
+            ObjectForm.FlexFieldTypeOption = 3;
+
+            /**
+             * Class for an option field
+             * 
+             * @class
+             */
+            ObjectForm.OptionFlexField = function() {
+                ObjectForm.FlexFieldBase.apply(this);
+
+                this.value = new ko.observable(null);
+                this.options = new ko.observableArray();
+            }
+
+            ObjectForm.OptionFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
+
+            /**
+             * Returns the type of the field
+             * 
+             * @returns {int} Type of the field
+             */
+            ObjectForm.OptionFlexField.prototype.getType = function() { return ObjectForm.FlexFieldTypeOption; }
+
+            /**
+             * Returns the template name
+             * 
+             * @returns {string} Template Name
+             */
+            ObjectForm.OptionFlexField.prototype.getTemplateName = function() { return "gn-optionField"; }
+
+            /**
+             * Returns if the field can be exported to a script
+             * 
+             * @returns {bool} true if the value can be exported to a script, else false
+             */
+            ObjectForm.OptionFlexField.prototype.canExportToScript = function() { return true; }
+
+            /**
+             * Serializes the value to a string
+             * 
+             * @returns {string} Value of the field as a string
+             */
+            ObjectForm.OptionFlexField.prototype.serializeValue = function() { return this.value(); }
+
+            /**
+             * Deserializes a value from a string
+             * 
+             * @param {string} value Value to Deserialize
+             */
+            ObjectForm.OptionFlexField.prototype.deserializeValue = function(value) { this.value(value); }
+
+
+            /**
+             * Returns true if the field has additional configuration, else false
+             * 
+             * @returns {bool} true if the field has additional configuration, else false
+             */
+            ObjectForm.OptionFlexField.prototype.hasAdditionalConfiguration = function() { return true; }
+
+            /**
+             * Returns the label for additional configuration
+             * 
+             * @returns {string} Additional Configuration
+             */
+            ObjectForm.OptionFlexField.prototype.getAdditionalConfigurationLabel = function() { return GoNorth.FlexFieldDatabase.Localization.OptionFieldAdditionalConfigurationLabel; }
+
+            /**
+             * Returns true if the additional configuration can be edited for fields that were created based on template fields, else false
+             * 
+             * @returns {bool} true if the additional configuration can be edited for fields that were created based on template fields, else false
+             */
+            ObjectForm.OptionFlexField.prototype.allowEditingAdditionalConfigForTemplateFields = function() { return false; }
+
+            /**
+             * Sets additional configuration
+             * 
+             * @param {string} configuration Additional Configuration
+             */
+            ObjectForm.OptionFlexField.prototype.setAdditionalConfiguration = function(configuration) { 
+                var availableOptions = [];
+                if(configuration)
+                {
+                    availableOptions = configuration.split("\n");
+                }
+                
+                this.options(availableOptions)
+            }
+
+            /**
+             * Returns additional configuration
+             * 
+             * @returns {string} Additional Configuration
+             */
+            ObjectForm.OptionFlexField.prototype.getAdditionalConfiguration = function() { return this.options().join("\n"); }
+        
+            /**
+             * Serializes the additional configuration
+             * 
+             * @returns {string} Serialized additional configuration
+             */
+            ObjectForm.OptionFlexField.prototype.serializeAdditionalConfiguration = function() { return JSON.stringify(this.options()); },
+
+            /**
+             * Deserializes the additional configuration
+             * 
+             * @param {string} additionalConfiguration Serialized additional configuration
+             */
+            ObjectForm.OptionFlexField.prototype.deserializeAdditionalConfiguration = function(additionalConfiguration) { 
+                var options = [];
+                if(additionalConfiguration)
+                {
+                    options = JSON.parse(additionalConfiguration);
+                }
+
+                this.options(options);
             }
 
         }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
@@ -2476,6 +2654,12 @@
 
                 var self = this;
                 this.loadObjectShared().then(function(fieldObject) {
+                    if(!fieldObject)
+                    {
+                        actionNode.hideLoading();
+                        return;
+                    }
+
                     // Set related object data
                     self.nodeModel.set("actionRelatedToObjectType", self.getObjectTypeName());
                     self.nodeModel.set("actionRelatedToObjectId", fieldObject.id);
@@ -4946,6 +5130,76 @@
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
+    (function(Tale) {
+        (function(Actions) {
+
+            /// Action Type for opening a shop
+            var actionTypeOpenShop = 25;
+
+            /**
+             * Open Shop Action
+             * @class
+             */
+            Actions.OpenShopAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.OpenShopAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.OpenShopAction.prototype.getContent = function() {
+                return  "<div class='gn-nodeActionText'>" + Tale.Localization.Actions.WillOpenAShopForTheCurrentNpc + "</div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.OpenShopAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+            };
+            
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.OpenShopAction.prototype.buildAction = function() {
+                return new Actions.OpenShopAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.OpenShopAction.prototype.getType = function() {
+                return actionTypeOpenShop;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.OpenShopAction.prototype.getLabel = function() {
+                return Tale.Localization.Actions.OpenShopLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.OpenShopAction());
+
+        }(Tale.Actions = Tale.Actions || {}));
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
     (function(DefaultNodeShapes) {
         (function(Conditions) {
 
@@ -5717,6 +5971,11 @@
             {
                 var self = this;
                 this.loadObjectShared(existingData).then(function(fieldObject) {
+                    if(!fieldObject)
+                    {
+                        return;
+                    }
+
                     self.fieldObjectId = fieldObject.id;
                     var filteredFields = GoNorth.Util.getFilteredFieldsForScript(fieldObject.fields);
                     for(var curField = 0; curField < filteredFields.length; ++curField)

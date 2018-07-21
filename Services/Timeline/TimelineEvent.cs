@@ -411,6 +411,32 @@ namespace GoNorth.Services.Timeline
         /// <summary>
         /// Implemented Marker
         /// </summary>
-        ImplementedMarker = 61
+        ImplementedMarker = 61,
+
+
+        /// <summary>
+        /// Default Export Template Updated
+        /// </summary>
+        ExportDefaultTemplateUpdated = 78,
+
+        /// <summary>
+        /// Object Export Template Updated
+        /// </summary>
+        ExportObjectTemplateUpdated = 79,
+        
+        /// <summary>
+        /// Object Export Template Deleted
+        /// </summary>
+        ExportObjectTemplateDeleted = 80,
+                
+        /// <summary>
+        /// Object Export Settings Updated
+        /// </summary>
+        ExportSettingsUpdated = 81,
+
+        /// <summary>
+        /// Export Dialog Function generation conditions updated
+        /// </summary>
+        ExportDialogFunctionGenerationConditionsUpdated = 82
     };
 }

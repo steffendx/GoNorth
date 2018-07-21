@@ -21,6 +21,9 @@ using GoNorth.Data.Tale;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Aika;
 using GoNorth.Services.ImplementationStatusCompare;
+using GoNorth.Services.FlexFieldThumbnail;
+using GoNorth.Data.Karta.Marker;
+using GoNorth.Data.Exporting;
 
 namespace GoNorth.Controllers.Api
 {
@@ -122,7 +125,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
+        /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
+        /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="imageAccess">Npc Image Access</param>
+        /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
@@ -132,10 +138,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public KortistoApiController(IKortistoFolderDbAccess folderDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess tagDbAccess, 
-                                     IKortistoNpcImageAccess imageAccess, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, 
-                                     UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<KortistoApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                     : base(folderDbAccess, templateDbAccess, npcDbAccess, projectDbAccess, tagDbAccess, imageAccess, userManager, implementationStatusComparer, timelineService, logger, localizerFactory)
+        public KortistoApiController(IKortistoFolderDbAccess folderDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
+                                     ILanguageKeyDbAccess languageKeyDbAccess, IKortistoNpcImageAccess imageAccess, IKortistoThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, 
+                                     IKartaMapDbAccess kartaMapDbAccess, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<KortistoApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                     : base(folderDbAccess, templateDbAccess, npcDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, imageAccess, thumbnailService, userManager, implementationStatusComparer, timelineService, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;
             _taleDbAccess = taleDbAccess;
@@ -298,7 +304,8 @@ namespace GoNorth.Controllers.Api
             {
                 if(flexFieldObject.IsPlayerNpc && loadedFlexFieldObject.IsPlayerNpc != flexFieldObject.IsPlayerNpc)
                 {
-                    await ((IKortistoNpcDbAccess)_objectDbAccess).ResetPlayerFlagForAllNpcs();
+                    GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                    await ((IKortistoNpcDbAccess)_objectDbAccess).ResetPlayerFlagForAllNpcs(project.Id);
                 }
                 loadedFlexFieldObject.IsPlayerNpc = flexFieldObject.IsPlayerNpc;
             }
@@ -319,6 +326,39 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
+        /// Runs updates on markers
+        /// </summary>
+        /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <returns>Task</returns>
+        protected override async Task RunMarkerUpdates(KortistoNpc flexFieldObject)
+        {
+            await SyncNpcNameToMarkers(flexFieldObject.Id, flexFieldObject.Name);
+        }
+
+        /// <summary>
+        /// Syncs the npc name to markers after an update
+        /// </summary>
+        /// <param name="id">Id of the npc</param>
+        /// <param name="npcName">New npc name</param>
+        /// <returns>Task</returns>
+        private async Task SyncNpcNameToMarkers(string id, string npcName)
+        {
+            List<KartaMapMarkerQueryResult> markerResult = await _kartaMapDbAccess.GetAllMapsNpcIsMarkedIn(id);
+            foreach(KartaMapMarkerQueryResult curMapQueryResult in markerResult)
+            {
+                KartaMap map = await _kartaMapDbAccess.GetMapById(curMapQueryResult.MapId);
+                foreach(NpcMapMarker curMarker in map.NpcMarker)
+                {
+                    if(curMarker.NpcId == id)
+                    {
+                        curMarker.NpcName = npcName;
+                    }
+                }
+                await _kartaMapDbAccess.UpdateMap(map);
+            }
+        }
+
+        /// <summary>
         /// Compares an object with the implementation snapshot
         /// </summary>
         /// <param name="flexFieldObject">Flex field object for compare</param>
@@ -336,7 +376,8 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> PlayerNpc()
         {
-            KortistoNpc npc = await ((IKortistoNpcDbAccess)_objectDbAccess).GetPlayerNpc();
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            KortistoNpc npc = await ((IKortistoNpcDbAccess)_objectDbAccess).GetPlayerNpc(project.Id);
             return Ok(npc);
         }
 

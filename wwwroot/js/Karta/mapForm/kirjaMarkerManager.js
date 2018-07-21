@@ -90,7 +90,14 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KirjaMarkerManager.prototype.createMarkerFromExistingPage = function(def, pageId, latLng) {
-                var marker = new Map.KirjaMarker(pageId, latLng);
+                var pageName = "";
+                var page = this.findEntryById(pageId);
+                if(page) 
+                {
+                    pageName = page.name;
+                }
+
+                var marker = new Map.KirjaMarker(pageId, pageName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
             };
@@ -110,7 +117,7 @@
                     self.viewModel.showWaitOnPageDialog(false);
                 };
                 newPage.newKirjaPageSaved = function(id, name) {
-                    var marker = new Map.KirjaMarker(id, latLng);
+                    var marker = new Map.KirjaMarker(id, name, latLng);
                     self.pushMarker(marker);
 
                     self.viewModel.showWaitOnPageDialog(false);
@@ -140,7 +147,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KirjaMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.KirjaMarker(unparsedMarker.pageId, latLng);
+                return new Map.KirjaMarker(unparsedMarker.pageId, unparsedMarker.pageName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));

@@ -1,0 +1,56 @@
+{
+    "GenerateRules": [{
+        "ConditionElements": [
+            {
+                "ConditionType": "MultipleParents"
+            }
+        ]
+    },
+    {
+        "ConditionElements": [
+            {
+                "ConditionType": "ParentNodeType",
+                "NodeType": "Choice"
+            }
+        ]
+    },
+    {
+        "ConditionElements": [
+            {
+                "ConditionType": "ParentNodeType",
+                "NodeType": "Condition"
+            }
+        ]
+    },
+    {
+        "ConditionElements": [
+            {
+                "ConditionType": "CurrentNodeType",
+                "NodeType": "Action"
+            },
+            {
+                "ConditionType": "Group",
+                "GroupOperator": "Or",
+                "ConditionElements": [
+                    {
+                        "ConditionType": "ParentNodeType",
+                        "NodeType": "PlayerText"
+                    },
+                    {
+                        "ConditionType": "ParentNodeType",
+                        "NodeType": "NpcText"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "ConditionElements": [
+            {
+                "ConditionType": "ParentActionType",
+                "ActionType": "PersistDialogState"
+            }
+        ]
+    }],
+    "PreventGenerationRules": []
+}

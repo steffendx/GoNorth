@@ -94,5 +94,11 @@
     "ImplementedSkill": "The skill <a href='/Evne/Skill#id={0}'>{1}</a> was implemented.",
     "ImplementedQuest": "The quest <a href='/Aika/Quest#id={0}'>{1}</a> was implemented.",
     "ImplementedDialog": "The dialog <a href='/Tale#npcId={0}'>{1}</a> was implemented.",
-    "ImplementedMarker": "A marker in the map <a href='/Karta#id={0}&zoomOnMarkerId={1}&zoomOnMarkerType={2}'>{3}</a> was implemented."
+    "ImplementedMarker": "A marker in the map <a href='/Karta#id={0}&zoomOnMarkerId={1}&zoomOnMarkerType={2}'>{3}</a> was implemented.",
+
+    "ExportDefaultTemplateUpdated": "A <a href='/Export/ManageTemplate#templateType={0}'>default export template</a> was updated.",
+    "ExportObjectTemplateUpdated": "An <a href='/Export/ManageTemplate#objectId={1}&templateType={0}'>object export template</a> was updated.",
+    "ExportObjectTemplateDeleted": "An object export template was deleted.",
+    "ExportSettingsUpdated": "The object export settings were changed",
+    "ExportDialogFunctionGenerationConditionsUpdated": "The export dialog function generation rules were updated."
 }

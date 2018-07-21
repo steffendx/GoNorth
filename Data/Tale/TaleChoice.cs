@@ -1,4 +1,5 @@
 using GoNorth.Data.NodeGraph;
+using GoNorth.Services.Export.Json;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Tale
@@ -35,11 +36,13 @@ namespace GoNorth.Data.Tale
         /// <summary>
         /// Id which is used in a list compare to detect deleted or new objects
         /// </summary>
+        [JsonExportIgnoreAttribute]
         public string ListComparableId { get { return Id.ToString(); } }
 
         /// <summary>
         /// Value which is used in a list compare for display
         /// </summary>
+        [JsonExportIgnoreAttribute]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue("Choice", CompareDifferenceValue.ValueResolveType.LanguageKey); } }
     }
 }

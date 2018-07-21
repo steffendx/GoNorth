@@ -117,5 +117,18 @@
                 </a>
             </div>
         }
+        
+        @if(User.IsInRole(RoleNames.ManageExportTemplates))
+        {
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 gn-homeTileContainer">
+                <a asp-area="" asp-controller="Export" asp-action="Index">
+                    <div class="gn-homeTile gn-exportSettingsTile">
+                        <div class="gn-homeTileIcon"><i class="glyphicon glyphicon-export"></i></div>
+                        <div class="gn-homeTileTitle">@Localizer["ExportSettings"]</div>
+                        <div class="gn-homeTileSubtitle">@Localizer["ManageExportSettings"]</div>
+                    </div>
+                </a>
+            </div>
+        }
     </div>
 </div>

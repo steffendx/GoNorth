@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Tale_Condition_State_Alive_Start": "Start of the content that will only be rendered if the npc must be alive. Must be closed using Tale_Condition_State_Alive_End.",
+    "PlaceholderDesc_Tale_Condition_State_Alive_End": "End of the content that will only be rendered if the npc must be alive.",
+    "PlaceholderDesc_Tale_Condition_State_Dead_Start": "Start of the content that will only be rendered if the npc must be dead. Must be closed using Tale_Condition_State_Dead_End.",
+    "PlaceholderDesc_Tale_Condition_State_Dead_End": "End of the content that will only be rendered if the npc must be dead."
+}

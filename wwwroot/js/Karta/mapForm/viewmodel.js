@@ -49,6 +49,8 @@
                 this.aikaMarkerManager = new Map.AikaMarkerManager(this);
                 this.noteMarkerManager = new Map.NoteMarkerManager(this);
 
+                this.showMarkerLabels = new ko.observable(true);
+
                 this.selectedMarkerObjectId = new ko.observable("");
                 this.currentValidManager = null;
 

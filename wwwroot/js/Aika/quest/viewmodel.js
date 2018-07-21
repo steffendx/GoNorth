@@ -546,7 +546,16 @@
                     type: "DELETE"
                 }).done(function(data) {
                     self.callOnQuestSaved();
-                    window.close();
+                    
+                    // In case quest was not opened by script, user must be redirected to prevent error
+                    if(window.opener != null)
+                    {
+                        window.close();
+                    }
+                    else
+                    {
+                        window.location = "/Aika/QuestList";
+                    }
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);

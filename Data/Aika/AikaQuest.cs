@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.ImplementationSnapshot;
 using GoNorth.Data.NodeGraph;
+using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Aika
@@ -10,7 +11,7 @@ namespace GoNorth.Data.Aika
     /// <summary>
     /// Aika Quest
     /// </summary>
-    public class AikaQuest : IHasModifiedData, IImplementationComparable, IImplementationSnapshotable, IImplementationStatusTrackingObject
+    public class AikaQuest : IHasModifiedData, IImplementationComparable, IImplementationSnapshotable, IImplementationStatusTrackingObject, IFlexFieldExportable
     {
 
         /// <summary>

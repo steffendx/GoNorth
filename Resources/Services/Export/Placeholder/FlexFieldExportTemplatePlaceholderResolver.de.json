@@ -1,0 +1,21 @@
+{
+    "PlaceholderDesc_FlexField_Name": "Name des Objektes",
+    "PlaceholderDesc_FlexField_Name_LangKey": "Sprachschlüssel für den Namen des Objektes",
+    "PlaceholderDesc_FlexField_Value_NAME_OF_FIELD": "Wert eines bestimmten Feldes. 'NAME_OF_FIELD' muss dabei mit dem Namen des Feldes ersetzt werden. Groß- und Kleinschreibung wird bein Namen nicht berücksichtigt.",
+    "PlaceholderDesc_FlexField_LangKey_NAME_OF_FIELD": "Sprachschlüssel für den Wert eines bestimmten Feldes. 'NAME_OF_FIELD' muss dabei mit dem Namen des Feldes ersetzt werden. Groß- und Kleinschreibung wird bein Namen nicht berücksichtigt.",
+    "PlaceholderDesc_FlexField_Field_List_Start": "Start der Attributs Liste. Wird durch Unused Field oder All Fields Platzhalter ersetzt beim integrieren in ein Objekt.",
+    "PlaceholderDesc_FlexField_Field_List_End": "Ende der Attributs Liste. Wird durch Unused Field oder All Fields Platzhalter ersetzt beim integrieren in ein Objekt.",
+    "PlaceholderDesc_FlexField_UnusedFields": "Liste von nicht genutzten Werten. Hierbei wird das Attribute Listen Template genutzt und die Start und End Platzhalter durch die Unused Fields Start und End Platzhalter ersetzt.",
+    "PlaceholderDesc_FlexField_UnusedFields_Start": "Start der Liste von nicht genutzten Werten. Nicht genutzte Werte sind dabei alle Werte die nicht per Namen direkt referenziert sind.",
+    "PlaceholderDesc_FlexField_UnusedFields_End": "Ende der Liste von nicht genutzten Werten",
+    "PlaceholderDesc_FlexField_AllFields": "Liste von allen Werten. Hierbei wird das Attribute Listen Template genutzt und die Start und End Platzhalter durch die All Fields Start und End Platzhalter ersetzt.",
+    "PlaceholderDesc_FlexField_AllFields_Start": "Start der Liste von allen Werten",
+    "PlaceholderDesc_FlexField_AllFields_End": "Ende der Liste von allen Werten",
+    "PlaceholderDesc_FlexField_Field_Name": "Name des Feldes",
+    "PlaceholderDesc_FlexField_Field_Value": "Wert des Feldes",
+    "PlaceholderDesc_FlexField_Field_LangKey": "Sprachschlüssel des Feldes. Nützlich wenn die String Werte übersetzt werden sollen und nicht hard coded exportiert werden dürfen.",
+    "PlaceholderDesc_FlexField_Field_IsNumberField_Start": "Start des Inhaltes der nur gerendert wird wenn das aktuelle Feld ein Zahlenfeld ist. Muss mit FlexField_Field_IsNumberField_End abgeschlossen werden.",
+    "PlaceholderDesc_FlexField_Field_IsNumberField_End": "Ende des Inhaltes der nur gerendert wird wenn das aktuelle Feld ein Zahlenfeld ist.",
+    "PlaceholderDesc_FlexField_Field_IsStringField_Start": "Start des Inhaltes der nur gerendert wird wenn das aktuelle Feld ein Textfeld ist. Muss mit FlexField_Field_IsStringField_End abgeschlossen werden.",
+    "PlaceholderDesc_FlexField_Field_IsStringField_End": "Start des Inhaltes der nur gerendert wird wenn das aktuelle Feld ein Textfeld ist."
+}

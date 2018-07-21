@@ -23,14 +23,17 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+
+    <DefaultExportTemplates Include="DefaultExportTemplates/**/*"/>  
   </ItemGroup>
 
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Copy SourceFiles="MapImages/blank.png" DestinationFolder="$(PublishDir)/MapImages" />
+    <Copy SourceFiles="@(DefaultExportTemplates)" DestinationFiles="@(DefaultExportTemplates->'$(PublishDir)/DefaultExportTemplates/%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <ItemGroup>
-    <Content Update="Documentation/**/*.*" CopyToPublishDirectory="Never" />
+    <Content Update="Documentation/**/*" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
 </Project>

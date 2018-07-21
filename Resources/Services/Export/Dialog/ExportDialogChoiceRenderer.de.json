@@ -1,0 +1,16 @@
+{
+    "PlaceholderDesc_Tale_Choices_Start": "Start der Liste der Auswahlmöglichkeiten. Muss mit Tale_Choices_End beendet werden.",
+    "PlaceholderDesc_Tale_Choices_End": "Ende der Liste der Auswahlmöglichkeiten.",
+    "PlaceholderDesc_Tale_Choice_Id": "Id der aktuelle Auswahlmöglichkeit. Diese bleibt konstant auch wenn die Reihenfolge der Auswahlmöglichkeiten geändert wird.",
+    "PlaceholderDesc_Tale_Choice_Index": "Index der aktuelle Auswahlmöglichkeit",
+    "PlaceholderDesc_Tale_Choice_HasCondition_Start": "Start des Inhalts der nur generiert wird wenn die Auswahl eine Bedingung hat. Muss mit Tale_Choice_HasCondition_End beendet werden.",
+    "PlaceholderDesc_Tale_Choice_HasCondition_End": "Ende des Inhalts der nur generiert wird wenn die Auswahl eine Bedingung hat.",
+    "PlaceholderDesc_Tale_Choice_Condition": "Bedingung unter der die Auswahl ausgewählt werden kann.",
+    "PlaceholderDesc_Tale_Choice_Text": "Text der aktuelle Auswahlmöglichkeit",
+    "PlaceholderDesc_Tale_Choice_Text_LangKey": "Sprachschlüssel für die aktuelle Auswahlmöglichkeit",
+    "PlaceholderDesc_Tale_Choice_Text_Preview": "Vorschau für den Text aktuellen Auswahlmöglichkeit. Dabei werden Zeilenumbrüche entfernt und zu langer Text abgeschnitten. Dieser Platzhalter ist gedacht um in Kommentaren eine Vorschau hinzuzufügen um die Lesbarkeit zu erhöhen wenn Sprachschlüssel genutzt werden.",
+    "PlaceholderDesc_Tale_Choice_IsRepeatable_Start": "Start des Inhalts der nur generiert wird wenn die Auswahl mehrfach gewählt werden kann. Muss mit Tale_Choice_IsRepeatable_End beendet werden.",
+    "PlaceholderDesc_Tale_Choice_IsRepeatable_End": "Ende des Inhalts der nur generiert wird wenn die Auswahl mehrfach gewählt werden kann.",
+    "PlaceholderDesc_Tale_Choice_IsNotRepeatable_Start": "Start des Inhalts der nur generiert wird wenn die Auswahl nicht mehrfach gewählt werden kann. Muss mit Tale_Choice_IsNotRepeatable_End beendet werden.",
+    "PlaceholderDesc_Tale_Choice_IsNotRepeatable_End": "Ende des Inhalts der nur generiert wird wenn die Auswahl nicht mehrfach gewählt werden kann."
+}

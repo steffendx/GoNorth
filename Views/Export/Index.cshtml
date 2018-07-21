@@ -1,0 +1,140 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["TemplateOverview"];
+}
+
+<div id="gn-exportTemplateOverviewContainer">
+    <!-- Delete Page Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: isSettingsDialogOpen">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["Settings"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: dialogErrorOccured">
+                        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gn-selectedScriptLanguage">@Localizer["ScriptLanguage"]</label>
+                        <select class="form-control" id="gn-selectedScriptLanguage" name="selectedScriptLanguage" data-bind="value: selectedCodeEditorMode, options: codeEditorModes, optionsText: 'caption'"></select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gn-escapeCharacter">@Localizer["EscapeCharacter"]</label>
+                        <input type="text" class="form-control" id="gn-escapeCharacter" name="escapeCharacter" data-bind="value: escapeCharacter"/>
+                    </div>        
+
+                    <div class="form-group">
+                        <label for="gn-charactersNeedEscaping">@Localizer["CharactersNeedingEscaping"]</label>
+                        <input type="text" class="form-control" id="gn-charactersNeedEscaping" name="charactersNeedEscaping" data-bind="value: charactersNeedingEscaping"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gn-newlineCharacter">@Localizer["NewlineCharacter"]</label>
+                        <input type="text" class="form-control" id="gn-newlineCharacter" name="newlineCharacter" data-bind="value: newlineCharacter"/>
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label for="gn-languageSelectedFileLanguage">@Localizer["LanguageFileLanguage"]</label>
+                        <select class="form-control" id="gn-languageSelectedFileLanguage" name="languageSelectedFileLanguage" data-bind="value: languageSelectedCodeEditorMode, options: codeEditorModes, optionsText: 'caption'"></select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gn-languageEscapeCharacter">@Localizer["LanguageEscapeCharacter"]</label>
+                        <input type="text" class="form-control" id="gn-languageEscapeCharacter" name="languageEscapeCharacter" data-bind="value: languageEscapeCharacter"/>
+                    </div>        
+
+                    <div class="form-group">
+                        <label for="gn-languageCharactersNeedEscaping">@Localizer["LanguageCharactersNeedingEscaping"]</label>
+                        <input type="text" class="form-control" id="gn-languageCharactersNeedEscaping" name="languageCharactersNeedEscaping" data-bind="value: languageCharactersNeedingEscaping"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gn-languageNewlineCharacter">@Localizer["LanguageNewlineCharacter"]</label>
+                        <input type="text" class="form-control" id="gn-languageNewlineCharacter" name="languageNewlineCharacter" data-bind="value: languageNewlineCharacter"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveSettings, disable: dialogLoading">
+                        <span data-bind="visible: !dialogLoading()">@Localizer["Save"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeSettingsDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h2>
+        @ViewData["Title"]
+        <span class="gn-exportTemplateOverviewLoading"><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i></span>
+    </h2>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <!-- Command Buttons -->
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openFunctionGenerationConditions">
+        <i class="glyphicon glyphicon-question-sign"></i> @Localizer["FunctionGenerationConditions"]
+    </button>
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openSettingsDialog">
+        <i class="glyphicon glyphicon-cog"></i> @Localizer["Settings"]
+    </button>
+
+    <div class="row gn-exportTemplateOverviewContent">
+        <div class="col-md-3 col-lg-2">
+            <ul class="nav nav-pills nav-stacked" data-bind="foreach: templateCategories">
+                <li data-bind="css: { 'active': $root.selectedCategory() == category }"><a class="gn-clickable" data-bind="click: function(category) { $root.selectTemplateCategory(category); }, text: label"></a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 col-lg-10">
+            <h4 data-bind="text: selectedCategoryLabel"></h4>
+
+            <div class="gn-commandWidgetTopMargin">
+                <div class="row gn-gridTableRow">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableHeader gn-gridTableCell">
+                        @Localizer["Name"]
+                    </div>
+                </div>
+                <!-- ko foreach: templates -->
+                <div class="row gn-gridTableRow">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableCell">
+                        <a class="gn-clickable" data-bind="text: label, href: $root.buildTemplateUrl"></a>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/ace-builds/src-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-noconflict/ext-modelist.js"></script>
+
+        <script src="~/js/Export/templateOverview.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/ace-builds/src-min-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-min-noconflict/ext-modelist.js"></script>
+
+        <script src="~/js/Export/templateOverview.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Export.TemplateOverview.ViewModel(), jQuery("#gn-exportTemplateOverviewContainer")[0]);
+        });
+    </script>
+}

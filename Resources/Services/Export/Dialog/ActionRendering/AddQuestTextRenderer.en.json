@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Tale_QuestText": "Text that is added to the quest.",
+    "PlaceholderDesc_Tale_QuestText_LangKey": "Language key for the text that is added to the quest.",
+    "PlaceholderDesc_Tale_QuestText_Preview": "Preview for the textline that is added. All line breaks will be removed and the text will be cut if it is to long. This placeholder is intended to be used in comments to increase the readability of the dialog if language keys are used."
+}

@@ -1,0 +1,24 @@
+{
+    "TemplateOverview": "Export Templates",
+    
+    "Settings": "Einstellungen",
+    "ScriptLanguage": "Skript Sprache",
+    "EscapeCharacter": "Escape Zeichen",
+    "CharactersNeedingEscaping": "Zeichen die escapt werden müssen",
+    "NewlineCharacter": "Neue Textzeile Zeichen",
+    "LanguageFileLanguage": "Sprachdatei Sprache",
+    "LanguageEscapeCharacter": "Sprachdatei Escape Zeichen",
+    "LanguageCharactersNeedingEscaping": "Sprachdatei Zeichen die escapt werden müssen",
+    "LanguageNewlineCharacter": "Sprachdatei Neue Textzeile Zeichen",
+
+    "FunctionGenerationConditions": "Dialog Funktions Generierung",
+
+    "Name": "Name",
+    "Description": "Beschreibung",
+    
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

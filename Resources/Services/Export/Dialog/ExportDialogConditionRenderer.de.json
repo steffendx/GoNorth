@@ -1,0 +1,15 @@
+{
+    "PlaceholderDesc_Tale_Conditions_Start": "Start der Liste der Bedingungen die einen Kindknoten haben. Muss mit Tale_Conditions_End beendet werden.",
+    "PlaceholderDesc_Tale_Conditions_End": "Ende der Liste der Bedingungen die einen Kindknoten haben.",
+    "PlaceholderDesc_Tale_AllConditions_Start": "Start der Liste von allen Bedingungen, auch denen die keinen Kindknoten besitzen. Muss mit Tale_AllConditions_End beendet werden.",
+    "PlaceholderDesc_Tale_AllConditions_End": "Ende der Liste von allen Bedingungen, auch denen die keinen Kindknoten besitzen.",
+    "PlaceholderDesc_Tale_Conditions_Else_Start": "Start des Inhalts für den Else Teil der Bedingung. Dieser wird nur gerendert wenn der Else Teil einen Kindknoten besitzt. Muss mit Tale_Conditions_Else_End beendet werden.",
+    "PlaceholderDesc_Tale_Conditions_Else_End": "Ende des Inhalts für den Else Teil der Bedingung.",
+    "PlaceholderDesc_Tale_Condition_Id": "Id der aktuellen Bedingung. Diese bleibt konstant auch wenn die Reihenfolge der Bedingungen geändert wird.",
+    "PlaceholderDesc_Tale_Condition_Index": "Index der aktuellen Bedingung.",
+    "PlaceholderDesc_Tale_Condition_IsFirst_Start": "Start des Inhalts der nur gerendert wird wenn die aktuelle Bedingung die erste in der Liste ist. Muss mit Tale_Condition_IsFirst_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_IsFirst_End": "Ende des Inhalts der nur gerendert wird wenn die aktuelle Bedingung die erste in der Liste ist.",
+    "PlaceholderDesc_Tale_Condition_IsNotFirst_Start": "Start des Inhalts der nur gerendert wird wenn die aktuelle Bedingung nicht die erste in der Liste ist. Muss mit Tale_Condition_IsNotFirst_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_IsNotFirst_End": "Ende des Inhalts der nur gerendert wird wenn die aktuelle Bedingung nicht die erste in der Liste ist.",
+    "PlaceholderDesc_Tale_Condition": "Bedingungsscript der Bedingung."
+}

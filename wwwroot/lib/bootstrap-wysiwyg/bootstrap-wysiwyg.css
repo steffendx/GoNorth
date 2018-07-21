@@ -18,3 +18,17 @@
 .wysiwgEditor-imageUpload {
 	display: none !important;
 }
+
+.wysiwgEditor-flipIcon {
+	transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+}
+
+.wysiwgEditor-removeIcon {
+    position: absolute;
+    font-size: 9px;
+    top: 18px;
+    left: 24px;
+}

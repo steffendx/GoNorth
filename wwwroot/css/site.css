@@ -138,6 +138,13 @@
     }
 }
 
+@media(max-width:1599px) {
+    .navbar-nav a {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+}
+
 .gn-gridTableHeader {
     font-weight: bold;
 }
@@ -216,6 +223,19 @@
 
 .gn-chooseObjectDialogTable {
     margin-top: 15px;
+}
+
+.gn-richTextEditorSubHeader {
+    font-size: 10px;
+}
+
+.wysiwgEditor h4 {
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.wysiwgEditor h5 {
+    font-size: 15px;
+    font-weight: bold;
 }
 
 /** Home **/
@@ -323,6 +343,12 @@
     border: 1px solid #b3990b;
 }
 
+.gn-exportSettingsTile {
+    color: #FFFFFF;
+    background-color: #010033;
+    border: 1px solid #010022;
+}
+
 /** Timeline **/
 .gn-timelineHeader {
     margin-bottom: 0px;
@@ -356,6 +382,16 @@
 
 .gn-defaultProjectRow {
     font-weight: bold;
+}
+
+/** Preferences **/
+
+.gn-preferencesLoading {
+    font-size: 12px;
+}
+
+.gn-preferencesWidgetContainer {
+    padding-top: 12px;
 }
 
 /** Flex Field Database Overview **/
@@ -443,6 +479,12 @@
 }
 
 /** Flex Field Form **/
+.gn-flexFieldObjectFormOpenImageLink {
+    position: absolute;
+    top: 0px;
+    left: 170px;
+}
+
 @media(min-width:768px) {
     .gn-flexFieldObjectFormImageColumn {
         border-right: 1px solid #CCCCCC;
@@ -510,6 +552,105 @@
     list-style: none;
     padding-left: 15px;
     margin-bottom: 25px;
+}
+
+.gn-flexFieldObjectFormLangaugeKeysWarningOnDelete {
+    font-weight: bold;
+}
+
+.gn-flexFieldObjectFormCustomizedExportTemplateWarningOnDelete {
+    font-weight: bold;
+}
+
+@media(min-width:990px) {
+    .gn-flexFieldObjectExportResultDialog {
+        width: 900px;
+    }
+}
+
+@media(min-width:1190px) {
+    .gn-flexFieldObjectExportResultDialog {
+        width: 1100px;
+    }
+}
+
+.gn-flexFieldExportResultCopyToClipboardToolTipContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.gn-flexFieldExportResultCopyToClipboardToolTipContainer .gn-flexFieldExportResultCopyToClipboardToolTipText {
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 120%;
+    left: 50%;
+    margin-left: -50%;
+}
+
+.gn-flexFieldExportResultCopyToClipboardToolTipContainer .gn-flexFieldExportResultCopyToClipboardToolTipText::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.gn-flexFieldObjectExportResultTextarea {
+    resize: none;
+    height: 200px;
+}
+
+.gn-flexFieldObjectExportResultErrorList {
+    overflow: auto;
+    max-height: 15px;
+}
+
+@media(min-height:500px) {
+    .gn-flexFieldObjectExportResultTextarea {
+        height: 165px !important;
+    }
+
+    .gn-flexFieldObjectExportResultErrorList {
+        max-height: 25px;
+    }
+}
+
+@media(min-height:700px) {
+    .gn-flexFieldObjectExportResultTextarea {
+        height: 350px !important;
+    }
+
+    .gn-flexFieldObjectExportResultErrorList {
+        max-height: 40px;
+    }
+}
+
+@media(min-height:900px) {
+    .gn-flexFieldObjectExportResultTextarea {
+        height: 530px !important;
+    }
+
+    .gn-flexFieldObjectExportResultErrorList {
+        max-height: 60px;
+    }
+}
+
+@media(min-height:1200px) {
+    .gn-flexFieldObjectExportResultTextarea {
+        height: 700px !important;
+    }
+
+    .gn-flexFieldObjectExportResultErrorList {
+        max-height: 150px;
+    }
 }
 
 /** Flex Field Manage Templates **/
@@ -581,6 +722,11 @@
 
 .gn-kirjaPageContentFormats h4 {
     border-bottom: 1px solid #CCCCCC;
+}
+
+.gn-kirjaPageContentFormats h5 {
+    font-size: 15px;
+    font-weight: bold;
 }
 
 .gn-kirjaButtonContainer {
@@ -690,6 +836,31 @@
     bottom: 10px;
 }
 
+gn-kirjaTableOfContent {
+    display: block;
+    width: 300px;
+    height: 32px;
+    background-color: #FAFAFA;
+    border: 1px solid #CCCCCC;
+    padding: 5px;
+}
+
+.gn-kirjaTableOfContentTransformed {
+    background-color: #FAFAFA;
+    border: 1px solid #CCCCCC;
+    padding: 5px;
+}
+
+.gn-kirjaTableOfContentTransformedHeader {
+    margin-top: 8px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.gn-kirjaTableOfContentTransformed ul {
+    padding-left: 25px;
+}
+
 /** Karta **/
 .gn-kartaMapDropzone {
     width: 100%;
@@ -779,6 +950,30 @@
     padding-left: 20px; 
     margin-bottom: 15px; 
     margin-top: 15px;
+}
+
+.gn-kartaIconShadowImage {
+    position: absolute; 
+    left: 0px; 
+    z-index: -1;
+}
+
+.gn-kartaIconLabel {
+    color: #FFF;
+    position: absolute;
+    left: -37px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100px;
+    text-align: center;
+    display: none;
+    white-space: nowrap;
+    text-shadow: 0 0 1px black;
+}
+
+.gn-kartaShowLabels .gn-kartaIconLabel {
+    display: block !important;
 }
 
 .gn-kartaPopupContent {
@@ -1252,4 +1447,50 @@ path.leaflet-interactive {
 /** Evne **/
 .node .label.evne_Text, .gn-evneNodeText .gn-labelInsert {
     color: #8c6;
+}
+
+
+/** Exporting Template Overview **/
+.gn-exportTemplateOverviewContent {
+    margin-top: 20px;
+}
+
+.gn-exportTemplateOverviewLoading {
+    font-size: 20px;
+}
+
+/** Exporting Template Form **/
+.gn-exportManageTemplateCodeEditorContainer {
+    margin-top: 20px;
+}
+
+.gn-exportManageTemplateCodeEditor {
+    width: 100%;
+    height: 700px;
+}
+
+.gn-exportManageTemplateLoading {
+    font-size: 20px;
+}
+
+.gn-exportManageTemplateInfoIcon {
+    font-size: 18px;
+}
+
+.gn-exportManageTemplateChildObjectsList {
+    max-height: 260px;
+    overflow: auto;
+}
+
+.gn-exportManageTemplateWarningOnDelete {
+    font-weight: bold;
+}
+
+.gn-exportManageTemplatePlaceholderContainer {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.gn-exportManageTemplatePlaceholderTable {
+    margin-bottom: 0px;
 }

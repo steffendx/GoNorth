@@ -53,8 +53,14 @@
              */
             Map.KortistoMarkerManager.prototype.createMarker = function(objectId, latLng) {
                 var def = new jQuery.Deferred();
+                var npcName = "";
+                var npc = this.findEntryById(objectId);
+                if(npc) 
+                {
+                    npcName = npc.name;
+                }
                 
-                var marker = new Map.KortistoMarker(objectId, latLng);
+                var marker = new Map.KortistoMarker(objectId, npcName, latLng);
                 this.pushMarker(marker);
                 def.resolve(marker);
 
@@ -68,7 +74,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.KortistoMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.KortistoMarker(unparsedMarker.npcId, latLng);
+                return new Map.KortistoMarker(unparsedMarker.npcId, unparsedMarker.npcName, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));

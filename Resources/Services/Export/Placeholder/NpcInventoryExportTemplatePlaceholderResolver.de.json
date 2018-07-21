@@ -1,0 +1,11 @@
+{
+    "PlaceholderDesc_Npc_Inventory": "Inventar des Npcs. Wird auf Basis des Inventar Templates generiert.",
+    "PlaceholderDesc_Inventory_Start": "Start der Inventar Item List. Die Liste muss mit Inventory_End abgeschlossen werden. Die Attribute der Items können genutzt über die FlexField Platzhalter verwendet werden. Hierbei muss jedoch CurItem_ statt FlexField_ genutzt werden.",
+    "PlaceholderDesc_Inventory_End": "Ende der Inventar Item List.",
+    "PlaceholderDesc_CurItem_Index": "Null-basierter Index des Items innerhalb der Inventar Liste.",
+    "PlaceholderDesc_CurItem_Is_Equipped_Start": "Start des Inhaltes der nur gerendert wird wenn das aktuelle Item innerhalb der Inventar Liste ausgerüstet ist. Muss mit CurItem_Is_Equipped_End abgeschlossen werden.",
+    "PlaceholderDesc_CurItem_Is_Equipped_End": "Ende des Inhaltes der nur gerendert wird wenn das aktuelle Item innerhalb der Inventar Liste ausgerüstet ist.",
+    "PlaceholderDesc_CurItem_Quantity": "Anzahl des Items im Inventar.",
+    "PlaceholderDesc_CurItem_Quantity_Not_Equal_One_Start": "Start des Inhaltes der nur gerendert wird wenn die Anzahl des aktuellen Items ungleich 1 ist. Muss mit CurItem_Quantity_Not_Equal_One_End abgeschlossen werden.",
+    "PlaceholderDesc_CurItem_Quantity_Not_Equal_One_End": "Ende des Inhaltes der nur gerendert wird wenn die Anzahl des aktuellen Items ungleich 1 ist."
+}

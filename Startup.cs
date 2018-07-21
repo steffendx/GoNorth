@@ -37,6 +37,13 @@ using GoNorth.Services.ImplementationStatusCompare;
 using Microsoft.AspNetCore.Localization;
 using GoNorth.Services.User;
 using GoNorth.Data.Evne;
+using GoNorth.Services.FlexFieldThumbnail;
+using GoNorth.Data.Exporting;
+using GoNorth.Services.Export;
+using GoNorth.Services.Export.Placeholder;
+using GoNorth.Services.Export.LanguageKeyGeneration;
+using GoNorth.Services.Export.Dialog;
+using GoNorth.Services.Export.Data;
 
 namespace GoNorth
 {
@@ -104,13 +111,27 @@ namespace GoNorth
 
             services.AddTransient<IKartaImageProcessor, ImageSharpKartaImageProcessor>();
             services.AddTransient<IKartaImageAccess, KartaFileSystemImageAccess>();
+            services.AddTransient<IKartaMarkerLabelSync, KartaMarkerLabelSync>();
 
             services.AddTransient<ITaskImageAccess, TaskImageFileSystemAccess>();
             services.AddTransient<ITaskImageParser, TaskImageParser>();
 
+            services.AddTransient<IKortistoThumbnailService, ImageSharpKortistoThumbnailService>();
+            services.AddTransient<IEvneThumbnailService, ImageSharpEvneThumbnailService>();
+            services.AddTransient<IStyrThumbnailService, ImageSharpStyrThumbnailService>();
+
             services.AddTransient<IImplementationStatusComparer, GenericImplementationStatusComparer>();
 
             services.AddTransient<IUserCreator, UserCreator>();
+
+            services.AddTransient<IExportTemplatePlaceholderResolver, ExportTemplatePlaceholderResolver>();
+            services.AddTransient<IExportDialogParser, ExportDialogParser>();
+            services.AddTransient<IExportDialogFunctionGenerator, ExportDialogFunctionGenerator>();
+            services.AddTransient<IExportDialogRenderer, ExportDialogRenderer>();
+            services.AddScoped<ILanguageKeyGenerator, LanguageKeyGenerator>();
+            services.AddScoped<IExportDialogFunctionNameGenerator, ExportDialogFunctionNameGenerator>();
+            services.AddTransient<IConditionRenderer, ConditionRenderer>();
+            services.AddScoped<IExportCachedDbAccess, ExportCachedDbAccess>();
 
             services.AddScoped<GoNorthUserManager>();
 
@@ -119,6 +140,7 @@ namespace GoNorth
             // Database
             services.AddScoped<ILockServiceDbAccess, LockServiceMongoDbAccess>();
             services.AddScoped<IUserDbAccess, UserMongoDbAccess>();
+            services.AddScoped<IUserPreferencesDbAccess, UserPreferencesMongoDbAccess>();
             services.AddScoped<IRoleDbAccess, RoleMongoDbAccess>();
             services.AddScoped<ITimelineDbAccess, TimelineMongoDbAccess>();
             services.AddScoped<IProjectDbAccess, ProjectMongoDbAccess>();
@@ -153,6 +175,15 @@ namespace GoNorth
             services.AddScoped<IAikaChapterDetailDbAccess, AikaChapterDetailMongoDbAccess>();
             services.AddScoped<IAikaQuestDbAccess, AikaQuestMongoDbAccess>();
             services.AddScoped<IAikaQuestImplementationSnapshotDbAccess, AikaQuestImplementationSnapshotMongoDbAccess>();
+
+            services.AddScoped<IExportTemplateDbAccess, ExportTemplateMongoDbAccess>();
+            services.AddScoped<IExportDefaultTemplateProvider, ExportDefaultTemplateProvider>();
+            services.AddScoped<ICachedExportDefaultTemplateProvider, CachedExportDefaultTemplateProvider>();
+            services.AddScoped<IExportSettingsDbAccess, ExportSettingsMongoDbAccess>();
+            services.AddScoped<IDialogFunctionGenerationConditionDbAccess, DialogFunctionGenerationConditionMongoDbAccess>();
+            services.AddScoped<IDialogFunctionGenerationConditionProvider, DialogFunctionGenerationConditionProvider>();
+
+            services.AddScoped<ILanguageKeyDbAccess, LanguageKeyMongoDbAccess>();
 
             services.AddScoped<ITaskBoardDbAccess, TaskBoardMongoDbAccess>();
 

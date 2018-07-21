@@ -7,14 +7,16 @@
              * Kirja Marker
              * 
              * @param {object} pageId Id of the kirja page
+             * @param {string} pageName Name of the page
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.KirjaMarker = function(pageId, latLng) 
+            Map.KirjaMarker = function(pageId, pageName, latLng) 
             {
                 Map.BaseMarker.apply(this);
 
                 this.pageId = pageId;
+                this.pageName = pageName;
 
                 this.isTrackingImplementationStatus = false;
 
@@ -41,6 +43,15 @@
              */
             Map.KirjaMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/kirjaMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.KirjaMarker.prototype.getIconLabel = function() {
+                return this.pageName;
             }
 
             /**
@@ -75,6 +86,7 @@
             Map.KirjaMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
                 serializedObject.pageId = this.pageId;
+                serializedObject.pageName = this.pageName;
                 return serializedObject;
             }
 

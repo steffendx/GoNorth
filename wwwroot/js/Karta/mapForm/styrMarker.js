@@ -7,14 +7,16 @@
              * Styr Marker
              * 
              * @param {object} itemId Id of the Item
+             * @param {string} itemName Name of the item
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.StyrMarker = function(itemId, latLng) 
+            Map.StyrMarker = function(itemId, itemName, latLng) 
             {
                 Map.BaseMarker.apply(this);
                 
                 this.itemId = itemId;
+                this.itemName = itemName;
 
                 this.isTrackingImplementationStatus = true;
 
@@ -41,6 +43,15 @@
              */
             Map.StyrMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/styrMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.StyrMarker.prototype.getIconLabel = function() {
+                return this.itemName;
             }
 
             /**
@@ -78,6 +89,7 @@
             Map.StyrMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
                 serializedObject.itemId = this.itemId;
+                serializedObject.itemName = this.itemName;
                 return serializedObject;
             }
 

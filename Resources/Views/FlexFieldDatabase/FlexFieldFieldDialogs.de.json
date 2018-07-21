@@ -12,5 +12,7 @@
     
     "FieldScriptSetting": "Feld Scripteinstellungen",
     "DontExportToScript": "Nicht in Script exportieren",
-    "AdditionalScriptNames": "Zusätzliche Skriptnamen (Komma getrennt)"
+    "AdditionalScriptNames": "Zusätzliche Skriptnamen (Komma getrennt)",
+
+    "ConfigCanOnlyBeEditedInTemplate": "Diese Einstellung kann nur im Template geändert werden"
 }

@@ -28,6 +28,8 @@
     "NoteMarkerNewNote": "<New note>",
     "ShowNoteMarker": "Show note markers",
 
+    "ShowMarkerLabels": "Show marker labels",
+
     "ShowingMarkersOfObjectTooltip": "Currently showing associated markers",
 
     "WaitingOnNewMarker": "Waiting on markers",
@@ -90,6 +92,6 @@
     "ErrorOccured": "An error occured.",
 
     "Locked": "Locked",
-    "LockedPrefix": "This map is currently beeing edited by ",
+    "LockedPrefix": "This map is currently being edited by ",
     "LockedPostfix": "."
 }

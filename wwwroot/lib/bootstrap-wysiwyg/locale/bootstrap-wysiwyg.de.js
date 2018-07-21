@@ -8,6 +8,7 @@ bootstrapWysiwyg.local.fontSizeNormal = "Normal";
 bootstrapWysiwyg.local.fontSizeSmall = "Klein";
 
 bootstrapWysiwyg.local.header = "Als Kopfzeile formatieren [Strg + H]";
+bootstrapWysiwyg.local.subHeader = "Als untergeordnete Kopfzeile formatieren [Strg + G]";
 
 bootstrapWysiwyg.local.bold = "Fett [Strg + B]";
 bootstrapWysiwyg.local.italic = "Kursiv [Strg + I]";
@@ -30,6 +31,20 @@ bootstrapWysiwyg.local.hyperlinkAdd = "Einfügen";
 bootstrapWysiwyg.local.removeHyperlink = "Link entfernen";
 
 bootstrapWysiwyg.local.insertPicture = "Bild einfügen";
+
+bootstrapWysiwyg.local.table = "Tabelle einfügen";
+bootstrapWysiwyg.local.columns = "Spalten";
+bootstrapWysiwyg.local.rows = "Zeilen";
+bootstrapWysiwyg.local.addHeaderRow = "Kopfzeile einfügen";
+bootstrapWysiwyg.local.tableAdd = "Einfügen";
+bootstrapWysiwyg.local.onlyAvailableInsideTable = "Dieser Befehl steht nur innerhalb einer Tabelle zu Verfügung.";
+bootstrapWysiwyg.local.tableAddRowAfter = "Zeile nach ausgewählter Zeile einfügen";
+bootstrapWysiwyg.local.tableAddRowBefore = "Zeile vor ausgewählter Zeile einfügen";
+bootstrapWysiwyg.local.tableRemoveRow = "Zeile entfernen";
+bootstrapWysiwyg.local.tableAddColumnAfter = "Spalte nach ausgewählter einfügen";
+bootstrapWysiwyg.local.tableAddColumnBefore = "Spalte vor ausgewählter einfügen";
+bootstrapWysiwyg.local.tableRemoveColumn = "Spalte entfernen";
+bootstrapWysiwyg.local.tableAddHeaderRow = "Kopfzeile einfügen";
 
 bootstrapWysiwyg.local.undo = "Rückgängig [Strg + Z]";
 bootstrapWysiwyg.local.redo = "Wiederholen [Strg + Y]";

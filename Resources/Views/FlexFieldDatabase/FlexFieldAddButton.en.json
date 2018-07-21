@@ -3,5 +3,6 @@
 
     "SingleLineField": "Text field",
     "MultiLineField": "Multiline text field",
-    "NumberField": "Number field"
+    "NumberField": "Number field",
+    "OptionField": "Option field"
 }

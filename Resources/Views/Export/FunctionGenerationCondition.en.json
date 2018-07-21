@@ -1,0 +1,61 @@
+{
+    "FunctionGenerationCondition": "Dialog function generation conditions",
+
+    "NodeTypePlayerText": "Player line",
+    "NodeTypeNpcText": "Npc line",
+    "NodeTypeChoice": "Choice",
+    "NodeTypeCondition": "Condition",
+    "NodeTypeAction": "Action",
+
+    "ActionTypeChangePlayerValue":"Change player value",
+    "ActionTypeChangeNpcValue":"Change npc value",
+    "ActionTypeSpawnItemInPlayerInventory":"Spawn item in player inventory",
+    "ActionTypeSpawnItemInNpcInventory":"Spawn item in npc inventory",
+    "ActionTypeTransferItemToPlayerInventory":"Transfer item to player",
+    "ActionTypeTransferItemToNpcInventory":"Transfer item to npc",
+    "ActionTypeChangeQuestValue":"Change quest value",
+    "ActionTypeChangeQuestState":"Change quest state",
+    "ActionTypeAddQuestText":"Add quest text",
+    "ActionTypeWait":"Wait",
+    "ActionTypeChangePlayerState":"Change player state",
+    "ActionTypeChangeNpcState":"Change npc state",
+    "ActionTypePlayerLearnSkill":"Player learns skill",
+    "ActionTypePlayerForgetSkill":"Player forgets skill",
+    "ActionTypeNpcLearnSkill":"Npc learns skill",
+    "ActionTypeNpcForgetSkill":"Npc forgets skill",
+    "ActionTypeChangePlayerSkillValue":"Change player skill value",
+    "ActionTypeChangeNpcSkillValue":"Change npc skill value",
+    "ActionTypePersistDialogState":"Persists dialog state",
+    "ActionTypeOpenShop":"Open shop",
+
+    "GenerationRules": "Rules that generate a function",
+    "PreventGenerationRules": "Rules that prevent generating a function",
+
+    "AddRule": "Add rule",
+    "DeleteRuleTooltip": "Delete rule",
+
+    "Condition": "Condition",
+
+    "ConditionMultipleParents": "Multiple parents",
+    "ConditionParentNodeType": "Parent node type",
+    "ConditionCurrentNodeType": "Node type",
+    "ConditionChildNodeType": "Child node type",
+    "ConditionParentActionType": "Parent action type",
+    "ConditionCurrentActionType": "Action type",
+    "ConditionChildActionType": "Child action type",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheRule": "Are you sure you want to delete the rule?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+    "UnknownConditionTypeUsed": "An unknown condition type was used.",
+    
+    "Locked": "Locked",
+    "LockedPrefix": "The rules are currently being edited by",
+    "LockedPostfix": ".",
+
+    "NodeLang": "en"
+}

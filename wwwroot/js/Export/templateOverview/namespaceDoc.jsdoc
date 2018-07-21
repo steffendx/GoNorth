@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Export) {
+
+        /**
+         * Template Overview Namespace
+         * @namespace TemplateOverview
+         */
+        (function(TemplateOverview) {
+        }(Export.TemplateOverview = Export.TemplateOverview || {}));
+        
+    }(GoNorth.Export = GoNorth.Export || {}));
+}(window.GoNorth = window.GoNorth || {}));

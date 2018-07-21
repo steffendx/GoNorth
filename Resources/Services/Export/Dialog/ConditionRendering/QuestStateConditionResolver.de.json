@@ -1,0 +1,10 @@
+{
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_NotStarted_Start": "Start des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'Nicht begonnen' ist. Muss mit Tale_Condition_QuestState_Is_NotStarted_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_NotStarted_End": "Ende des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'Nicht begonnen' ist.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_InProgress_Start": "Start des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'In Arbeit' ist. Muss mit Tale_Condition_QuestState_Is_InProgress_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_InProgress_End": "Ende des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'In Arbeit' ist.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Success_Start": "Start des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'Abgeschlossen' ist. Muss mit Tale_Condition_QuestState_Is_Success_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Success_End": "Ende des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'Abgeschlossen' ist.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Failed_Start": "Start des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'Fehlgeschlagen' ist. Muss mit Tale_Condition_QuestState_Is_Failed_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Failed_End": "Ende des Inhalts der nur gerendert wird wenn der Vergleichsstatus des Quests 'Fehlgeschlagen' ist."
+}

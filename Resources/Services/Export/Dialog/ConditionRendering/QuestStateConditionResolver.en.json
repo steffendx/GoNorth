@@ -1,0 +1,10 @@
+{
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_NotStarted_Start": "Start of the content that will only be rendered if the compare quest state is 'not started'. Must be closed using Tale_Condition_QuestState_Is_NotStarted_End.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_NotStarted_End": "End of the content that will only be rendered if the compare quest state is 'not started'.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_InProgress_Start": "Start of the content that will only be rendered if the compare quest state is 'in progress'. Must be closed using Tale_Condition_QuestState__IsInProgress_End.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_InProgress_End": "End of the content that will only be rendered if the compare quest state is 'in progress'.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Success_Start": "Start of the content that will only be rendered if the compare quest state is 'success'. Must be closed using Tale_Condition_QuestState_Is_Success_End.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Success_End": "End of the content that will only be rendered if the compare quest state is 'success'.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Failed_Start": "Start of the content that will only be rendered if the compare quest state is 'failed'. Must be closed using Tale_Condition_QuestState_Is_Failed_End.",
+    "PlaceholderDesc_Tale_Condition_QuestState_Is_Failed_End": "End of the content that will only be rendered if the compare quest state is 'failed'."
+}

@@ -1,0 +1,52 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Views
+@using GoNorth.Views.Manage
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["Preferences"];
+    ViewData.AddActivePage(ManageNavPages.Preferences);
+}
+
+<div id="gn-userPreferencesContainer">
+    <h4>
+        @ViewData["Title"]
+        <span class="gn-preferencesLoading"><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i></span>
+    </h4>
+    <div class="row">
+        <div class="col-md-6 gn-preferencesWidgetContainer">
+            <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+                <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+            </div>
+
+            <div class="form-group">
+                <label for="gn-preferencesCodeEditor">@Localizer["CodeEditorTheme"]</label>
+                <select class="form-control" id="gn-preferencesCodeEditor" name="preferencesCodeEditor" data-bind="value: codeEditorTheme, options: themes, optionsText: function(item) { var label = item.caption; if(item.isDark) { label += ' (@Localizer["Dark"])'; } return label; }"></select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" data-bind="click: save"><i class="glyphicon glyphicon-floppy-disk"></i> @Localizer["Save"]</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/ace-builds/src-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-noconflict/ext-themelist.js"></script>
+
+        <script src="~/js/Manage/preferences.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/ace-builds/src-min-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-min-noconflict/ext-themelist.js"></script>
+
+        <script src="~/js/Manage/preferences.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Manage.Preferences.ViewModel(), jQuery("#gn-userPreferencesContainer")[0]);
+        });
+    </script>
+}

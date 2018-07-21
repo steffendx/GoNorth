@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Tale_FunctionName": "Name der Funktion die generiert wird.",
+    "PlaceholderDesc_Tale_Function_ParentPreview": "Text Vorschau der übergeordneten Knoten die zu dieser neuen Funktion führen. Dieser Platzhalter ist gedacht um in einem Kommentar gerendert zu werden um die Lesbarkeit zu erhöhen.",
+    "PlaceholderDesc_Tale_StepContent": "Inhalt des Dialogschrittes der generiert wird. Wenn es mehrere Dialogschritte gibt die keine neue Funktion generieren werden diese alle an dieser Stelle eingefügt.",
+    "PlaceholderDesc_Tale_FunctionContent": "Inhalt der Funktion die generiert wird. Wenn es mehrere Dialogschritte gibt die keine neue Funktion generieren werden diese alle an dieser Stelle eingefügt."
+}

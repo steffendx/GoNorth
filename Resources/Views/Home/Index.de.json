@@ -25,5 +25,8 @@
     "KartaMap": "Karten Komponente",
 
     "ImplementationStatus": "Implementierung",
-    "TrackCurrentImplementationProgress": "Aktueller Implementierungsfortschritt"
+    "TrackCurrentImplementationProgress": "Aktueller Implementierungsfortschritt",
+
+    "ExportSettings": "Export",
+    "ManageExportSettings": "Export Einstellungen verwalten"
 }

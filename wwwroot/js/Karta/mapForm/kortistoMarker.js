@@ -7,14 +7,16 @@
              * Kortisto Marker
              * 
              * @param {object} npcId Id of the Npc
+             * @param {string} npcName Name of the npc
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.KortistoMarker = function(npcId, latLng) 
+            Map.KortistoMarker = function(npcId, npcName, latLng) 
             {
                 Map.BaseMarker.apply(this);
                 
                 this.npcId = npcId;
+                this.npcName = npcName;
 
                 this.isTrackingImplementationStatus = true;
 
@@ -41,6 +43,15 @@
              */
             Map.KortistoMarker.prototype.getIconRetinaUrl = function() {
                 return "/img/karta/kortistoMarker_2x.png";
+            }
+
+            /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.KortistoMarker.prototype.getIconLabel = function() {
+                return this.npcName;
             }
 
             /**
@@ -78,6 +89,7 @@
             Map.KortistoMarker.prototype.serialize = function(map) {
                 var serializedObject = this.serializeBaseData(map);
                 serializedObject.npcId = this.npcId;
+                serializedObject.npcName = this.npcName;
                 return serializedObject;
             }
 

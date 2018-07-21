@@ -1,0 +1,16 @@
+{
+    "PlaceholderDesc_Tale_ChildNode_Function": "Will be replaced by the function name of the child node",
+    "PlaceholderDesc_Tale_ChildNode_HasFunction_Start": "Start of the content that will only be rendered if the child of the current node starts a new function. If the node has no child the content will not be rendered. Must be closed using Tale_ChildNode_HasFunction_End.",
+    "PlaceholderDesc_Tale_ChildNode_HasFunction_End": "End of the content that will only be rendered if the child of the current node starts a new function.",
+    "PlaceholderDesc_Tale_ChildNode_HasNoFunction_Start": "Start of the content that will only be rendered if the child of the current node starts no new function. If the node has no child the content will be rendered. Must be closed using Tale_ChildNode_HasNoFunction_End.",
+    "PlaceholderDesc_Tale_ChildNode_HasNoFunction_End": "End of the content that will only be rendered if the child of the current node starts no new function.",
+    "PlaceholderDesc_Tale_Node_Id": "Unique Id for the current node",
+    "PlaceholderDesc_Tale_HasChild_Start": "Start of the content that will only be rendered if the current dialog node has a child. Must be closed using Tale_HasChild_End.",
+    "PlaceholderDesc_Tale_HasChild_End": "End of the content that will only be rendered if the current dialog node has a child.",
+    "PlaceholderDesc_Tale_HasNoChild_Start": "Start of the content that will only be rendered if the current dialog node has no children. Must be closed using Tale_HasNoChild_End.",
+    "PlaceholderDesc_Tale_HasNoChild_End": "End of the content that will only be rendered if the current dialog node has no children.",
+    "PlaceholderDesc_Tale_IsChildNodeOfType(<<TypeName>>)_Start": "Start of the content that will only be rendered if the child node of the current node is of certain type. Possible types for <<TypeName>> are playertext, npctext, choice, condition or action. Must be closed using Tale_IsChildNodeOfType_End.",
+    "PlaceholderDesc_Tale_IsChildNodeOfType_End": "End of the content that will only be rendered if the child node of the current node is of certain type.",
+    "PlaceholderDesc_Tale_IsChildNodeNotOfType(<<TypeName>>)_Start": "Start of the content that will only be rendered if the child node of the current node is not of certain type. Possible types for <<TypeName>> are playertext, npctext, choice, condition or action. Must be closed using Tale_IsChildNodeNotOfType_End.",
+    "PlaceholderDesc_Tale_IsChildNodeNotOfType_End": "End of the content that will only be rendered if the child node of the current node is not of certain type."
+}

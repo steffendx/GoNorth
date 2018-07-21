@@ -46,6 +46,15 @@
             }
 
             /**
+             * Returns the icon label
+             * 
+             * @returns {string} Icon Label
+             */
+            Map.NoteMarker.prototype.getIconLabel = function() {
+                return this.name;
+            }
+
+            /**
              * Loads the content
              * 
              * @returns {jQuery.Deferred} Deferred

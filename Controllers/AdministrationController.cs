@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using GoNorth.Data;
+using GoNorth.Services.Karta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,11 +19,19 @@ namespace GoNorth.Controllers
         public readonly IDbSetup _DbSetup;
 
         /// <summary>
+        /// Karta Marker Label Sync
+        /// </summary>
+        public readonly IKartaMarkerLabelSync _KartaMarkerLabelSync;
+
+        /// <summary>
         /// Constructor
         /// </summary>
-        public AdministrationController(IDbSetup dbSetup)
+        /// <param name="dbSetup">Database Setup</param>
+        /// <param name="kartaMarkerLabelSync">Karta Marker Label Sync</param>
+        public AdministrationController(IDbSetup dbSetup, IKartaMarkerLabelSync kartaMarkerLabelSync)
         {
             _DbSetup = dbSetup;
+            _KartaMarkerLabelSync = kartaMarkerLabelSync;
         }
 
         /// <summary>
@@ -63,6 +72,7 @@ namespace GoNorth.Controllers
         public async Task<IActionResult> DbSetup()
         {
             await _DbSetup.SetupDatabaseAsync();
+            await _KartaMarkerLabelSync.SyncMarkerLabels();
             return View();
         }
     }

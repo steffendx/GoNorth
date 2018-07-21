@@ -107,7 +107,8 @@ namespace GoNorth.Data.FlexFieldDatabase
         public async Task UpdateFolder(FlexFieldFolder folder)
         {
             await _FolderCollection.UpdateOneAsync(Builders<FlexFieldFolder>.Filter.Eq(f => f.Id, folder.Id), 
-                                                   Builders<FlexFieldFolder>.Update.Set(p => p.Name, folder.Name).Set(p => p.Description, folder.Description).Set(p => p.ImageFile, folder.ImageFile));
+                                                   Builders<FlexFieldFolder>.Update.Set(p => p.Name, folder.Name).Set(p => p.Description, folder.Description).
+                                                                                    Set(p => p.ImageFile, folder.ImageFile).Set(p => p.ThumbnailImageFile, folder.ThumbnailImageFile));
         }
 
         /// <summary>

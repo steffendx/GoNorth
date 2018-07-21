@@ -73,7 +73,8 @@ namespace GoNorth.Data.FlexFieldDatabase
             List<T> flexFieldObjects = await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && string.IsNullOrEmpty(n.ParentFolderId)).OrderBy(n => n.Name).Skip(start).Take(pageSize).Select(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
-                ImageFile = c.ImageFile
+                ImageFile = c.ImageFile,
+                ThumbnailImageFile = c.ThumbnailImageFile
             }).ToListAsync();
             return flexFieldObjects;
         }
@@ -101,7 +102,8 @@ namespace GoNorth.Data.FlexFieldDatabase
             List<T> flexFieldObjects = await _ObjectCollection.AsQueryable().Where(n => n.ParentFolderId == folderId).OrderBy(n => n.Name).Skip(start).Take(pageSize).Select(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
-                ImageFile = c.ImageFile
+                ImageFile = c.ImageFile,
+                ThumbnailImageFile = c.ThumbnailImageFile
             }).ToListAsync();
             return flexFieldObjects;
         }
@@ -175,7 +177,8 @@ namespace GoNorth.Data.FlexFieldDatabase
             return await BuildFlexFieldObjectSearchQueryable(projectId, searchPattern).Skip(start).Take(pageSize).Select(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
-                ImageFile = c.ImageFile
+                ImageFile = c.ImageFile,
+                ThumbnailImageFile = c.ThumbnailImageFile
             }).ToListAsync();
         }
 
@@ -249,7 +252,7 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <returns>true if image file is used, else false</returns>
         public async Task<bool> AnyFlexFieldObjectUsingImage(string imageFile)
         {
-            int count = (int)await _ObjectCollection.CountAsync(Builders<T>.Filter.Eq(n => n.ImageFile, imageFile));
+            int count = (int)await _ObjectCollection.CountAsync(Builders<T>.Filter.Eq(n => n.ImageFile, imageFile) | Builders<T>.Filter.Eq(n => n.ThumbnailImageFile, imageFile));
             return count > 0;
         }
 

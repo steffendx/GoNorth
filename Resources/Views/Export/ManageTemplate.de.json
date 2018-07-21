@@ -1,0 +1,26 @@
+{
+    "ManageTemplate": "Template verwalten",
+
+    "TemplateBasedOnParent": "Für dieses Objekt ist noch kein eigenes Template gespeichert. Es wird das übergeordnete Template verwendet. Hier klicken um das übergeordnete Template zu laden.",
+
+    "Save": "Speichern",
+    "Delete": "Löschen",
+
+    "ChildObjectsHavingCustomizedTemplate": "Die folgendene Kindobjekte verwenden ein eigenes Export Template. Es könnte sein das du hier Änderungen ebenfalls anpassen musst.",
+    "Template": "(Template)",
+
+    "Placeholders": "Platzhalter",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Bist du sicher das das Template gelöscht werden soll?",
+    "AllObjectsUsingThisTemplateWillUseParentTemplate": "Wenn du dieses Template löscht nutzen alle Objekte die auf diesem Template basieren erneut das übergeordnete Template.",
+    "Yes": "Ja",
+    "No": "Nein",
+    
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+    
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Dieses Template wird gerade von ",
+    "LockedPostfix": " bearbeitet."
+}

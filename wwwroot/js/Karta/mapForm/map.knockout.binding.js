@@ -11,6 +11,9 @@
                 /// Pow of two to reach tile size (2^8 = 256)
                 var TileSizePowOfTwo = 8;
 
+                /// Default Zoom Level
+                var defaultZoom = 2;
+
                 function unwrapIfObservable(obs) {
                     if(ko.isObservable(obs))
                     {
@@ -99,7 +102,7 @@
                     map.setMaxBounds(mapTileBounds);
 
                     var mapCenter = map.unproject([imageWidth * 0.5, imageHeight * 0.5], 0);
-                    map.setView(mapCenter, 0);
+                    map.setView(mapCenter, Math.min(defaultZoom, maxZoom));
 
                     if(ko.isObservable(obs)) 
                     {

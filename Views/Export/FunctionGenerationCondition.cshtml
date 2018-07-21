@@ -1,0 +1,166 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.ExportViewModels
+
+@inject IViewLocalizer Localizer
+
+@model FunctionGenerationConditionViewModel
+
+@{
+    ViewData["Title"] = @Localizer["FunctionGenerationCondition"];
+}
+
+<div id="gn-functionGenerationConditionContainer">
+    <!-- Delete Condition Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteTheRule"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: deleteRule">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ko with: conditionDialog -->
+        @await Html.PartialAsync("~/Views/Shared/NodeConditionBase.cshtml")
+    <!-- /ko -->
+
+    <!-- Condition Templates -->
+    <script type="text/html" id="gn-functionGenerationCondition-multipleParents">
+        <td colspan="3"></td>
+    </script>
+
+    <script type="text/html" id="gn-functionGenerationCondition-nodeType">
+    <!-- ko with: conditionData -->
+        <td colspan="3"><select data-bind="value: selectedNodeType, options: nodeTypes, optionsText: function(nodeType) { return nodeType.displayName; }" class="form-control"></select></td>
+    <!-- /ko -->
+    </script>
+
+    <script type="text/html" id="gn-functionGenerationCondition-actionType">
+    <!-- ko with: conditionData -->
+        <td colspan="3"><select data-bind="value: selectedActionType, options: actionTypes, optionsText: function(actionType) { return actionType.displayName; }" class="form-control"></select></td>
+    <!-- /ko -->
+    </script>
+
+    <!-- Function Generation Condition List -->
+    <script type="text/html" id="gn-functionGenerationConditionList">
+        <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: function(ruleArrayObj) { $root.createNewRule(ruleArrayObj.rules) }, disable: $root.isReadonly() || $root.isLoading()"><i class="glyphicon glyphicon-plus"></i> @Localizer["AddRule"]</button>
+        <div class="gn-defaultContentTopMargin">
+            <div class="row gn-gridTableRow">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableHeader gn-gridTableCell">
+                    @Localizer["Condition"]
+                </div>
+            </div>
+            <!-- ko foreach: $data.rules -->
+                <div class="row gn-gridTableRow">
+                    <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11 gn-gridTableCell">
+                        <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(rule) { $root.openEditRuleDialog($parent.rules, $index); }"></a>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 gn-gridTableCell">
+                        <a class="gn-clickable" data-bind="click: function(rule) { $root.openDeleteRuleDialog($parent.rules, rule); }, visible: !$root.isReadonly()" title="@Localizer["DeleteRuleTooltip"]"><i class="glyphicon glyphicon-trash"></i></a>
+                    </div>
+                </div>
+            <!-- /ko -->
+        </div>
+    </script>
+
+    <h2>@ViewData["Title"] <i class="glyphicon glyphicon-refresh spinning gn-kartaMapLoading" style="display: none" data-bind="visible: isLoading"></i></h2>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="visible: hasUnknownConditionType" style="display: none">@Localizer["UnknownConditionTypeUsed"]</span>
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <h4 class="gn-defaultContentTopMargin">@Localizer["GenerationRules"]</h4>
+    <div data-bind="template: { name: 'gn-functionGenerationConditionList', data: { rules: generateRules } }"></div>
+
+    <h4 class="gn-defaultContentTopMargin">@Localizer["PreventGenerationRules"]</h4>
+    <div data-bind="template: { name: 'gn-functionGenerationConditionList', data: { rules: preventGenerationRules } }"></div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+
+    <environment include="Development">
+        <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"].Value).js" asp-append-version="true"></script>
+
+        <script src="~/js/Export/functionGenerationCondition.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"].Value).min.js" asp-append-version="true"></script>
+
+        <script src="~/js/Export/functionGenerationCondition.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.Export.FunctionGenerationCondition.conditionTypesByName = {};
+        @foreach(MappedDialogFunctionGenerationConditionType curConditionType in @Model.DialogFunctionGenerationConditionTypes)
+        {
+            <text>
+            GoNorth.Export.FunctionGenerationCondition.conditionTypesByName["@curConditionType.Name"] = @curConditionType.Value;
+            </text>
+        }
+
+        GoNorth.Export.FunctionGenerationCondition.localizedNodeTypes = {};
+        GoNorth.Export.FunctionGenerationCondition.nodeTypes = [];
+        @foreach(string curNodeType in Model.NodeTypes)
+        {
+            <text>
+            GoNorth.Export.FunctionGenerationCondition.localizedNodeTypes["@curNodeType"] = "@Localizer["NodeType" + curNodeType]";
+            GoNorth.Export.FunctionGenerationCondition.nodeTypes.push({
+                nodeType: "@curNodeType",
+                displayName: "@Localizer["NodeType" + curNodeType]"
+            });
+            </text>
+        }
+
+        GoNorth.Export.FunctionGenerationCondition.localizedActionTypes = [];
+        GoNorth.Export.FunctionGenerationCondition.actionTypes = [];
+        @foreach(MappedDialogFunctionGenerationActionType curActionType in Model.DialogFunctionGenerationActionTypes)
+        {
+            <text>
+            GoNorth.Export.FunctionGenerationCondition.localizedActionTypes[@curActionType.Value] = "@Localizer["ActionType" + @curActionType.Name]";
+            GoNorth.Export.FunctionGenerationCondition.actionTypes.push({
+                actionType: @curActionType.Value,
+                displayName: "@Localizer["ActionType" + @curActionType.Name]"
+            });
+            </text>
+        }
+
+        GoNorth.Export.FunctionGenerationCondition.lockId = "@Model.LockId";
+
+        GoNorth.Export.FunctionGenerationCondition.Localization = {
+            ConditionMultipleParents: "@Localizer["ConditionMultipleParents"]",
+            ConditionParentNodeType: "@Localizer["ConditionParentNodeType"]",
+            ConditionCurrentNodeType: "@Localizer["ConditionCurrentNodeType"]",
+            ConditionChildNodeType: "@Localizer["ConditionChildNodeType"]",
+            ConditionParentActionType: "@Localizer["ConditionParentActionType"]",
+            ConditionCurrentActionType: "@Localizer["ConditionCurrentActionType"]",
+            ConditionChildActionType: "@Localizer["ConditionChildActionType"]"
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Export.FunctionGenerationCondition.ViewModel(), jQuery("#gn-functionGenerationConditionContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/defaultNodes.css" />
+    </environment>
+    <environment exclude="Development">   
+        <link rel="stylesheet" href="~/css/defaultNodes.min.css" />
+    </environment>
+}

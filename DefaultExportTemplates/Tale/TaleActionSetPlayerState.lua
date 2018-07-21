@@ -1,0 +1,1 @@
+playerNpc:push_state("{{Tale_Action_State}}")

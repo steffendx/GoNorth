@@ -101,6 +101,17 @@ namespace GoNorth
 
 
         /// <summary>
+        /// Export Objects
+        /// </summary>
+        public const string ExportObjects = "ExportObjects";
+
+        /// <summary>
+        /// Manage Export Templates
+        /// </summary>
+        public const string ManageExportTemplates = "ManageExportTemplates";
+
+
+        /// <summary>
         /// Returns all Role Names
         /// </summary>
         /// <returns>All Role Names</returns>

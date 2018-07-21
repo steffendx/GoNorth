@@ -20,6 +20,7 @@ using GoNorth.Data.Karta;
 using Microsoft.Extensions.Options;
 using GoNorth.Config;
 using System.Text.RegularExpressions;
+using GoNorth.Data.Karta.Marker;
 
 namespace GoNorth.Controllers.Api
 {
@@ -323,6 +324,8 @@ namespace GoNorth.Controllers.Api
                 oldImages = new List<string>();
             }
 
+            bool nameChanged = loadedPage.Name != page.Name;
+
             loadedPage.Name = page.Name;
             loadedPage.Content = page.Content;
             _pageParserService.ParsePage(loadedPage);
@@ -334,9 +337,37 @@ namespace GoNorth.Controllers.Api
             DeleteUnusedImages(oldImages.Except(loadedPage.UplodadedImages, StringComparer.OrdinalIgnoreCase).ToList());
             _logger.LogInformation("Unused Images were deleted.");
 
+            if(nameChanged) 
+            {
+                await SyncPageNameToMarkers(id, page.Name);
+            }
+
             await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageUpdated, loadedPage.Name, loadedPage.Id);
 
             return Ok(loadedPage);
+        }
+
+        /// <summary>
+        /// Syncs the page name to markers after an update
+        /// </summary>
+        /// <param name="id">Id of the page</param>
+        /// <param name="pageName">New page name</param>
+        /// <returns>Task</returns>
+        private async Task SyncPageNameToMarkers(string id, string pageName)
+        {
+            List<KartaMapMarkerQueryResult> markerResult = await _kartaMapDbAccess.GetAllMapsKirjaPageIsMarkedIn(id);
+            foreach(KartaMapMarkerQueryResult curMapQueryResult in markerResult)
+            {
+                KartaMap map = await _kartaMapDbAccess.GetMapById(curMapQueryResult.MapId);
+                foreach(KirjaPageMapMarker curMarker in map.KirjaPageMarker)
+                {
+                    if(curMarker.PageId == id)
+                    {
+                        curMarker.PageName = pageName;
+                    }
+                }
+                await _kartaMapDbAccess.UpdateMap(map);
+            }
         }
 
         /// <summary>

@@ -1,0 +1,13 @@
+{
+    "PlaceholderDesc_Tale_Action_ValueName": "Name des Feldes das geändert wird.",
+    "PlaceholderDesc_Tale_Action_ValueOperator": "Operator für die Änderung. Wird anhand der Templates geladen.",
+    "PlaceholderDesc_Tale_Action_ValueIsNumber_Start": "Anfang des Inhalts der nur gerendert wird wenn das Feld das geändert wird ein Zahlenfeld ist. Muss mit Tale_Action_ValueIsNumber_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Action_ValueIsNumber_End": "Ende des Inhalts der nur gerendert wird wenn das Feld das geändert wird ein Zahlenfeld ist.",
+    "PlaceholderDesc_Tale_Action_ValueIsString_Start": "Anfang des Inhalts der nur gerendert wird wenn das Feld das geändert wird ein Textfeld ist. Muss mit Tale_Action_ValueIsString_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Action_ValueIsString_End": "Ende des Inhalts der nur gerendert wird wenn das Feld das geändert wird ein Textfeld ist.",
+    "PlaceholderDesc_Tale_Action_OperatorIsSetTo_Start": "Anfang des Inhalts der nur gerendert wird wenn der Operator \"Zuweisen\" ist. Muss mit Tale_Action_OperatorIsSetTo_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Action_OperatorIsSetTo_End": "Ende des Inhalts der nur gerendert wird wenn der Operator \"Zuweisen\" ist.",
+    "PlaceholderDesc_Tale_Action_OperatorIsNotSetTo_Start": "Anfang des Inhalts der nur gerendert wird wenn der Operator nicht \"Zuweisen\" ist. Muss mit Tale_Action_OperatorIsSetTo_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Action_OperatorIsNotSetTo_End": "Ende des Inhalts der nur gerendert wird wenn der Operator nicht \"Zuweisen\" ist.",
+    "PlaceholderDesc_Tale_Action_ValueChange": "Wert der Änderung."
+}

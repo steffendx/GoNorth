@@ -25,5 +25,8 @@
     "KartaMap": "Map component",
 
     "ImplementationStatus": "Implementation",
-    "TrackCurrentImplementationProgress": "Current implementation progress"
+    "TrackCurrentImplementationProgress": "Current implementation progress",
+
+    "ExportSettings": "Export",
+    "ManageExportSettings": "Manage export settings"
 }

@@ -165,6 +165,18 @@
   },
 
   {
+    "outputFileName": "wwwroot/js/Manage/preferences.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Manage/preferences/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
     "outputFileName": "wwwroot/js/Kortisto/overview.viewmodel.js",
     "inputFiles": [
       "wwwroot/js/FlexFieldDatabase/flexFieldOverview.BaseViewModel.js",
@@ -194,10 +206,11 @@
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
-      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
@@ -239,10 +252,11 @@
     "inputFiles": [
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
-      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
@@ -289,10 +303,11 @@
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
 
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
-      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
@@ -444,9 +459,10 @@
       "wwwroot/js/Shared/nodeGraph/actionNode.js",
 
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
-      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
       
       "wwwroot/js/Shared/nodeGraph/actions/baseAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changeValueAction.js",
@@ -474,6 +490,7 @@
       "wwwroot/js/Shared/nodeGraph/actions/changePlayerSkillValueAction.js",
       "wwwroot/js/Tale/dialogForm/actions/changeNpcSkillValueAction.js",
       "wwwroot/js/Tale/dialogForm/actions/persistDialogStateAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/openShopAction.js",
 
       "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
       "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
@@ -584,10 +601,11 @@
       "wwwroot/js/Shared/flexFieldUtil.js",
       
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
-      "wwwroot/js/FlexFieldDatabase/objectForm/iflexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
 
@@ -726,6 +744,57 @@
       "wwwroot/js/ImplementationStatus/overview/implementationStatusQuestList.js",
       "wwwroot/js/ImplementationStatus/overview/implementationStatusMarkerList.js",
       "wwwroot/js/ImplementationStatus/overview/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
+  {
+    "outputFileName": "wwwroot/js/Export/manageTemplate.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Export/manageTemplate/bindingHandler.js",
+      "wwwroot/js/Export/manageTemplate/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Export/templateOverview.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Export/templateOverview/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Export/functionGenerationCondition.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/groupCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/conditionConverting.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/groupConditionExtension.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/multipleParentsCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/checkNodeTypeCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/parentNodeTypeCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/currentNodeTypeCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/childNodeTypeCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/checkActionTypeCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/parentActionTypeCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/currentActionTypeCondition.js",
+      "wwwroot/js/Export/functionGenerationCondition/conditions/childActionTypeCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
+
+      "wwwroot/js/Export/functionGenerationCondition/viewmodel.js"
     ],
     "minify": {
       "enabled": true,

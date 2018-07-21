@@ -14,12 +14,12 @@
              * @class
              */
             ObjectForm.NumberFlexField = function() {
-                ObjectForm.IFlexField.apply(this);
+                ObjectForm.FlexFieldBase.apply(this);
 
                 this.value = new ko.observable(0.0);
             }
 
-            ObjectForm.NumberFlexField.prototype = jQuery.extend(true, {}, ObjectForm.IFlexField.prototype);
+            ObjectForm.NumberFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
 
             /**
              * Returns the type of the field

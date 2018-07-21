@@ -3,7 +3,7 @@
 /*jslint browser:true*/
 (function ($) {
 	'use strict';
-	var initToolbarBootstrapBindings = function(toolbarElement)
+	var initToolbarBootstrapBindings = function(toolbarElement, options)
 	{
 		var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier', 
 			'Courier New', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
@@ -14,7 +14,10 @@
 		{
 			fontTarget.append($('<li><a data-edit="fontName ' + fontName +'" style="font-family:\''+ fontName +'\'">'+fontName + '</a></li>'));
 		});
-		toolbarElement.find('.dropdown-menu input').click(function() {return false; })
+		toolbarElement.find(".dropdown-menu").click(function(event) {
+			event.stopPropagation();
+		});
+		toolbarElement.find('.dropdown-menu input[data-' + options.commandRole + ']').click(function() {return false; })
 			.change(function ()
 			{
 				$(this).parent('.dropdown-menu').siblings('.dropdown-toggle').dropdown('toggle');
@@ -32,14 +35,14 @@
 		});
 	};
 
-	var createToolbar = function(targetElement, additionalButtons, showFontSize) {
+	var createToolbar = function(targetElement, additionalButtons, options) {
 		var toolbarHtml = '<div class="btn-toolbar" data-role="editor-toolbar"> \
 			<div class="btn-group"> \
 				<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="' + bootstrapWysiwyg.local.font + '"><i class="glyphicon glyphicon-font"></i><b class="caret"></b></a> \
 				<ul class="dropdown-menu wysiwyg-fonts"> \
 				</ul> \
 				</div>';
-		if(showFontSize)
+		if(options.showFontSize)
 		{
 			toolbarHtml += '<div class="btn-group"> \
 				<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="' + bootstrapWysiwyg.local.fontSize + '"><i class="glyphicon glyphicon-text-height"></i>&nbsp;<b class="caret"></b></a> \
@@ -52,6 +55,7 @@
 		}
 		toolbarHtml += '<div class="btn-group"> \
 				<a class="btn btn-default" data-edit="formatBlock <h4>" title="' + bootstrapWysiwyg.local.header + '"><i class="glyphicon glyphicon-header"></i></a> \
+				<a class="btn btn-default" data-edit="formatBlock <h5>" title="' + bootstrapWysiwyg.local.subHeader + '"><i class="glyphicon glyphicon-header gn-richTextEditorSubHeader"></i></a> \
 			</div> \
 			<div class="btn-group"> \
 				<a class="btn btn-default" data-edit="bold" title="' + bootstrapWysiwyg.local.bold + '"><i class="glyphicon glyphicon-bold"></i></a> \
@@ -85,6 +89,22 @@
 				<input type="file" data-role="magic-overlay" data-edit="insertImage" class="wysiwgEditor-imageUpload" /> \
 			</div> \
 			<div class="btn-group"> \
+				<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" title="' + bootstrapWysiwyg.local.table + '"><i class="glyphicon glyphicon-th"></i></a> \
+				<div class="dropdown-menu input-append" style="padding: 10px"> \
+					<input class="form-control gn-table-columns" placeholder="' + bootstrapWysiwyg.local.columns + '" type="text"/> \
+					<input class="form-control gn-table-rows" placeholder="' + bootstrapWysiwyg.local.rows + '" type="text"/> \
+					<div class="checkbox"><label><input type="checkbox" class="gn-table-addHeader">' + bootstrapWysiwyg.local.addHeaderRow + '</label></div> \
+					<button class="btn btn-default gn-table-add" style="margin-top: 5px" type="button">' + bootstrapWysiwyg.local.tableAdd + '</button> \
+				</div> \
+				<a class="btn btn-default gn-table-add-row-after" disabled="disabled" title="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-disabletitle="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-enabletitle="' + bootstrapWysiwyg.local.tableAddRowAfter + '" data-editactiveinside="tr"><i class="glyphicon glyphicon-object-align-vertical wysiwgEditor-flipIcon"></i></a> \
+				<a class="btn btn-default gn-table-add-row-before" disabled="disabled" title="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-disabletitle="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-enabletitle="' + bootstrapWysiwyg.local.tableAddRowBefore + '" data-editactiveinside="tr"><i class="glyphicon glyphicon-object-align-vertical"></i></a> \
+				<a class="btn btn-default gn-table-remove-row" disabled="disabled" title="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-disabletitle="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-enabletitle="' + bootstrapWysiwyg.local.tableRemoveRow + '" data-editactiveinside="tr"><i class="glyphicon glyphicon-object-align-vertical"></i><i class="glyphicon glyphicon-remove wysiwgEditor-removeIcon"></i></a> \
+				<a class="btn btn-default gn-table-add-column-after" disabled="disabled" title="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-disabletitle="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-enabletitle="' + bootstrapWysiwyg.local.tableAddColumnAfter + '" data-editactiveinside="th,td"><i class="glyphicon glyphicon-object-align-horizontal"></i></a> \
+				<a class="btn btn-default gn-table-add-column-before" disabled="disabled" title="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-disabletitle="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-enabletitle="' + bootstrapWysiwyg.local.tableAddColumnBefore + '" data-editactiveinside="th,td"><i class="glyphicon glyphicon-object-align-horizontal wysiwgEditor-flipIcon"></i></a> \
+				<a class="btn btn-default gn-table-remove-column" disabled="disabled" title="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-disabletitle="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-enabletitle="' + bootstrapWysiwyg.local.tableRemoveColumn + '" data-editactiveinside="th,td"><i class="glyphicon glyphicon-object-align-horizontal"></i><i class="glyphicon glyphicon-remove wysiwgEditor-removeIcon"></i></a> \
+				<a class="btn btn-default gn-table-add-header-row" disabled="disabled" title="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-disabletitle="' + bootstrapWysiwyg.local.onlyAvailableInsideTable + '" data-enabletitle="' + bootstrapWysiwyg.local.tableAddHeaderRow + '" data-editactiveinside="table"><i class="glyphicon glyphicon-th-large"></i></a> \
+			</div> \
+			<div class="btn-group"> \
 				<a class="btn btn-default" data-edit="undo" title="' + bootstrapWysiwyg.local.undo + '"><i class="glyphicon glyphicon-share-alt" style="-webkit-transform: scaleX(-1); filter: FlipH;"></i></a> \
 				<a class="btn btn-default" data-edit="redo" title="' + bootstrapWysiwyg.local.redo + '"><i class="glyphicon glyphicon-share-alt"></i></a> \
 			</div>';
@@ -103,7 +123,7 @@
 		toolbarHtml += '</div>';
 		
 		var toolbarElement = jQuery(toolbarHtml).insertBefore(targetElement);
-		initToolbarBootstrapBindings(toolbarElement);
+		initToolbarBootstrapBindings(toolbarElement, options);
 		return toolbarElement;
 	};
 
@@ -124,13 +144,35 @@
 	};
 	$.fn.wysiwyg = function (userOptions) {
 		options = $.extend({}, $.fn.wysiwyg.defaults, userOptions);
-		var createdToolbar = createToolbar(this, userOptions.additionalButtons, options.showFontSize);
+		var createdToolbar = createToolbar(this, userOptions.additionalButtons, options);
 		var htmlOld = $(this).html();
 		
 		var editor = this;
 		var selectedRange,
 			options,
 			toolbarBtnSelector,
+			toolbarBtnActivateSelector,
+			getSelectionInsideElement = function (selector) {
+				var sel, containerNode;
+				if (window.getSelection) {
+					sel = window.getSelection();
+					if (sel.rangeCount > 0) {
+						containerNode = sel.getRangeAt(0).commonAncestorContainer;
+					}
+				} else if ((sel = document.selection) && sel.type != "Control") {
+					containerNode = sel.createRange().parentElement();
+				}
+				
+				var elementNodeType = 1;
+				while (containerNode) 
+				{
+					if (containerNode.nodeType == elementNodeType && $(containerNode).is(selector)) {
+						return containerNode;
+					}
+					containerNode = containerNode.parentNode;
+				}
+				return null;
+			},
 			updateToolbar = function () {
 				if (options.activeToolbarClass) {
 					$(createdToolbar).find(toolbarBtnSelector).each(function () {
@@ -139,6 +181,17 @@
 							$(this).addClass(options.activeToolbarClass);
 						} else {
 							$(this).removeClass(options.activeToolbarClass);
+						}
+					});
+
+					$(createdToolbar).find(toolbarBtnActivateSelector).each(function() {
+						var activateInside = $(this).data(options.activeRole);
+						if(getSelectionInsideElement(activateInside) != null) {
+							$(this).removeAttr("disabled");
+							$(this).attr("title", $(this).data("enabletitle"));
+						} else {
+							$(this).attr("disabled", "disabled");
+							$(this).attr("title", $(this).data("disabletitle"));
 						}
 					});
 				}
@@ -303,6 +356,184 @@
 					saveSelection();
 					this.value = '';
 				});
+
+				var generateRowHtmlForTable = function(parentTable, cellTag)
+				{
+					var colCount = parentTable.find("tr").first().find("td,th").length;
+					var rowHtml = "<tr>";
+					for(var curColumn = 0; curColumn < colCount; ++curColumn)
+					{
+						rowHtml += "<" + cellTag + "><br/></" + cellTag + ">";
+					}
+					rowHtml += "</tr>";
+					return rowHtml;
+				}
+				toolbar.find(".gn-table-columns,.gn-table-rows").keydown(function(e) {
+					GoNorth.Util.validateNumberKeyPress(jQuery(this), e);
+				});
+				toolbar.find(".gn-table-add").click(function() {
+					var columns = parseInt(toolbar.find(".gn-table-columns").val());
+					if(isNaN(columns)) {
+						columns = 1;
+					}
+					var rows = parseInt(toolbar.find(".gn-table-rows").val());
+					if(isNaN(rows)) {
+						rows = 1;
+					}
+					var addHeaderRow = toolbar.find(".gn-table-addHeader").is(":checked");
+					
+					var tableHtml = "<div class='table-responsive'><table class='table table-bordered table-striped'>";
+					if(addHeaderRow) {
+						tableHtml += "<thead><tr>";
+						for(var curColumn = 0; curColumn < columns; ++curColumn)
+						{
+							tableHtml += "<th></th>";
+						}
+						tableHtml += "</tr></thead>";
+					}
+
+					tableHtml += "<tbody>";
+					for(var curRow = 0; curRow < rows; ++curRow)
+					{
+						tableHtml += "<tr>"
+						for(var curColumn = 0; curColumn < columns; ++curColumn)
+						{
+							tableHtml += "<td></td>";
+						}
+						tableHtml += "</tr>";
+					}
+					tableHtml += "</tbody></table></div>";
+					
+					restoreSelection();
+					editor.focus();
+					execCommand("insertHtml", tableHtml);
+					saveSelection();
+
+					$(this).parent('.dropdown-menu').siblings('.dropdown-toggle').dropdown('toggle');
+				});
+				var insertTableChange = function(parentTable, html)
+				{
+					restoreSelection();
+					editor.focus();
+
+					var selection = window.getSelection();
+					var range = document.createRange();
+					range.setStartBefore(parentTable.first()[0]);
+					range.setEndAfter(parentTable.last()[0]);
+					selection.removeAllRanges();
+					selection.addRange(range);
+					execCommand("insertHTML", html);
+					
+					saveSelection();
+				};
+				var insertTableRow = function(insertAfter) {
+					var currentRow = $(getSelectionInsideElement("tr"));
+					var parentTable = currentRow.closest("table");
+					var clonedTable = parentTable.clone();
+					var rowIndex = currentRow.index() + 1;
+					var clonedRow = clonedTable.find(currentRow.parent().prop("tagName")).children(":nth-child(" + rowIndex + ")");
+					if(clonedRow.parent().is("thead"))
+					{
+						if(!insertAfter)
+						{
+							return;
+						}
+
+						clonedRow = clonedTable.find("tbody>tr").first();		
+						insertAfter = false;				
+					}
+
+					var rowHtml = generateRowHtmlForTable(clonedTable, "td");
+					if(insertAfter)
+					{
+						$(rowHtml).insertAfter(clonedRow);
+					}
+					else
+					{
+						$(rowHtml).insertBefore(clonedRow);
+					}
+
+					insertTableChange(parentTable, clonedTable[0].outerHTML);
+				};
+				toolbar.find(".gn-table-add-row-after").click(function() {
+					insertTableRow(true);
+				});
+				toolbar.find(".gn-table-add-row-before").click(function() {
+					insertTableRow(false);
+				});
+				toolbar.find(".gn-table-remove-row").click(function() {
+					var rowToDelete = $(getSelectionInsideElement("tr"));
+					var rowIndex = rowToDelete.index() + 1;
+					var parentTable = rowToDelete.closest("table");
+					var clonedTable = parentTable.clone();
+					if(clonedTable.find("tr").first().find("td,th").length > 1)
+					{
+						var clonedRow = clonedTable.find(rowToDelete.parent().prop("tagName")).children(":nth-child(" + rowIndex + ")");
+						clonedRow.remove(); 
+					}
+					
+					insertTableChange(parentTable, clonedTable[0].outerHTML);
+				});
+				var insertTableColumn = function(insertAfter) {
+					var columnCell = $(getSelectionInsideElement("th,td"));
+					var columnIndex = columnCell.index() + 1;
+					var parentTable = columnCell.closest("table");
+					var clonedTable = parentTable.clone();
+					clonedTable.find("tr").each(function() {
+						var columnHtml = "<td><br/></td>";
+						if($(this).parent().is("thead"))
+						{
+							columnHtml = "<th><br/></th>";
+						}
+
+						if(insertAfter) 
+						{
+							$(columnHtml).insertAfter($(this).find(":nth-child(" + columnIndex + ")"));
+						}
+						else
+						{
+							$(columnHtml).insertBefore($(this).find(":nth-child(" + columnIndex + ")"));
+						}
+					});
+
+					insertTableChange(parentTable, clonedTable[0].outerHTML);
+				};
+				toolbar.find(".gn-table-add-column-after").click(function() {
+					insertTableColumn(true);
+				});
+				toolbar.find(".gn-table-add-column-before").click(function() {
+					insertTableColumn(false);
+				});
+				toolbar.find(".gn-table-remove-column").click(function() {
+					var columnCell = $(getSelectionInsideElement("th,td"));
+					var columnIndex = columnCell.index() + 1;
+					var parentTable = columnCell.closest("table");
+					var clonedTable = parentTable.clone();
+					if(clonedTable.find("tr").first().find("td,th").length > 1)
+					{
+						clonedTable.find("tr").find(":nth-child(" + columnIndex + ")").remove(); 
+					}
+
+					insertTableChange(parentTable, clonedTable[0].outerHTML);
+				});
+				toolbar.find(".gn-table-add-header-row").click(function() {
+					var parentTable = $(getSelectionInsideElement("table"));
+					var clonedTable = parentTable.clone();
+					var tableHead = clonedTable.find("thead");
+					if(tableHead.find("tr").length > 0)
+					{
+						return;
+					}
+
+					if(tableHead.length == 0)
+					{
+						clonedTable.prepend("<thead></thead>");
+					}
+
+					clonedTable.find("thead").append(generateRowHtmlForTable(clonedTable, "th"));
+					
+					insertTableChange(parentTable, clonedTable[0].outerHTML);
+				});
 			},
 			initFileDrops = function () {
 				editor.on('dragenter dragover', false)
@@ -316,6 +547,7 @@
 					});
 			};
 		toolbarBtnSelector = 'a[data-' + options.commandRole + '],button[data-' + options.commandRole + '],input[type=button][data-' + options.commandRole + ']';
+		toolbarBtnActivateSelector = 'a[data-' + options.activeRole + '],button[data-' + options.activeRole + '],input[type=button][data-' + options.activeRole + ']';
 		bindHotkeys(options.hotKeys);
 		if (options.dragAndDropImages) {
 			initFileDrops();
@@ -354,6 +586,7 @@
 	$.fn.wysiwyg.defaults = {
 		hotKeys: {
 			'ctrl+h meta+h': 'formatBlock <h4>',
+			'ctrl+g meta+g': 'formatBlock <h5>',
 			'ctrl+b meta+b': 'bold',
 			'ctrl+i meta+i': 'italic',
 			'ctrl+u meta+u': 'underline',
@@ -368,6 +601,7 @@
 		},
 		toolbarSelector: '[data-role=editor-toolbar]',
 		commandRole: 'edit',
+		activeRole: 'editactiveinside',
 		activeToolbarClass: 'btn-info',
 		selectionMarker: 'edit-focus-marker',
 		selectionColor: 'darkgrey',

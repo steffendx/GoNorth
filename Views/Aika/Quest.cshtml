@@ -248,6 +248,8 @@
         <script src="~/js/Shared/nodeGraph/nodeGraph.knockout.binding.min.js"></script>
         <script src="~/js/Aika/quest.viewmodel.min.js" asp-append-version="true"></script>
     </environment>
+    
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldScriptLocalization.cshtml")
 
     <script type="text/javascript">
         @if(User.IsInRole(RoleNames.Kortisto))

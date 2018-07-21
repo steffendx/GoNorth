@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using GoNorth.Models.FlexFieldDatabaseModels
+@using GoNorth.Data.Exporting
 
 @inject IViewLocalizer Localizer
 
@@ -66,7 +67,7 @@
         </div>
     </div>
 
-    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormDialogsButtons.cshtml", Localizer)
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormDialogsButtons.cshtml", new ObjectFormButtonsViewModel { Localizer = Localizer, ExportTemplateType = TemplateType.ObjectNpc })
 
     <!-- ko with: objectDialog -->
         @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
@@ -189,6 +190,8 @@
     </environment>
     
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormScriptRights.cshtml", Localizer)
+
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldScriptLocalization.cshtml")
 
     <script type="text/javascript">
         GoNorth.Kortisto.Npc.Localization = {
