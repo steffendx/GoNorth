@@ -221,7 +221,7 @@
     </div>
 
     <div data-bind="if: !isEditMode()">
-        <div data-bind="html: pageContentTransformed" class="gn-kirjaPageContent gn-kirjaPageContentFormats">
+        <div data-bind="html: pageContentTransformed, childLinkClick: pushKirjaPageState" class="gn-kirjaPageContent gn-kirjaPageContentFormats">
         </div>
     </div>
     <div data-bind="if: isEditMode, visible: isEditMode" style="display: none">

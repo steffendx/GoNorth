@@ -324,7 +324,7 @@
              * @returns {string} Url for the item
              */
             Npc.ViewModel.prototype.buildItemUrl = function(item) {
-                return "/Styr/Item#id=" + item.id;
+                return "/Styr/Item?id=" + item.id;
             };
 
             /**
@@ -334,7 +334,7 @@
              * @returns {string} Url for the skill
              */
             Npc.ViewModel.prototype.buildSkillUrl = function(skill) {
-                return "/Evne/Skill#id=" + skill.id;
+                return "/Evne/Skill?id=" + skill.id;
             };
 
             /**
@@ -397,7 +397,7 @@
                     return;
                 }
 
-                window.location = "/Tale#npcId=" + this.id();
+                window.location = "/Tale?npcId=" + this.id();
             };
 
 

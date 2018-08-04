@@ -13,11 +13,12 @@
             Map.ViewModel = function()
             {
                 this.id = new ko.observable("");
-                this.preSelectType = GoNorth.Util.getParameterFromHash("preSelectType");
-                this.preSelectId = GoNorth.Util.getParameterFromHash("preSelectId");
-                this.zoomOnMarkerType = GoNorth.Util.getParameterFromHash("zoomOnMarkerType");
-                this.zoomOnMarkerId = GoNorth.Util.getParameterFromHash("zoomOnMarkerId");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                this.preSelectType = GoNorth.Util.getParameterFromUrl("preSelectType");
+                this.preSelectId = GoNorth.Util.getParameterFromUrl("preSelectId");
+                this.zoomOnMarkerType = GoNorth.Util.getParameterFromUrl("zoomOnMarkerType");
+                this.zoomOnMarkerId = GoNorth.Util.getParameterFromUrl("zoomOnMarkerId");
+                this.preSelectChapter = parseInt(GoNorth.Util.getParameterFromUrl("chapter"));
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.setId(paramId);
@@ -148,13 +149,24 @@
                 });
 
                 var lastId = this.id();
-                window.onhashchange = function() {
-                    var id = GoNorth.Util.getParameterFromHash("id");
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var id = GoNorth.Util.getParameterFromUrl("id");
                     if(id != lastId) {
+                        var chapterByUrl = parseInt(GoNorth.Util.getParameterFromUrl("chapter"));
+                        if(!isNaN(chapterByUrl))
+                        {
+                            self.switchChapterByNumber(chapterByUrl, true);
+                        }
+                        else if(self.chapters().length > 0)
+                        {
+                            self.switchChapter(self.chapters()[0], true);
+                        }
+
+                        GoNorth.Karta.Map.readUrlMapLocations();
                         lastId = id;
-                        self.switchMap(GoNorth.Util.getParameterFromHash("id"));
+                        self.switchMap(GoNorth.Util.getParameterFromUrl("id"), true);
                     }
-                }
+                });
             };
 
             Map.ViewModel.prototype = {
@@ -222,8 +234,23 @@
                     this.checkZoomOnMarker();
 
                     this.initEditGeometryToolbar(map);
+
+                    if(!GoNorth.Util.getParameterFromUrl("mapLat"))
+                    {
+                        this.refreshUrlMapLocations();
+                    }
                 },
                 
+                /**
+                 * Refreshes the url map locations
+                 */
+                refreshUrlMapLocations: function() {
+                    if(GoNorth.Karta.Map.refreshUrlMapLocations) 
+                    {
+                        GoNorth.Karta.Map.refreshUrlMapLocations();
+                    }
+                },
+
 
                 /**
                  * Loads all available maps
@@ -303,7 +330,20 @@
                         if(aggregatedChapters.length > 0)
                         {
                             aggregatedChapters[0].isDefault = true;
-                            self.selectedChapter(aggregatedChapters[0]);
+                            var chapterToSelect = aggregatedChapters[0];
+                            if(self.preSelectChapter != null && !isNaN(self.preSelectChapter))
+                            {
+                                for(var curChapter = 0; curChapter < aggregatedChapters.length; ++curChapter)
+                                {
+                                    if(aggregatedChapters[curChapter].number == self.preSelectChapter)
+                                    {
+                                        chapterToSelect = aggregatedChapters[curChapter];
+                                        break;
+                                    }
+                                }
+                            }
+                            self.preSelectChapter = null;
+                            self.switchChapter(chapterToSelect, true);
                         }
 
                         self.chapters(aggregatedChapters);
@@ -320,8 +360,9 @@
                  * Switches the chapter by a chapter number
                  * 
                  * @param {int} chapterNumber Chapter number to which to switch
+                 * @param {bool} dontUpdateUrl true if the Url should be not be updated, else false
                  */
-                switchChapterByNumber: function(chapterNumber) {
+                switchChapterByNumber: function(chapterNumber, dontUpdateUrl) {
                     var chapters = this.chapters();
                     if(chapters == null || chapters.length == 0 || this.getSelectedChapterNumber() == chapterNumber)
                     {
@@ -340,7 +381,7 @@
 
                     if(bestChapter != this.selectedChapter())
                     {
-                        this.switchChapter(bestChapter);
+                        this.switchChapter(bestChapter, dontUpdateUrl);
                     }
                 },
 
@@ -348,8 +389,9 @@
                  * Switches the chapter
                  * 
                  * @param {object} chapter Chapter to select
+                 * @param {bool} dontUpdateUrl true if the Url should be not be updated, else false
                  */
-                switchChapter: function(chapter) {
+                switchChapter: function(chapter, dontUpdateUrl) {
                     this.selectedChapter(chapter);
 
                     this.kirjaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
@@ -358,6 +400,15 @@
                     this.kartaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
                     this.aikaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
                     this.noteMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
+
+                    if(dontUpdateUrl)
+                    {
+                        return;
+                    }
+
+                    var parameterValue = this.buildUrlParameters();
+                    GoNorth.Util.replaceUrlParameters(parameterValue);
+                    this.refreshUrlMapLocations();
                 },
 
                 /**
@@ -379,18 +430,50 @@
                  * Sets the id
                  * 
                  * @param {string} id Id of the page
+                 * @param {bool} dontPushState true if the url change should not be pushed as a state, else falsedontPushState
                  */
-                setId: function(id) {
+                setId: function(id, dontPushState) {
+                    var pushNewState = !!this.id() && this.id() != id;
                     this.id(id);
-                    window.location.hash = "id=" + id;
+
+                    if(dontPushState)
+                    {
+                        return;
+                    }
+
+                    var parameterValue = this.buildUrlParameters();
+                    if(pushNewState)
+                    {
+                        GoNorth.Util.setUrlParameters(parameterValue);
+                    }
+                    else
+                    {
+                        GoNorth.Util.replaceUrlParameters(parameterValue);
+                    }
+                },
+
+                /**
+                 * Builds the url parameters
+                 * 
+                 * @returns {string} Url parameters
+                 */
+                buildUrlParameters: function() {
+                    var parameterValue = "id=" + this.id();
+                    if(this.isNonDefaultChapterSelected && this.isNonDefaultChapterSelected() && this.selectedChapter())
+                    {
+                        parameterValue += "&chapter=" + this.selectedChapter().number;
+                    }
+
+                    return parameterValue;
                 },
 
                 /**
                  * Switches the map which is currently displayed if ifs different to the current one
                  * 
                  * @param {string} id Id of the map
+                 * @param {bool} dontPushState true if the url change should not be pushed as a state, else false
                  */
-                switchMap: function(id) {
+                switchMap: function(id, dontPushState) {
                     if(this.id() == id)
                     {
                         return;
@@ -402,15 +485,16 @@
                     this.kartaMarkerManager.resetMarkers();
                     this.aikaMarkerManager.resetMarkers();
                     this.noteMarkerManager.resetMarkers();
-                    this.loadMap(id);
+                    this.loadMap(id, dontPushState);
                 },
 
                 /**
                  * Loads a map
                  * 
                  * @param {string} id Id of the map
+                 * @param {bool} dontPushState true if the url change should not be pushed as a state, else false
                  */
-                loadMap: function(id) {
+                loadMap: function(id, dontPushState) {
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
@@ -423,7 +507,7 @@
                         self.mapMaxZoom(map.maxZoom);
                         self.mapImageWidth(map.width);
                         self.mapImageHeight(map.height);
-                        self.setId(id);
+                        self.setId(id, dontPushState);
 
                         if(self.map)
                         {

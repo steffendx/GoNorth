@@ -155,5 +155,14 @@ namespace GoNorth.Data.Exporting
             DeleteResult result = await _TemplateCollection.DeleteOneAsync(t => t.Id == template.Id);
         }
 
+        /// <summary>
+        /// Deletes all templates of a project
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Task</returns>
+        public async Task DeleteTemplatesForProject(string projectId)
+        {
+            await _TemplateCollection.DeleteManyAsync(t => t.ProjectId == projectId);
+        }
     }
 }

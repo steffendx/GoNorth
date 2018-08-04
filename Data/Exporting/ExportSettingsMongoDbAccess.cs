@@ -80,5 +80,15 @@ namespace GoNorth.Data.Exporting
             }
         }
 
+        /// <summary>
+        /// Deletes the export settings for a project
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Task</returns>
+        public async Task DeleteExportSettings(string projectId)
+        {
+            await _SettingsCollection.DeleteOneAsync(s => s.ProjectId == projectId);
+        }
+
     }
 }

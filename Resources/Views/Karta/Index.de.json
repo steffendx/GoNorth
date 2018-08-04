@@ -49,6 +49,9 @@
 
     "YouAreEditingANonDefaultChapter": "Du bearbeitest aktuell nicht die Markierungen des Standardkapitel. Alle Änderungen gelten erst ab dem ausgewählten Kapitel.",
 
+    "SuccessfullyCopiedToClipboard": "Link wurde in die zwischenablage kopiert",
+
+    "CopyLinkToMarkerTooltip": "Link zu Markierung kopieren",
     "EditMarkerGeometryTooltip": "Geometrie der Markierung bearbeiten",
     "EditMarkerTooltip": "Markierung bearbeiten",
     "MarkerIsNotImplementedTooltip": "Markierung ist noch nicht implementiert",

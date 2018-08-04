@@ -12,7 +12,7 @@
                 GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
 
                 this.id = new ko.observable("");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.id(paramId);

@@ -59,5 +59,12 @@ namespace GoNorth.Data.Exporting
         /// <param name="template">Template to delete</param>
         /// <returns>Task</returns>
         Task DeleteTemplate(ExportTemplate template);
+        
+        /// <summary>
+        /// Deletes all templates of a project
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Task</returns>
+        Task DeleteTemplatesForProject(string projectId);
     }
 }

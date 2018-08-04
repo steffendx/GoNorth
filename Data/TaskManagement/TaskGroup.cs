@@ -14,6 +14,11 @@ namespace GoNorth.Data.TaskManagement
         public string Id { get; set; }
 
         /// <summary>
+        /// Task number
+        /// </summary>
+        public int TaskNumber { get; set; }
+
+        /// <summary>
         /// Name of the group
         /// </summary>
         public string Name { get; set; }

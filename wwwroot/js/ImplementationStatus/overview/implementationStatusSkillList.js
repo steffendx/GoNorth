@@ -58,7 +58,7 @@
              * @returns {string}  Url of the object
              */
             Overview.ImplementationStatusSkillList.prototype.buildObjectUrl = function(obj) {
-                return "/Evne/Skill#id=" + obj.id;
+                return "/Evne/Skill?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));

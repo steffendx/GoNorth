@@ -535,6 +535,33 @@
             }
 
             /**
+             * Updates the position and zoom in the url for the node graph
+             * @param {object} paper JointJs paper
+             */
+            function updatePositionZoomUrl(paper) {
+                var urlParams = "nodeX=" + roundToOneDigit(paper.translate().tx);
+                urlParams += "&nodeY=" + roundToOneDigit(paper.translate().ty);
+                urlParams += "&nodeZoom=" + roundToOneDigit(paper.scale().sx);
+
+                var finalParams = window.location.search;
+                if(finalParams) 
+                {
+                    finalParams = finalParams.replace(/nodeX=.*?&nodeY=.*?&nodeZoom=.*?(&|$)/i, "");
+                    if(finalParams[finalParams.length - 1] != "&")
+                    {
+                        finalParams += "&";
+                    }
+                    finalParams += urlParams;
+                }
+                else
+                {
+                    finalParams = "?" + urlParams;
+                }
+
+                window.history.replaceState(finalParams, null, finalParams)
+            }
+
+            /**
              * Updates the mini map
              * 
              * @param {object} element Element containing the node graph
@@ -615,7 +642,7 @@
 
             // Create throttled version of update mini map
             var throttledUpdatedMiniMap = GoNorth.Util.throttle(updateMiniMap, 35);
-
+            var debouncedUpdatePositionZoomUrl = GoNorth.Util.debounce(updatePositionZoomUrl, 250);
 
             /**
              * Node Graph Binding Handler
@@ -671,6 +698,10 @@
                         }
                     });
 
+                    GoNorth.BindingHandlers.nodeGraphRefreshPositionZoomUrl = function() {
+                        debouncedUpdatePositionZoomUrl(paper);
+                    };
+
                     // Add mini Map update events
                     var showMiniMap = false;
                     graph.on("change", function() {
@@ -713,6 +744,7 @@
                         {
                             paper.scale(newScale, newScale);
                             updatePositionZoomDisplay(element, paper);
+                            debouncedUpdatePositionZoomUrl(paper);
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
 
@@ -740,6 +772,7 @@
                         {
                             paper.translate(event.offsetX - dragStartPosition.x, event.offsetY - dragStartPosition.y);
                             updatePositionZoomDisplay(element, paper);
+                            debouncedUpdatePositionZoomUrl(paper);
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
                     });
@@ -775,6 +808,7 @@
                         {
                             paper.translate(event.originalEvent.touches[0].screenX - dragStartPosition.x + dragStartTransform.x, event.originalEvent.touches[0].screenY - dragStartPosition.y + dragStartTransform.y);
                             updatePositionZoomDisplay(element, paper);
+                            debouncedUpdatePositionZoomUrl(paper);
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
                         else if(dragStartDistance && event.originalEvent.touches && event.originalEvent.touches.length == 2)
@@ -785,6 +819,7 @@
                             {
                                 paper.scale(newScale, newScale);
                                 updatePositionZoomDisplay(element, paper);
+                                debouncedUpdatePositionZoomUrl(paper);
                                 throttledUpdatedMiniMap(element, paper, showMiniMap);
                             }
                         }
@@ -796,6 +831,19 @@
                         dragStartDistance = null;
                         dragStartScale = null;
                     });
+
+                    // Url Position / Zoom
+                    var urlPositionX = parseFloat(GoNorth.Util.getParameterFromUrl("nodeX"));
+                    var urlPositionY = parseFloat(GoNorth.Util.getParameterFromUrl("nodeY"));
+                    var urlZoom = parseFloat(GoNorth.Util.getParameterFromUrl("nodeZoom"));
+                    if(!isNaN(urlPositionX) && !isNaN(urlPositionY))
+                    {
+                        paper.translate(urlPositionX, urlPositionY);
+                    }
+                    if(!isNaN(urlZoom))
+                    {
+                        paper.scale(urlZoom, urlZoom);
+                    }
 
                     // Styling
                     jQuery(element).addClass("gn-nodeGraph");
@@ -821,6 +869,7 @@
                     });
 
                     updatePositionZoomDisplay(element, paper);
+                    debouncedUpdatePositionZoomUrl(paper);
                 },
                 update: function (element, valueAccessor) {
                 }

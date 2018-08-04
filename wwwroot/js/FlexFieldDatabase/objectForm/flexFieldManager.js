@@ -53,6 +53,16 @@
                 },
 
                 /**
+                 * Adds a field group to the manager
+                 * 
+                 * @param {string} name Name of the group
+                 * @returns {FlexFieldBase} New field
+                 */
+                addFieldGroup: function(name) {
+                    return this.addField(ObjectForm.FlexFieldGroup, name);
+                },
+
+                /**
                  * Adds a field to the manager
                  * 
                  * @param {int} fieldType Type of the field
@@ -87,6 +97,8 @@
                         return new ObjectForm.NumberFlexField();
                     case ObjectForm.FlexFieldTypeOption:
                         return new ObjectForm.OptionFlexField();
+                    case ObjectForm.FlexFieldGroup:
+                        return new ObjectForm.FieldGroup();
                     }
 
                     return null;
@@ -102,79 +114,29 @@
                     this.fields.remove(field);
                 },
 
-
                 /**
-                 * Moves a field up
+                 * Deletes a field group
                  * 
-                 * @param {FlexFieldBase} field Field to move up
+                 * @param {FieldGroup} fieldGroup Field group to delete
                  */
-                moveFieldUp: function(field) {
-                    var fieldIndex = this.fields.indexOf(field);
-                    if(fieldIndex >= this.fields().length - 1 || fieldIndex < 0)
-                    {
-                        return;
+                deleteFieldGroup: function(field) {
+                    if(field.fields) {
+                        var targetPushIndex = this.fields.indexOf(field);
+                        var fieldsInGroup = field.fields();
+                        for(var curField = 0; curField < fieldsInGroup.length; ++curField)
+                        {
+                            if(targetPushIndex < 0)
+                            {
+                                this.fields.push(fieldsInGroup[curField]);
+                            }
+                            else
+                            {
+                                this.fields.splice(targetPushIndex + curField, 0, fieldsInGroup[curField]);
+                            }
+                        }
                     }
-
-                    this.swapFields(fieldIndex, fieldIndex + 1);
-                },
-
-                /**
-                 * Moves a field down
-                 * 
-                 * @param {FlexFieldBase} field Field to move down
-                 */
-                moveFieldDown: function(field) {
-                    var fieldIndex = this.fields.indexOf(field);
-                    if(fieldIndex <= 0)
-                    {
-                        return;
-                    }
-
-                    this.swapFields(fieldIndex, fieldIndex - 1);
-                },
-
-                /**
-                 * Swaps to fields
-                 * 
-                 * @param {int} index1 Index of the first field
-                 * @param {int} index2 Index of the second field
-                 */
-                swapFields: function(index1, index2) {
-                    // Needs to remove and add again for multiline field
-                    var fieldValue1 = this.fields()[index1];
-                    var fieldValue2 = this.fields()[index2];
-                    this.fields.remove(fieldValue1);
-                    this.fields.remove(fieldValue2);
-
-                    var firstIndex = index1;
-                    var firstItem = fieldValue2;
-                    var secondIndex = index2;
-                    var secondItem = fieldValue1;
-                    if(index1 > index2)
-                    {
-                        firstIndex = index2;
-                        firstItem = fieldValue1;
-                        secondIndex = index1;
-                        secondItem = fieldValue2;
-                    }
-
-                    if(firstIndex >= this.fields().length)
-                    {
-                        this.fields.push(firstItem);
-                    }
-                    else
-                    {
-                        this.fields.splice(firstIndex, 0, firstItem);
-                    }
-
-                    if(secondIndex >= this.fields().length)
-                    {
-                        this.fields.push(secondItem);
-                    }
-                    else
-                    {
-                        this.fields.splice(secondIndex, 0, secondItem);
-                    }
+                    
+                    this.fields.remove(field);
                 },
 
 
@@ -188,19 +150,38 @@
                     var fields = this.fields();
                     for(var curField = 0; curField < fields.length; ++curField)
                     {
-                        var serializedValue = {
-                            id: fields[curField].id(),
-                            createdFromTemplate: fields[curField].createdFromTemplate(),
-                            fieldType: fields[curField].getType(),
-                            name: fields[curField].name(),
-                            value: fields[curField].serializeValue(),
-                            additionalConfiguration: fields[curField].serializeAdditionalConfiguration(),
-                            scriptSettings: fields[curField].scriptSettings.serialize()
-                        };
-                        serializedValues.push(serializedValue);
+                        serializedValues.push(this.serializeSingleField(fields[curField], serializedValues));
+
+                        var childFields = fields[curField].getChildFields();
+                        if(childFields)
+                        {
+                            for(var curChild = 0; curChild < childFields.length; ++curChild)
+                            {
+                                serializedValues.push(this.serializeSingleField(childFields[curChild], serializedValues));
+                            }
+                        }
                     }
 
                     return serializedValues;
+                },
+
+                /**
+                 * Serializes a single field
+                 * 
+                 * @param {FlexFieldBase} field Field to serialize
+                 * @param {object[]} serializedValues Already serialized values
+                 * @returns {object} Serialized field
+                 */
+                serializeSingleField: function(field, serializedValues) {
+                    return {
+                        id: field.id(),
+                        createdFromTemplate: field.createdFromTemplate(),
+                        fieldType: field.getType(),
+                        name: field.name(),
+                        value: field.serializeValue(serializedValues.length),
+                        additionalConfiguration: field.serializeAdditionalConfiguration(),
+                        scriptSettings: field.scriptSettings.serialize()
+                    };
                 },
 
                 /**
@@ -221,6 +202,21 @@
                         deserializedField.scriptSettings.deserialize(serializedValues[curField].scriptSettings);
                         fields.push(deserializedField);
                     }
+
+                    var fieldsToRemoveFromRootList = {};
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        fields[curField].groupFields(fields, fieldsToRemoveFromRootList);
+                    }
+
+                    for(var curField = fields.length - 1; curField >= 0; --curField)
+                    {
+                        if(fieldsToRemoveFromRootList[curField])
+                        {
+                            fields.splice(curField, 1);
+                        }
+                    }
+
                     this.fields(fields);
                 },
 
@@ -251,6 +247,50 @@
                     for(var curField = 0; curField < fields.length; ++curField)
                     {
                         fields[curField].createdFromTemplate(true);
+                        var children = fields[curField].getChildFields();
+                        if(!children)
+                        {
+                            continue;
+                        }
+
+                        for(var curChild = 0; curChild < children.length; ++curChild)
+                        {
+                            children[curChild].createdFromTemplate(true);
+                        }
+                    }
+                },
+
+
+                /**
+                 * Checks if a field name is in used
+                 * 
+                 * @param {string} fieldName Name of the field to check
+                 * @param {string} fieldToIgnore Field to ignore during the check (important for rename)
+                 */
+                isFieldNameInUse: function(fieldName, fieldToIgnore) {
+                    fieldName = fieldName.toLowerCase();
+
+                    var fields = this.fields();
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        if(fields[curField] != fieldToIgnore && fields[curField].name() && fields[curField].name().toLowerCase() == fieldName)
+                        {
+                            return true;
+                        }
+
+                        var children = fields[curField].getChildFields();
+                        if(!children)
+                        {
+                            continue;
+                        }
+
+                        for(var curChild = 0; curChild < children.length; ++curChild)
+                        {
+                            if(children[curChild] != fieldToIgnore && children[curChild].name() && children[curChild].name().toLowerCase() == fieldName)
+                            {
+                                return true;
+                            }
+                        }
                     }
                 }
             }

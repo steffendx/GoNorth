@@ -76,7 +76,7 @@
                  * Opens the object form to create a new template
                  */
                 createNewTemplate: function() {
-                    window.location = this.objectPageUrl + "#template=1";
+                    window.location = this.objectPageUrl + "?template=1";
                 },
 
                 /**
@@ -86,7 +86,7 @@
                  * @returns {string} Url of the template
                  */
                 buildTemplateUrl: function(template) {
-                    return this.objectPageUrl + "#template=1&id=" + template.id;
+                    return this.objectPageUrl + "?template=1&id=" + template.id;
                 }
             };
 

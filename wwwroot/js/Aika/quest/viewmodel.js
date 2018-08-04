@@ -19,7 +19,7 @@
                 GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldHandlingViewModel.apply(this);
 
                 this.id = new ko.observable("");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.id(paramId);
@@ -232,7 +232,7 @@
              * @returns {string} Url to the detail view
              */
             Quest.ViewModel.prototype.buildAikaDetailUrl = function(detail) {
-                return "/Aika/Detail#id=" + detail.id;
+                return "/Aika/Detail?id=" + detail.id;
             };
 
             
@@ -271,7 +271,7 @@
              * @returns {string} Url to the quest
              */
             Quest.ViewModel.prototype.buildAikaQuestUrl = function(quest) {
-                return "/Aika/Quest#id=" + quest.id;
+                return "/Aika/Quest?id=" + quest.id;
             };
             
 
@@ -301,7 +301,7 @@
              * @returns {string} Url to the kirja page
              */
             Quest.ViewModel.prototype.buildKirjaPageUrl = function(page) {
-                return "/Kirja#id=" + page.id;
+                return "/Kirja?id=" + page.id;
             };
 
 
@@ -356,7 +356,7 @@
              * @returns {string} Url for the dialog
              */
             Quest.ViewModel.prototype.buildTaleDialogUrl = function(dialogNpc) {
-                return "/Tale#npcId=" + dialogNpc.id;
+                return "/Tale?npcId=" + dialogNpc.id;
             };
 
 
@@ -386,7 +386,7 @@
              * @returns {string} Url to the map 
              */
             Quest.ViewModel.prototype.buildKartaMapUrl = function(map) {
-               return "/Karta#id=" + map.id + "&preSelectType=Quest&preSelectId=" + this.id();
+               return "/Karta?id=" + map.id + "&preSelectType=Quest&preSelectId=" + this.id();
             };
 
 
@@ -438,7 +438,8 @@
                         self.id(data.id);
                         self.acquireLock();
 
-                        window.location.hash = "id=" + data.id;
+                        GoNorth.Util.replaceUrlParameters("id=" + data.id);
+                        GoNorth.BindingHandlers.nodeGraphRefreshPositionZoomUrl();
                     }
 
                     self.isImplemented(data.isImplemented);

@@ -58,7 +58,7 @@
              * @returns {string}  Url of the object
              */
             Overview.ImplementationStatusItemList.prototype.buildObjectUrl = function(obj) {
-                return "/Styr/Item#id=" + obj.id;
+                return "/Styr/Item?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));

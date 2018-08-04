@@ -1,18 +1,6 @@
-@using Microsoft.AspNetCore.Mvc.Localization
-
-@inject IViewLocalizer Localizer
-
-<!-- ko foreach: fieldManager.fields -->
+<div data-bind="sortable: { data: fieldManager.fields, connectClass: 'fieldList', isEnabled: !$root.isReadonly(), options: { handle: '.gn-flexFieldDragHandle' }, beforeMove: function(e) { $root.checkFieldDropAllowed(e); } }">
     <div class="form-group">
-        <label data-bind="text: name"></label>
-        <!-- ko if: !$root.isReadonly() -->
-            <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.moveFieldDown(field); }" title="@Localizer["MoveUp"]"><i class="glyphicon glyphicon-arrow-up"></i></a>
-            <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.moveFieldUp(field); }" title="@Localizer["MoveDown"]"><i class="glyphicon glyphicon-arrow-down"></i></a>
-            <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.openScriptSettings(field); }, visible: canExportToScript()" title="@Localizer["ScriptSettings"]"><i class="glyphicon glyphicon-log-in"></i></a>
-            <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.editField(field); }"><i class="glyphicon glyphicon-pencil" title="@Localizer["EditField"]"></i></a>
-            <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.openConfirmDeleteFieldDialog(field); }" title="@Localizer["DeleteField"]"><i class="glyphicon glyphicon-trash"></i></a>
-        <!-- /ko -->
         <!-- ko template: { name: getTemplateName(), data: $data } -->
         <!-- /ko -->
     </div>
-<!-- /ko -->
+</div>

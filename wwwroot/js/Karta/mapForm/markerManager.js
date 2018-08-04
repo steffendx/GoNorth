@@ -350,8 +350,7 @@
                 /**
                  * Saves unparsed markers to parse later after map was loaded
                  */
-                setUnparsedMarkers: function(unparsedMarkers)
-                {
+                setUnparsedMarkers: function(unparsedMarkers) {
                     this.unparsedMarkers = unparsedMarkers;
                 },
 

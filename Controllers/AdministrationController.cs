@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using GoNorth.Data;
 using GoNorth.Services.Karta;
+using GoNorth.Services.TaskManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,22 +17,29 @@ namespace GoNorth.Controllers
         /// <summary>
         /// Database Setup
         /// </summary>
-        public readonly IDbSetup _DbSetup;
+        private readonly IDbSetup _DbSetup;
 
         /// <summary>
         /// Karta Marker Label Sync
         /// </summary>
-        public readonly IKartaMarkerLabelSync _KartaMarkerLabelSync;
+        private readonly IKartaMarkerLabelSync _KartaMarkerLabelSync;
+
+        /// <summary>
+        /// Task number fill
+        /// </summary>
+        private readonly ITaskNumberFill _TaskNumberFill;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dbSetup">Database Setup</param>
         /// <param name="kartaMarkerLabelSync">Karta Marker Label Sync</param>
-        public AdministrationController(IDbSetup dbSetup, IKartaMarkerLabelSync kartaMarkerLabelSync)
+        /// <param name="taskNumberFill">Task Number fill</param>
+        public AdministrationController(IDbSetup dbSetup, IKartaMarkerLabelSync kartaMarkerLabelSync, ITaskNumberFill taskNumberFill)
         {
             _DbSetup = dbSetup;
             _KartaMarkerLabelSync = kartaMarkerLabelSync;
+            _TaskNumberFill = taskNumberFill;
         }
 
         /// <summary>
@@ -73,6 +81,7 @@ namespace GoNorth.Controllers
         {
             await _DbSetup.SetupDatabaseAsync();
             await _KartaMarkerLabelSync.SyncMarkerLabels();
+            await _TaskNumberFill.FillTasks();
             return View();
         }
     }

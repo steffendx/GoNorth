@@ -66,7 +66,7 @@
              * @returns {string} Url for the npc
              */
             Item.ViewModel.prototype.buildNpcInventoryUrl = function(npc) {
-                return "/Kortisto/Npc#id=" + npc.id;
+                return "/Kortisto/Npc?id=" + npc.id;
             };
 
         }(Styr.Item = Styr.Item || {}));

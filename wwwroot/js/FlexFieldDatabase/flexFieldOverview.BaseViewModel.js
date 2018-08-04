@@ -17,13 +17,20 @@
              */
             Overview.BaseViewModel = function(apiControllerName, objectPageUrl)
             {
+                var currentPage = 0;
+                var pageFromUrl = parseInt(GoNorth.Util.getParameterFromUrl("page"));
+                if(!isNaN(pageFromUrl))
+                {
+                    currentPage = pageFromUrl;
+                }
+
                 this.apiControllerName = apiControllerName;
                 this.objectPageUrl = objectPageUrl;
 
                 this.availableTemplates = new ko.observableArray();
 
                 this.currentFolderId = new ko.observable("");
-                var folderId = GoNorth.Util.getParameterFromHash("folderId");
+                var folderId = GoNorth.Util.getParameterFromUrl("folderId");
                 if(folderId)
                 {
                     this.currentFolderId(folderId);
@@ -40,17 +47,46 @@
                     return "";
                 }, this);
                 
-                this.currentPage = new ko.observable(0);
+                this.currentPage = new ko.observable(currentPage);
                 this.displayObjectRows = new ko.observableArray();
                 this.hasMore = new ko.observable(false);
                 this.isLoading = new ko.observable(false);
                 this.prevLoading = new ko.observable(false);
                 this.nextLoading = new ko.observable(false);
 
-                this.searchPattern = new ko.observable("");
-                this.currentSearchPattern = "";
+                var searchTermToUse = "";
+                var searchTermFromUrl = GoNorth.Util.getParameterFromUrl("searchTerm");
+                if(searchTermFromUrl)
+                {
+                    searchTermToUse = searchTermFromUrl;
+                }
+                this.searchPattern = new ko.observable(searchTermToUse);
+                this.currentSearchPattern = searchTermToUse;
 
                 this.initializeEmptyValues();
+
+                var folderPageFromUrl = parseInt(GoNorth.Util.getParameterFromUrl("folderPage"));
+                if(!isNaN(folderPageFromUrl))
+                {
+                    this.folderPage = folderPageFromUrl;
+                }
+
+                var objectPageFromUrl = parseInt(GoNorth.Util.getParameterFromUrl("objectPage"));
+                if(!isNaN(objectPageFromUrl))
+                {
+                    this.flexFieldObjectPage = objectPageFromUrl;
+                }
+
+                var objectStartPageSizeFromUrl = parseInt(GoNorth.Util.getParameterFromUrl("objectStartPageSize"));
+                if(!isNaN(objectStartPageSizeFromUrl))
+                {
+                    this.flexFieldObjectStartPageSize = objectStartPageSizeFromUrl;
+                }
+
+                if(parseInt(GoNorth.Util.getParameterFromUrl("useStartPageSize")) == 1)
+                {
+                    this.useFlexFieldObjectStartPageSize = true;
+                }
 
                 this.showConfirmDeleteFolderDialog = new ko.observable(false);
                 this.deleteFolderError = new ko.observable("");
@@ -79,8 +115,8 @@
                 this.loadAvailableTemplates();
 
                 var self = this;
-                window.onhashchange = function() {
-                    var folderId = GoNorth.Util.getParameterFromHash("folderId");
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var folderId = GoNorth.Util.getParameterFromUrl("folderId");
                     if(folderId == self.currentFolderId())
                     {
                         return;
@@ -96,9 +132,10 @@
                     }
 
                     self.showAllLoading();
+                    self.currentPage(0);
                     self.initializeEmptyValues();
                     self.loadPage(true);
-                }
+                });
             };
 
             Overview.BaseViewModel.prototype = {
@@ -148,11 +185,21 @@
                 },
 
                 /**
+                 * Saves paging information
+                 */
+                savePagingInformation: function() {
+                    var urlParameters = "?" + this.buildUrlParameters(false);
+                    window.history.replaceState(urlParameters, null, urlParameters)
+                },
+
+                /**
                  * Loads a page
                  * 
                  * @param {bool} isFirst true if its the first load, else false
                  */
                 loadPage: function(isFirst) {
+                    this.savePagingInformation();
+
                     var loadingDefs = [];
                     if(!this.currentSearchPattern)
                     {
@@ -278,7 +325,8 @@
                             description: folder.description,
                             imageFile: folder.imageFile,
                             thumbnailImage: folder.thumbnailImageFile ? folder.thumbnailImageFile : folder.imageFile,
-                            tileUrl: "#folderId=" + folder.id
+                            tileUrl: window.location.pathname + "?folderId=" + folder.id,
+                            isFolder: true
                         });
 
                         if(curRow.length >= rowSize)
@@ -305,7 +353,8 @@
                                 name: flexFieldObject.name,
                                 imageFile: flexFieldObject.imageFile,
                                 thumbnailImage: flexFieldObject.thumbnailImageFile ? flexFieldObject.thumbnailImageFile : flexFieldObject.imageFile,
-                                tileUrl: self.objectPageUrl + "#id=" + flexFieldObject.id
+                                tileUrl: self.objectPageUrl + "?id=" + flexFieldObject.id,
+                                isFolder: false
                             });
     
                             if(curRow.length >= rowSize)
@@ -382,17 +431,36 @@
                 },
 
                 /**
+                 * Builds the url parameters
+                 * 
+                 * @param {bool} useParentId true if the parent id should be used, false if the current folder id should be used
+                 * @returns {string} Url Parameters
+                 */
+                buildUrlParameters: function(useParentId) {
+                    var urlParameters = "";
+                    if(!useParentId && this.currentFolderId())
+                    {
+                        urlParameters = "folderId=" + this.currentFolderId() + "&";
+                    }
+                    else if(useParentId && this.parentFolderId())
+                    {
+                        urlParameters = "folderId=" + this.parentFolderId() + "&";
+                    }
+
+                    urlParameters += "page=" + this.currentPage() + "&folderPage=" + this.folderPage + "&objectPage=" + this.flexFieldObjectPage + "&objectStartPageSize=" + this.flexFieldObjectStartPageSize + "&useStartPageSize=" + (this.useFlexFieldObjectStartPageSize ? 1 : 0);
+                    if(this.currentSearchPattern)
+                    {
+                        urlParameters += "&searchTerm=" + encodeURIComponent(this.currentSearchPattern);
+                    }
+
+                    return urlParameters;
+                },
+
+                /**
                  * Navigates a level back up
                  */
                 navigateLevelBack: function() {
-                    if(this.parentFolderId())
-                    {
-                        window.location.hash = "#folderId=" + this.parentFolderId();
-                    }
-                    else
-                    {
-                        window.location.hash = "";
-                    }
+                    GoNorth.Util.setUrlParameters(this.buildUrlParameters(true));
                 },
 
 
@@ -568,7 +636,7 @@
                  * @param {object} template Template for the Flex Field Object
                  */
                 openNewFlexFieldObjectForm: function(template) {
-                    window.location = this.objectPageUrl + "#templateId=" + template.id + "&folderId=" + this.currentFolderId();
+                    window.location = this.objectPageUrl + "?templateId=" + template.id + "&folderId=" + this.currentFolderId();
                 }
             };
 

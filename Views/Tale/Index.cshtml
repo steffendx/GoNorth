@@ -63,31 +63,31 @@
 
     <div class="row gn-defaultContentTopMargin">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" data-bind="if: !isReadonly()">
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodePlayerText" data-nodetype="tale.PlayerText">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodePlayerText" data-nodetype="tale.PlayerText">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["PlayerTextNode"]</div>
                 </div>
             </div>
 
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeNpcText" data-nodetype="tale.NpcText">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeNpcText" data-nodetype="tale.NpcText">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["NpcTextNode"]</div>
                 </div>
             </div>
 
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeChoice" data-nodetype="tale.Choice">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeChoice" data-nodetype="tale.Choice">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["ChoiceNode"]</div>
                 </div>
             </div>
             
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeAction" data-nodetype="default.Action">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeAction" data-nodetype="default.Action">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["ActionNode"]</div>
                 </div>
             </div>
 
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeCondition" data-nodetype="default.Condition">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeCondition" data-nodetype="default.Condition">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["ConditionNode"]</div>
                 </div>
@@ -95,7 +95,7 @@
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="gn-nodeGraphContainer">
-                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, droppable: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
+                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, droppableElement: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
             </div>
         </div>
     </div>

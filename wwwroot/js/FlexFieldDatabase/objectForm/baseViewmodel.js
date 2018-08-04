@@ -27,13 +27,13 @@
                 this.kartaApiMarkedMethod = kartaApiMarkedMethod;
 
                 this.isTemplateMode = new ko.observable(false);
-                if(GoNorth.Util.getParameterFromHash("template"))
+                if(GoNorth.Util.getParameterFromUrl("template"))
                 {
                     this.isTemplateMode(true);
                 }
 
                 this.id = new ko.observable("");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.id(paramId);
@@ -50,9 +50,9 @@
                     }
                 }, this);
 
-                var templateId = GoNorth.Util.getParameterFromHash("templateId");
+                var templateId = GoNorth.Util.getParameterFromUrl("templateId");
                 this.templateId = templateId;
-                this.parentFolderId = GoNorth.Util.getParameterFromHash("folderId");
+                this.parentFolderId = GoNorth.Util.getParameterFromUrl("folderId");
                 
                 this.isReadonly = new ko.observable(false);
                 this.lockedByUser = new ko.observable("");
@@ -379,11 +379,11 @@
                         var idAdd = "id=" + data.id;
                         if(self.isTemplateMode())
                         {
-                            window.location.hash += "&" + idAdd;
+                            GoNorth.Util.replaceUrlParameters("template=1&" + idAdd);
                         }
                         else
                         {
-                            window.location.hash = idAdd;
+                            GoNorth.Util.replaceUrlParameters(idAdd);
                         }
                         self.acquireLock();
                     }
@@ -551,7 +551,7 @@
                     return;
                 }
 
-                var url = "/Export/ManageTemplate#templateType=" + templateType + "&customizedObjectId=" + this.id();
+                var url = "/Export/ManageTemplate?templateType=" + templateType + "&customizedObjectId=" + this.id();
                 if(this.isTemplateMode())
                 {
                     url += "&objectIsTemplate=1";
@@ -681,7 +681,7 @@
              * @returns {string} Url for quest
              */
             ObjectForm.BaseViewModel.prototype.buildAikaQuestUrl = function(quest) {
-                return "/Aika/Quest#id=" + quest.id;
+                return "/Aika/Quest?id=" + quest.id;
             };
 
 
@@ -711,7 +711,7 @@
              * @returns {string} Url for the page
              */
             ObjectForm.BaseViewModel.prototype.buildKirjaPageUrl = function(page) {
-                return "/Kirja#id=" + page.id;
+                return "/Kirja?id=" + page.id;
             };
 
 
@@ -760,7 +760,7 @@
              * @returns {string} Url for the map
              */
             ObjectForm.BaseViewModel.prototype.buildKartaMapUrl = function(map) {
-                var url = "/Karta#id=" + map.mapId;
+                var url = "/Karta?id=" + map.mapId;
                 if(map.markerIds.length == 1)
                 {
                     url += "&zoomOnMarkerId=" + map.markerIds[0] + "&zoomOnMarkerType=" + map.mapMarkerType
@@ -823,7 +823,7 @@
              * @returns {string} Url for the dialog
              */
             ObjectForm.BaseViewModel.prototype.buildTaleDialogUrl = function(dialogNpc) {
-                return "/Tale#npcId=" + dialogNpc.id;
+                return "/Tale?npcId=" + dialogNpc.id;
             };
 
 

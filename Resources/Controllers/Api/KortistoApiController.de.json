@@ -8,5 +8,7 @@
 
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",
-    "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt."
+    "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt.",
+
+    "DuplicateFieldNameExist": "Es existitieren mehrere Felder mit gleichem Namen."
 }

@@ -66,11 +66,6 @@ namespace GoNorth.Controllers.Api
             /// Label of the Tempalte
             /// </summary>
             public string Label { get; set; }
-
-            /// <summary>
-            /// true if the template is for a language file
-            /// </summary>
-            public bool IsLanguageTemplate { get; set; }
         };
 
         /// <summary>
@@ -497,7 +492,6 @@ namespace GoNorth.Controllers.Api
             TranslatedExportTemplate translatedTemplate = new TranslatedExportTemplate();
             translatedTemplate.Template = template;
             translatedTemplate.Label = _localizer["TemplateType" + template.TemplateType];
-            translatedTemplate.IsLanguageTemplate = _defaultTemplateProvider.IsTemplateTypeLanguage(template.TemplateType);
             
             return translatedTemplate;
         }

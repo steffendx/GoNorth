@@ -4,5 +4,7 @@
 
     "CanNotDeleteQuestUsedInChapterDetail": "The quest is being used in the detail view \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteQuestMentionedInKirjaPage": "The quest is mentioned in the Kirja page \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteQuestReferencedInTaleDialog": "The quest is referenced in the Tale dialog \"{0}\". To prevent errors in the story it must be deleted there first."
+    "CanNotDeleteQuestReferencedInTaleDialog": "The quest is referenced in the Tale dialog \"{0}\". To prevent errors in the story it must be deleted there first.",
+
+    "DuplicateFieldNameExist": "Multiple fields with the same name exist."
 }

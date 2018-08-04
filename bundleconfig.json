@@ -211,6 +211,7 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
@@ -257,6 +258,7 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
@@ -308,6 +310,7 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
@@ -378,6 +381,7 @@
     "outputFileName": "wwwroot/js/Kirja/page.viewmodel.js",
     "inputFiles": [
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+      "wwwroot/js/Kirja/page/childLinkClickBindingHandler.js",
       "wwwroot/js/Kirja/page/viewmodel.js"
     ],
     "minify": {
@@ -463,6 +467,7 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
       
       "wwwroot/js/Shared/nodeGraph/actions/baseAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changeValueAction.js",
@@ -606,6 +611,7 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
 

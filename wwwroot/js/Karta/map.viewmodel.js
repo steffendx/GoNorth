@@ -10,6 +10,13 @@
             CompareDialog.ViewModel = function()
             {
                 this.isOpen = new ko.observable(false);
+                var self = this;
+                this.isOpen.subscribe(function(newValue) {
+                    if(!newValue && self.markAsImplementedPromise)
+                    {
+                        self.markAsImplementedPromise.reject();
+                    }
+                });
                 this.objectName = new ko.observable("");
 
                 this.isLoading = new ko.observable(false);
@@ -185,15 +192,16 @@
                         headers: GoNorth.Util.generateAntiForgeryHeader(),
                         type: "POST"
                     }).done(function() {
-                        self.isLoading(false);
-                        self.isOpen(false);
-
                         if(window.refreshImplementationStatusList)
                         {
                             window.refreshImplementationStatusList();
                         }
 
                         self.markAsImplementedPromise.resolve();
+                        self.markAsImplementedPromise = null;
+
+                        self.isLoading(false);
+                        self.isOpen(false);
                     }).fail(function() {
                         self.isLoading(false);
                         self.errorOccured(true);
@@ -349,7 +357,31 @@
 
                 /// Default Zoom Level
                 var defaultZoom = 2;
+                
+                /// Url Latitude
+                var urlLat = null;
 
+                /// Url Longitude
+                var urlLong = null;
+
+                /// Url Zoom
+                var urlZoom = null;
+
+                /**
+                 * Reads the url map locations
+                 */
+                GoNorth.Karta.Map.readUrlMapLocations = function() {
+                    urlLat = parseFloat(GoNorth.Util.getParameterFromUrl("mapLat"));
+                    urlLong = parseFloat(GoNorth.Util.getParameterFromUrl("mapLong"));
+                    urlZoom = parseInt(GoNorth.Util.getParameterFromUrl("mapZoom"));
+                }
+                GoNorth.Karta.Map.readUrlMapLocations();
+
+                /**
+                 * Unwraps an observable
+                 * @param {object} obs Observable or value
+                 * @returns {object} Value of the observable
+                 */
                 function unwrapIfObservable(obs) {
                     if(ko.isObservable(obs))
                     {
@@ -358,6 +390,57 @@
 
                     return obs;
                 }
+
+                /**
+                 * Removes dangling events from leaflet that get not correctly removed
+                 * @param {object} domElement Dom Element
+                 * @param {object} inputObj Input object
+                 * @param {boolean} checkPrefix true to check the prefix, else false
+                 */
+                function removeDanglingEvents(domElement, inputObj, checkPrefix)
+                {
+                    if(inputObj !== null)
+                    {
+                        var msPointer = L.Browser.msPointer;
+                        var POINTER_DOWN   = msPointer ? 'MSPointerDown'   : 'pointerdown';
+                        var POINTER_MOVE   = msPointer ? 'MSPointerMove'   : 'pointermove';
+                        var POINTER_UP     = msPointer ? 'MSPointerUp'     : 'pointerup';
+                        var POINTER_CANCEL = msPointer ? 'MSPointerCancel' : 'pointercancel';
+
+                        for(var prop in inputObj)
+                        {
+                            var prefixOk = checkPrefix ? prop.indexOf('_leaflet_') !== -1 : true, propVal; 
+                            if(inputObj.hasOwnProperty(prop) && prefixOk)
+                            {
+                                var evt = []; 
+                                if(prop.indexOf('touchstart') !== -1) 
+                                {
+                                    evt = [ POINTER_DOWN ];
+                                }
+                                else if(prop.indexOf('touchmove') !== -1)
+                                {
+                                    evt = [ POINTER_MOVE ];
+                                }
+                                else if(prop.indexOf('touchend') !== -1)
+                                {
+                                    evt = [ POINTER_UP, POINTER_CANCEL ];
+                                }
+
+                                propVal = inputObj[prop];
+                                if(evt.length > 0 && typeof propVal === 'function')
+                                {
+                                    for(var curEvent = 0; curEvent < evt.length; ++curEvent)
+                                    {
+                                        domElement.removeEventListener(evt[curEvent], propVal, false);
+                                    }                 
+                                }
+
+                                inputObj[prop] = null;
+                                delete inputObj[prop];
+                            }
+                        }
+                    }        
+                };
 
                 /**
                  * Initializes the map
@@ -438,7 +521,21 @@
                     map.setMaxBounds(mapTileBounds);
 
                     var mapCenter = map.unproject([imageWidth * 0.5, imageHeight * 0.5], 0);
-                    map.setView(mapCenter, Math.min(defaultZoom, maxZoom));
+                    var mapZoom = defaultZoom;
+
+                    if(urlLat != null && urlLong != null && !isNaN(urlLat) && !isNaN(urlLong))
+                    {
+                        mapCenter = new L.LatLng(urlLat, urlLong);
+                        urlLat = null;
+                        urlLong = null;
+                    }
+                    if(urlZoom != null && !isNaN(urlZoom))
+                    {
+                        mapZoom = urlZoom;
+                        urlZoom = null;
+                    }
+
+                    map.setView(mapCenter, Math.min(mapZoom, maxZoom));
 
                     if(ko.isObservable(obs)) 
                     {
@@ -454,6 +551,33 @@
                             clickHandler.apply(bindingContext.$data, [ map, e.latlng ])
                         });
                     }
+
+                    GoNorth.Karta.Map.refreshUrlMapLocations = function() {
+                        var urlParams = "mapLat=" + map.getCenter().lat;
+                        urlParams += "&mapLong=" + map.getCenter().lng;
+                        urlParams += "&mapZoom=" + map.getZoom();
+
+                        var finalParams = window.location.search;
+                        if(finalParams) 
+                        {
+                            finalParams = finalParams.replace(/mapLat=.*?&mapLong=.*?&mapZoom=.*?(&|$)/i, "");
+                            if(finalParams[finalParams.length - 1] != "&")
+                            {
+                                finalParams += "&";
+                            }
+                            finalParams += urlParams;
+                        }
+                        else
+                        {
+                            finalParams = "?" + urlParams;
+                        }
+
+                        window.history.replaceState(finalParams, null, finalParams)
+                    };
+
+                    map.on("zoomend moveend", function() {
+                        GoNorth.Karta.Map.refreshUrlMapLocations();
+                    });
 
                     var readyHandler = allBindings.get("mapReady");
                     if(readyHandler)
@@ -479,6 +603,9 @@
                         if(obs._map)
                         {
                             obs._map.remove();
+                            // Some events are not removed by leaflet itself, must be done here to prevent errors
+                            removeDanglingEvents(element, element._leaflet_events, false);
+                            removeDanglingEvents(element, element, true);
                             obs._map = null;
                         }
 
@@ -584,6 +711,7 @@
                             if(!self.isDisabled)
                             {
                                 content += "<div class='gn-kartaPopupButtons'>";
+                                content += "<a class='gn-clickable gn-kartaCopyMarkerLink' title='" + Map.Localization.CopyLinkToMarkerTooltip + "'><i class='glyphicon glyphicon-link'></i></a>";
                                 content += "<a class='gn-clickable gn-kartaEditMarkerGeometryButton' title='" + Map.Localization.EditMarkerGeometryTooltip + "'><i class='glyphicon glyphicon-record'></i></a>";
                                 if(self.editCallback)
                                 {
@@ -608,6 +736,10 @@
                             content = "<div>" + content + "</div>";
 
                             var jQueryContent = jQuery(content);
+                            jQueryContent.find(".gn-kartaCopyMarkerLink").click(function() {
+                                self.copyMarkerLink(this);
+                            });
+
                             jQueryContent.find(".gn-kartaEditMarkerGeometryButton").click(function() {
                                 self.callEditGeometry();
                             });
@@ -951,6 +1083,39 @@
                     });
                 },
 
+
+                /**
+                 * Copys a link to the marker
+                 * 
+                 * @param {object} markerLinkElement Marker Link Element
+                 */
+                copyMarkerLink: function(markerLinkElement) {
+                    var link = window.location.protocol + "//" + window.location.hostname;
+                    if(window.location.port)
+                    {
+                        link += ":" + window.location.port;
+                    }
+                    link += "/Karta?id=" + encodeURIComponent(this.mapId) + "&zoomOnMarkerId=" + encodeURIComponent(this.id) + "&zoomOnMarkerType=" + this.markerType;
+
+                    jQuery("#gn-kartaMarkerLinkContainer").remove();
+                    jQuery("body").append("<div id='gn-kartaMarkerLinkContainer' style='opacity: 0'><input id='gn-kartaMarkerLink'/></div>");
+                    jQuery("#gn-kartaMarkerLink").val(link);
+
+                    var exportResultField = jQuery("#gn-kartaMarkerLink")[0];
+                    exportResultField.select();
+                    document.execCommand("copy");
+
+                    jQuery("#gn-kartaMarkerLinkContainer").remove();
+
+                    jQuery("#gn-copyToClipboardToolTipContainer").remove();
+                    var buttonContainer = jQuery(markerLinkElement).parent();
+                    buttonContainer.append("<div id='gn-kartaCopyToLinkSuccessTooltip' class='gn-copyToClipboardToolTipContainer' style='width: 400px;position: absolute;right: 0px;bottom: 37px'><span class='gn-copyToClipboardToolTipText' style='bottom: 140%'>" + Map.Localization.SuccessfullyCopiedToClipboard + "</span></div>");
+                    var rightPosition = -(jQuery("#gn-kartaCopyToLinkSuccessTooltip").width() - jQuery(".gn-copyToClipboardToolTipText").outerWidth() / 2) + (buttonContainer.width() - jQuery(markerLinkElement).position().left + 34);
+                    jQuery("#gn-kartaCopyToLinkSuccessTooltip").css("right", rightPosition + "px");
+                    setTimeout(function() {
+                        buttonContainer.find("#gn-kartaCopyToLinkSuccessTooltip").remove();
+                    }, 1000);
+                },
 
                 /**
                  * Calls the edit geometry callback
@@ -1462,7 +1627,7 @@
                 jQuery.ajax({
                     url: "/api/KirjaApi/Page?id=" + this.pageId
                 }).done(function(pageContent) {
-                    var pageHtml = "<h4><a href='/Kirja#id=" + self.pageId + "' target='_blank'>" + pageContent.name + "</a></h4>";
+                    var pageHtml = "<h4><a href='/Kirja?id=" + self.pageId + "' target='_blank'>" + pageContent.name + "</a></h4>";
                     pageHtml += "<div class='gn-kartaPopupContent'>" + pageContent.content + "</div>";
 
                     def.resolve(pageHtml);
@@ -1557,7 +1722,7 @@
                 jQuery.ajax({
                     url: "/api/KortistoApi/FlexFieldObject?id=" + this.npcId
                 }).done(function(npc) {
-                    var npcHtml = "<h4><a href='/Kortisto/Npc#id=" + self.npcId + "' target='_blank'>" + npc.name + "</a></h4>";
+                    var npcHtml = "<h4><a href='/Kortisto/Npc?id=" + self.npcId + "' target='_blank'>" + npc.name + "</a></h4>";
                     if(npc.imageFile)
                     {
                         npcHtml += "<div class='gn-kartaPopupImageContainer'><img class='gn-kartaPopupImage' src='/api/KortistoApi/FlexFieldObjectImage?imageFile=" + encodeURIComponent(npc.imageFile) + "'/></div>";
@@ -1749,7 +1914,7 @@
                 jQuery.ajax({
                     url: "/api/StyrApi/FlexFieldObject?id=" + this.itemId
                 }).done(function(item) {
-                    var itemHtml = "<h4><a href='/Styr/Item#id=" + self.itemId + "' target='_blank'>" + item.name + "</a></h4>";
+                    var itemHtml = "<h4><a href='/Styr/Item?id=" + self.itemId + "' target='_blank'>" + item.name + "</a></h4>";
                     if(item.imageFile)
                     {
                         itemHtml += "<div class='gn-kartaPopupImageContainer'><img class='gn-kartaPopupImage' src='/api/StyrApi/FlexFieldObjectImage?imageFile=" + encodeURIComponent(item.imageFile) + "'/></div>";
@@ -1847,7 +2012,7 @@
                 jQuery.ajax({
                     url: "/api/AikaApi/GetQuest?id=" + this.questId
                 }).done(function(quest) {
-                    var questHtml = "<h4><a href='/Aika/Quest#id=" + self.questId + "' target='_blank'>" + quest.name + "</a></h4>";
+                    var questHtml = "<h4><a href='/Aika/Quest?id=" + self.questId + "' target='_blank'>" + quest.name + "</a></h4>";
                     questHtml += "<div class='gn-kartaPopupContent'>" + jQuery("<div></div>").text(self.name).html() + "</div>";
 
                     def.resolve(questHtml);
@@ -2316,8 +2481,7 @@
                 /**
                  * Saves unparsed markers to parse later after map was loaded
                  */
-                setUnparsedMarkers: function(unparsedMarkers)
-                {
+                setUnparsedMarkers: function(unparsedMarkers) {
                     this.unparsedMarkers = unparsedMarkers;
                 },
 
@@ -2651,7 +2815,7 @@
                 this.viewModel.showWaitOnPageDialog(true);
 
                 var self = this;
-                var newPage = window.open("/Kirja#newPage=1");
+                var newPage = window.open("/Kirja?newPage=1");
                 newPage.onbeforeunload = function() {
                     self.viewModel.showWaitOnPageDialog(false);
                 };
@@ -3326,11 +3490,12 @@
             Map.ViewModel = function()
             {
                 this.id = new ko.observable("");
-                this.preSelectType = GoNorth.Util.getParameterFromHash("preSelectType");
-                this.preSelectId = GoNorth.Util.getParameterFromHash("preSelectId");
-                this.zoomOnMarkerType = GoNorth.Util.getParameterFromHash("zoomOnMarkerType");
-                this.zoomOnMarkerId = GoNorth.Util.getParameterFromHash("zoomOnMarkerId");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                this.preSelectType = GoNorth.Util.getParameterFromUrl("preSelectType");
+                this.preSelectId = GoNorth.Util.getParameterFromUrl("preSelectId");
+                this.zoomOnMarkerType = GoNorth.Util.getParameterFromUrl("zoomOnMarkerType");
+                this.zoomOnMarkerId = GoNorth.Util.getParameterFromUrl("zoomOnMarkerId");
+                this.preSelectChapter = parseInt(GoNorth.Util.getParameterFromUrl("chapter"));
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.setId(paramId);
@@ -3461,13 +3626,24 @@
                 });
 
                 var lastId = this.id();
-                window.onhashchange = function() {
-                    var id = GoNorth.Util.getParameterFromHash("id");
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var id = GoNorth.Util.getParameterFromUrl("id");
                     if(id != lastId) {
+                        var chapterByUrl = parseInt(GoNorth.Util.getParameterFromUrl("chapter"));
+                        if(!isNaN(chapterByUrl))
+                        {
+                            self.switchChapterByNumber(chapterByUrl, true);
+                        }
+                        else if(self.chapters().length > 0)
+                        {
+                            self.switchChapter(self.chapters()[0], true);
+                        }
+
+                        GoNorth.Karta.Map.readUrlMapLocations();
                         lastId = id;
-                        self.switchMap(GoNorth.Util.getParameterFromHash("id"));
+                        self.switchMap(GoNorth.Util.getParameterFromUrl("id"), true);
                     }
-                }
+                });
             };
 
             Map.ViewModel.prototype = {
@@ -3535,8 +3711,23 @@
                     this.checkZoomOnMarker();
 
                     this.initEditGeometryToolbar(map);
+
+                    if(!GoNorth.Util.getParameterFromUrl("mapLat"))
+                    {
+                        this.refreshUrlMapLocations();
+                    }
                 },
                 
+                /**
+                 * Refreshes the url map locations
+                 */
+                refreshUrlMapLocations: function() {
+                    if(GoNorth.Karta.Map.refreshUrlMapLocations) 
+                    {
+                        GoNorth.Karta.Map.refreshUrlMapLocations();
+                    }
+                },
+
 
                 /**
                  * Loads all available maps
@@ -3616,7 +3807,20 @@
                         if(aggregatedChapters.length > 0)
                         {
                             aggregatedChapters[0].isDefault = true;
-                            self.selectedChapter(aggregatedChapters[0]);
+                            var chapterToSelect = aggregatedChapters[0];
+                            if(self.preSelectChapter != null && !isNaN(self.preSelectChapter))
+                            {
+                                for(var curChapter = 0; curChapter < aggregatedChapters.length; ++curChapter)
+                                {
+                                    if(aggregatedChapters[curChapter].number == self.preSelectChapter)
+                                    {
+                                        chapterToSelect = aggregatedChapters[curChapter];
+                                        break;
+                                    }
+                                }
+                            }
+                            self.preSelectChapter = null;
+                            self.switchChapter(chapterToSelect, true);
                         }
 
                         self.chapters(aggregatedChapters);
@@ -3633,8 +3837,9 @@
                  * Switches the chapter by a chapter number
                  * 
                  * @param {int} chapterNumber Chapter number to which to switch
+                 * @param {bool} dontUpdateUrl true if the Url should be not be updated, else false
                  */
-                switchChapterByNumber: function(chapterNumber) {
+                switchChapterByNumber: function(chapterNumber, dontUpdateUrl) {
                     var chapters = this.chapters();
                     if(chapters == null || chapters.length == 0 || this.getSelectedChapterNumber() == chapterNumber)
                     {
@@ -3653,7 +3858,7 @@
 
                     if(bestChapter != this.selectedChapter())
                     {
-                        this.switchChapter(bestChapter);
+                        this.switchChapter(bestChapter, dontUpdateUrl);
                     }
                 },
 
@@ -3661,8 +3866,9 @@
                  * Switches the chapter
                  * 
                  * @param {object} chapter Chapter to select
+                 * @param {bool} dontUpdateUrl true if the Url should be not be updated, else false
                  */
-                switchChapter: function(chapter) {
+                switchChapter: function(chapter, dontUpdateUrl) {
                     this.selectedChapter(chapter);
 
                     this.kirjaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
@@ -3671,6 +3877,15 @@
                     this.kartaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
                     this.aikaMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
                     this.noteMarkerManager.adjustMarkersToChapter(chapter.number, this.map);
+
+                    if(dontUpdateUrl)
+                    {
+                        return;
+                    }
+
+                    var parameterValue = this.buildUrlParameters();
+                    GoNorth.Util.replaceUrlParameters(parameterValue);
+                    this.refreshUrlMapLocations();
                 },
 
                 /**
@@ -3692,18 +3907,50 @@
                  * Sets the id
                  * 
                  * @param {string} id Id of the page
+                 * @param {bool} dontPushState true if the url change should not be pushed as a state, else falsedontPushState
                  */
-                setId: function(id) {
+                setId: function(id, dontPushState) {
+                    var pushNewState = !!this.id() && this.id() != id;
                     this.id(id);
-                    window.location.hash = "id=" + id;
+
+                    if(dontPushState)
+                    {
+                        return;
+                    }
+
+                    var parameterValue = this.buildUrlParameters();
+                    if(pushNewState)
+                    {
+                        GoNorth.Util.setUrlParameters(parameterValue);
+                    }
+                    else
+                    {
+                        GoNorth.Util.replaceUrlParameters(parameterValue);
+                    }
+                },
+
+                /**
+                 * Builds the url parameters
+                 * 
+                 * @returns {string} Url parameters
+                 */
+                buildUrlParameters: function() {
+                    var parameterValue = "id=" + this.id();
+                    if(this.isNonDefaultChapterSelected && this.isNonDefaultChapterSelected() && this.selectedChapter())
+                    {
+                        parameterValue += "&chapter=" + this.selectedChapter().number;
+                    }
+
+                    return parameterValue;
                 },
 
                 /**
                  * Switches the map which is currently displayed if ifs different to the current one
                  * 
                  * @param {string} id Id of the map
+                 * @param {bool} dontPushState true if the url change should not be pushed as a state, else false
                  */
-                switchMap: function(id) {
+                switchMap: function(id, dontPushState) {
                     if(this.id() == id)
                     {
                         return;
@@ -3715,15 +3962,16 @@
                     this.kartaMarkerManager.resetMarkers();
                     this.aikaMarkerManager.resetMarkers();
                     this.noteMarkerManager.resetMarkers();
-                    this.loadMap(id);
+                    this.loadMap(id, dontPushState);
                 },
 
                 /**
                  * Loads a map
                  * 
                  * @param {string} id Id of the map
+                 * @param {bool} dontPushState true if the url change should not be pushed as a state, else false
                  */
-                loadMap: function(id) {
+                loadMap: function(id, dontPushState) {
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
@@ -3736,7 +3984,7 @@
                         self.mapMaxZoom(map.maxZoom);
                         self.mapImageWidth(map.width);
                         self.mapImageHeight(map.height);
-                        self.setId(id);
+                        self.setId(id, dontPushState);
 
                         if(self.map)
                         {

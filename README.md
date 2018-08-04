@@ -129,3 +129,4 @@ GoNorth uses the following libraries:
  * [eonasdan-bootstrap-datetimepicker](https://github.com/Eonasdan/bootstrap-datetimepicker) licensed under MIT
  * [Fantasy Name Generator](https://github.com/skeeto/fantasyname) licensed under The Unlicense
  * [Ace Editor](https://ace.c9.io/) licensed under BSD-License
+ * [knockout-sortable](https://github.com/rniemeyer/knockout-sortable/) licensed under MIT

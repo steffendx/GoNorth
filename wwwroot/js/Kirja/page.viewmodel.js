@@ -246,7 +246,7 @@
 
                     for(var curEntry = 0; curEntry < data.pages.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja#id=" + data.pages[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja?id=" + data.pages[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -286,7 +286,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -319,7 +319,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -352,7 +352,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -385,7 +385,7 @@
 
                     for(var curEntry = 0; curEntry < data.quests.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest#id=" + data.quests[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest?id=" + data.quests[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -422,7 +422,7 @@
                             continue;
                         }
 
-                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail#id=" + data.details[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail?id=" + data.details[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -442,14 +442,47 @@
     (function(Kirja) {
         (function(Page) {
 
+            /**
+             * Child Link Click Binding Handler
+             */
+            ko.bindingHandlers.childLinkClick = {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    var callbackFunction = valueAccessor();
+                    jQuery(element).on("click", "a", function(event) {
+                        var href = jQuery(this).attr("href");
+                        if(bindingContext.$data)
+                        {
+                            callbackFunction.apply(bindingContext.$data, [ href, event ]);
+                        }
+                        else
+                        {
+                            callbackFunction(href, event);
+                        }
+                    });
+                },
+                update: function () {
+                }
+            };
+
+        }(Kirja.Page = Kirja.Page || {}));
+    }(GoNorth.Kirja = GoNorth.Kirja || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Kirja) {
+        (function(Page) {
+
             /// Link Dialog Page Size
             var linkDialogPageSize = 15;
 
             /// Scroll Offset
             var headerScrollOffset = 45;
 
+            /// Mouse Button left
+            var mouseButtonLeft = 1;
+
             /// Kirja Id Url Prefix
-            var kirjaIdUrlPrefx = "/Kirja#id=";
+            var kirjaIdUrlPrefx = "/Kirja?id=";
 
             /**
              * Page View Model
@@ -458,7 +491,7 @@
             Page.ViewModel = function()
             {
                 this.id = new ko.observable("");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.id(paramId);
@@ -530,7 +563,7 @@
                 this.showConfirmDeleteAttachmentDialog = new ko.observable(false);
                 this.attachmentToDelete = null;
 
-                var isNewPage = GoNorth.Util.getParameterFromHash("newPage") == "1";
+                var isNewPage = GoNorth.Util.getParameterFromUrl("newPage") == "1";
                 if(this.id() || !isNewPage)
                 {
                     this.loadPage();
@@ -550,12 +583,12 @@
                 GoNorth.Util.setupValidation("#gn-kirjaHeaderFields");
 
                 this.blockPageReload = false;
-                window.onhashchange = function() {
+                GoNorth.Util.onUrlParameterChanged(function() {
                     if(!self.blockPageReload) {
-                        self.switchPage(GoNorth.Util.getParameterFromHash("id"));
+                        self.switchPage(GoNorth.Util.getParameterFromUrl("id"));
                     }
                     self.blockPageReload = false;
-                }
+                });
 
                 // Access function for scrolling in the table of content
                 Page.scrollToHeader = function(id) {
@@ -615,7 +648,7 @@
                         }
 
                         self.pageName(data.name);
-                        self.pageContent(data.content);
+                        self.pageContent(self.fixOldLinks(data.content));
                         self.isDefault(data.isDefault);
                         if(!self.id())
                         {
@@ -727,9 +760,68 @@
                 },
 
                 /**
+                 * Pushes the new kirja page state if a kirja page link is clicked
+                 * 
+                 * @param {string} href Href to the new page
+                 * @param {event} event Click event
+                 */
+                pushKirjaPageState: function(href, event) {
+                    if(event.which != mouseButtonLeft) 
+                    {
+                        return;
+                    }
+
+                    if(!href || !href.toLowerCase().indexOf("/kirja") == 0)
+                    {
+                        return;
+                    }
+
+                    href = href.toLowerCase().replace("/kirja?", "")
+                    GoNorth.Util.setUrlParameters(href);
+                    event.preventDefault();
+                    return false;
+                },
+
+                /**
+                 * Fixes old links
+                 * 
+                 * @param {string} pageContent Page content
+                 * @returns {string} Paged content with fixed links
+                 */
+                fixOldLinks: function(pageContent) {
+                    if(!pageContent)
+                    {
+                        return "";
+                    }
+
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Kirja");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Kortisto/Npc");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Styr/Item");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Evne/Skill");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Aika/Quest");
+                
+                    return pageContent;
+                },
+
+                /**
+                 * Fixes old links by the controller url
+                 * 
+                 * @param {string} pageContent Page content
+                 * @param {string} controllerUrl Controller Url to search for
+                 * @returns {string} Page content with fixed links
+                 */
+                fixOldLinksByControllerUrl: function(pageContent, controllerUrl) {
+                    var replaceRegex = new RegExp(" href=\"" + controllerUrl + "#id=([0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12})\"", "gi");
+                    pageContent = pageContent.replace(replaceRegex, function(match) {
+                        return match.replace("#", "?");
+                    });
+                    return pageContent;
+                },
+
+                /**
                  * Transforms the page content, adding table of contents etc.
                  * 
-                 * @param {string} pageContent Page Content
+                 * @param {string} pageContent Page content
                  * @returns {string} Transformed page content
                  */
                 transformPageContent: function(pageContent) {
@@ -1038,7 +1130,7 @@
                         for(var curPage = 0; curPage < pages.length; ++curPage)
                         {
                             loadedPages.push({
-                                openLink: "/Kirja#id=" + pages[curPage].id,
+                                openLink: "/Kirja?id=" + pages[curPage].id,
                                 name: pages[curPage].name
                             });
                         }
@@ -1075,7 +1167,7 @@
                         for(var curQuest = 0; curQuest < questNames.length; ++curQuest)
                         {
                             loadedQuestNames.push({
-                                openLink: "/Aika/Quest#id=" + questNames[curQuest].id,
+                                openLink: "/Aika/Quest?id=" + questNames[curQuest].id,
                                 name: questNames[curQuest].name
                             });
                         }
@@ -1112,7 +1204,7 @@
                         for(var curNpc = 0; curNpc < npcNames.length; ++curNpc)
                         {
                             loadedNpcNames.push({
-                                openLink: "/Kortisto/Npc#id=" + npcNames[curNpc].id,
+                                openLink: "/Kortisto/Npc?id=" + npcNames[curNpc].id,
                                 name: npcNames[curNpc].name
                             });
                         }
@@ -1149,7 +1241,7 @@
                         for(var curItem = 0; curItem < itemNames.length; ++curItem)
                         {
                             loadedItemNames.push({
-                                openLink: "/Styr/Item#id=" + itemNames[curItem].id,
+                                openLink: "/Styr/Item?id=" + itemNames[curItem].id,
                                 name: itemNames[curItem].name
                             });
                         }
@@ -1186,7 +1278,7 @@
                         for(var curSkill = 0; curSkill < skillNames.length; ++curSkill)
                         {
                             loadedSkillNames.push({
-                                openLink: "/Evne/Skill#id=" + skillNames[curSkill].id,
+                                openLink: "/Evne/Skill?id=" + skillNames[curSkill].id,
                                 name: skillNames[curSkill].name
                             });
                         }
@@ -1219,7 +1311,7 @@
                         var loadedMaps = [];
                         for(var curMap = 0; curMap < maps.length; ++curMap)
                         {
-                            var url = "/Karta#id=" + maps[curMap].mapId;
+                            var url = "/Karta?id=" + maps[curMap].mapId;
                             if(maps[curMap].markerIds.length == 1)
                             {
                                 url += "&zoomOnMarkerId=" + maps[curMap].markerIds[0] + "&zoomOnMarkerType=" + maps[curMap].mapMarkerType
@@ -1246,16 +1338,17 @@
                  * @param {string} id Id of the page
                  */
                 setId: function(id) {
+                    var hasId = !!this.id();
                     this.id(id);
                     this.blockPageReload = true;
-                    var hashValue = "#id=" + id;
-                    if(window.location.hash)
+                    var parameterValue = "id=" + id;
+                    if(hasId)
                     {
-                        window.location.hash = hashValue; 
+                        GoNorth.Util.setUrlParameters(parameterValue); 
                     }
                     else
                     {
-                        window.location.replace(hashValue);
+                        GoNorth.Util.replaceUrlParameters(parameterValue);
                     }
                 },
 
@@ -1333,7 +1426,7 @@
                     this.showNewWaitPageDialog(true);
 
                     var self = this;
-                    var newPage = window.open("/Kirja#newPage=1");
+                    var newPage = window.open("/Kirja?newPage=1");
                     newPage.onbeforeunload = function() {
                         self.showNewWaitPageDialog(false);
                     };

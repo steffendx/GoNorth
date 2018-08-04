@@ -105,7 +105,7 @@
 <div class="container gn-defaultContentTopMargin" data-bind="foreach: displayObjectRows">
     <div class="row" data-bind="foreach: $data, visible: true" style="display: none">
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 gn-flexFieldOverviewTileContainer">
-            <a data-bind="href: tileUrl">
+            <a data-bind="href: tileUrl, isPushStateHref: isFolder">
                 <div class="gn-flexFieldOverviewTile" data-bind="template: { name: template, data: $data }"></div>
             </a>
         </div>

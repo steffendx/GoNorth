@@ -53,6 +53,66 @@ namespace GoNorth.Services.Export.Placeholder
         private const string Placeholder_Field_LangKey_FriendlyName = "LangKey_NAME_OF_FIELD";
 
         /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field exists
+        /// </summary>
+        private const string Placeholder_FlexField_HasField_Start = "HasField_(.*?)_Start";
+
+        /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field exists Friendly Name
+        /// </summary>
+        private const string Placeholder_FlexField_HasField_Start_FriendlyName = "HasField_NAME_OF_FIELD_Start";
+
+        /// <summary>
+        /// End of the content that will only be rendered if a Flex Field exists
+        /// </summary>
+        private const string Placeholder_FlexField_HasField_End = "HasField_End";
+        
+        /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field does not exist
+        /// </summary>
+        private const string Placeholder_FlexField_NotHasField_Start = "NotHasField_(.*?)_Start";
+
+        /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field does not exist
+        /// </summary>
+        private const string Placeholder_FlexField_NotHasField_Start_FriendlyName = "NotHasField_NAME_OF_FIELD_Start";
+
+        /// <summary>
+        /// End of the content that will only be rendered if a Flex Field does not exist
+        /// </summary>
+        private const string Placeholder_FlexField_NotHasField_End = "NotHasField_End";
+
+        /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field is blank or does not exists
+        /// </summary>
+        private const string Placeholder_FlexField_FieldIsBlank_Start = "FieldIsBlank_(.*?)_Start";
+
+        /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field is blank or does not exists friendly name
+        /// </summary>
+        private const string Placeholder_FlexField_FieldIsBlank_Start_FriendlyName = "FieldIsBlank_NAME_OF_FIELD_Start";
+
+        /// <summary>
+        /// End of the content that will only be rendered if a Flex Field exists
+        /// </summary>
+        private const string Placeholder_FlexField_FieldIsBlank_End = "FieldIsBlank_End";
+        
+        /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field is not blank and does exist
+        /// </summary>
+        private const string Placeholder_FlexField_FieldIsNotBlank_Start = "FieldIsNotBlank_(.*?)_Start";
+
+        /// <summary>
+        /// Start of the content that will only be rendered if a Flex Field is not blank and does exist friendly name
+        /// </summary>
+        private const string Placeholder_FlexField_FieldIsNotBlank_Start_FriendlyName = "FieldIsNotBlank_NAME_OF_FIELD_Start";
+
+        /// <summary>
+        /// End of the content that will only be rendered if a Flex Field is not blank and does exist
+        /// </summary>
+        private const string Placeholder_FlexField_FieldIsNotBlank_End = "FieldIsNotBlank_End";
+
+        /// <summary>
         /// Flex Field Fields List Start
         /// </summary>
         private const string Placeholder_Field_List_Start = "Field_List_Start";
@@ -126,6 +186,66 @@ namespace GoNorth.Services.Export.Placeholder
         /// Flex Field Field is a string field end
         /// </summary>
         private const string Placeholder_FlexField_Field_IsStringField_End = "Field_IsStringField_End";
+
+        /// <summary>
+        /// Flex Field Field is blank start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsBlank_Start = "Field_IsBlank_Start";
+
+        /// <summary>
+        /// Flex Field Field is blank end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsBlank_End = "Field_IsBlank_End";
+
+        /// <summary>
+        /// Flex Field Field is not blank start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsNotBlank_Start = "Field_IsNotBlank_Start";
+
+        /// <summary>
+        /// Flex Field Field is not blank end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsNotBlank_End = "Field_IsNotBlank_End";
+
+        /// <summary>
+        /// Flex Field Field is first start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsFirst_Start = "Field_IsFirst_Start";
+
+        /// <summary>
+        /// Flex Field Field is first end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsFirst_End = "Field_IsFirst_End";
+        
+        /// <summary>
+        /// Flex Field Field is not first start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsNotFirst_Start = "Field_IsNotFirst_Start";
+
+        /// <summary>
+        /// Flex Field Field is not first end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsNotFirst_End = "Field_IsNotFirst_End";
+
+        /// <summary>
+        /// Flex Field Field is last start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsLast_Start = "Field_IsLast_Start";
+
+        /// <summary>
+        /// Flex Field Field is last end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsLast_End = "Field_IsLast_End";
+        
+        /// <summary>
+        /// Flex Field Field is not last start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsNotLast_Start = "Field_IsNotLast_Start";
+
+        /// <summary>
+        /// Flex Field Field is not last end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_IsNotLast_End = "Field_IsNotLast_End";
 
 
         /// <summary>
@@ -225,6 +345,36 @@ namespace GoNorth.Services.Export.Placeholder
 
             HashSet<string> usedFields = new HashSet<string>();
             code = ExportUtil.BuildPlaceholderRegex(BuildFinalPlaceholder(Placeholder_Name)).Replace(code, flexFieldObject.Name);
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_HasField_Start), BuildFinalPlaceholder(Placeholder_FlexField_HasField_End), m => {
+                string fieldName = m.Groups[1].Value;
+                FlexField field = FindFlexField(flexFieldObject, fieldName);
+                return field != null;
+            });
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_NotHasField_Start), BuildFinalPlaceholder(Placeholder_FlexField_NotHasField_End), m => {
+                string fieldName = m.Groups[1].Value;
+                FlexField field = FindFlexField(flexFieldObject, fieldName);
+                return field == null;
+            });
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_FieldIsBlank_Start), BuildFinalPlaceholder(Placeholder_FlexField_FieldIsBlank_End), m => {
+                string fieldName = m.Groups[1].Value;
+                FlexField field = FindFlexField(flexFieldObject, fieldName);
+                if(field == null)
+                {
+                    return true;
+                }
+
+                return string.IsNullOrEmpty(field.Value);
+            });
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_FieldIsNotBlank_Start), BuildFinalPlaceholder(Placeholder_FlexField_FieldIsNotBlank_End), m => {
+                string fieldName = m.Groups[1].Value;
+                FlexField field = FindFlexField(flexFieldObject, fieldName);
+                if(field == null)
+                {
+                    return false;
+                }
+
+                return !string.IsNullOrEmpty(field.Value);
+            });
             code = ExportUtil.BuildPlaceholderRegex(BuildFinalPlaceholder(Placeholder_Name_LangKey)).Replace(code, m => {
                 // Run in function to only create language key if required
                 string key = _languageKeyGenerator.GetFlexFieldNameKey(flexFieldObject.Id, flexFieldObject.Name, objectType).Result;
@@ -334,25 +484,24 @@ namespace GoNorth.Services.Export.Placeholder
         private string BuildFlexFieldList(string attributeTemplate, List<FlexField> fields, IFlexFieldExportable flexFieldObject, ExportSettings exportSettings, string objectType)
         {
             string fieldContent = string.Empty;
-            foreach(FlexField curField in fields)
+            List<FlexField> fieldsToExport = fields.Where(f => (f.ScriptSettings == null || !f.ScriptSettings.DontExportToScript) && 
+                                                         (f.FieldType == ExportConstants.FlexFieldType_Number || f.FieldType == ExportConstants.FlexFieldType_String || f.FieldType == ExportConstants.FlexFieldType_Option)).ToList();
+            for(int curFieldIndex = 0; curFieldIndex < fieldsToExport.Count; ++curFieldIndex)
             {
-                if(curField.ScriptSettings != null && curField.ScriptSettings.DontExportToScript)
-                {
-                    continue;
-                }
-
-                if(curField.FieldType != ExportConstants.FlexFieldType_Number && curField.FieldType != ExportConstants.FlexFieldType_String && curField.FieldType != ExportConstants.FlexFieldType_Option)
-                {
-                    continue;
-                }
-
-                string fieldCode = FillFlexFieldTemplate(attributeTemplate, curField.Name, curField, flexFieldObject, exportSettings, objectType);
+                FlexField curField = fieldsToExport[curFieldIndex];
+                string[] additionalScriptNames = null;
                 if(curField.ScriptSettings != null && !string.IsNullOrEmpty(curField.ScriptSettings.AdditionalScriptNames))
                 {
-                    string[] additionalScriptNames = curField.ScriptSettings.AdditionalScriptNames.Split(ExportConstants.FlexFieldAdditionalScriptNamesSeperator, StringSplitOptions.RemoveEmptyEntries);
-                    foreach(string curAdditionalName in additionalScriptNames)
+                    additionalScriptNames = curField.ScriptSettings.AdditionalScriptNames.Split(ExportConstants.FlexFieldAdditionalScriptNamesSeperator, StringSplitOptions.RemoveEmptyEntries);
+                }
+
+                string fieldCode = FillFlexFieldTemplate(attributeTemplate, curField.Name, curField, flexFieldObject, exportSettings, objectType, curFieldIndex == 0, curFieldIndex == fieldsToExport.Count - 1 && (additionalScriptNames == null || additionalScriptNames.Length == 0));
+                if(additionalScriptNames != null)
+                {
+                    for(int curAdditionalNameIndex = 0; curAdditionalNameIndex < additionalScriptNames.Length; ++curAdditionalNameIndex)
                     {
-                        fieldCode += FillFlexFieldTemplate(attributeTemplate, curAdditionalName, curField, flexFieldObject, exportSettings, objectType);
+                        string curAdditionalName = additionalScriptNames[curAdditionalNameIndex];
+                        fieldCode += FillFlexFieldTemplate(attributeTemplate, curAdditionalName, curField, flexFieldObject, exportSettings, objectType, false, curFieldIndex == fieldsToExport.Count - 1 && curAdditionalNameIndex == additionalScriptNames.Length - 1);
                     }
                 }
 
@@ -371,9 +520,17 @@ namespace GoNorth.Services.Export.Placeholder
         /// <param name="flexFieldObject">Flex Field object</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <param name="objectType">Object Type</param>
+        /// <param name="isFirst">true if the field is the first field</param>
+        /// <param name="isLast">true if the field is the last field</param>
         /// <returns>Filled template</returns>
-        private string FillFlexFieldTemplate(string code, string name, FlexField field, IFlexFieldExportable flexFieldObject, ExportSettings exportSettings, string objectType)
+        private string FillFlexFieldTemplate(string code, string name, FlexField field, IFlexFieldExportable flexFieldObject, ExportSettings exportSettings, string objectType, bool isFirst, bool isLast)
         {
+            code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsBlank_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsBlank_End), string.IsNullOrEmpty(field.Value));
+            code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotBlank_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotBlank_End), !string.IsNullOrEmpty(field.Value));
+            code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsFirst_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsFirst_End), isFirst);
+            code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotFirst_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotFirst_End), !isFirst);
+            code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsLast_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsLast_End), isLast);
+            code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotLast_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotLast_End), !isLast);
             code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNumberField_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNumberField_End), field.FieldType == ExportConstants.FlexFieldType_Number);
             code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsStringField_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsStringField_End), field.FieldType == ExportConstants.FlexFieldType_String || field.FieldType == ExportConstants.FlexFieldType_Option);
 
@@ -430,6 +587,14 @@ namespace GoNorth.Services.Export.Placeholder
                     CreateFlexFieldPlaceHolder(Placeholder_Name_LangKey),
                     CreateFlexFieldPlaceHolder(Placeholder_Field_Value_FriendlyName),
                     CreateFlexFieldPlaceHolder(Placeholder_Field_LangKey_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_HasField_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_HasField_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_NotHasField_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_NotHasField_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_FieldIsBlank_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_FieldIsBlank_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_FieldIsNotBlank_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_FieldIsNotBlank_End),
                     CreateFlexFieldPlaceHolder(Placeholder_UnusedFields),
                     CreateFlexFieldPlaceHolder(Placeholder_UnusedFields_Start),
                     CreateFlexFieldPlaceHolder(Placeholder_UnusedFields_End),
@@ -442,7 +607,19 @@ namespace GoNorth.Services.Export.Placeholder
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_Start),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_End),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsStringField_Start),
-                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsStringField_End)
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsStringField_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsBlank_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsBlank_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotBlank_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotBlank_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsFirst_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsFirst_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotFirst_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotFirst_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsLast_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsLast_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotLast_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotLast_End)
                 };
             }
             else if(templateType == TemplateType.ObjectAttributeList)
@@ -456,7 +633,19 @@ namespace GoNorth.Services.Export.Placeholder
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_Start),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_End),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsStringField_Start),
-                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsStringField_End)
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsStringField_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsBlank_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsBlank_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotBlank_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotBlank_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsFirst_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsFirst_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotFirst_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotFirst_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsLast_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsLast_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotLast_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNotLast_End)
                 };
             }
 

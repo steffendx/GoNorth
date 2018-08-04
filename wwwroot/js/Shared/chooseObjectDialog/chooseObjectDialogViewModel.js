@@ -246,7 +246,7 @@
 
                     for(var curEntry = 0; curEntry < data.pages.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja#id=" + data.pages[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja?id=" + data.pages[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -286,7 +286,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -319,7 +319,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -352,7 +352,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -385,7 +385,7 @@
 
                     for(var curEntry = 0; curEntry < data.quests.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest#id=" + data.quests[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest?id=" + data.quests[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -422,7 +422,7 @@
                             continue;
                         }
 
-                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail#id=" + data.details[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail?id=" + data.details[curEntry].id));
                     }
 
                     def.resolve(result);

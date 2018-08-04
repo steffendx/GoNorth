@@ -40,9 +40,10 @@
                 /**
                  * Serializes the value to a string
                  * 
+                 * @param {number} fieldIndex Index of the field in the final serialization
                  * @returns {string} Value of the field as a string
                  */
-                serializeValue: function() { },
+                serializeValue: function(fieldIndex) { },
 
                 /**
                  * Deserializes a value from a string
@@ -50,6 +51,13 @@
                  * @param {string} value Value to Deserialize
                  */
                 deserializeValue: function(value) { },
+
+                /**
+                 * Returns all child fields
+                 * 
+                 * @returns {FlexFieldBase[]} Children of the field, null if no children exist
+                 */
+                getChildFields: function() { return null; },
 
                 /**
                  * Returns true if the field has additional configuration, else false
@@ -98,7 +106,16 @@
                  * 
                  * @param {string} additionalConfiguration Serialized additional configuration
                  */
-                deserializeAdditionalConfiguration: function(additionalConfiguration) { }
+                deserializeAdditionalConfiguration: function(additionalConfiguration) { },
+
+
+                /**
+                 * Groups fields into the field
+                 * 
+                 * @param {FlexFieldBase[]} fields Root List of fields
+                 * @param {object} fieldsToRemoveFromRootList Object to track fields that must be removed from the root list
+                 */
+                groupFields: function(fields, fieldsToRemoveFromRootList) { }
             }
 
         }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));

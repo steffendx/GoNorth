@@ -22,7 +22,7 @@
             <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].moveConditionElementDown(condition); }" title="@Localizer["MoveConditionDown"]">
                 <i class="glyphicon glyphicon-arrow-down"></i>
             </a>
-            <a class="gn-clickable gn-nodeConditionIcon gn-nodeConditionElementMove" data-bind="draggable: 'clone', draggableObject: $data, draggableDropIndicators: { '.gn-nodeConditionGroupOperator': 'gn-nodeConditionMoveDropIndicator', '.gn-nodeConditionDialogMoveToRoot': 'gn-nodeConditionMoveDropIndicator' }" title="@Localizer["DragOnOperatorToMove"]">
+            <a class="gn-clickable gn-nodeConditionIcon gn-nodeConditionElementMove" data-bind="draggableElement: 'clone', draggableObject: $data, draggableDropIndicators: { '.gn-nodeConditionGroupOperator': 'gn-nodeConditionMoveDropIndicator', '.gn-nodeConditionDialogMoveToRoot': 'gn-nodeConditionMoveDropIndicator' }" title="@Localizer["DragOnOperatorToMove"]">
                 <i class="glyphicon glyphicon glyphicon-move"></i>
             </a>
             <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].deleteConditionElement(condition); }" title="@Localizer["DeleteCondition"]">
@@ -40,7 +40,7 @@
     <td colspan="4" class="gn-nodeConditionGroupCell">
         <table class="gn-nodeConditionGroupTable">
             <tr>
-                <td class="gn-nodeConditionGroupOperator" data-bind="text: operatorText, dblClick: toggleOperator, droppable: function(draggable, left, top, conditionElement) { $parents[$parents.length - 2].dropConditionToGroup($parent, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'" title="@Localizer["DoubleClickToChangeOperator"]"></td>
+                <td class="gn-nodeConditionGroupOperator" data-bind="text: operatorText, dblClick: toggleOperator, droppableElement: function(draggable, left, top, conditionElement) { $parents[$parents.length - 2].dropConditionToGroup($parent, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'" title="@Localizer["DoubleClickToChangeOperator"]"></td>
                 <td>
                     <table class="gn-nodeConditionDialogElementTable">
                         <tbody data-bind="template: { name: 'gn-nodeConditionRow', foreach: conditionElements }">
@@ -130,7 +130,7 @@
                     <tbody data-bind="template: { name: 'gn-nodeConditionRow', foreach: conditionElements }">
                     </tbody>
                 </table>
-                <div class="gn-nodeConditionDialogMoveToRoot" data-bind="droppable: function(draggable, left, top, conditionElement) { dropConditionToGroup(null, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'"></div>
+                <div class="gn-nodeConditionDialogMoveToRoot" data-bind="droppableElement: function(draggable, left, top, conditionElement) { dropConditionToGroup(null, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bind="click: saveCondition">@Localizer["Confirm"]</button>

@@ -58,7 +58,7 @@
              * @returns {string} Url of the object
              */
             Overview.ImplementationStatusNpcList.prototype.buildObjectUrl = function(obj) {
-                return "/Kortisto/Npc#id=" + obj.id;
+                return "/Kortisto/Npc?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));

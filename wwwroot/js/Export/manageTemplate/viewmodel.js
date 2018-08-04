@@ -9,15 +9,15 @@
              */
             ManageTemplate.ViewModel = function()
             {
-                this.templateType = parseInt(GoNorth.Util.getParameterFromHash("templateType"));
+                this.templateType = parseInt(GoNorth.Util.getParameterFromUrl("templateType"));
                 this.customizedObjectId = new ko.observable("");
-                var customizedObjectId = GoNorth.Util.getParameterFromHash("customizedObjectId");
+                var customizedObjectId = GoNorth.Util.getParameterFromUrl("customizedObjectId");
                 if(customizedObjectId)
                 {
                     this.customizedObjectId(customizedObjectId);
                 }
                 this.customizedObjectIsTemplate = new ko.observable(false);
-                if(GoNorth.Util.getParameterFromHash("objectIsTemplate"))
+                if(GoNorth.Util.getParameterFromUrl("objectIsTemplate"))
                 {
                     this.customizedObjectIsTemplate(true);
                 }
@@ -31,7 +31,7 @@
                 this.customizedObjectTemplateIsDefault = new ko.observable(false);
                 this.parentTemplateId = new ko.observable("");
                 this.parentTemplateUrl = new ko.computed(function() {
-                    var url = "/Export/ManageTemplate#templateType=" + this.templateType;
+                    var url = "/Export/ManageTemplate?templateType=" + this.templateType;
                     if(this.parentTemplateId())
                     {
                         url += "&customizedObjectId=" + this.parentTemplateId() + "&objectIsTemplate=1"; // Parent customized object is always a template
@@ -60,8 +60,8 @@
                 }
 
                 var self = this;
-                window.onhashchange = function() {
-                    var customizedObjectId = GoNorth.Util.getParameterFromHash("customizedObjectId");
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var customizedObjectId = GoNorth.Util.getParameterFromUrl("customizedObjectId");
                     if(customizedObjectId)
                     {
                         self.customizedObjectId(customizedObjectId);
@@ -70,7 +70,7 @@
                     {
                         self.customizedObjectId("");
                     }
-                    if(GoNorth.Util.getParameterFromHash("objectIsTemplate"))
+                    if(GoNorth.Util.getParameterFromUrl("objectIsTemplate"))
                     {
                         self.customizedObjectIsTemplate(true);
                     }
@@ -81,7 +81,7 @@
 
                     GoNorth.LockService.releaseCurrentLock();
                     self.initTemplateData();
-                };
+                });
             };
 
             ManageTemplate.ViewModel.prototype = {

@@ -66,7 +66,7 @@
                 jQuery.ajax({
                     url: "/api/KortistoApi/FlexFieldObject?id=" + this.npcId
                 }).done(function(npc) {
-                    var npcHtml = "<h4><a href='/Kortisto/Npc#id=" + self.npcId + "' target='_blank'>" + npc.name + "</a></h4>";
+                    var npcHtml = "<h4><a href='/Kortisto/Npc?id=" + self.npcId + "' target='_blank'>" + npc.name + "</a></h4>";
                     if(npc.imageFile)
                     {
                         npcHtml += "<div class='gn-kartaPopupImageContainer'><img class='gn-kartaPopupImage' src='/api/KortistoApi/FlexFieldObjectImage?imageFile=" + encodeURIComponent(npc.imageFile) + "'/></div>";

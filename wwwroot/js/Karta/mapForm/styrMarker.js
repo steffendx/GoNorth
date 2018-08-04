@@ -66,7 +66,7 @@
                 jQuery.ajax({
                     url: "/api/StyrApi/FlexFieldObject?id=" + this.itemId
                 }).done(function(item) {
-                    var itemHtml = "<h4><a href='/Styr/Item#id=" + self.itemId + "' target='_blank'>" + item.name + "</a></h4>";
+                    var itemHtml = "<h4><a href='/Styr/Item?id=" + self.itemId + "' target='_blank'>" + item.name + "</a></h4>";
                     if(item.imageFile)
                     {
                         itemHtml += "<div class='gn-kartaPopupImageContainer'><img class='gn-kartaPopupImage' src='/api/StyrApi/FlexFieldObjectImage?imageFile=" + encodeURIComponent(item.imageFile) + "'/></div>";

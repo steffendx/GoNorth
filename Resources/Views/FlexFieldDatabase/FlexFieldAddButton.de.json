@@ -4,5 +4,7 @@
     "SingleLineField": "Textfeld",
     "MultiLineField": "Mehrzeiliges Textfeld",
     "NumberField": "Zahlenfeld",
-    "OptionField": "Auswahlfeld"
+    "OptionField": "Auswahlfeld",
+
+    "FieldGroup": "Feldgruppe"
 }

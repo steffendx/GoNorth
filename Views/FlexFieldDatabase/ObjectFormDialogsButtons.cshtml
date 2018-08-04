@@ -62,9 +62,9 @@
                     <button type="button" class="btn btn-primary" data-bind="click: function() { exportDownload(@((int)@Model.ExportTemplateType)); }">
                         <i class="glyphicon glyphicon-export"></i> @Model.Localizer["Download"]
                     </button>
-                    <span class="gn-flexFieldExportResultCopyToClipboardToolTipContainer">
+                    <span class="gn-copyToClipboardToolTipContainer">
                         <button type="button" class="btn btn-default" data-bind="click: function() { copyExportCodeToClipboard() }">
-                            <span class="gn-flexFieldExportResultCopyToClipboardToolTipText" style="display: none" data-bind="visible: exportShowSuccessfullyCopiedTooltip">@Model.Localizer["SuccessfullyCopiedToClipboard"]</span>
+                            <span class="gn-copyToClipboardToolTipText" style="display: none" data-bind="visible: exportShowSuccessfullyCopiedTooltip">@Model.Localizer["SuccessfullyCopiedToClipboard"]</span>
                             <i class="glyphicon glyphicon-paperclip"></i> @Model.Localizer["CopyToClipboard"]
                         </button>
                     </span>

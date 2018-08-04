@@ -12,7 +12,7 @@
                 this.templateCategories = new ko.observableArray();
                 this.selectedCategoryLabel = new ko.observable("");
                 this.selectedCategory = new ko.observable(-1);
-                var category = parseInt(GoNorth.Util.getParameterFromHash("category"));
+                var category = parseInt(GoNorth.Util.getParameterFromUrl("category"));
                 if(!isNaN(category))
                 {
                     this.selectedCategory(category);
@@ -40,12 +40,12 @@
                 this.loadSettings();
 
                 var self = this;
-                window.onhashchange = function() {
-                    var category = parseInt(GoNorth.Util.getParameterFromHash("category"));
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var category = parseInt(GoNorth.Util.getParameterFromUrl("category"));
                     if(!isNaN(category) && category != self.selectedCategory()) {
-                        self.selectTemplateCategoryFromHash(category);
+                        self.selectTemplateCategoryFromUrl(category);
                     }
-                }
+                });
             };
 
             TemplateOverview.ViewModel.prototype = {
@@ -69,7 +69,7 @@
                         }
                         else
                         {
-                            self.selectTemplateCategoryFromHash(self.selectedCategory());
+                            self.selectTemplateCategoryFromUrl(self.selectedCategory());
                         }
                     }).fail(function() {
                         self.isLoading(false);
@@ -78,11 +78,11 @@
                 },
 
                 /**
-                 * Selects a template category from the hash
+                 * Selects a template category from the url
                  * 
                  * @param {number} category Category to select
                  */
-                selectTemplateCategoryFromHash: function(category) {
+                selectTemplateCategoryFromUrl: function(category) {
                     var label = "";
                     var templateCategories = this.templateCategories();
                     for(var curCategory = 0; curCategory < templateCategories.length; ++curCategory)
@@ -105,15 +105,15 @@
                  * @param {object} category Category to select
                  */
                 selectTemplateCategory: function(category) {
-                    // Will load templates because of hash change
-                    var hashValue = "#category=" + category.category;
-                    if(window.location.hash)
+                    // Will load templates because of url change
+                    var parameterValue = "category=" + category.category;
+                    if(window.location.search)
                     {
-                        window.location.hash = hashValue; 
+                        GoNorth.Util.setUrlParameters(parameterValue);
                     }
                     else
                     {
-                        window.location.replace(hashValue);
+                        GoNorth.Util.replaceUrlParameters(parameterValue);
                     }
                 },
 
@@ -144,12 +144,7 @@
                  * @returns {string} Templat Url
                  */
                 buildTemplateUrl: function(template) {
-                    var controllerUrl = "ManageTemplate";
-                    if(template.isLanguageTemplate) 
-                    {
-                        controllerUrl = "ManageLanguageTemplate";
-                    }
-                    return "/Export/" + controllerUrl + "#templateType=" + template.template.templateType;
+                    return "/Export/ManageTemplate?templateType=" + template.template.templateType;
                 },
 
 

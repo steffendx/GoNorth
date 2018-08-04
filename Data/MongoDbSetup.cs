@@ -102,6 +102,8 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(LanguageKeyMongoDbAccess.LanguageKeyCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(TaskBoardMongoDbAccess.TaskBoardCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(TaskNumberMongoDbAccess.TaskNumberCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(UserTaskBoardHistoryMongoDbAccess.TaskBoardUserHistoryCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(LockServiceMongoDbAccess.LockCollectionName, collectionNames);
         }

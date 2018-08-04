@@ -17,7 +17,8 @@ namespace GoNorth.Services.Kirja
         /// <returns>Found ids</returns>
         public List<string> ParseIds(KirjaPage page, string pageName)
         {
-            Regex guidLinkRegex = new Regex("/" + pageName + "#id=([0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12})", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            // Support both query and hash notation for backwards comaptibility of links
+            Regex guidLinkRegex = new Regex("/" + pageName + "[#|?]id=([0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12})", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             List<string> ids = new List<string>();
 
             MatchCollection itemLinkMatches = guidLinkRegex.Matches(page.Content);

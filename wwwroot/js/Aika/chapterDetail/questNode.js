@@ -73,7 +73,7 @@
                             this.loadQuestData();
                             var self = this;
                             this.$box.find(".gn-aikaNodeQuestName").click(function() {
-                                var questWindow = window.open("/Aika/Quest#id=" + self.model.get("questId"));
+                                var questWindow = window.open("/Aika/Quest?id=" + self.model.get("questId"));
                                 questWindow.onQuestSaved = function() {
                                     self.loadQuestData();
                                 };

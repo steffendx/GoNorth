@@ -20,6 +20,11 @@ namespace GoNorth.Controllers
     public class ExportController : Controller
     {
         /// <summary>
+        /// Export Default Template Provider
+        /// </summary>
+        private readonly IExportDefaultTemplateProvider _exportDefaultTemplateProvider;
+
+        /// <summary>
         /// USer Preferences Db Access
         /// </summary>
         private readonly IUserPreferencesDbAccess _userPreferencesDbAccess;
@@ -42,12 +47,14 @@ namespace GoNorth.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="exportDefaultTemplateProvider">Export default template provider</param>
         /// <param name="userPreferencesDbAccess">User PReferences Database access</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="exportSettings">Export settings</param>
         /// <param name="projectDbAccess">Project Db Access</param>
-        public ExportController(IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, IExportSettingsDbAccess exportSettings, IProjectDbAccess projectDbAccess)
+        public ExportController(IExportDefaultTemplateProvider exportDefaultTemplateProvider, IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, IExportSettingsDbAccess exportSettings, IProjectDbAccess projectDbAccess)
         {
+            _exportDefaultTemplateProvider = exportDefaultTemplateProvider;
             _userPreferencesDbAccess = userPreferencesDbAccess;
             _userManager = userManager;
             _exportSettings = exportSettings;
@@ -67,33 +74,14 @@ namespace GoNorth.Controllers
         /// <summary>
         /// Manage template view
         /// </summary>
+        /// <param name="templateType">Template type</param>
         /// <returns>View</returns>
         [HttpGet]
-        public async Task<IActionResult> ManageTemplate()
-        {
-            return await ManageTemplateInternal(false);
-        }
-
-        /// <summary>
-        /// Manage language template view
-        /// </summary>
-        /// <returns>View</returns>
-        [HttpGet]
-        public async Task<IActionResult> ManageLanguageTemplate()
-        {
-            return await ManageTemplateInternal(true);
-        }
-
-        /// <summary>
-        /// Opens the manage template view
-        /// </summary>
-        /// <param name="isLanguage">true if the template is for a language file</param>
-        /// <returns>View</returns>
-        private async Task<IActionResult> ManageTemplateInternal(bool isLanguage)
+        public async Task<IActionResult> ManageTemplate(TemplateType templateType)
         {
             GoNorthUser currentUser = await _userManager.GetUserAsync(this.User);
             UserPreferences userPreferences = await _userPreferencesDbAccess.GetUserPreferences(currentUser.Id);
-            string scriptLanguage = await GetScriptLanguage(isLanguage);
+            string scriptLanguage = await GetScriptLanguage(_exportDefaultTemplateProvider.IsTemplateTypeLanguage(templateType));
 
             ManageTemplateViewModel viewModel = new ManageTemplateViewModel();
             if(userPreferences != null)
@@ -106,11 +94,11 @@ namespace GoNorth.Controllers
                 viewModel.ScriptLanguage = scriptLanguage;
             }
 
-            viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectNpc, "/Kortisto/Npc#id={0}"));
-            viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectItem, "/Styr/Item#id={0}"));
-            viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectSkill, "/Evne/Skill#id={0}"));
+            viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectNpc, "/Kortisto/Npc?id={0}"));
+            viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectItem, "/Styr/Item?id={0}"));
+            viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectSkill, "/Evne/Skill?id={0}"));
 
-            return View("ManageTemplate", viewModel);
+            return View(viewModel);
         }
 
         /// <summary>

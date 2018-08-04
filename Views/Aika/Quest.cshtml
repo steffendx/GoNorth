@@ -181,27 +181,27 @@
     <!-- Node System -->
     <div class="row gn-defaultContentTopMargin">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" data-bind="if: !isReadonly()">
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeText" data-nodetype="aika.Text">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeText" data-nodetype="aika.Text">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["TextNode"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeCondition" data-nodetype="default.Condition">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeCondition" data-nodetype="default.Condition">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["ConditionNode"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeAction" data-nodetype="default.Action">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeAction" data-nodetype="default.Action">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["ActionNode"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeAllDone" data-nodetype="aika.AllDone">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeAllDone" data-nodetype="aika.AllDone">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["AllDone"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeFinish" data-nodetype="aika.Finish">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeFinish" data-nodetype="aika.Finish">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["FinishNode"]</div>
                 </div>
@@ -209,7 +209,7 @@
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="gn-nodeGraphContainer">
-                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, nodeGraphAllowMultpleOutbound: true, droppable: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
+                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, nodeGraphAllowMultpleOutbound: true, droppableElement: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
             </div>
         </div>
     </div>
@@ -226,6 +226,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js" integrity="sha384-NNt9ocJfZhIg2c5PbM5G2a3tTaeXhEfqCHWHNB7htzaWKn8MwFkzVyGdzLA8QMX7" crossorigin="anonymous" asp-fallback-test="Backbone" asp-fallback-src="~/lib/jointjs/backbone-min.js"></script>
     <script src="~/lib/jointjs/joint.js"></script>
     <script src="~/lib/jointjs/joint.shapes.dev.js"></script>
+    
+    <script src="~/lib/knockout-sortable/build/knockout-sortable.js"></script>
 
     <environment include="Development">
         <script src="~/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js"></script>

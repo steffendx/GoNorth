@@ -80,7 +80,117 @@ return de;
 (function(GoNorth) {
     "use strict";
     (function(Util) {
-        
+        /// Callback function that gets called when the url parameter changed
+        var urlParameterChangedCallback = null;
+
+        /**
+         * Calls the url parameter changed function
+         */
+        function callUrlParameterChanged() {
+            if(urlParameterChangedCallback) 
+            {
+                urlParameterChangedCallback();
+            }
+        }
+
+        /**
+         * Adds a function that will be called if the url parameter is changed
+         *
+         * @param {function} callback 
+         */
+        Util.onUrlParameterChanged = function(callback) {
+            urlParameterChangedCallback = callback;
+            window.onpopstate = callUrlParameterChanged;
+        }
+
+        /**
+         * Manipulates the history state
+         * 
+         * @param {string} parameter Parameter change
+         * @param {bool} replaceState true if the state should be replaced, false to push the state
+         */
+        function manipulateHistoryState(parameter, replaceState) {
+            var dontUse = false;
+            if(parameter) 
+            {
+                parameter = "?" + parameter;
+                if(window.location.search == parameter)
+                {
+                    dontUse = true;
+                }
+            } 
+            else if(!parameter)
+            {
+                parameter = window.location.pathname;
+                if(!window.location.search)
+                {
+                    dontUse = true;
+                }
+            }
+
+            if(!dontUse) 
+            {
+                if(!replaceState) 
+                {
+                    window.history.pushState(parameter, null, parameter);
+                }
+                else
+                {
+                    window.history.replaceState(parameter, null, parameter);
+                }
+                callUrlParameterChanged();
+            }
+        }
+
+        /**
+         * Sets the url parameters
+         * 
+         * @param {string} parameters Parameters
+         */
+        Util.setUrlParameters = function(parameter) {
+            manipulateHistoryState(parameter, false);
+        }
+
+        /**
+         * Replace the url parameters without pushing a new history state
+         * 
+         * @param {string} parameters Parameters
+         */
+        Util.replaceUrlParameters = function(parameter) {
+            manipulateHistoryState(parameter, true);
+        }
+
+        /**
+         * Returns a parameter value (will search the query parameter or hash, depending on browser support)
+         * 
+         * @param {string} parameter Name of the parameter
+         * @returns {string} Value, null if not present
+         */
+        Util.getParameterFromUrl = function(parameter) {
+            var url = window.location.search;
+
+            // If search string is not given, fallback to old hash notatation to allow old links to still work (Kirja etc.)
+            if(!url)
+            {
+                url = window.location.hash;
+            }
+
+            parameter = parameter.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp(parameter + "(=([^&#]*)|&|#|$)");
+            var results = regex.exec(url);
+            if (!results) 
+            {
+                return null;
+            }
+
+            if (!results[2]) 
+            {
+                return '';
+            }
+
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
         /**
          * Generates the anti forgery header
          * 
@@ -105,30 +215,6 @@ return de;
             }).resetForm();
         }
 
-        /**
-         * Returns a parameter value from the location hash
-         * 
-         * @param {string} parameter Name of the parameter
-         * @returns {string} Value, null if not present
-         */
-        Util.getParameterFromHash = function(parameter) {
-            var url = window.location.hash;
-            parameter = parameter.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp(parameter + "(=([^&#]*)|&|#|$)");
-            var results = regex.exec(url);
-            if (!results) 
-            {
-                return null;
-            }
-
-            if (!results[2]) 
-            {
-                return '';
-            }
-
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        }
-        
         /**
          * Fills a select box from an array
          * @param {object} selectBox jQuery Select Element
@@ -208,6 +294,24 @@ return de;
                 }
             };
         }
+
+        /**
+         * Debounces a function
+         * @param {function} fn Function to debounce
+         * @param {number} wait Timeout for milliseconds
+         */
+        Util.debounce = function(fn, wait) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    fn.apply(context, args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        };
 
     }(GoNorth.Util = GoNorth.Util || {}));
 }(window.GoNorth = window.GoNorth || {}));
@@ -710,7 +814,7 @@ return de;
             /**
              * Draggable Binding Handler
              */
-            ko.bindingHandlers.draggable = {
+            ko.bindingHandlers.draggableElement = {
                 init: function (element, valueAccessor, allBindings) {
                     var helper = valueAccessor();
                     if(ko.isObservable(helper))
@@ -774,7 +878,7 @@ return de;
             /**
              * Droppable Binding Handler
              */
-            ko.bindingHandlers.droppable = {
+            ko.bindingHandlers.droppableElement = {
                 init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     var callbackFunc = valueAccessor();
                     var droppableOptions = {
@@ -930,6 +1034,10 @@ return de;
                 return href;
             }
 
+
+            /// Left mouse button
+            var mouesButtonLeft = 1;
+
             /**
              * Href Binding Handler
              */
@@ -937,6 +1045,22 @@ return de;
                 init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     var href = extractHref(valueAccessor, bindingContext);
                     jQuery(element).prop("href", href);
+
+                    if(allBindings.get("isPushStateHref"))
+                    {
+                        jQuery(element).click(function(event) {
+                            if(event.which != mouesButtonLeft) {
+                                return;
+                            }
+    
+                            var hrefTarget = jQuery(this).attr("href");
+                            hrefTarget = hrefTarget.replace(window.location.pathname + "?", "");
+                            hrefTarget = hrefTarget.replace(window.location.pathname + "#", "");
+                            GoNorth.Util.setUrlParameters(hrefTarget);
+                            event.preventDefault();
+                            return false;
+                        });
+                    }
                 },
                 update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     var href = extractHref(valueAccessor, bindingContext);

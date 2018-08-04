@@ -10,6 +10,13 @@
             CompareDialog.ViewModel = function()
             {
                 this.isOpen = new ko.observable(false);
+                var self = this;
+                this.isOpen.subscribe(function(newValue) {
+                    if(!newValue && self.markAsImplementedPromise)
+                    {
+                        self.markAsImplementedPromise.reject();
+                    }
+                });
                 this.objectName = new ko.observable("");
 
                 this.isLoading = new ko.observable(false);
@@ -185,15 +192,16 @@
                         headers: GoNorth.Util.generateAntiForgeryHeader(),
                         type: "POST"
                     }).done(function() {
-                        self.isLoading(false);
-                        self.isOpen(false);
-
                         if(window.refreshImplementationStatusList)
                         {
                             window.refreshImplementationStatusList();
                         }
 
                         self.markAsImplementedPromise.resolve();
+                        self.markAsImplementedPromise = null;
+
+                        self.isLoading(false);
+                        self.isOpen(false);
                     }).fail(function() {
                         self.isLoading(false);
                         self.errorOccured(true);
@@ -230,6 +238,7 @@
                 this.hasMarkerTypeRow = false;
 
                 this.compareDialog = compareDialog;
+                this.initialCompareObjId = null;
 
                 this.objects = new ko.observableArray();
                 this.hasMore = new ko.observable(false);
@@ -257,14 +266,35 @@
                 },
 
                 /**
+                 * Opens the compare for an object by id
+                 * 
+                 * @param {string} id Id of the object to check
+                 */
+                openCompareById: function(id) {
+                    var objects = this.objects();
+                    for(var curObject = 0; curObject < objects.length; ++curObject)
+                    {
+                        if(objects[curObject].id == id)
+                        {
+                            this.openCompare(objects[curObject]);
+                            break;
+                        }
+                    }
+                },
+
+                /**
                  * Opens the compare
                  * 
                  * @param {object} obj Object to check
                  */
                 openCompare: function(obj) {
+                    this.saveCompareIdInUrl(obj.id);
                     var self = this;
                     this.openCompareDialog(obj).done(function() {
+                        self.saveCompareIdInUrl(null);
                         self.loadPage();
+                    }).fail(function() {
+                        self.saveCompareIdInUrl(null);
                     });
                 },
 
@@ -293,6 +323,7 @@
                  * Initializes the list
                  */
                 init: function() {
+                    this.savePagingInfoInUrl();
                     if(!this.isInitialized)
                     {
                         this.loadPage();
@@ -304,6 +335,8 @@
                  * Loads a page with objects
                  */
                 loadPage: function() {
+                    this.savePagingInfoInUrl();
+
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
@@ -312,6 +345,11 @@
                        self.hasMore(data.hasMore);
 
                        self.resetLoadingState();
+
+                       if(self.initialCompareObjId) {
+                           self.openCompareById(self.initialCompareObjId);
+                           self.initialCompareObjId = null;
+                       }
                     }).fail(function() {
                         self.errorOccured(true);
                         self.resetLoadingState();
@@ -345,6 +383,73 @@
                     this.nextLoading(true);
 
                     this.loadPage();
+                },
+
+
+                /**
+                 * Manipulates the url data
+                 * 
+                 * @param {string} paramName Name of the parameter
+                 * @param {string} paramValue Value of hte parameter
+                 */
+                manipulateUrlData: function(paramName, paramValue) {
+                    var urlParameters = window.location.search;
+                    if(urlParameters)
+                    {
+                        var paramRegex = new RegExp("&" + paramName + "=.*?(&|$)", "i")
+                        urlParameters = urlParameters.substr(1).replace(paramRegex, "");
+                        if(paramValue != null)
+                        {
+                            urlParameters += "&" + paramName + "=" + paramValue;
+                        }
+                    }
+                    else
+                    {
+                        if(paramValue != null)
+                        {
+                            urlParameters = paramName + "=" + paramValue;
+                        }
+                        else
+                        {
+                            urlParameters = "";
+                        }
+                    }
+
+                    GoNorth.Util.replaceUrlParameters(urlParameters);
+                },
+
+                /**
+                 * Saves the paging info in the url
+                 */
+                savePagingInfoInUrl: function() {
+                    this.manipulateUrlData("page", this.currentPage());
+                },
+
+                /**
+                 * Sets the current page
+                 * 
+                 * @param {number} currentPage Page to set
+                 */
+                setCurrentPage: function(currentPage) {
+                    this.currentPage(currentPage);
+                },
+
+                /**
+                 * Saves the compare dialog object id in the url
+                 * 
+                 * @param {string} compareObjId Id of the object to save in the url
+                 */
+                saveCompareIdInUrl: function(compareObjId) {
+                    this.manipulateUrlData("compareId", compareObjId);
+                },
+
+                /**
+                 * Sets the initial compare id
+                 * 
+                 * @param {string} compareObjId Id of the object for which the compare dialog should be opened
+                 */
+                setInitialCompareId: function(compareObjId) {
+                    this.initialCompareObjId = compareObjId;
                 }
             };
 
@@ -411,7 +516,7 @@
              * @returns {string} Url of the object
              */
             Overview.ImplementationStatusNpcList.prototype.buildObjectUrl = function(obj) {
-                return "/Kortisto/Npc#id=" + obj.id;
+                return "/Kortisto/Npc?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));
@@ -477,7 +582,7 @@
              * @returns {string}  Url of the object
              */
             Overview.ImplementationStatusDialogList.prototype.buildObjectUrl = function(obj) {
-                return "/Tale#npcId=" + obj.relatedObjectId;
+                return "/Tale?npcId=" + obj.relatedObjectId;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));
@@ -543,7 +648,7 @@
              * @returns {string}  Url of the object
              */
             Overview.ImplementationStatusItemList.prototype.buildObjectUrl = function(obj) {
-                return "/Styr/Item#id=" + obj.id;
+                return "/Styr/Item?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));
@@ -609,7 +714,7 @@
              * @returns {string}  Url of the object
              */
             Overview.ImplementationStatusSkillList.prototype.buildObjectUrl = function(obj) {
-                return "/Evne/Skill#id=" + obj.id;
+                return "/Evne/Skill?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));
@@ -675,7 +780,7 @@
              * @returns {string} Url of the object
              */
             Overview.ImplementationStatusQuestList.prototype.buildObjectUrl = function(obj) {
-                return "/Aika/Quest#id=" + obj.id;
+                return "/Aika/Quest?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));
@@ -746,7 +851,7 @@
              */
             Overview.ImplementationStatusMarkerList.prototype.buildObjectUrl = function(obj) {
                 var zoomOnMarkerParam = "&zoomOnMarkerType=" + this.markerTypes[obj.type] + "&zoomOnMarkerId=" + obj.id;
-                return "/Karta#id=" + obj.mapId + zoomOnMarkerParam;
+                return "/Karta?id=" + obj.mapId + zoomOnMarkerParam;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));
@@ -818,11 +923,13 @@
                 this.markerList = new Overview.ImplementationStatusMarkerList(nonLocalizedMarkerTypes, this.isLoading, this.errorOccured, this.compareDialog);
 
                 // Select first list user has access to
-                var existingListType = parseInt(GoNorth.Util.getParameterFromHash("listType"));
+                var existingListType = parseInt(GoNorth.Util.getParameterFromUrl("listType"));
+                var existingPage = parseInt(GoNorth.Util.getParameterFromUrl("page"));
+                var compareId = GoNorth.Util.getParameterFromUrl("compareId");
                 var preSelected = false;
                 if(!isNaN(existingListType))
                 {
-                    preSelected = this.selectListByType(existingListType);
+                    preSelected = this.selectListByType(existingListType, existingPage, compareId);
                 }
 
                 if(!preSelected)
@@ -831,12 +938,12 @@
                 }
                 
                 var self = this;
-                window.onhashchange = function() {
-                    var listType = parseInt(GoNorth.Util.getParameterFromHash("listType"));
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var listType = parseInt(GoNorth.Util.getParameterFromUrl("listType"));
                     if(!isNaN(listType) && listType != self.currentListToShow()) {
-                        self.selectListByType(listType);
+                        self.selectListByType(listType, null, null);
                     }
-                }
+                });
             };
 
             Overview.ViewModel.prototype = {
@@ -896,14 +1003,14 @@
                  */
                 setCurrentListToShow: function(listType) {
                     this.currentListToShow(listType);
-                    var hashValue = "#listType=" + listType;
-                    if(window.location.hash)
+                    var parameterValue = "listType=" + listType;
+                    if(window.location.search)
                     {
-                        window.location.hash = hashValue; 
+                        GoNorth.Util.setUrlParameters(parameterValue);
                     }
                     else
                     {
-                        window.location.replace(hashValue);
+                        GoNorth.Util.replaceUrlParameters(parameterValue);
                     }
                 },
 
@@ -941,41 +1048,85 @@
                  * Selects a list type by the type
                  * 
                  * @param {number} listType List Type to select
+                 * @param {number} page Page to select
+                 * @param {string} compareId Id of the object to open the compare dialog for
                  * @returns {bool} true if the List can be selected, else false
                  */
-                selectListByType: function(listType) {
+                selectListByType: function(listType, page, compareId) {
                     if(GoNorth.ImplementationStatus.Overview.hasKortistoRights && listType == listTypeNpc)
                     {
+                        this.setPageFromUrl(this.npcList, page);
+                        this.setInitialCompareIdFromUrl(this.npcList, compareId);
                         this.selectNpcList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasTaleRights && listType == listTypeDialog)
                     {
+                        this.setPageFromUrl(this.dialogList, page);
+                        this.setInitialCompareIdFromUrl(this.dialogList, compareId);
                         this.selectDialogList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasStyrRights && listType == listTypeItem)
                     {
+                        this.setPageFromUrl(this.itemList, page);
+                        this.setInitialCompareIdFromUrl(this.itemList, compareId);
                         this.selectItemList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasEvneRights && listType == listTypeSkill)
                     {
+                        this.setPageFromUrl(this.skillList, page);
+                        this.setInitialCompareIdFromUrl(this.skillList, compareId);
                         this.selectSkillList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasAikaRights && listType == listTypeQuest)
                     {
+                        this.setPageFromUrl(this.questList, page);
+                        this.setInitialCompareIdFromUrl(this.questList, compareId);
                         this.selectQuestList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasKartaRights && listType == listTypeMarker)
                     {
+                        this.setPageFromUrl(this.markerList, page);
+                        this.setInitialCompareIdFromUrl(this.markerList, compareId);
                         this.selectMarkerList();
                         return true;
                     }
 
                     return false;
+                },
+
+                /**
+                 * Sets the page from url
+                 * 
+                 * @param {object} list List to update
+                 * @param {number} page Page
+                 */
+                setPageFromUrl: function(list, page) {
+                    if(list == null || isNaN(page) || page == null)
+                    {
+                        return;
+                    }
+
+                    list.setCurrentPage(page);
+                },
+
+                /**
+                 * Sets the initial compare id
+                 * 
+                 * @param {object} list List to update
+                 * @param {number} compareId Compare Id
+                 */
+                setInitialCompareIdFromUrl: function(list, compareId) {
+                    if(list == null || compareId == null)
+                    {
+                        return;
+                    }
+
+                    list.setInitialCompareId(compareId);
                 }
             };
 

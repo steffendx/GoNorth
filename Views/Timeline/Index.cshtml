@@ -32,6 +32,10 @@
         <!-- /ko -->
     </div>
     <div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+        <button class="btn btn-default" data-bind="enable: startIndices().length > 2 && !isLoading(), click: firstPage" title="@Localizer["FirstPage"]">
+            <i class="glyphicon glyphicon-step-backward" data-bind="visible: !prevLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
+        </button>
         <button class="btn btn-default" data-bind="enable: startIndices().length > 2 && !isLoading(), click: prevPage" title="@Localizer["PreviousPage"]">
             <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
             <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>

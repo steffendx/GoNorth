@@ -34,7 +34,7 @@
     <h2>
         @ViewData["Title"] - <span data-bind="text: templateLabel"></span>
         <span class="gn-exportManageTemplateLoading" style="display: none" data-bind="visible: isLoading"><i class="glyphicon glyphicon-refresh spinning"></i></span>
-        <span class="gn-exportManageTemplateInfoIcon" style="display: none" data-bind="visible: customizedObjectTemplateIsDefault" title="@Localizer["TemplateBasedOnParent"]"><a data-bind="href: parentTemplateUrl"><i class="glyphicon glyphicon-share"></i></a></span>
+        <span class="gn-exportManageTemplateInfoIcon" style="display: none" data-bind="visible: customizedObjectTemplateIsDefault" title="@Localizer["TemplateBasedOnParent"]"><a data-bind="href: parentTemplateUrl, isPushStateHref: true"><i class="glyphicon glyphicon-share"></i></a></span>
     </h2>
 
     <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">

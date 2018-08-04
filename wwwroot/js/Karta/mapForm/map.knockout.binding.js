@@ -13,7 +13,31 @@
 
                 /// Default Zoom Level
                 var defaultZoom = 2;
+                
+                /// Url Latitude
+                var urlLat = null;
 
+                /// Url Longitude
+                var urlLong = null;
+
+                /// Url Zoom
+                var urlZoom = null;
+
+                /**
+                 * Reads the url map locations
+                 */
+                GoNorth.Karta.Map.readUrlMapLocations = function() {
+                    urlLat = parseFloat(GoNorth.Util.getParameterFromUrl("mapLat"));
+                    urlLong = parseFloat(GoNorth.Util.getParameterFromUrl("mapLong"));
+                    urlZoom = parseInt(GoNorth.Util.getParameterFromUrl("mapZoom"));
+                }
+                GoNorth.Karta.Map.readUrlMapLocations();
+
+                /**
+                 * Unwraps an observable
+                 * @param {object} obs Observable or value
+                 * @returns {object} Value of the observable
+                 */
                 function unwrapIfObservable(obs) {
                     if(ko.isObservable(obs))
                     {
@@ -22,6 +46,57 @@
 
                     return obs;
                 }
+
+                /**
+                 * Removes dangling events from leaflet that get not correctly removed
+                 * @param {object} domElement Dom Element
+                 * @param {object} inputObj Input object
+                 * @param {boolean} checkPrefix true to check the prefix, else false
+                 */
+                function removeDanglingEvents(domElement, inputObj, checkPrefix)
+                {
+                    if(inputObj !== null)
+                    {
+                        var msPointer = L.Browser.msPointer;
+                        var POINTER_DOWN   = msPointer ? 'MSPointerDown'   : 'pointerdown';
+                        var POINTER_MOVE   = msPointer ? 'MSPointerMove'   : 'pointermove';
+                        var POINTER_UP     = msPointer ? 'MSPointerUp'     : 'pointerup';
+                        var POINTER_CANCEL = msPointer ? 'MSPointerCancel' : 'pointercancel';
+
+                        for(var prop in inputObj)
+                        {
+                            var prefixOk = checkPrefix ? prop.indexOf('_leaflet_') !== -1 : true, propVal; 
+                            if(inputObj.hasOwnProperty(prop) && prefixOk)
+                            {
+                                var evt = []; 
+                                if(prop.indexOf('touchstart') !== -1) 
+                                {
+                                    evt = [ POINTER_DOWN ];
+                                }
+                                else if(prop.indexOf('touchmove') !== -1)
+                                {
+                                    evt = [ POINTER_MOVE ];
+                                }
+                                else if(prop.indexOf('touchend') !== -1)
+                                {
+                                    evt = [ POINTER_UP, POINTER_CANCEL ];
+                                }
+
+                                propVal = inputObj[prop];
+                                if(evt.length > 0 && typeof propVal === 'function')
+                                {
+                                    for(var curEvent = 0; curEvent < evt.length; ++curEvent)
+                                    {
+                                        domElement.removeEventListener(evt[curEvent], propVal, false);
+                                    }                 
+                                }
+
+                                inputObj[prop] = null;
+                                delete inputObj[prop];
+                            }
+                        }
+                    }        
+                };
 
                 /**
                  * Initializes the map
@@ -102,7 +177,21 @@
                     map.setMaxBounds(mapTileBounds);
 
                     var mapCenter = map.unproject([imageWidth * 0.5, imageHeight * 0.5], 0);
-                    map.setView(mapCenter, Math.min(defaultZoom, maxZoom));
+                    var mapZoom = defaultZoom;
+
+                    if(urlLat != null && urlLong != null && !isNaN(urlLat) && !isNaN(urlLong))
+                    {
+                        mapCenter = new L.LatLng(urlLat, urlLong);
+                        urlLat = null;
+                        urlLong = null;
+                    }
+                    if(urlZoom != null && !isNaN(urlZoom))
+                    {
+                        mapZoom = urlZoom;
+                        urlZoom = null;
+                    }
+
+                    map.setView(mapCenter, Math.min(mapZoom, maxZoom));
 
                     if(ko.isObservable(obs)) 
                     {
@@ -118,6 +207,33 @@
                             clickHandler.apply(bindingContext.$data, [ map, e.latlng ])
                         });
                     }
+
+                    GoNorth.Karta.Map.refreshUrlMapLocations = function() {
+                        var urlParams = "mapLat=" + map.getCenter().lat;
+                        urlParams += "&mapLong=" + map.getCenter().lng;
+                        urlParams += "&mapZoom=" + map.getZoom();
+
+                        var finalParams = window.location.search;
+                        if(finalParams) 
+                        {
+                            finalParams = finalParams.replace(/mapLat=.*?&mapLong=.*?&mapZoom=.*?(&|$)/i, "");
+                            if(finalParams[finalParams.length - 1] != "&")
+                            {
+                                finalParams += "&";
+                            }
+                            finalParams += urlParams;
+                        }
+                        else
+                        {
+                            finalParams = "?" + urlParams;
+                        }
+
+                        window.history.replaceState(finalParams, null, finalParams)
+                    };
+
+                    map.on("zoomend moveend", function() {
+                        GoNorth.Karta.Map.refreshUrlMapLocations();
+                    });
 
                     var readyHandler = allBindings.get("mapReady");
                     if(readyHandler)
@@ -143,6 +259,9 @@
                         if(obs._map)
                         {
                             obs._map.remove();
+                            // Some events are not removed by leaflet itself, must be done here to prevent errors
+                            removeDanglingEvents(element, element._leaflet_events, false);
+                            removeDanglingEvents(element, element, true);
                             obs._map = null;
                         }
 

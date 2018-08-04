@@ -1,8 +1,14 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
 <script type="text/html" id="gn-singleLineField">
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldDefaultHeader.cshtml")
     <input type="text" class="form-control" data-bind="value: value, attr: { placeholder: name }, disable: $root.isReadonly"/>
 </script>
 
 <script type="text/html" id="gn-multiLineField">
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldDefaultHeader.cshtml")
     <!-- ko if: !$root.isReadonly() -->
         <div class="form-control gn-flexFieldObjectFormRichText" data-bind="richText: value, disable: $root.isReadonly"></div>
     <!-- /ko -->
@@ -12,9 +18,30 @@
 </script>
 
 <script type="text/html" id="gn-numberField">
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldDefaultHeader.cshtml")
     <input type="text" class="form-control" data-bind="numeric: value, attr: { placeholder: name }, disable: $root.isReadonly"/>
 </script>
 
 <script type="text/html" id="gn-optionField">
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldDefaultHeader.cshtml")
     <select type="text" class="form-control" data-bind="options: options, value: value, attr: { placeholder: name }, disable: $root.isReadonly"></select>
+</script>
+
+<script type="text/html" id="gn-fieldGroup">
+    <h4 class="gn-clickable" data-bind="click: toogleFieldVisibility">
+        <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !areFieldsExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: areFieldsExpanded" style="display: none"></i> 
+        <span data-bind="text: name"></span>
+        <!-- ko if: !$root.isReadonly() -->
+            <a class="gn-clickable gn-flexFieldObjectFormFieldGroupButton gn-flexFieldDragHandle" data-bind="click: function() {}, clickBubble: false" title="@Localizer["DragToMove"]"><i class="glyphicon glyphicon-sort"></i></a>
+            <a class="gn-clickable gn-flexFieldObjectFormFieldGroupButton" data-bind="click: function(fieldGroup) { $root.openEditFieldGroupDialog(fieldGroup); }, clickBubble: false"><i class="glyphicon glyphicon-pencil" title="@Localizer["EditFieldGroup"]"></i></a>
+            <a class="gn-clickable gn-flexFieldObjectFormFieldGroupButton" data-bind="click: function(fieldGroup) { $root.openConfirmDeleteFieldGroupDialog(fieldGroup); }, clickBubble: false" title="@Localizer["DeleteFieldGroup"]"><i class="glyphicon glyphicon-trash"></i></a>
+        <!-- /ko -->
+    </h4>
+
+    <div class="gn-flexFieldObjectFormFieldGroupFieldList" data-bind="sortable: { data: fields, connectClass: 'fieldList', isEnabled: !$root.isReadonly(), options: { handle: '.gn-flexFieldDragHandle' }, beforeMove: function(e) { $root.checkFieldDropAllowed(e); } }, visible: areFieldsExpanded">
+        <div class="form-group">
+            <!-- ko template: { name: getTemplateName(), data: $data } -->
+            <!-- /ko -->
+        </div>
+    </div>
 </script>

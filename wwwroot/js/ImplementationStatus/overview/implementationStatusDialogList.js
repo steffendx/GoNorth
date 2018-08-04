@@ -58,7 +58,7 @@
              * @returns {string}  Url of the object
              */
             Overview.ImplementationStatusDialogList.prototype.buildObjectUrl = function(obj) {
-                return "/Tale#npcId=" + obj.relatedObjectId;
+                return "/Tale?npcId=" + obj.relatedObjectId;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));

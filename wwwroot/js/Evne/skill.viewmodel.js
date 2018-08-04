@@ -246,7 +246,7 @@
 
                     for(var curEntry = 0; curEntry < data.pages.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja#id=" + data.pages[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja?id=" + data.pages[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -286,7 +286,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -319,7 +319,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -352,7 +352,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -385,7 +385,7 @@
 
                     for(var curEntry = 0; curEntry < data.quests.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest#id=" + data.quests[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest?id=" + data.quests[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -422,7 +422,7 @@
                             continue;
                         }
 
-                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail#id=" + data.details[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail?id=" + data.details[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -494,6 +494,13 @@
             CompareDialog.ViewModel = function()
             {
                 this.isOpen = new ko.observable(false);
+                var self = this;
+                this.isOpen.subscribe(function(newValue) {
+                    if(!newValue && self.markAsImplementedPromise)
+                    {
+                        self.markAsImplementedPromise.reject();
+                    }
+                });
                 this.objectName = new ko.observable("");
 
                 this.isLoading = new ko.observable(false);
@@ -669,15 +676,16 @@
                         headers: GoNorth.Util.generateAntiForgeryHeader(),
                         type: "POST"
                     }).done(function() {
-                        self.isLoading(false);
-                        self.isOpen(false);
-
                         if(window.refreshImplementationStatusList)
                         {
                             window.refreshImplementationStatusList();
                         }
 
                         self.markAsImplementedPromise.resolve();
+                        self.markAsImplementedPromise = null;
+
+                        self.isLoading(false);
+                        self.isOpen(false);
                     }).fail(function() {
                         self.isLoading(false);
                         self.errorOccured(true);
@@ -781,9 +789,10 @@
                 /**
                  * Serializes the value to a string
                  * 
+                 * @param {number} fieldIndex Index of the field in the final serialization
                  * @returns {string} Value of the field as a string
                  */
-                serializeValue: function() { },
+                serializeValue: function(fieldIndex) { },
 
                 /**
                  * Deserializes a value from a string
@@ -791,6 +800,13 @@
                  * @param {string} value Value to Deserialize
                  */
                 deserializeValue: function(value) { },
+
+                /**
+                 * Returns all child fields
+                 * 
+                 * @returns {FlexFieldBase[]} Children of the field, null if no children exist
+                 */
+                getChildFields: function() { return null; },
 
                 /**
                  * Returns true if the field has additional configuration, else false
@@ -839,7 +855,16 @@
                  * 
                  * @param {string} additionalConfiguration Serialized additional configuration
                  */
-                deserializeAdditionalConfiguration: function(additionalConfiguration) { }
+                deserializeAdditionalConfiguration: function(additionalConfiguration) { },
+
+
+                /**
+                 * Groups fields into the field
+                 * 
+                 * @param {FlexFieldBase[]} fields Root List of fields
+                 * @param {object} fieldsToRemoveFromRootList Object to track fields that must be removed from the root list
+                 */
+                groupFields: function(fields, fieldsToRemoveFromRootList) { }
             }
 
         }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
@@ -1172,6 +1197,191 @@
         (function(ObjectForm) {
 
             /**
+             * Type of the field group
+             */
+            ObjectForm.FlexFieldGroup = 100;
+
+            /**
+             * Class for a field group
+             * 
+             * @class
+             */
+            ObjectForm.FieldGroup = function() {
+                ObjectForm.FlexFieldBase.apply(this);
+
+                this.fields = new ko.observableArray();
+                this.deserializingFieldIds = null;
+
+                this.isExpandedByDefault = true;
+                this.areFieldsExpanded = new ko.observable(true);
+            }
+
+            ObjectForm.FieldGroup.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
+
+            /**
+             * Returns the type of the field
+             * 
+             * @returns {int} Type of the field
+             */
+            ObjectForm.FieldGroup.prototype.getType = function() { return ObjectForm.FlexFieldGroup; }
+
+            /**
+             * Returns the template name
+             * 
+             * @returns {string} Template Name
+             */
+            ObjectForm.FieldGroup.prototype.getTemplateName = function() { return "gn-fieldGroup"; }
+
+            /**
+             * Returns if the field can be exported to a script
+             * 
+             * @returns {bool} true if the value can be exported to a script, else false
+             */
+            ObjectForm.FieldGroup.prototype.canExportToScript = function() { return false; }
+
+            /**
+             * Serializes the value to a string
+             * 
+             * @param {number} fieldIndex Index of the field in the final serialization
+             * @returns {string} Value of the field as a string
+             */
+            ObjectForm.FieldGroup.prototype.serializeValue = function(fieldIndex) { 
+                var fieldIds = [];
+                var fields = this.fields();
+                for(var curField = 0; curField < fields.length; ++curField)
+                {
+                    // If field id is not yet filled it will be filled on the server side
+                    if(fields[curField].id())
+                    {
+                        fieldIds.push(fields[curField].id());
+                    }
+                    else
+                    {
+                        fieldIds.push((fieldIndex + curField + 1).toString());
+                    }
+                }
+
+                return JSON.stringify(fieldIds); 
+            }
+            
+            /**
+             * Returns all child fields
+             * 
+             * @returns {FlexFieldBase[]} Children of the field, null if no children exist
+             */
+            ObjectForm.FieldGroup.prototype.getChildFields = function() { 
+                return this.fields(); 
+            }
+
+            /**
+             * Deserializes a value from a string
+             * 
+             * @param {string} value Value to Deserialize
+             */
+            ObjectForm.FieldGroup.prototype.deserializeValue = function(value) { 
+                this.deserializingFieldIds = [];
+                if(value) 
+                {
+                    this.deserializingFieldIds = JSON.parse(value);
+                }
+            }
+
+            /**
+             * Serializes the additional configuration
+             * 
+             * @returns {string} Serialized additional configuration
+             */
+            ObjectForm.FieldGroup.prototype.serializeAdditionalConfiguration = function() { 
+                return JSON.stringify({
+                    isExpandedByDefault: this.isExpandedByDefault
+                }); 
+            },
+
+            /**
+             * Deserializes the additional configuration
+             * 
+             * @param {string} additionalConfiguration Serialized additional configuration
+             */
+            ObjectForm.FieldGroup.prototype.deserializeAdditionalConfiguration = function(additionalConfiguration) { 
+                if(additionalConfiguration)
+                {
+                    var deserializedConfig = JSON.parse(additionalConfiguration);
+                    this.isExpandedByDefault = deserializedConfig.isExpandedByDefault;
+                    this.areFieldsExpanded(this.isExpandedByDefault);
+                }
+            }
+            
+            /**
+             * Groups fields into the field
+             * 
+             * @param {FlexFieldBase[]} fields Root List of fields
+             * @param {object} fieldsToRemoveFromRootList Object to track fields that must be removed from the root list
+             */
+            ObjectForm.FieldGroup.prototype.groupFields = function(fields, fieldsToRemoveFromRootList) { 
+                if(!this.deserializingFieldIds)
+                {
+                    return;
+                }
+
+                for(var curGroupFieldId = 0; curGroupFieldId < this.deserializingFieldIds.length; ++curGroupFieldId)
+                {
+                    var fieldFound = false;
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        if(fields[curField].id() == this.deserializingFieldIds[curGroupFieldId])
+                        {
+                            // Check fieldsToRemoveFromRootList here to prevent duplicated fields if a new group was distributed from template 
+                            // using a field which a group in the current object includes
+                            if(!fieldsToRemoveFromRootList[curField])
+                            {
+                                this.fields.push(fields[curField]);
+                                fieldsToRemoveFromRootList[curField] = true;
+                            }
+                            fieldFound = true;
+                            break;
+                        }
+                    }
+
+                    // If a user creates a folder from template the index must be used
+                    if(!fieldFound && this.deserializingFieldIds[curGroupFieldId] && this.deserializingFieldIds[curGroupFieldId].indexOf("-") < 0)
+                    {
+                        var targetIndex = parseInt(this.deserializingFieldIds[curGroupFieldId]);
+                        if(!isNaN(targetIndex) && targetIndex >= 0 && targetIndex < fields.length)
+                        {
+                            this.fields.push(fields[targetIndex]);
+                            fieldsToRemoveFromRootList[targetIndex] = true;
+                        }
+                    }
+                }
+                this.deserializingFieldIds = null;
+            }
+
+
+            /**
+             * Toggles the field visibility
+             */
+            ObjectForm.FieldGroup.prototype.toogleFieldVisibility = function() {
+                this.areFieldsExpanded(!this.areFieldsExpanded());
+            }
+
+            /**
+             * Deletes a field
+             * 
+             * @param {FlexFieldBase} field Field to delete
+             */
+            ObjectForm.FieldGroup.prototype.deleteField = function(field) {
+                this.fields.remove(field);
+            }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
              * Class for managing flex fields
              * 
              * @class
@@ -1221,6 +1431,16 @@
                 },
 
                 /**
+                 * Adds a field group to the manager
+                 * 
+                 * @param {string} name Name of the group
+                 * @returns {FlexFieldBase} New field
+                 */
+                addFieldGroup: function(name) {
+                    return this.addField(ObjectForm.FlexFieldGroup, name);
+                },
+
+                /**
                  * Adds a field to the manager
                  * 
                  * @param {int} fieldType Type of the field
@@ -1255,6 +1475,8 @@
                         return new ObjectForm.NumberFlexField();
                     case ObjectForm.FlexFieldTypeOption:
                         return new ObjectForm.OptionFlexField();
+                    case ObjectForm.FlexFieldGroup:
+                        return new ObjectForm.FieldGroup();
                     }
 
                     return null;
@@ -1270,79 +1492,29 @@
                     this.fields.remove(field);
                 },
 
-
                 /**
-                 * Moves a field up
+                 * Deletes a field group
                  * 
-                 * @param {FlexFieldBase} field Field to move up
+                 * @param {FieldGroup} fieldGroup Field group to delete
                  */
-                moveFieldUp: function(field) {
-                    var fieldIndex = this.fields.indexOf(field);
-                    if(fieldIndex >= this.fields().length - 1 || fieldIndex < 0)
-                    {
-                        return;
+                deleteFieldGroup: function(field) {
+                    if(field.fields) {
+                        var targetPushIndex = this.fields.indexOf(field);
+                        var fieldsInGroup = field.fields();
+                        for(var curField = 0; curField < fieldsInGroup.length; ++curField)
+                        {
+                            if(targetPushIndex < 0)
+                            {
+                                this.fields.push(fieldsInGroup[curField]);
+                            }
+                            else
+                            {
+                                this.fields.splice(targetPushIndex + curField, 0, fieldsInGroup[curField]);
+                            }
+                        }
                     }
-
-                    this.swapFields(fieldIndex, fieldIndex + 1);
-                },
-
-                /**
-                 * Moves a field down
-                 * 
-                 * @param {FlexFieldBase} field Field to move down
-                 */
-                moveFieldDown: function(field) {
-                    var fieldIndex = this.fields.indexOf(field);
-                    if(fieldIndex <= 0)
-                    {
-                        return;
-                    }
-
-                    this.swapFields(fieldIndex, fieldIndex - 1);
-                },
-
-                /**
-                 * Swaps to fields
-                 * 
-                 * @param {int} index1 Index of the first field
-                 * @param {int} index2 Index of the second field
-                 */
-                swapFields: function(index1, index2) {
-                    // Needs to remove and add again for multiline field
-                    var fieldValue1 = this.fields()[index1];
-                    var fieldValue2 = this.fields()[index2];
-                    this.fields.remove(fieldValue1);
-                    this.fields.remove(fieldValue2);
-
-                    var firstIndex = index1;
-                    var firstItem = fieldValue2;
-                    var secondIndex = index2;
-                    var secondItem = fieldValue1;
-                    if(index1 > index2)
-                    {
-                        firstIndex = index2;
-                        firstItem = fieldValue1;
-                        secondIndex = index1;
-                        secondItem = fieldValue2;
-                    }
-
-                    if(firstIndex >= this.fields().length)
-                    {
-                        this.fields.push(firstItem);
-                    }
-                    else
-                    {
-                        this.fields.splice(firstIndex, 0, firstItem);
-                    }
-
-                    if(secondIndex >= this.fields().length)
-                    {
-                        this.fields.push(secondItem);
-                    }
-                    else
-                    {
-                        this.fields.splice(secondIndex, 0, secondItem);
-                    }
+                    
+                    this.fields.remove(field);
                 },
 
 
@@ -1356,19 +1528,38 @@
                     var fields = this.fields();
                     for(var curField = 0; curField < fields.length; ++curField)
                     {
-                        var serializedValue = {
-                            id: fields[curField].id(),
-                            createdFromTemplate: fields[curField].createdFromTemplate(),
-                            fieldType: fields[curField].getType(),
-                            name: fields[curField].name(),
-                            value: fields[curField].serializeValue(),
-                            additionalConfiguration: fields[curField].serializeAdditionalConfiguration(),
-                            scriptSettings: fields[curField].scriptSettings.serialize()
-                        };
-                        serializedValues.push(serializedValue);
+                        serializedValues.push(this.serializeSingleField(fields[curField], serializedValues));
+
+                        var childFields = fields[curField].getChildFields();
+                        if(childFields)
+                        {
+                            for(var curChild = 0; curChild < childFields.length; ++curChild)
+                            {
+                                serializedValues.push(this.serializeSingleField(childFields[curChild], serializedValues));
+                            }
+                        }
                     }
 
                     return serializedValues;
+                },
+
+                /**
+                 * Serializes a single field
+                 * 
+                 * @param {FlexFieldBase} field Field to serialize
+                 * @param {object[]} serializedValues Already serialized values
+                 * @returns {object} Serialized field
+                 */
+                serializeSingleField: function(field, serializedValues) {
+                    return {
+                        id: field.id(),
+                        createdFromTemplate: field.createdFromTemplate(),
+                        fieldType: field.getType(),
+                        name: field.name(),
+                        value: field.serializeValue(serializedValues.length),
+                        additionalConfiguration: field.serializeAdditionalConfiguration(),
+                        scriptSettings: field.scriptSettings.serialize()
+                    };
                 },
 
                 /**
@@ -1389,6 +1580,21 @@
                         deserializedField.scriptSettings.deserialize(serializedValues[curField].scriptSettings);
                         fields.push(deserializedField);
                     }
+
+                    var fieldsToRemoveFromRootList = {};
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        fields[curField].groupFields(fields, fieldsToRemoveFromRootList);
+                    }
+
+                    for(var curField = fields.length - 1; curField >= 0; --curField)
+                    {
+                        if(fieldsToRemoveFromRootList[curField])
+                        {
+                            fields.splice(curField, 1);
+                        }
+                    }
+
                     this.fields(fields);
                 },
 
@@ -1419,6 +1625,50 @@
                     for(var curField = 0; curField < fields.length; ++curField)
                     {
                         fields[curField].createdFromTemplate(true);
+                        var children = fields[curField].getChildFields();
+                        if(!children)
+                        {
+                            continue;
+                        }
+
+                        for(var curChild = 0; curChild < children.length; ++curChild)
+                        {
+                            children[curChild].createdFromTemplate(true);
+                        }
+                    }
+                },
+
+
+                /**
+                 * Checks if a field name is in used
+                 * 
+                 * @param {string} fieldName Name of the field to check
+                 * @param {string} fieldToIgnore Field to ignore during the check (important for rename)
+                 */
+                isFieldNameInUse: function(fieldName, fieldToIgnore) {
+                    fieldName = fieldName.toLowerCase();
+
+                    var fields = this.fields();
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        if(fields[curField] != fieldToIgnore && fields[curField].name() && fields[curField].name().toLowerCase() == fieldName)
+                        {
+                            return true;
+                        }
+
+                        var children = fields[curField].getChildFields();
+                        if(!children)
+                        {
+                            continue;
+                        }
+
+                        for(var curChild = 0; curChild < children.length; ++curChild)
+                        {
+                            if(children[curChild] != fieldToIgnore && children[curChild].name() && children[curChild].name().toLowerCase() == fieldName)
+                            {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
@@ -1441,6 +1691,7 @@
 
                 this.showFieldCreateEditDialog = new ko.observable(false);
                 this.isEditingField = new ko.observable(false);
+                this.fieldToEdit = null;
                 this.createEditFieldName = new ko.observable("");
                 this.createEditFieldAdditionalConfigurationDisabled = new ko.observable(false);
                 this.createEditFieldHasAdditionalConfiguration = new ko.observable(false);
@@ -1450,11 +1701,31 @@
 
                 this.showConfirmFieldDeleteDialog = new ko.observable(false);
                 this.fieldToDelete = null;
+                this.fieldToDeleteParent = null;
 
                 this.showFieldScriptSettingsDialog = new ko.observable(false);
                 this.dontExportFieldToScript = new ko.observable();
                 this.additionalFieldScriptNames = new ko.observable();
                 this.scriptSettingsField = null;
+
+                this.showFieldGroupCreateEditDialog = new ko.observable(false);
+                this.fieldGroupToEdit = null;
+                this.isEditingFieldGroup = new ko.observable(false);
+                this.createEditFieldGroupName = new ko.observable("");
+                this.createEditFieldGroupExpandedByDefault = new ko.observable(false);
+
+                this.showDuplicateFieldNameError = new ko.observable(false);
+
+                var self = this;
+                this.createEditFieldName.subscribe(function() {
+                    self.showDuplicateFieldNameError(false);
+                });
+                this.createEditFieldGroupName.subscribe(function() {
+                    self.showDuplicateFieldNameError(false);
+                });
+                
+                this.showConfirmFieldGroupDeleteDialog = new ko.observable(false);
+                this.fieldGroupToDelete = null;
             };
 
             ObjectForm.FlexFieldHandlingViewModel.prototype = {
@@ -1518,7 +1789,7 @@
                  */
                 editField: function(field) {
                     var disableAdditionalConfig = !field.allowEditingAdditionalConfigForTemplateFields() && field.createdFromTemplate();
-                    this.openCreateEditFieldDialog(true, field.name(), field.hasAdditionalConfiguration(), field.getAdditionalConfiguration(), field.getAdditionalConfigurationLabel(), disableAdditionalConfig).done(function(name, additionalConfiguration) {
+                    this.openCreateEditFieldDialog(true, field, field.hasAdditionalConfiguration(), field.getAdditionalConfiguration(), field.getAdditionalConfigurationLabel(), disableAdditionalConfig).done(function(name, additionalConfiguration) {
                         field.name(name);
 
                         if(field.hasAdditionalConfiguration())
@@ -1533,24 +1804,26 @@
                  * Opens the create/edit field dialog
                  * 
                  * @param {bool} isEdit true if its an edit operation, else false
-                 * @param {string} existingName Existing name of the field
+                 * @param {FlexFieldBase} fieldToEdit Field to edit
                  * @param {bool} hasAdditionalConfiguration true if additional configuration is required for the field
                  * @param {string} existingAdditionalConfiguration Existing additional Configuration
                  * @param {string} additionalConfigurationLabel Label for the additional configuration
                  * @param {bool} disableAdditionalConfiguration true if the additional configuration should be disabled, else false
                  * @returns {jQuery.Deferred} Deferred which will be resolved once the user presses save
                  */
-                openCreateEditFieldDialog: function(isEdit, existingName, hasAdditionalConfiguration, existingAdditionalConfiguration, additionalConfigurationLabel, disableAdditionalConfiguration) {
+                openCreateEditFieldDialog: function(isEdit, fieldToEdit, hasAdditionalConfiguration, existingAdditionalConfiguration, additionalConfigurationLabel, disableAdditionalConfiguration) {
                     this.createEditFieldDeferred = new jQuery.Deferred();
 
                     this.isEditingField(isEdit);
-                    if(existingName)
+                    if(fieldToEdit)
                     {
-                        this.createEditFieldName(existingName);
+                        this.createEditFieldName(fieldToEdit.name());
+                        this.fieldToEdit = fieldToEdit;
                     }
                     else
                     {
                         this.createEditFieldName("");
+                        this.fieldToEdit = null;
                     }
 
                     this.createEditFieldHasAdditionalConfiguration(hasAdditionalConfiguration ? true : false);
@@ -1576,6 +1849,13 @@
                         return;
                     }
 
+                    // TODO: Check for field edit to ignore current ifeld
+                    if(this.fieldManager.isFieldNameInUse(this.createEditFieldName(), this.fieldToEdit))
+                    {
+                        this.showDuplicateFieldNameError(true);
+                        return;
+                    }
+
                     if(this.createEditFieldDeferred)
                     {
                         var additionalConfiguration = null;
@@ -1598,26 +1878,110 @@
                         this.createEditFieldDeferred.reject();
                     }
                     this.createEditFieldDeferred = null; 
+                    this.fieldToEdit = null;
                     this.showFieldCreateEditDialog(false);
                 },
 
 
                 /**
-                 * Moves a field up
-                 * 
-                 * @param {FlexFieldBase} field Field to move up
+                 * Opens the create new field group dialog
                  */
-                moveFieldUp: function(field) {
-                    this.fieldManager.moveFieldUp(field);
+                openCreateNewFieldGroupDialog: function() {
+                    GoNorth.Util.setupValidation("#gn-fieldGroupCreateEditForm");
+                    this.showFieldGroupCreateEditDialog(true);
+                    this.fieldGroupToEdit = null;
+                    this.isEditingFieldGroup(false);
+                    this.createEditFieldGroupName("");
+                    this.createEditFieldGroupExpandedByDefault(true);
                 },
 
                 /**
-                 * Moves a field down
+                 * Opens the edit field group dialog
                  * 
-                 * @param {FlexFieldBase} field Field to move down
+                 * @param {FieldGroup} fieldGroupToEdit Field group to edit
                  */
-                moveFieldDown: function(field) {
-                    this.fieldManager.moveFieldDown(field);
+                openEditFieldGroupDialog: function(fieldGroupToEdit) {
+                    GoNorth.Util.setupValidation("#gn-fieldGroupCreateEditForm");
+                    this.showFieldGroupCreateEditDialog(true);
+                    this.fieldGroupToEdit = fieldGroupToEdit;
+                    this.isEditingFieldGroup(true);
+                    this.createEditFieldGroupName(fieldGroupToEdit.name());
+                    this.createEditFieldGroupExpandedByDefault(fieldGroupToEdit.isExpandedByDefault);
+                },
+
+                /**
+                 * Saves the field group
+                 */
+                saveFieldGroup: function() {
+                    if(!jQuery("#gn-fieldGroupCreateEditForm").valid())
+                    {
+                        return;
+                    }
+
+                    if(this.fieldManager.isFieldNameInUse(this.createEditFieldGroupName(), this.fieldGroupToEdit))
+                    {
+                        this.showDuplicateFieldNameError(true);
+                        return;
+                    }
+
+                    if(this.fieldGroupToEdit == null)
+                    {
+                        var fieldGroup = this.fieldManager.addFieldGroup(this.createEditFieldGroupName());
+                        fieldGroup.isExpandedByDefault = this.createEditFieldGroupExpandedByDefault();
+                        fieldGroup.areFieldsExpanded(fieldGroup.isExpandedByDefault);
+                    }
+                    else
+                    {
+                        this.fieldGroupToEdit.name(this.createEditFieldGroupName());
+                        this.fieldGroupToEdit.isExpandedByDefault = this.createEditFieldGroupExpandedByDefault();
+                        this.fieldGroupToEdit.areFieldsExpanded(this.fieldGroupToEdit.isExpandedByDefault);
+                    }
+                    this.closeFieldGroupDialog();
+                },
+
+                /**
+                 * Closes the field group dialog
+                 */
+                closeFieldGroupDialog: function() {
+                    this.fieldGroupToEdit = null;
+                    this.showFieldGroupCreateEditDialog(false);
+                },
+
+                /**
+                 * Opens the confirm delete field group dialog
+                 * 
+                 * @param {FieldGroup} fieldGroup Field group to delete
+                 */
+                openConfirmDeleteFieldGroupDialog: function(fieldGroup) {
+                    this.showConfirmFieldGroupDeleteDialog(true);
+                    this.fieldGroupToDelete = fieldGroup;
+                },
+
+                /**
+                 * Closes the confirm field group delete dialog
+                 */
+                closeConfirmFieldGroupDeleteDialog: function() {
+                    this.showConfirmFieldGroupDeleteDialog(false);
+                    this.fieldGroupToDelete = null;
+                },
+
+                /**
+                 * Deletes the current field group
+                 */
+                deleteFieldGroup: function() {
+                    this.fieldManager.deleteFieldGroup(this.fieldGroupToDelete);
+                    this.closeConfirmFieldGroupDeleteDialog();
+                },
+
+                /**
+                 * Checks if a field drop is allowed
+                 * 
+                 * @param {object} dropEvent Drop event 
+                 */
+                checkFieldDropAllowed: function(dropEvent) {
+                    if(dropEvent.item.getType() == ObjectForm.FlexFieldGroup && dropEvent.targetParent != this.fieldManager.fields) {
+                        dropEvent.cancelDrop = true;
+                    }
                 },
 
 
@@ -1625,10 +1989,12 @@
                  * Opens the delete field dialog
                  * 
                  * @param {FlexFieldBase} field Field to delete
+                 * @param {object} fieldParent Field parent
                  */
-                openConfirmDeleteFieldDialog: function(field) {
+                openConfirmDeleteFieldDialog: function(field, fieldParent) {
                     this.showConfirmFieldDeleteDialog(true);
                     this.fieldToDelete = field;
+                    this.fieldToDeleteParent = fieldParent;
                 },
 
                 /**
@@ -1637,13 +2003,22 @@
                 closeConfirmFieldDeleteDialog: function() {
                     this.showConfirmFieldDeleteDialog(false);
                     this.fieldToDelete = null;
+                    this.fieldToDeleteParent = null;
                 },
 
                 /**
                  * Deletes the field for which the dialog is opened
                  */
                 deleteField: function() {
-                    this.fieldManager.deleteField(this.fieldToDelete);
+                    if(this.fieldToDeleteParent != null && typeof(this.fieldToDeleteParent.getType) == "function" && this.fieldToDeleteParent.getType() == ObjectForm.FlexFieldGroup)
+                    {
+                        this.fieldToDeleteParent.deleteField(this.fieldToDelete);
+                    }
+                    else
+                    {
+                        this.fieldManager.deleteField(this.fieldToDelete);
+                    }
+
                     this.closeConfirmFieldDeleteDialog();
                 },
 
@@ -1710,13 +2085,13 @@
                 this.kartaApiMarkedMethod = kartaApiMarkedMethod;
 
                 this.isTemplateMode = new ko.observable(false);
-                if(GoNorth.Util.getParameterFromHash("template"))
+                if(GoNorth.Util.getParameterFromUrl("template"))
                 {
                     this.isTemplateMode(true);
                 }
 
                 this.id = new ko.observable("");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.id(paramId);
@@ -1733,9 +2108,9 @@
                     }
                 }, this);
 
-                var templateId = GoNorth.Util.getParameterFromHash("templateId");
+                var templateId = GoNorth.Util.getParameterFromUrl("templateId");
                 this.templateId = templateId;
-                this.parentFolderId = GoNorth.Util.getParameterFromHash("folderId");
+                this.parentFolderId = GoNorth.Util.getParameterFromUrl("folderId");
                 
                 this.isReadonly = new ko.observable(false);
                 this.lockedByUser = new ko.observable("");
@@ -2062,11 +2437,11 @@
                         var idAdd = "id=" + data.id;
                         if(self.isTemplateMode())
                         {
-                            window.location.hash += "&" + idAdd;
+                            GoNorth.Util.replaceUrlParameters("template=1&" + idAdd);
                         }
                         else
                         {
-                            window.location.hash = idAdd;
+                            GoNorth.Util.replaceUrlParameters(idAdd);
                         }
                         self.acquireLock();
                     }
@@ -2234,7 +2609,7 @@
                     return;
                 }
 
-                var url = "/Export/ManageTemplate#templateType=" + templateType + "&customizedObjectId=" + this.id();
+                var url = "/Export/ManageTemplate?templateType=" + templateType + "&customizedObjectId=" + this.id();
                 if(this.isTemplateMode())
                 {
                     url += "&objectIsTemplate=1";
@@ -2364,7 +2739,7 @@
              * @returns {string} Url for quest
              */
             ObjectForm.BaseViewModel.prototype.buildAikaQuestUrl = function(quest) {
-                return "/Aika/Quest#id=" + quest.id;
+                return "/Aika/Quest?id=" + quest.id;
             };
 
 
@@ -2394,7 +2769,7 @@
              * @returns {string} Url for the page
              */
             ObjectForm.BaseViewModel.prototype.buildKirjaPageUrl = function(page) {
-                return "/Kirja#id=" + page.id;
+                return "/Kirja?id=" + page.id;
             };
 
 
@@ -2443,7 +2818,7 @@
              * @returns {string} Url for the map
              */
             ObjectForm.BaseViewModel.prototype.buildKartaMapUrl = function(map) {
-                var url = "/Karta#id=" + map.mapId;
+                var url = "/Karta?id=" + map.mapId;
                 if(map.markerIds.length == 1)
                 {
                     url += "&zoomOnMarkerId=" + map.markerIds[0] + "&zoomOnMarkerType=" + map.mapMarkerType
@@ -2506,7 +2881,7 @@
              * @returns {string} Url for the dialog
              */
             ObjectForm.BaseViewModel.prototype.buildTaleDialogUrl = function(dialogNpc) {
-                return "/Tale#npcId=" + dialogNpc.id;
+                return "/Tale?npcId=" + dialogNpc.id;
             };
 
 
@@ -7562,6 +7937,8 @@
              */
             Skill.ViewModel.prototype.runAfterSave = function(data) {
                 this.reloadFieldsForNodes(GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill, this.id());
+                
+                GoNorth.BindingHandlers.nodeGraphRefreshPositionZoomUrl();
             };
 
             /**
@@ -7616,7 +7993,7 @@
              * @returns {string} Url for the npc
              */
             Skill.ViewModel.prototype.buildNpcSkillUrl = function(npc) {
-                return "/Kortisto/Npc#id=" + npc.id;
+                return "/Kortisto/Npc?id=" + npc.id;
             };
 
         }(Evne.Skill = Evne.Skill || {}));

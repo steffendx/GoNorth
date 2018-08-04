@@ -323,7 +323,7 @@ namespace GoNorth.Controllers.Api
                     Description = folder.Description
                 };
                 newFolder = await _folderDbAccess.CreateFolder(newFolder);
-                await _timelineService.AddTimelineEntry(FolderCreatedEvent, folder.Name);
+                await _timelineService.AddTimelineEntry(FolderCreatedEvent, folder.Name, newFolder.Id);
                 return Ok(newFolder.Id);
             }
             catch(Exception ex)
@@ -399,7 +399,7 @@ namespace GoNorth.Controllers.Api
 
             await _folderDbAccess.UpdateFolder(loadedFolder);
             _logger.LogInformation("Folder was updated.");
-            await _timelineService.AddTimelineEntry(FolderUpdatedEvent, folder.Name);
+            await _timelineService.AddTimelineEntry(FolderUpdatedEvent, folder.Name, loadedFolder.Id);
 
             return Ok(id);
         }
@@ -524,6 +524,11 @@ namespace GoNorth.Controllers.Api
             {
                 return StatusCode((int)HttpStatusCode.BadRequest);
             }
+            
+            if(FlexFieldApiUtil.HasDuplicateFieldNames(template.Fields))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["DuplicateFieldNameExist"]);
+            }
 
             template.ParentFolderId = string.Empty;
 
@@ -605,6 +610,11 @@ namespace GoNorth.Controllers.Api
         /// <returns>Result Status Code</returns>
         protected async Task<IActionResult> BaseUpdateFlexFieldTemplate(string id, T template)
         {
+            if(FlexFieldApiUtil.HasDuplicateFieldNames(template.Fields))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["DuplicateFieldNameExist"]);
+            }
+
             T loadedTemplate = await _templateDbAccess.GetFlexFieldObjectById(id);
             List<string> oldTags = loadedTemplate.Tags;
             if(oldTags == null)
@@ -672,6 +682,7 @@ namespace GoNorth.Controllers.Api
                 curObject.Fields.AddRange(newFields);
 
                 FlexFieldApiUtil.SetFieldIdsForNewFields(curObject.Fields);
+                FlexFieldApiUtil.SetFieldIdsForNewFieldsInFolders(curObject.Fields, template);
 
                 await _objectDbAccess.UpdateFlexFieldObject(curObject);
             }
@@ -788,7 +799,13 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.BadRequest);
             }
 
+            if(FlexFieldApiUtil.HasDuplicateFieldNames(flexFieldObject.Fields))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["DuplicateFieldNameExist"]);
+            }
+
             FlexFieldApiUtil.SetFieldIdsForNewFields(flexFieldObject.Fields);
+            FlexFieldApiUtil.SetFieldIdsForNewFieldsInFolders(flexFieldObject.Fields);
 
             if(flexFieldObject.Tags == null)
             {
@@ -935,7 +952,13 @@ namespace GoNorth.Controllers.Api
                 flexFieldObject.Tags = new List<string>();
             }
 
+            if(FlexFieldApiUtil.HasDuplicateFieldNames(flexFieldObject.Fields))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["DuplicateFieldNameExist"]);
+            }
+
             FlexFieldApiUtil.SetFieldIdsForNewFields(flexFieldObject.Fields);
+            FlexFieldApiUtil.SetFieldIdsForNewFieldsInFolders(flexFieldObject.Fields);
 
             bool nameChanged = loadedFlexFieldObject.Name != flexFieldObject.Name;
 

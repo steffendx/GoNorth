@@ -238,6 +238,10 @@
     font-weight: bold;
 }
 
+.gn-textDanger {
+    color: #a94442;
+}
+
 /** Home **/
 .gn-homeTileContainer {
     padding: 10px;
@@ -347,6 +351,35 @@
     color: #FFFFFF;
     background-color: #010033;
     border: 1px solid #010022;
+}
+
+.gn-copyToClipboardToolTipContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText {
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 120%;
+    left: 50%;
+    margin-left: -50%;
+}
+
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
 }
 
 /** Timeline **/
@@ -537,10 +570,20 @@
     margin-top: 25px;
 }
 
-.gn-flexFieldObjectFormFieldButton {
+.gn-flexFieldObjectFormFieldButton, .gn-flexFieldObjectFormFieldGroupButton {
     margin-right: 5px;
     display: inline-block;
     width: 12px;
+}
+
+.gn-flexFieldObjectFormFieldGroupButton {
+    font-size: 14px;
+}
+
+.gn-flexFieldObjectFormFieldGroupFieldList {
+    padding-left: 26px;
+    padding-top: 10px;
+    padding-bottom: 2px;
 }
 
 .gn-flexFieldObjectFormRichText {
@@ -572,35 +615,6 @@
     .gn-flexFieldObjectExportResultDialog {
         width: 1100px;
     }
-}
-
-.gn-flexFieldExportResultCopyToClipboardToolTipContainer {
-    position: relative;
-    display: inline-block;
-}
-
-.gn-flexFieldExportResultCopyToClipboardToolTipContainer .gn-flexFieldExportResultCopyToClipboardToolTipText {
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 120%;
-    left: 50%;
-    margin-left: -50%;
-}
-
-.gn-flexFieldExportResultCopyToClipboardToolTipContainer .gn-flexFieldExportResultCopyToClipboardToolTipText::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
 }
 
 .gn-flexFieldObjectExportResultTextarea {
@@ -995,7 +1009,7 @@ gn-kirjaTableOfContent {
     text-align: right;
 }
 
-.gn-kartaEditMarkerGeometryButton, .gn-kartaEditMarkerButton, .gn-kartaMarkAsImplementedMarkerButton {
+.gn-kartaCopyMarkerLink, .gn-kartaEditMarkerGeometryButton, .gn-kartaEditMarkerButton, .gn-kartaMarkAsImplementedMarkerButton {
     margin-right: 5px;
 }
 
@@ -1310,6 +1324,11 @@ path.leaflet-interactive {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.gn-taskCardNumber {
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .gn-taskGroupTitle {

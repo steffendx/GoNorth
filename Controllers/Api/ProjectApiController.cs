@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
+using GoNorth.Data.Exporting;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
@@ -75,6 +76,26 @@ namespace GoNorth.Controllers.Api
         private readonly ITaskBoardDbAccess _taskBoardDbAccess;
 
         /// <summary>
+        /// Task Number Db Access
+        /// </summary>
+        private readonly ITaskNumberDbAccess _taskNumberDbAccess;
+
+        /// <summary>
+        /// User task board history db access
+        /// </summary>
+        private readonly IUserTaskBoardHistoryDbAccess _userTaskBoardHistoryDbAccess;
+
+        /// <summary>
+        /// Export Settings Db Access
+        /// </summary>
+        private readonly IExportSettingsDbAccess _exportSettingsDbAccess;
+
+        /// <summary>
+        /// Export Template Db Access
+        /// </summary>
+        private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
+
+        /// <summary>
         /// Timeline Service
         /// </summary>
         private readonly ITimelineService _timelineService;
@@ -102,12 +123,16 @@ namespace GoNorth.Controllers.Api
         /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="taskBoardDbAccess">Task Board Db Access</param>
+        /// <param name="taskNumberDbAccess">Task Number Db Access</param>
+        /// <param name="userTaskBoardHistoryDbAccess">User Task board history db access</param>
+        /// <param name="exportSettingsDbAccess">Export Settings Db Access</param>
+        /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ProjectApiController(IProjectDbAccess projectDbAccess, IKortistoFolderDbAccess kortistoFolderDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrFolderDbAccess styrFolderDbAccess, IStyrItemDbAccess itemDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, 
-                                    IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITimelineService timelineService, 
-                                    ILogger<ProjectApiController> logger, IStringLocalizerFactory localizerFactory)
+                                    IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskNumberDbAccess taskNumberDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
+                                    IExportSettingsDbAccess exportSettingsDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, ITimelineService timelineService, ILogger<ProjectApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _projectDbAccess = projectDbAccess;
             _kortistoFolderDbAccess = kortistoFolderDbAccess;
@@ -119,6 +144,10 @@ namespace GoNorth.Controllers.Api
             _questDbAccess = questDbAccess;
             _mapDbAccess = mapDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
+            _taskNumberDbAccess = taskNumberDbAccess;
+            _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
+            _exportSettingsDbAccess = exportSettingsDbAccess;
+            _exportTemplateDbAccess = exportTemplateDbAccess;
             _timelineService = timelineService;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(ProjectApiController));
@@ -182,6 +211,9 @@ namespace GoNorth.Controllers.Api
 
             await _projectDbAccess.DeleteProject(project);
             _logger.LogInformation("Project was deleted.");
+
+            await CleanUpAdditionalProjectData(project);
+            _logger.LogInformation("Additional project data was deleted.");
 
             await _timelineService.AddTimelineEntry(TimelineEvent.ProjectDeleted, project.Name);
             return Ok(id);
@@ -251,6 +283,20 @@ namespace GoNorth.Controllers.Api
 
             return true;
         }
+        
+        /// <summary>
+        /// Cleans up additional project settings
+        /// </summary>
+        /// <param name="project">Project to clean up for</param>
+        /// <returns>Task</returns>
+        private async Task CleanUpAdditionalProjectData(GoNorthProject project)
+        {
+            await _taskNumberDbAccess.DeleteCounterForProject(project.Id);
+            await _userTaskBoardHistoryDbAccess.DeleteUserTaskBoardHistoryForProject(project.Id);
+            await _exportTemplateDbAccess.DeleteTemplatesForProject(project.Id);
+            await _exportSettingsDbAccess.DeleteExportSettings(project.Id);
+        }
+
 
         /// <summary>
         /// Updates a project 

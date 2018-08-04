@@ -1,12 +1,18 @@
 {
     "EditField": "Feld editieren",
     "AddField": "Feld hinzufügen",
+    "EditFieldGroup": "Feldgruppe editieren",
+    "AddFieldGroup": "Feldgruppe hinzufügen",
     "Name": "Name",
     "Save": "Speichern",
     "Cancel": "Abbrechen",
 
+    "FieldNameIsAlreadyInUse": "Der Name wird bereits verwendet.",
+
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteTheField": "Bist du sicher das das Feld gelöscht werden soll?",
+    "AreYouSureYouWantToDeleteTheFieldGroup": "Bist du sicher das die Feldgruppe gelöscht werden soll?",
+    "AllFieldsInTheGroupWillBeKept": "Die Felder in der Feldgruppe werden nicht gelöscht.",
     "Yes": "Ja",
     "No": "Nein",
     
@@ -14,5 +20,7 @@
     "DontExportToScript": "Nicht in Script exportieren",
     "AdditionalScriptNames": "Zusätzliche Skriptnamen (Komma getrennt)",
 
-    "ConfigCanOnlyBeEditedInTemplate": "Diese Einstellung kann nur im Template geändert werden"
+    "ConfigCanOnlyBeEditedInTemplate": "Diese Einstellung kann nur im Template geändert werden",
+
+    "ExpandedByDefault": "Standardmäßig aufgeklappt"
 }

@@ -497,7 +497,7 @@
             /**
              * Draggable Binding Handler
              */
-            ko.bindingHandlers.draggable = {
+            ko.bindingHandlers.draggableElement = {
                 init: function (element, valueAccessor, allBindings) {
                     var helper = valueAccessor();
                     if(ko.isObservable(helper))
@@ -561,7 +561,7 @@
             /**
              * Droppable Binding Handler
              */
-            ko.bindingHandlers.droppable = {
+            ko.bindingHandlers.droppableElement = {
                 init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     var callbackFunc = valueAccessor();
                     var droppableOptions = {
@@ -717,6 +717,10 @@
                 return href;
             }
 
+
+            /// Left mouse button
+            var mouesButtonLeft = 1;
+
             /**
              * Href Binding Handler
              */
@@ -724,6 +728,22 @@
                 init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     var href = extractHref(valueAccessor, bindingContext);
                     jQuery(element).prop("href", href);
+
+                    if(allBindings.get("isPushStateHref"))
+                    {
+                        jQuery(element).click(function(event) {
+                            if(event.which != mouesButtonLeft) {
+                                return;
+                            }
+    
+                            var hrefTarget = jQuery(this).attr("href");
+                            hrefTarget = hrefTarget.replace(window.location.pathname + "?", "");
+                            hrefTarget = hrefTarget.replace(window.location.pathname + "#", "");
+                            GoNorth.Util.setUrlParameters(hrefTarget);
+                            event.preventDefault();
+                            return false;
+                        });
+                    }
                 },
                 update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     var href = extractHref(valueAccessor, bindingContext);

@@ -13,8 +13,10 @@
          */
         Timeline.ViewModel = function()
         {
+            var existingPagingData = this.loadPagingData();
+
             this.dayEntries = new ko.observableArray();
-            this.startIndices = new ko.observableArray([0]);
+            this.startIndices = new ko.observableArray(existingPagingData);
             this.hasMore = new ko.observable(false);
 
             this.isLoading = new ko.observable(false);
@@ -44,6 +46,7 @@
                     if(pushIndices) 
                     {
                         self.startIndices.push(data.continueStart);
+                        self.savePagingData();
                     }
 
                     self.isLoading(false);
@@ -56,11 +59,22 @@
             },
 
             /**
+             * Loads the first page
+             */
+            firstPage: function() {
+                this.prevLoading(true);
+                this.startIndices([0]);
+                this.savePagingData();
+                this.loadPage(0, true);  
+            },
+
+            /**
              * Loads the previous page
              */
             prevPage: function() {
                 this.prevLoading(true);
                 this.startIndices.pop();
+                this.savePagingData();
                 this.loadPage(this.startIndices()[this.startIndices().length - 2], false);  
             },
 
@@ -104,6 +118,42 @@
                 });
 
                 return result;
+            },
+
+
+            /**
+             * Saves the paging data
+             */
+            savePagingData: function() {
+                var startIndices = this.startIndices();
+                if(startIndices.length > 1)
+                {
+                    startIndices = startIndices.slice(0, startIndices.length - 1);
+                }
+                var pagingData = "pagingData=" + encodeURIComponent(JSON.stringify(startIndices));
+                GoNorth.Util.replaceUrlParameters(pagingData);
+            },
+
+            /**
+             * Loads the paging data
+             * 
+             * @returns {number[]} Start indices
+             */
+            loadPagingData: function() {
+                var existingPagingData = [0];
+                var pagingParamData = GoNorth.Util.getParameterFromUrl("pagingData");
+                if(pagingParamData) 
+                {
+                    try
+                    {
+                        existingPagingData = JSON.parse(pagingParamData);
+                    }
+                    catch(e)
+                    {                       
+                    }
+                }
+
+                return existingPagingData;
             }
         };
 

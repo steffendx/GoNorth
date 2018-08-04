@@ -17,6 +17,7 @@
                 this.hasMarkerTypeRow = false;
 
                 this.compareDialog = compareDialog;
+                this.initialCompareObjId = null;
 
                 this.objects = new ko.observableArray();
                 this.hasMore = new ko.observable(false);
@@ -44,14 +45,35 @@
                 },
 
                 /**
+                 * Opens the compare for an object by id
+                 * 
+                 * @param {string} id Id of the object to check
+                 */
+                openCompareById: function(id) {
+                    var objects = this.objects();
+                    for(var curObject = 0; curObject < objects.length; ++curObject)
+                    {
+                        if(objects[curObject].id == id)
+                        {
+                            this.openCompare(objects[curObject]);
+                            break;
+                        }
+                    }
+                },
+
+                /**
                  * Opens the compare
                  * 
                  * @param {object} obj Object to check
                  */
                 openCompare: function(obj) {
+                    this.saveCompareIdInUrl(obj.id);
                     var self = this;
                     this.openCompareDialog(obj).done(function() {
+                        self.saveCompareIdInUrl(null);
                         self.loadPage();
+                    }).fail(function() {
+                        self.saveCompareIdInUrl(null);
                     });
                 },
 
@@ -80,6 +102,7 @@
                  * Initializes the list
                  */
                 init: function() {
+                    this.savePagingInfoInUrl();
                     if(!this.isInitialized)
                     {
                         this.loadPage();
@@ -91,6 +114,8 @@
                  * Loads a page with objects
                  */
                 loadPage: function() {
+                    this.savePagingInfoInUrl();
+
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
@@ -99,6 +124,11 @@
                        self.hasMore(data.hasMore);
 
                        self.resetLoadingState();
+
+                       if(self.initialCompareObjId) {
+                           self.openCompareById(self.initialCompareObjId);
+                           self.initialCompareObjId = null;
+                       }
                     }).fail(function() {
                         self.errorOccured(true);
                         self.resetLoadingState();
@@ -132,6 +162,73 @@
                     this.nextLoading(true);
 
                     this.loadPage();
+                },
+
+
+                /**
+                 * Manipulates the url data
+                 * 
+                 * @param {string} paramName Name of the parameter
+                 * @param {string} paramValue Value of hte parameter
+                 */
+                manipulateUrlData: function(paramName, paramValue) {
+                    var urlParameters = window.location.search;
+                    if(urlParameters)
+                    {
+                        var paramRegex = new RegExp("&" + paramName + "=.*?(&|$)", "i")
+                        urlParameters = urlParameters.substr(1).replace(paramRegex, "");
+                        if(paramValue != null)
+                        {
+                            urlParameters += "&" + paramName + "=" + paramValue;
+                        }
+                    }
+                    else
+                    {
+                        if(paramValue != null)
+                        {
+                            urlParameters = paramName + "=" + paramValue;
+                        }
+                        else
+                        {
+                            urlParameters = "";
+                        }
+                    }
+
+                    GoNorth.Util.replaceUrlParameters(urlParameters);
+                },
+
+                /**
+                 * Saves the paging info in the url
+                 */
+                savePagingInfoInUrl: function() {
+                    this.manipulateUrlData("page", this.currentPage());
+                },
+
+                /**
+                 * Sets the current page
+                 * 
+                 * @param {number} currentPage Page to set
+                 */
+                setCurrentPage: function(currentPage) {
+                    this.currentPage(currentPage);
+                },
+
+                /**
+                 * Saves the compare dialog object id in the url
+                 * 
+                 * @param {string} compareObjId Id of the object to save in the url
+                 */
+                saveCompareIdInUrl: function(compareObjId) {
+                    this.manipulateUrlData("compareId", compareObjId);
+                },
+
+                /**
+                 * Sets the initial compare id
+                 * 
+                 * @param {string} compareObjId Id of the object for which the compare dialog should be opened
+                 */
+                setInitialCompareId: function(compareObjId) {
+                    this.initialCompareObjId = compareObjId;
                 }
             };
 

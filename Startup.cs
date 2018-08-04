@@ -115,6 +115,7 @@ namespace GoNorth
 
             services.AddTransient<ITaskImageAccess, TaskImageFileSystemAccess>();
             services.AddTransient<ITaskImageParser, TaskImageParser>();
+            services.AddTransient<ITaskNumberFill, TaskNumberFill>();
 
             services.AddTransient<IKortistoThumbnailService, ImageSharpKortistoThumbnailService>();
             services.AddTransient<IEvneThumbnailService, ImageSharpEvneThumbnailService>();
@@ -186,6 +187,8 @@ namespace GoNorth
             services.AddScoped<ILanguageKeyDbAccess, LanguageKeyMongoDbAccess>();
 
             services.AddScoped<ITaskBoardDbAccess, TaskBoardMongoDbAccess>();
+            services.AddScoped<ITaskNumberDbAccess, TaskNumberMongoDbAccess>();
+            services.AddScoped<IUserTaskBoardHistoryDbAccess, UserTaskBoardHistoryMongoDbAccess>();
 
             services.AddScoped<IDbSetup, MongoDbSetup>();
 

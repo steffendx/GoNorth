@@ -393,7 +393,7 @@
                 chapterNode.$box.append("<button class='gn-aikaChapterDetailButton'>" + Aika.Localization.Chapter.OpenDetailView + "</button>");
 
                 chapterNode.$box.find(".gn-aikaChapterDetailButton").click(function() {
-                    var detailWindow = window.open("/Aika/Detail#id=" + detailViewId);
+                    var detailWindow = window.open("/Aika/Detail?id=" + detailViewId);
                     detailWindow.refreshChapterNode = function() {
                         loadDetailViewData(chapterNode, detailViewId);
                     };

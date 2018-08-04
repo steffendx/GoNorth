@@ -29,7 +29,7 @@
 
                 this.showReturnToNpcButton = new ko.observable(false);
                 
-                var npcId = GoNorth.Util.getParameterFromHash("npcId");
+                var npcId = GoNorth.Util.getParameterFromUrl("npcId");
                 if(npcId)
                 {
                     this.id(npcId);
@@ -235,7 +235,7 @@
                     return;
                 }
 
-                window.location = "/Kortisto/Npc#id=" + this.id();
+                window.location = "/Kortisto/Npc?id=" + this.id();
             };
 
             

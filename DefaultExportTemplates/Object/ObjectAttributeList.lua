@@ -1,2 +1,2 @@
-{{FlexField_Field_List_Start}}{{FlexField_Field_IsNumberField_Start}}this:add_number_value("{{FlexField_Field_Name}}", {{FlexField_Field_Value}}){{FlexField_Field_IsNumberField_End}}{{FlexField_Field_IsStringField_Start}}this:add_localized_string_value("{{FlexField_Field_Name}}", "{{FlexField_Field_LangKey}}"){{FlexField_Field_IsStringField_End}}
-{{FlexField_Field_List_End}}
+{{FlexField_Field_List_Start}}{{FlexField_Field_IsNotBlank_Start}}{{FlexField_Field_IsNumberField_Start}}this:add_number_value("{{FlexField_Field_Name}}", {{FlexField_Field_Value}}){{FlexField_Field_IsNumberField_End}}{{FlexField_Field_IsStringField_Start}}this:add_localized_string_value("{{FlexField_Field_Name}}", "{{FlexField_Field_LangKey}}"){{FlexField_Field_IsStringField_End}}{{FlexField_Field_IsNotLast_Start}}
+{{FlexField_Field_IsNotLast_End}}{{FlexField_Field_IsNotBlank_End}}{{FlexField_Field_List_End}}

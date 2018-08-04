@@ -74,7 +74,7 @@
                 skillOpenLink.on("click", function() {
                     if(selectSkillAction.data("skillid"))
                     {
-                        window.open("/Evne/Skill#id=" + selectSkillAction.data("skillid"));
+                        window.open("/Evne/Skill?id=" + selectSkillAction.data("skillid"));
                     }
                 });
             };

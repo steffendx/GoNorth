@@ -58,7 +58,7 @@
              * @returns {string} Url of the object
              */
             Overview.ImplementationStatusQuestList.prototype.buildObjectUrl = function(obj) {
-                return "/Aika/Quest#id=" + obj.id;
+                return "/Aika/Quest?id=" + obj.id;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));

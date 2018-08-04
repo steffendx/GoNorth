@@ -96,7 +96,7 @@
                 contentElement.find(".gn-nodeActionOpenDialog").on("click", function() {
                     if(selectNpcAction.data("npcid"))
                     {
-                        var taleWindow = window.open("/Tale#npcId=" + selectNpcAction.data("npcid"));
+                        var taleWindow = window.open("/Tale?npcId=" + selectNpcAction.data("npcid"));
                         taleWindow.taleDialogSaved = function() {
                             self.clearLoadedSharedObject();
                             self.validateDialogNodeExistsWithLoadingIndicator(actionNode);

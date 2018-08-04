@@ -12,10 +12,24 @@
              */
             AllPages.ViewModel = function()
             {
-                this.searchPattern = new ko.observable("");
+                var currentPage = 0;
+                var pageFromUrl = parseInt(GoNorth.Util.getParameterFromUrl("page"));
+                if(!isNaN(pageFromUrl))
+                {
+                    currentPage = pageFromUrl;
+                }
+
+                var initialSearchPattern = GoNorth.Util.getParameterFromUrl("searchTerm");
+                if(!initialSearchPattern)
+                {
+                    initialSearchPattern = "";
+                }
+
+                this.searchPattern = new ko.observable(initialSearchPattern);
+                this.searchPatternToUse = initialSearchPattern;
                 this.pages = new ko.observableArray();
                 this.hasMore = new ko.observable(false);
-                this.currentPage = new ko.observable(0);
+                this.currentPage = new ko.observable(currentPage);
 
                 this.isLoading = new ko.observable(false);
                 this.prevLoading = new ko.observable(false);
@@ -32,6 +46,7 @@
                  * Starts a new search
                  */
                 startNewSearch: function() {
+                    this.searchPatternToUse = this.searchPattern();
                     this.currentPage(0);
                     this.hasMore(false);
                     this.searchPages();
@@ -43,9 +58,17 @@
                 searchPages: function() {
                     this.errorOccured(false);
                     this.isLoading(true);
+
+                    var urlParameters = "page=" + this.currentPage();
+                    if(this.searchPatternToUse)
+                    {
+                        urlParameters += "&searchTerm=" + encodeURIComponent(this.searchPatternToUse);
+                    }
+                    GoNorth.Util.replaceUrlParameters(urlParameters);
+
                     var self = this;
                     jQuery.ajax({ 
-                        url: "/api/KirjaApi/SearchPages?searchPattern=" + encodeURIComponent(this.searchPattern()) + "&start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize, 
+                        url: "/api/KirjaApi/SearchPages?searchPattern=" + encodeURIComponent(this.searchPatternToUse) + "&start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize, 
                         type: "GET"
                     }).done(function(data) {
                        self.pages(data.pages);
@@ -91,7 +114,7 @@
                  * Opens a new window to create a page
                  */
                 openCreatePage: function() {
-                    window.location = "/Kirja#newPage=1";
+                    window.location = "/Kirja?newPage=1";
                 },
 
                 /**
@@ -101,7 +124,7 @@
                  * @returns {string} Url of the kirja page
                  */
                 buildPageUrl: function(page) {
-                    return "/Kirja#id=" + page.id;
+                    return "/Kirja?id=" + page.id;
                 }
             };
 

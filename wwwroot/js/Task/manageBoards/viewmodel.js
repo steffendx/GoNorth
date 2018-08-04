@@ -54,7 +54,7 @@
                  * @returns {string} Url for the board
                  */
                 buildTaskBoardUrl: function(board) {
-                    return "/Task#id=" + board.id;
+                    return "/Task?id=" + board.id;
                 },
 
 

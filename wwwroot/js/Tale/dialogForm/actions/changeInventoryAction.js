@@ -96,7 +96,7 @@
                 itemOpenLink.on("click", function() {
                     if(selectItemAction.data("itemid"))
                     {
-                        window.open("/Styr/Item#id=" + selectItemAction.data("itemid"));
+                        window.open("/Styr/Item?id=" + selectItemAction.data("itemid"));
                     }
                 });
             };

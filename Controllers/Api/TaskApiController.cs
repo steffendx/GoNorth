@@ -47,9 +47,19 @@ namespace GoNorth.Controllers.Api
 
 
         /// <summary>
-        /// Task Board Db Service
+        /// Task Board Db Access
         /// </summary>
         private readonly ITaskBoardDbAccess _taskBoardDbAccess;
+
+        /// <summary>
+        /// Task Number Db Access
+        /// </summary>
+        private readonly ITaskNumberDbAccess _taskNumberDbAccess;
+
+        /// <summary>
+        /// User Task Board History Db Access
+        /// </summary>
+        private readonly IUserTaskBoardHistoryDbAccess _userTaskBoardHistoryDbAccess;
 
         /// <summary>
         /// Project Db Access
@@ -90,6 +100,8 @@ namespace GoNorth.Controllers.Api
         /// Constructor
         /// </summary>
         /// <param name="taskBoardDbAccess">Task Board Db Access</param>
+        /// <param name="taskNumberDbAccess">Task Number Db Access</param>
+        /// <param name="userTaskBoardHistoryDbAccess">User Task Board History Db Access</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="taskImageAccess">Task Image Access</param>
         /// <param name="taskImageParser">Task Image Parser</param>
@@ -97,10 +109,12 @@ namespace GoNorth.Controllers.Api
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public TaskApiController(ITaskBoardDbAccess taskBoardDbAccess, IProjectDbAccess projectDbAccess, ITaskImageAccess taskImageAccess, ITaskImageParser taskImageParser, UserManager<GoNorthUser> userManager, ITimelineService timelineService,
-                                 ILogger<TaskApiController> logger, IStringLocalizerFactory localizerFactory)
+        public TaskApiController(ITaskBoardDbAccess taskBoardDbAccess, ITaskNumberDbAccess taskNumberDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITaskImageAccess taskImageAccess, ITaskImageParser taskImageParser, 
+                                 UserManager<GoNorthUser> userManager, ITimelineService timelineService, ILogger<TaskApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _taskBoardDbAccess = taskBoardDbAccess;
+            _taskNumberDbAccess = taskNumberDbAccess;
+            _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
             _projectDbAccess = projectDbAccess;
             _taskImageAccess = taskImageAccess;
             _taskImageParser = taskImageParser;
@@ -389,6 +403,7 @@ namespace GoNorth.Controllers.Api
             // Create Task Group
             TaskGroup newGroup = new TaskGroup();
             newGroup.Id = Guid.NewGuid().ToString();
+            newGroup.TaskNumber = await _taskNumberDbAccess.GetNextTaskNumber(updatedTaskBoard.ProjectId);
             newGroup.Name = group.Name;
             newGroup.Description = group.Description;
             newGroup.Status = group.Status;
@@ -613,6 +628,7 @@ namespace GoNorth.Controllers.Api
             // Create Task
             GoNorthTask newTask = new GoNorthTask();
             newTask.Id = Guid.NewGuid().ToString();
+            newTask.TaskNumber = await _taskNumberDbAccess.GetNextTaskNumber(updatedTaskBoard.ProjectId);
             newTask.Name = task.Name;
             newTask.Description = task.Description;
             newTask.Status = task.Status;
@@ -888,5 +904,37 @@ namespace GoNorth.Controllers.Api
             }
         }
 
+
+        /// <summary>
+        /// Returns the last opened task board id for the current user
+        /// </summary>
+        /// <returns>Id of the last opened task board, "" if no task board was opened before</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetLastOpenedTaskBoard()
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            string userId = _userManager.GetUserId(this.User);
+
+            string boardId = await _userTaskBoardHistoryDbAccess.GetLastOpenBoardForUser(project.Id, userId);
+            return Ok(boardId);
+        }
+
+        /// <summary>
+        /// Returns the last opened task board id for the current user
+        /// </summary>
+        /// <param name="boardId">Id of the board</param>
+        /// <returns>Task</returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> SetLastOpenedTaskBoard(string boardId)
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            string userId = _userManager.GetUserId(this.User);
+
+            await _userTaskBoardHistoryDbAccess.SetLastOpenBoardForUser(project.Id, userId, boardId);
+            
+            return Ok(userId);
+        }
+        
     }
 }

@@ -63,7 +63,7 @@
              */
             Overview.ImplementationStatusMarkerList.prototype.buildObjectUrl = function(obj) {
                 var zoomOnMarkerParam = "&zoomOnMarkerType=" + this.markerTypes[obj.type] + "&zoomOnMarkerId=" + obj.id;
-                return "/Karta#id=" + obj.mapId + zoomOnMarkerParam;
+                return "/Karta?id=" + obj.mapId + zoomOnMarkerParam;
             };
 
         }(ImplementationStatus.Overview = ImplementationStatus.Overview || {}));

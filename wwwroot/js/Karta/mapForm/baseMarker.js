@@ -92,6 +92,7 @@
                             if(!self.isDisabled)
                             {
                                 content += "<div class='gn-kartaPopupButtons'>";
+                                content += "<a class='gn-clickable gn-kartaCopyMarkerLink' title='" + Map.Localization.CopyLinkToMarkerTooltip + "'><i class='glyphicon glyphicon-link'></i></a>";
                                 content += "<a class='gn-clickable gn-kartaEditMarkerGeometryButton' title='" + Map.Localization.EditMarkerGeometryTooltip + "'><i class='glyphicon glyphicon-record'></i></a>";
                                 if(self.editCallback)
                                 {
@@ -116,6 +117,10 @@
                             content = "<div>" + content + "</div>";
 
                             var jQueryContent = jQuery(content);
+                            jQueryContent.find(".gn-kartaCopyMarkerLink").click(function() {
+                                self.copyMarkerLink(this);
+                            });
+
                             jQueryContent.find(".gn-kartaEditMarkerGeometryButton").click(function() {
                                 self.callEditGeometry();
                             });
@@ -459,6 +464,39 @@
                     });
                 },
 
+
+                /**
+                 * Copys a link to the marker
+                 * 
+                 * @param {object} markerLinkElement Marker Link Element
+                 */
+                copyMarkerLink: function(markerLinkElement) {
+                    var link = window.location.protocol + "//" + window.location.hostname;
+                    if(window.location.port)
+                    {
+                        link += ":" + window.location.port;
+                    }
+                    link += "/Karta?id=" + encodeURIComponent(this.mapId) + "&zoomOnMarkerId=" + encodeURIComponent(this.id) + "&zoomOnMarkerType=" + this.markerType;
+
+                    jQuery("#gn-kartaMarkerLinkContainer").remove();
+                    jQuery("body").append("<div id='gn-kartaMarkerLinkContainer' style='opacity: 0'><input id='gn-kartaMarkerLink'/></div>");
+                    jQuery("#gn-kartaMarkerLink").val(link);
+
+                    var exportResultField = jQuery("#gn-kartaMarkerLink")[0];
+                    exportResultField.select();
+                    document.execCommand("copy");
+
+                    jQuery("#gn-kartaMarkerLinkContainer").remove();
+
+                    jQuery("#gn-copyToClipboardToolTipContainer").remove();
+                    var buttonContainer = jQuery(markerLinkElement).parent();
+                    buttonContainer.append("<div id='gn-kartaCopyToLinkSuccessTooltip' class='gn-copyToClipboardToolTipContainer' style='width: 400px;position: absolute;right: 0px;bottom: 37px'><span class='gn-copyToClipboardToolTipText' style='bottom: 140%'>" + Map.Localization.SuccessfullyCopiedToClipboard + "</span></div>");
+                    var rightPosition = -(jQuery("#gn-kartaCopyToLinkSuccessTooltip").width() - jQuery(".gn-copyToClipboardToolTipText").outerWidth() / 2) + (buttonContainer.width() - jQuery(markerLinkElement).position().left + 34);
+                    jQuery("#gn-kartaCopyToLinkSuccessTooltip").css("right", rightPosition + "px");
+                    setTimeout(function() {
+                        buttonContainer.find("#gn-kartaCopyToLinkSuccessTooltip").remove();
+                    }, 1000);
+                },
 
                 /**
                  * Calls the edit geometry callback

@@ -246,7 +246,7 @@
 
                     for(var curEntry = 0; curEntry < data.pages.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja#id=" + data.pages[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.pages[curEntry].id, data.pages[curEntry].name, "/Kirja?id=" + data.pages[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -286,7 +286,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -319,7 +319,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Styr/Item?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -352,7 +352,7 @@
 
                     for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill#id=" + data.flexFieldObjects[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Evne/Skill?id=" + data.flexFieldObjects[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -385,7 +385,7 @@
 
                     for(var curEntry = 0; curEntry < data.quests.length; ++curEntry)
                     {
-                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest#id=" + data.quests[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.quests[curEntry].id, data.quests[curEntry].name, "/Aika/Quest?id=" + data.quests[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -422,7 +422,7 @@
                             continue;
                         }
 
-                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail#id=" + data.details[curEntry].id));
+                        result.entries.push(self.createDialogObject(data.details[curEntry].id, data.details[curEntry].name, "/Aika/Detail?id=" + data.details[curEntry].id));
                     }
 
                     def.resolve(result);
@@ -450,6 +450,7 @@
             TaskBoard.Task = function(serverData)
             {
                 this.id = serverData.id;
+                this.taskNumber = 0;
                 this.name = new ko.observable("");
                 this.description = new ko.observable("");
                 this.assignedTo = new ko.observable("");
@@ -465,6 +466,7 @@
                  * @param {object} serverData Server Data
                  */
                 parseTaskFromServerResponse: function(serverData) {
+                    this.taskNumber = serverData.taskNumber;
                     this.name(serverData.name);
                     this.description(serverData.description);
                     this.assignedTo(serverData.assignedTo);
@@ -637,8 +639,11 @@
              */
             TaskBoard.ViewModel = function(taskStatus)
             {
+                this.initialTaskGroupToOpenId = GoNorth.Util.getParameterFromUrl("taskGroupId");
+                this.initialTaskToOpenId = GoNorth.Util.getParameterFromUrl("taskId");
+
                 this.id = new ko.observable("");
-                var paramId = GoNorth.Util.getParameterFromHash("id");
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.setId(paramId);
@@ -664,6 +669,7 @@
 
                 this.showTaskDialog = new ko.observable(false);
                 this.taskDialogTitle = new ko.observable("");
+                this.taskDialogEditNumber = new ko.observable(null);
                 this.taskDialogName = new ko.observable("");
                 this.taskDialogDescription = new ko.observable("");
                 this.taskDialogAssignedTo = new ko.observable(null);
@@ -685,6 +691,7 @@
 
 
                 this.userDeferred = this.loadAllUsers();
+                this.lastOpenedBoardIdDef = this.getLastOpenedBoardId();
                 this.loadAllOpenBoards();
                 
                 var self = this;
@@ -692,6 +699,7 @@
                     if(!newValue)
                     {
                         self.releaseLock();
+                        self.setTaskDialogParameter("");
                     }
                 });
 
@@ -700,16 +708,17 @@
                     this.userDeferred.done(function() {
                         self.loadBoard(self.id());
                     });
+                    this.saveLastOpenedBoardId(this.id());
                 }
 
                 var lastId = this.id();
-                window.onhashchange = function() {
-                    var id = GoNorth.Util.getParameterFromHash("id");
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var id = GoNorth.Util.getParameterFromUrl("id");
                     if(id != lastId) {
                         lastId = id;
-                        self.switchBoard(GoNorth.Util.getParameterFromHash("id"));
+                        self.switchBoard(id);
                     }
-                }
+                });
             };
 
             TaskBoard.ViewModel.prototype = {
@@ -737,8 +746,10 @@
 
                         if(!self.id() && data.boards.length > 0)
                         {
-                            self.userDeferred.done(function() {
-                                self.loadBoard(data.boards[0].id);
+                            self.lastOpenedBoardIdDef.done(function(lastOpenedBoardId) {
+                                self.userDeferred.done(function() {
+                                    self.loadBoard(lastOpenedBoardId ? lastOpenedBoardId : data.boards[0].id);
+                                });
                             });
                         }
                     }).fail(function() {
@@ -774,8 +785,17 @@
                  * @param {string} id Id of the board
                  */
                 setId: function(id) {
+                    var pushIdAsNewState = this.id() && this.id() != id;
                     this.id(id);
-                    window.location.hash = "id=" + id;
+                    var parameterValue = "id=" + id;
+                    if(pushIdAsNewState)
+                    {
+                        GoNorth.Util.setUrlParameters(parameterValue);
+                    }
+                    else
+                    {
+                        GoNorth.Util.replaceUrlParameters(parameterValue);
+                    }
                 },
 
                 /**
@@ -790,6 +810,7 @@
                     }
 
                     this.loadBoard(boardId);
+                    this.saveLastOpenedBoardId(boardId);
                 },
 
                 /**
@@ -820,6 +841,18 @@
                         }
 
                         self.isLoading(false);
+
+                        if(self.initialTaskGroupToOpenId)
+                        {
+                            self.openTaskGroupById(self.initialTaskGroupToOpenId);
+                            self.initialTaskGroupToOpenId = null;
+                        }
+
+                        if(self.initialTaskToOpenId)
+                        {
+                            self.openTaskById(self.initialTaskToOpenId);
+                            self.initialTaskToOpenId = null;
+                        }
                     }).fail(function() {
                         self.errorOccured(true);
                         self.isLoading(false);
@@ -870,12 +903,88 @@
                     return formatedDates;
                 },
 
+                /**
+                 * Loads the last opened board id
+                 * 
+                 * @returns {jQuery.Deferred} Deferred for the loading process
+                 */
+                getLastOpenedBoardId: function() {
+                    var def = new jQuery.Deferred();
+                    jQuery.ajax({
+                        url: "/api/TaskApi/GetLastOpenedTaskBoard",
+                        method: "GET"
+                    }).done(function(boardId) {
+                        def.resolve(boardId);
+                    }).fail(function() {
+                        def.reject();
+                    });
+
+                    return def.promise();
+                },
+
+                /**
+                 * Saves the last opened board id
+                 * 
+                 * @param {string} boardId Id of the board
+                 */
+                saveLastOpenedBoardId: function(boardId) {
+                    jQuery.ajax({
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        url: "/api/TaskApi/SetLastOpenedTaskBoard?boardId=" + encodeURIComponent(boardId),
+                        method: "POST"
+                    });
+                },
+
+
+                /**
+                 * Opens a task group by id
+                 * 
+                 * @param {string} taskGroupId Task group id
+                 */
+                openTaskGroupById: function(taskGroupId) {
+                    var taskGroups = this.taskGroups();
+                    for(var curTaskGroup = 0; curTaskGroup < taskGroups.length; ++curTaskGroup)
+                    {
+                        if(taskGroups[curTaskGroup].id == taskGroupId)
+                        {
+                            this.openEditTaskGroupDialog(taskGroups[curTaskGroup]);
+                            return;
+                        }
+                    }
+                },
+
+                /**
+                 * Opens a task by id
+                 * 
+                 * @param {string} taskId Task id
+                 */
+                openTaskById: function(taskId) {
+                    var taskGroups = this.taskGroups();
+                    for(var curTaskGroup = 0; curTaskGroup < taskGroups.length; ++curTaskGroup)
+                    {
+                        var taskGroup = taskGroups[curTaskGroup];
+                        for(var curColumn = 0; curColumn < taskGroup.statusColumns.length; ++curColumn)
+                        {
+                            var statusColumnTasks = taskGroup.statusColumns[curColumn].tasks();
+                            for(var curTask = 0; curTask < statusColumnTasks.length; ++curTask)
+                            {
+                                if(statusColumnTasks[curTask].id == taskId)
+                                {
+                                    this.openEditTaskDialog(taskGroup, statusColumnTasks[curTask]);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                },
+
 
                 /**
                  * Opens the create task group dialog
                  */
                 openCreateTaskGroupDialog: function() {
                     this.taskDialogTitle(Task.TaskBoard.Localization.NewTaskGroup);
+                    this.taskDialogEditNumber(null);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskGroupPrefix);
 
                     this.resetTaskDialogValues();
@@ -902,6 +1011,7 @@
                     }
 
                     this.taskDialogTitle(Task.TaskBoard.Localization.EditTaskGroup);
+                    this.taskDialogEditNumber(taskGroup.taskNumber);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskGroupPrefix);
 
                     this.setTaskDialogValuesFromTask(taskGroup);
@@ -913,6 +1023,8 @@
 
                     this.acquireLock("TaskGroup", taskGroup.id);
 
+                    this.setTaskDialogParameter("taskGroupId=" + taskGroup.id);
+
                     this.openSharedTaskDialog();
                 },
 
@@ -923,6 +1035,7 @@
                  */
                 openCreateNewTaskDialog: function(taskGroup) {
                     this.taskDialogTitle(Task.TaskBoard.Localization.NewTask);
+                    this.taskDialogEditNumber(null);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskPrefix);
 
                     this.resetTaskDialogValues();
@@ -950,6 +1063,7 @@
                     }
 
                     this.taskDialogTitle(Task.TaskBoard.Localization.EditTask);
+                    this.taskDialogEditNumber(task.taskNumber);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskPrefix);
 
                     this.setTaskDialogValuesFromTask(task);
@@ -961,7 +1075,24 @@
                     
                     this.acquireLock("Task", task.id);
 
+                    this.setTaskDialogParameter("taskId=" + task.id);
+
                     this.openSharedTaskDialog();
+                },
+
+                /**
+                 * Sets the task dialog parameters
+                 * 
+                 * @param {string} dialogParameters Dialog Parameters to set
+                 */
+                setTaskDialogParameter: function(dialogParameters) {
+                    var parameterValue = "id=" + this.id();
+                    if(dialogParameters)
+                    {
+                        parameterValue += "&" + dialogParameters;
+                    }
+
+                    GoNorth.Util.replaceUrlParameters(parameterValue);
                 },
 
                 /**

@@ -22,5 +22,12 @@ namespace GoNorth.Data.Exporting
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Task</returns>
         Task SaveExportSettings(string projectId, ExportSettings exportSettings);
+
+        /// <summary>
+        /// Deletes the export settings for a project
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Task</returns>
+        Task DeleteExportSettings(string projectId);
     }
 }

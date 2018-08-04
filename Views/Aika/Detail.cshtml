@@ -49,32 +49,32 @@
 
     <div class="row gn-defaultContentTopMargin">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" data-bind="if: !isReadonly()">
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeQuestDrag gn-nodeNewQuest" data-nodetype="aika.Quest">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeQuestDrag gn-nodeNewQuest" data-nodetype="aika.Quest">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["NewQuestNode"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeQuestDrag gn-nodeExistingQuest" data-nodetype="aika.Quest">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeQuestDrag gn-nodeExistingQuest" data-nodetype="aika.Quest">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["ExistingQuestNode"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeAllDone" data-nodetype="aika.AllDone">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-aikaNodeAllDone" data-nodetype="aika.AllDone">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["AllDone"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeFinish" data-nodetype="aika.Finish">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeFinish" data-nodetype="aika.Finish">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["FinishNode"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeChapterDetailDrag gn-nodeNewDetailView" data-nodetype="aika.ChapterDetail">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeChapterDetailDrag gn-nodeNewDetailView" data-nodetype="aika.ChapterDetail">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["NewDetailNode"]</div>
                 </div>
             </div>
-            <div data-bind="draggable: 'clone'" class="gn-nodeInsertContainer gn-nodeChapterDetailDrag gn-nodeExistingDetailView" data-nodetype="aika.ChapterDetail">
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeChapterDetailDrag gn-nodeExistingDetailView" data-nodetype="aika.ChapterDetail">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["ExistingDetailNode"]</div>
                 </div>
@@ -82,7 +82,7 @@
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="gn-nodeGraphContainer">
-                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, nodeGraphAllowMultpleOutbound: true, droppable: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
+                <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, nodeGraphAllowMultpleOutbound: true, droppableElement: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
             </div>
         </div>
     </div>

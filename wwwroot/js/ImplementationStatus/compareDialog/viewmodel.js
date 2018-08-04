@@ -10,6 +10,13 @@
             CompareDialog.ViewModel = function()
             {
                 this.isOpen = new ko.observable(false);
+                var self = this;
+                this.isOpen.subscribe(function(newValue) {
+                    if(!newValue && self.markAsImplementedPromise)
+                    {
+                        self.markAsImplementedPromise.reject();
+                    }
+                });
                 this.objectName = new ko.observable("");
 
                 this.isLoading = new ko.observable(false);
@@ -185,15 +192,16 @@
                         headers: GoNorth.Util.generateAntiForgeryHeader(),
                         type: "POST"
                     }).done(function() {
-                        self.isLoading(false);
-                        self.isOpen(false);
-
                         if(window.refreshImplementationStatusList)
                         {
                             window.refreshImplementationStatusList();
                         }
 
                         self.markAsImplementedPromise.resolve();
+                        self.markAsImplementedPromise = null;
+
+                        self.isLoading(false);
+                        self.isOpen(false);
                     }).fail(function() {
                         self.isLoading(false);
                         self.errorOccured(true);

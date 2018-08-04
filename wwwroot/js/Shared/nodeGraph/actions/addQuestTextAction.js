@@ -84,7 +84,7 @@
                 questOpenLink.on("click", function() {
                     if(selectQuestAction.data("questid"))
                     {
-                        window.open("/Aika/Quest#id=" + selectQuestAction.data("questid"));
+                        window.open("/Aika/Quest?id=" + selectQuestAction.data("questid"));
                     }
                 });
             };

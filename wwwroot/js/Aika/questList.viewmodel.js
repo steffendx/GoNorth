@@ -12,15 +12,28 @@
              */
             QuestList.ViewModel = function()
             {
-                this.currentPage = new ko.observable(0);
+                var currentPage = 0;
+                var pageFromUrl = parseInt(GoNorth.Util.getParameterFromUrl("page"));
+                if(!isNaN(pageFromUrl))
+                {
+                    currentPage = pageFromUrl;
+                }
+
+                var initialSearchPattern = GoNorth.Util.getParameterFromUrl("searchTerm");
+                if(!initialSearchPattern)
+                {
+                    initialSearchPattern = "";
+                }
+
+                this.currentPage = new ko.observable(currentPage);
                 this.quests = new ko.observableArray();
                 this.hasMore = new ko.observable(false);
                 this.isLoading = new ko.observable(false);
                 this.prevLoading = new ko.observable(false);
                 this.nextLoading = new ko.observable(false);
 
-                this.searchPattern = new ko.observable("");
-                this.searchPatternToUse = "";
+                this.searchPattern = new ko.observable(initialSearchPattern);
+                this.searchPatternToUse = initialSearchPattern;
 
                 this.errorOccured = new ko.observable(false);
 
@@ -46,6 +59,13 @@
                     var self = this;
                     this.errorOccured(false);
                     this.isLoading(true);
+                    
+                    var urlParameters = "page=" + this.currentPage();
+                    if(this.searchPatternToUse)
+                    {
+                        urlParameters += "&searchTerm=" + encodeURIComponent(this.searchPatternToUse);
+                    }
+                    GoNorth.Util.replaceUrlParameters(urlParameters);
     
                     jQuery.ajax("/api/AikaApi/GetQuests?searchPattern=" + this.searchPatternToUse + "&start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
                         self.quests(data.quests);
@@ -95,7 +115,7 @@
                  * @returns {string} Url for the quest
                  */
                 buildQuestUrl: function(quest) {
-                    return "/Aika/Quest#id=" + quest.id;
+                    return "/Aika/Quest?id=" + quest.id;
                 }
             };
 

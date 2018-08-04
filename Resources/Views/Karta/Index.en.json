@@ -49,6 +49,9 @@
 
     "YouAreEditingANonDefaultChapter": "You are currently not changing the default chapter. All changes are only valid from the current chapter onwards.",
 
+    "SuccessfullyCopiedToClipboard": "Link was copied to clipboard",
+
+    "CopyLinkToMarkerTooltip": "Copy link to marker",
     "EditMarkerGeometryTooltip": "Edit marker geometry",
     "EditMarkerTooltip": "Edit marker",
     "MarkerIsNotImplementedTooltip": "Marker is not implemented",

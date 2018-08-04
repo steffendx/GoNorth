@@ -55,6 +55,12 @@ namespace GoNorth.Data.TaskManagement
         Task<int> GetClosedTaskBoardCount(string projectId);
 
         /// <summary>
+        /// Returns all task boards
+        /// </summary>
+        /// <returns>All task boards</returns>
+        Task<List<TaskBoard>> GetAllTaskBoards();
+
+        /// <summary>
         /// Updates a task board
         /// </summary>
         /// <param name="board">Task Board</param>

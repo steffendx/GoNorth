@@ -1069,6 +1069,7 @@ namespace GoNorth.Controllers.Api
             targetQuest.Fields = sourceQuest.Fields;
             
             FlexFieldApiUtil.SetFieldIdsForNewFields(targetQuest.Fields);
+            FlexFieldApiUtil.SetFieldIdsForNewFieldsInFolders(targetQuest.Fields);
 
             targetQuest.Start = GetStartNodeList(sourceQuest.Start);
             targetQuest.Text = sourceQuest.Text != null ? sourceQuest.Text : new List<TextNode>();

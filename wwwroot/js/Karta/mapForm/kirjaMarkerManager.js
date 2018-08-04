@@ -112,7 +112,7 @@
                 this.viewModel.showWaitOnPageDialog(true);
 
                 var self = this;
-                var newPage = window.open("/Kirja#newPage=1");
+                var newPage = window.open("/Kirja?newPage=1");
                 newPage.onbeforeunload = function() {
                     self.viewModel.showWaitOnPageDialog(false);
                 };

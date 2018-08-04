@@ -64,11 +64,13 @@
                 this.markerList = new Overview.ImplementationStatusMarkerList(nonLocalizedMarkerTypes, this.isLoading, this.errorOccured, this.compareDialog);
 
                 // Select first list user has access to
-                var existingListType = parseInt(GoNorth.Util.getParameterFromHash("listType"));
+                var existingListType = parseInt(GoNorth.Util.getParameterFromUrl("listType"));
+                var existingPage = parseInt(GoNorth.Util.getParameterFromUrl("page"));
+                var compareId = GoNorth.Util.getParameterFromUrl("compareId");
                 var preSelected = false;
                 if(!isNaN(existingListType))
                 {
-                    preSelected = this.selectListByType(existingListType);
+                    preSelected = this.selectListByType(existingListType, existingPage, compareId);
                 }
 
                 if(!preSelected)
@@ -77,12 +79,12 @@
                 }
                 
                 var self = this;
-                window.onhashchange = function() {
-                    var listType = parseInt(GoNorth.Util.getParameterFromHash("listType"));
+                GoNorth.Util.onUrlParameterChanged(function() {
+                    var listType = parseInt(GoNorth.Util.getParameterFromUrl("listType"));
                     if(!isNaN(listType) && listType != self.currentListToShow()) {
-                        self.selectListByType(listType);
+                        self.selectListByType(listType, null, null);
                     }
-                }
+                });
             };
 
             Overview.ViewModel.prototype = {
@@ -142,14 +144,14 @@
                  */
                 setCurrentListToShow: function(listType) {
                     this.currentListToShow(listType);
-                    var hashValue = "#listType=" + listType;
-                    if(window.location.hash)
+                    var parameterValue = "listType=" + listType;
+                    if(window.location.search)
                     {
-                        window.location.hash = hashValue; 
+                        GoNorth.Util.setUrlParameters(parameterValue);
                     }
                     else
                     {
-                        window.location.replace(hashValue);
+                        GoNorth.Util.replaceUrlParameters(parameterValue);
                     }
                 },
 
@@ -187,41 +189,85 @@
                  * Selects a list type by the type
                  * 
                  * @param {number} listType List Type to select
+                 * @param {number} page Page to select
+                 * @param {string} compareId Id of the object to open the compare dialog for
                  * @returns {bool} true if the List can be selected, else false
                  */
-                selectListByType: function(listType) {
+                selectListByType: function(listType, page, compareId) {
                     if(GoNorth.ImplementationStatus.Overview.hasKortistoRights && listType == listTypeNpc)
                     {
+                        this.setPageFromUrl(this.npcList, page);
+                        this.setInitialCompareIdFromUrl(this.npcList, compareId);
                         this.selectNpcList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasTaleRights && listType == listTypeDialog)
                     {
+                        this.setPageFromUrl(this.dialogList, page);
+                        this.setInitialCompareIdFromUrl(this.dialogList, compareId);
                         this.selectDialogList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasStyrRights && listType == listTypeItem)
                     {
+                        this.setPageFromUrl(this.itemList, page);
+                        this.setInitialCompareIdFromUrl(this.itemList, compareId);
                         this.selectItemList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasEvneRights && listType == listTypeSkill)
                     {
+                        this.setPageFromUrl(this.skillList, page);
+                        this.setInitialCompareIdFromUrl(this.skillList, compareId);
                         this.selectSkillList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasAikaRights && listType == listTypeQuest)
                     {
+                        this.setPageFromUrl(this.questList, page);
+                        this.setInitialCompareIdFromUrl(this.questList, compareId);
                         this.selectQuestList();
                         return true;
                     }
                     else if(GoNorth.ImplementationStatus.Overview.hasKartaRights && listType == listTypeMarker)
                     {
+                        this.setPageFromUrl(this.markerList, page);
+                        this.setInitialCompareIdFromUrl(this.markerList, compareId);
                         this.selectMarkerList();
                         return true;
                     }
 
                     return false;
+                },
+
+                /**
+                 * Sets the page from url
+                 * 
+                 * @param {object} list List to update
+                 * @param {number} page Page
+                 */
+                setPageFromUrl: function(list, page) {
+                    if(list == null || isNaN(page) || page == null)
+                    {
+                        return;
+                    }
+
+                    list.setCurrentPage(page);
+                },
+
+                /**
+                 * Sets the initial compare id
+                 * 
+                 * @param {object} list List to update
+                 * @param {number} compareId Compare Id
+                 */
+                setInitialCompareIdFromUrl: function(list, compareId) {
+                    if(list == null || compareId == null)
+                    {
+                        return;
+                    }
+
+                    list.setInitialCompareId(compareId);
                 }
             };
 

@@ -197,7 +197,7 @@
                  * @returns {string} Url for the map
                  */
                 buildMapUrl: function(map) {
-                    return "/Karta#id=" + map.id;
+                    return "/Karta?id=" + map.id;
                 },
 
 

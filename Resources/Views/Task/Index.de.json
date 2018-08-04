@@ -19,6 +19,8 @@
     "InsertKortistoNpcLink": "Link zu Npc einfügen",
     "InsertStyrItemLink": "Link zu Item einfügen",
 
+    "DialogTaskNumberPrefix": "(#",
+    "DialogTaskNumberPostfix": ")",
     "NewTaskGroup": "Neue Aufgabengruppe",
     "EditTaskGroup": "Aufgabengruppe editieren",
     "NewTask": "Neue Aufgabe",

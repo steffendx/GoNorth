@@ -66,7 +66,7 @@
                 jQuery.ajax({
                     url: "/api/AikaApi/GetQuest?id=" + this.questId
                 }).done(function(quest) {
-                    var questHtml = "<h4><a href='/Aika/Quest#id=" + self.questId + "' target='_blank'>" + quest.name + "</a></h4>";
+                    var questHtml = "<h4><a href='/Aika/Quest?id=" + self.questId + "' target='_blank'>" + quest.name + "</a></h4>";
                     questHtml += "<div class='gn-kartaPopupContent'>" + jQuery("<div></div>").text(self.name).html() + "</div>";
 
                     def.resolve(questHtml);

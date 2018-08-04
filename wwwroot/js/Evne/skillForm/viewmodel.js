@@ -157,6 +157,8 @@
              */
             Skill.ViewModel.prototype.runAfterSave = function(data) {
                 this.reloadFieldsForNodes(GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill, this.id());
+                
+                GoNorth.BindingHandlers.nodeGraphRefreshPositionZoomUrl();
             };
 
             /**
@@ -211,7 +213,7 @@
              * @returns {string} Url for the npc
              */
             Skill.ViewModel.prototype.buildNpcSkillUrl = function(npc) {
-                return "/Kortisto/Npc#id=" + npc.id;
+                return "/Kortisto/Npc?id=" + npc.id;
             };
 
         }(Evne.Skill = Evne.Skill || {}));
