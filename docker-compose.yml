@@ -2,9 +2,30 @@ version: '3'
 services:
   web:
     build: .
+    volumes:
+      - MapImages:/app/MapImages
+      - NpcImages:/app/NpcImages
+      - KirjaFiles:/app/KirjaFiles
+      - ItemImages:/app/ItemImages
+      - TaskImages:/app/TaskImages
+      - SkillImages:/app/SkillImages
     ports:
      - 5000:80
   mongo:
     image: 'mongo'
     volumes:
       - ./dbdata:/data/db
+
+volumes:
+  MapImages:
+    external: true
+  NpcImages:
+    external: true
+  KirjaFiles:
+    external: true
+  ItemImages:
+    external: true
+  TaskImages:
+    external: true
+  SkillImages:
+    external: true
