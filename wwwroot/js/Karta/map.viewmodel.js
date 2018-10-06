@@ -1820,7 +1820,7 @@
                 jQuery.ajax({
                     url: "/api/KartaApi/Map?id=" + this.mapChangeId
                 }).done(function(map) {
-                    var mapHtml = "<h4><a href='#id=" + self.mapChangeId + "'>" + map.name + "</a></h4>";
+                    var mapHtml = "<h4><a class='gn-clickable' onclick='GoNorth.Karta.Map.switchToMap(\"" + self.mapChangeId + "\")'>" + map.name + "</a></h4>";
 
                     def.resolve(mapHtml);
                 }).fail(function() {
@@ -3644,6 +3644,12 @@
                         self.switchMap(GoNorth.Util.getParameterFromUrl("id"), true);
                     }
                 });
+
+                GoNorth.Karta.Map.switchToMap = function(mapId) {
+                    if(self.id() != mapId) {
+                        self.switchMap(mapId);
+                    }
+                }
             };
 
             Map.ViewModel.prototype = {

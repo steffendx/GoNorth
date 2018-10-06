@@ -137,7 +137,7 @@ namespace GoNorth.Services.Export.Placeholder
                 {
                     return string.Empty;
                 }
-                exportDialog = await _dialogFunctionGenerator.GenerateFunctions(project.Id, exportDialog, _errorCollection);
+                exportDialog = await _dialogFunctionGenerator.GenerateFunctions(project.Id, npc.Id, exportDialog, _errorCollection);
             }
 
             code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_HasDialog_Start, Placeholder_HasDialog_End, hasValidDialog);

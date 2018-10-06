@@ -2,6 +2,65 @@
 /*global jQuery, $, FileReader*/
 /*jslint browser:true*/
 (function ($) {
+	var formatHtmlForRead = function(html) 
+	{
+		function parse(html, tab = 0) {
+			var tab;
+			var html = $.parseHTML(html);
+			var formatHtml = "";   
+	
+			function setTabs() {
+				var tabs = "";
+	
+				for (var curIndent = 0; curIndent < tab; ++curIndent) 
+				{
+					tabs += '\t';
+				}
+
+				return tabs;    
+			}
+	
+	
+			var wasTextLast = false;
+			$.each(html, function( i, el ) {
+				if (el.nodeName == '#text') 
+				{
+					if (($(el).text().trim()).length) 
+					{
+						formatHtml += setTabs() + $(el).text().trim();
+					} 
+					wasTextLast = true;
+				} else {
+					var innerHTML = $(el).html().trim();
+					$(el).html(innerHTML.replace('\n', '').replace(/ +(?= )/g, ''));
+	
+					if ($(el).children().length) {
+						$(el).html('\n' + parse(innerHTML, (tab + 1)) + setTabs());
+						var outerHTML = $(el).prop('outerHTML').trim();
+						var tabText = "";
+						if(!wasTextLast) {
+							tabText = setTabs(); 
+						}
+						formatHtml += tabText + outerHTML + '\n'; 
+	
+					} else {
+						var tabText = "";
+						if(!wasTextLast) {
+							tabText = setTabs(); 
+						}
+						var outerHTML = $(el).prop('outerHTML').trim();
+						formatHtml += tabText + outerHTML + '\n';
+					}   
+					wasTextLast = false;   
+				}
+			});
+	
+			return formatHtml;
+		}   
+		
+		return parse(html.replace(/(\r\n|\n|\r)/gm," ").replace(/ +(?= )/g,''));
+	}; 
+
 	'use strict';
 	var initToolbarBootstrapBindings = function(toolbarElement, options)
 	{
@@ -107,6 +166,12 @@
 			<div class="btn-group"> \
 				<a class="btn btn-default" data-edit="undo" title="' + bootstrapWysiwyg.local.undo + '"><i class="glyphicon glyphicon-share-alt" style="-webkit-transform: scaleX(-1); filter: FlipH;"></i></a> \
 				<a class="btn btn-default" data-edit="redo" title="' + bootstrapWysiwyg.local.redo + '"><i class="glyphicon glyphicon-share-alt"></i></a> \
+			</div> \
+			<div class="btn-group"> \
+				<a class="btn btn-default enterHtmlMode" title="' + bootstrapWysiwyg.local.editHtml + '"><i class="glyphicon glyphicon-console"></i></a> \
+			</div> \
+			<div class="btn-group htmlModeButton" style="display: none"> \
+				<a class="btn btn-default leaveHtmlMode" title="' + bootstrapWysiwyg.local.editText + '"><i class="glyphicon glyphicon-text-size"></i></a> \
 			</div>';
 
 		if(additionalButtons)
@@ -145,6 +210,14 @@
 	$.fn.wysiwyg = function (userOptions) {
 		options = $.extend({}, $.fn.wysiwyg.defaults, userOptions);
 		var createdToolbar = createToolbar(this, userOptions.additionalButtons, options);
+		var htmlEditor = jQuery("<textarea style='display: none; width: calc(100% - 10px);resize: none'></textarea>");
+		var targetClass =  "htmlEditor wysiwgEditor";
+		if($(this).attr("class"))
+		{
+			targetClass += " " + $(this).attr("class");
+		}
+		htmlEditor.attr("class", targetClass);
+		htmlEditor.insertAfter(this);
 		var htmlOld = $(this).html();
 		
 		var editor = this;
@@ -355,6 +428,38 @@
 					}
 					saveSelection();
 					this.value = '';
+				});
+				toolbar.find('.enterHtmlMode').click(function() {
+					jQuery(editor).hide();
+					htmlEditor.val(formatHtmlForRead(jQuery(editor).html()));
+					htmlEditor.show();
+
+					createdToolbar.children(":not(.htmlModeButton)").hide();
+					createdToolbar.children(".htmlModeButton").show();
+				});
+				toolbar.find('.leaveHtmlMode').click(function() {
+					htmlEditor.blur();
+
+					htmlEditor.hide();
+					jQuery(editor).show();
+
+					createdToolbar.children(":not(.htmlModeButton)").show();
+					createdToolbar.children(".htmlModeButton").hide();
+				});
+				htmlEditor.blur(function() {
+					var editorHtml = htmlEditor.val();
+					var checkedEditorHtml = editorHtml.replace(/<script[\S\s]*?>[\S\s]*?<\/script>/gmi, ""); // Very simply XSS protection
+					if(checkedEditorHtml != editorHtml)
+					{
+						htmlEditor.val(checkedEditorHtml);
+					}
+					
+					jQuery(editor).html(checkedEditorHtml);
+
+					if(options.events && options.events.change)
+					{
+						options.events.change(jQuery(editor).html());
+					}
 				});
 
 				var generateRowHtmlForTable = function(parentTable, cellTag)

@@ -20,7 +20,7 @@ namespace GoNorth.Data.Project
         public const string ProjectCollectionName = "Project";
 
         /// <summary>
-        /// Dialog Collection
+        /// Project Collection
         /// </summary>
         private IMongoCollection<GoNorthProject> _ProjectCollection;
 

@@ -10,6 +10,8 @@
     "Template": "(Template)",
 
     "Placeholders": "Platzhalter",
+    "Name": "Name",
+    "Description": "Beschreibung",
 
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteTheTemplate": "Bist du sicher das das Template gelöscht werden soll?",

@@ -6,7 +6,7 @@ using System.Text;
 namespace GoNorth.Services.Encryption
 {
     /// <summary>
-    /// Sends and Email for mail confirmation
+    /// AES Encryption Service
     /// </summary>
     public class AesEncryptionService : IEncryptionService
     {

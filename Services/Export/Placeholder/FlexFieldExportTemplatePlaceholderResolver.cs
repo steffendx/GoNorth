@@ -43,6 +43,36 @@ namespace GoNorth.Services.Export.Placeholder
         private const string Placeholder_Field_Value_FriendlyName = "Value_NAME_OF_FIELD";
 
         /// <summary>
+        /// Flex Field Value equals start
+        /// </summary>
+        private const string Placeholder_Field_Value_Equals_Start = "Value_(.*?)_Equals_(.*?)_Start";
+
+        /// <summary>
+        /// Flex Field Value equals start friendly name
+        /// </summary>
+        private const string Placeholder_Field_Value_Equals_Start_FriendlyName = "Value_NAME_OF_FIELD_Equals_VALUE_TO_COMPARE_Start";
+
+        /// <summary>
+        /// Flex Field Value equals end
+        /// </summary>
+        private const string Placeholder_Field_Value_Equals_End = "Value_Equals_End";
+
+        /// <summary>
+        /// Flex Field Value not equals start
+        /// </summary>
+        private const string Placeholder_Field_Value_NotEquals_Start = "Value_(.*?)_NotEquals_(.*?)_Start";
+
+        /// <summary>
+        /// Flex Field Value not equals start friendly name
+        /// </summary>
+        private const string Placeholder_Field_Value_NotEquals_Start_FriendlyName = "Value_NAME_OF_FIELD_NotEquals_VALUE_TO_COMPARE_Start";
+
+        /// <summary>
+        /// Flex Field Value not equals end
+        /// </summary>
+        private const string Placeholder_Field_Value_NotEquals_End = "Value_NotEquals_End";
+
+        /// <summary>
         /// Flex Field Language Key
         /// </summary>
         private const string Placeholder_Field_LangKey = "LangKey_(.*?)";
@@ -161,6 +191,36 @@ namespace GoNorth.Services.Export.Placeholder
         /// Flex Field Value in a Flex Field List
         /// </summary>
         private const string Placeholder_FlexField_Field_Value = "Field_Value";
+
+        /// <summary>
+        /// Flex Field Value equals start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_Value_Equals_Start = "Field_Value_Equals_(.*?)_Start";
+
+        /// <summary>
+        /// Flex Field Value equals start friendly name
+        /// </summary>
+        private const string Placeholder_FlexField_Field_Value_Equals_Start_FriendlyName = "Field_Value_Equals_VALUE_TO_COMPARE_Start";
+
+        /// <summary>
+        /// Flex Field Value equals end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_Value_Equals_End = "Field_Value_Equals_End";
+
+        /// <summary>
+        /// Flex Field Value not equals start
+        /// </summary>
+        private const string Placeholder_FlexField_Field_Value_NotEquals_Start = "Field_Value_NotEquals_(.*?)_Start";
+
+        /// <summary>
+        /// Flex Field Value not equals start friendly name
+        /// </summary>
+        private const string Placeholder_FlexField_Field_Value_NotEquals_Start_FriendlyName = "Field_Value_NotEquals_VALUE_TO_COMPARE_Start";
+
+        /// <summary>
+        /// Flex Field Value not equals end
+        /// </summary>
+        private const string Placeholder_FlexField_Field_Value_NotEquals_End = "Field_Value_NotEquals_End";
 
         /// <summary>
         /// Flex Field Language Key in a Flex Field List
@@ -345,6 +405,24 @@ namespace GoNorth.Services.Export.Placeholder
 
             HashSet<string> usedFields = new HashSet<string>();
             code = ExportUtil.BuildPlaceholderRegex(BuildFinalPlaceholder(Placeholder_Name)).Replace(code, flexFieldObject.Name);
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_Field_Value_Equals_Start), BuildFinalPlaceholder(Placeholder_Field_Value_Equals_End), m => {
+                string fieldName = m.Groups[1].Value;
+                FlexField field = FindFlexField(flexFieldObject, fieldName);
+                if(field == null)
+                {
+                    return false;
+                }
+                return m.Groups[2].Value == field.Value;
+            });
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_Field_Value_NotEquals_Start), BuildFinalPlaceholder(Placeholder_Field_Value_NotEquals_End), m => {
+                string fieldName = m.Groups[1].Value;
+                FlexField field = FindFlexField(flexFieldObject, fieldName);
+                if(field == null)
+                {
+                    return true;
+                }
+                return m.Groups[2].Value != field.Value;
+            });
             code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_HasField_Start), BuildFinalPlaceholder(Placeholder_FlexField_HasField_End), m => {
                 string fieldName = m.Groups[1].Value;
                 FlexField field = FindFlexField(flexFieldObject, fieldName);
@@ -533,6 +611,12 @@ namespace GoNorth.Services.Export.Placeholder
             code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotLast_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNotLast_End), !isLast);
             code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNumberField_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsNumberField_End), field.FieldType == ExportConstants.FlexFieldType_Number);
             code = ExportUtil.RenderPlaceholderIfTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_IsStringField_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_IsStringField_End), field.FieldType == ExportConstants.FlexFieldType_String || field.FieldType == ExportConstants.FlexFieldType_Option);
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_Value_Equals_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_Value_Equals_End), m => {
+                return m.Groups[1].Value == field.Value;
+            });
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_FlexField_Field_Value_NotEquals_Start), BuildFinalPlaceholder(Placeholder_FlexField_Field_Value_NotEquals_End), m => {
+                return m.Groups[1].Value != field.Value;
+            });
 
             code = ExportUtil.BuildPlaceholderRegex(BuildFinalPlaceholder(Placeholder_FlexField_Field_Name)).Replace(code, name);
             code = ExportUtil.BuildPlaceholderRegex(BuildFinalPlaceholder(Placeholder_FlexField_Field_Value)).Replace(code, EscapedFieldValue(field, exportSettings));
@@ -586,6 +670,10 @@ namespace GoNorth.Services.Export.Placeholder
                     CreateFlexFieldPlaceHolder(Placeholder_Name),
                     CreateFlexFieldPlaceHolder(Placeholder_Name_LangKey),
                     CreateFlexFieldPlaceHolder(Placeholder_Field_Value_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_Field_Value_Equals_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_Field_Value_Equals_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_Field_Value_NotEquals_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_Field_Value_NotEquals_End),
                     CreateFlexFieldPlaceHolder(Placeholder_Field_LangKey_FriendlyName),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_HasField_Start_FriendlyName),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_HasField_End),
@@ -603,6 +691,10 @@ namespace GoNorth.Services.Export.Placeholder
                     CreateFlexFieldPlaceHolder(Placeholder_AllFields_End),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Name),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_Equals_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_Equals_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_NotEquals_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_NotEquals_End),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_LangKey),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_Start),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_End),
@@ -629,6 +721,10 @@ namespace GoNorth.Services.Export.Placeholder
                     CreateFlexFieldPlaceHolder(Placeholder_Field_List_End),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Name),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_Equals_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_Equals_End),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_NotEquals_Start_FriendlyName),
+                    CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_Value_NotEquals_End),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_LangKey),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_Start),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_Field_IsNumberField_End),

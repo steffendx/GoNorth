@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
-    /// User Api controller
+    /// Role Api controller
     /// </summary>
     [Authorize(Roles = RoleNames.Administrator)]
     [Route("/api/[controller]/[action]")]

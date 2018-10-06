@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
-    /// User Api controller
+    /// Project Api controller
     /// </summary>
     [Authorize(Roles = RoleNames.Administrator)]
     [Route("/api/[controller]/[action]")]
@@ -193,9 +193,9 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
-        /// Deletes a user
+        /// Deletes a project
         /// </summary>
-        /// <param name="id">Id of the user</param>
+        /// <param name="id">Id of the project</param>
         /// <returns>Result Status Code</returns>
         [HttpDelete]
         [ValidateAntiForgeryToken]

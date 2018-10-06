@@ -49,6 +49,9 @@ bootstrapWysiwyg.local.tableAddHeaderRow = "Kopfzeile einfügen";
 bootstrapWysiwyg.local.undo = "Rückgängig [Strg + Z]";
 bootstrapWysiwyg.local.redo = "Wiederholen [Strg + Y]";
 
+bootstrapWysiwyg.local.editHtml = "Html editieren";
+bootstrapWysiwyg.local.editText = "Text editieren";
+
 bootstrapWysiwyg.local.onlyOneFileCanBeUploaded = "Es kann nur ein Bild gleichzeitig hochgeladen werden.";
 bootstrapWysiwyg.local.unsupportedFileType = "Das Bildformat wird nicht unterstützt.";
 bootstrapWysiwyg.local.couldNotReadFile = "Das Bild konnte nicht gelesen werden.";

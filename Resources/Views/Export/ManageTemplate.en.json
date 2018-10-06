@@ -10,6 +10,8 @@
     "Template": "(Template)",
 
     "Placeholders": "Placeholders",
+    "Name": "Name",
+    "Description": "Description",
 
     "AreYouSure": "Are you sure?",
     "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",

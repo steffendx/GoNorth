@@ -49,6 +49,9 @@ bootstrapWysiwyg.local.tableAddHeaderRow = "Add header row";
 bootstrapWysiwyg.local.undo = "Undo [Ctrl + Z]";
 bootstrapWysiwyg.local.redo = "Redo [Ctrl + Y]";
 
+bootstrapWysiwyg.local.editHtml = "Edit html";
+bootstrapWysiwyg.local.editText = "Edit text";
+
 bootstrapWysiwyg.local.onlyOneFileCanBeUploaded = "Only one file can be uploaded at a time.";
 bootstrapWysiwyg.local.unsupportedFileType = "The file format is not supported.";
 bootstrapWysiwyg.local.couldNotReadFile = "The image can not be read.";

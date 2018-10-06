@@ -19,6 +19,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using GoNorth.Services.TaskManagement;
+using GoNorth.Services.Security;
 
 namespace GoNorth.Controllers.Api
 {
@@ -87,6 +88,11 @@ namespace GoNorth.Controllers.Api
         private readonly UserManager<GoNorthUser> _userManager;
 
         /// <summary>
+        /// Xss Checker
+        /// </summary>
+        private readonly IXssChecker _xssChecker;
+
+        /// <summary>
         /// Logger
         /// </summary>
         private readonly ILogger _logger;
@@ -107,10 +113,11 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskImageParser">Task Image Parser</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="timelineService">Timeline Service</param>
+        /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public TaskApiController(ITaskBoardDbAccess taskBoardDbAccess, ITaskNumberDbAccess taskNumberDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITaskImageAccess taskImageAccess, ITaskImageParser taskImageParser, 
-                                 UserManager<GoNorthUser> userManager, ITimelineService timelineService, ILogger<TaskApiController> logger, IStringLocalizerFactory localizerFactory)
+                                 UserManager<GoNorthUser> userManager, ITimelineService timelineService, IXssChecker xssChecker, ILogger<TaskApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _taskBoardDbAccess = taskBoardDbAccess;
             _taskNumberDbAccess = taskNumberDbAccess;
@@ -120,6 +127,7 @@ namespace GoNorth.Controllers.Api
             _taskImageParser = taskImageParser;
             _userManager = userManager;
             _timelineService = timelineService;
+            _xssChecker = xssChecker;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(TaskApiController));
         }
@@ -393,6 +401,9 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.BadRequest); 
             }
 
+            _xssChecker.CheckXss(group.Name);
+            _xssChecker.CheckXss(group.Description);
+
             // Get Task Board
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(updatedTaskBoard == null)
@@ -458,6 +469,9 @@ namespace GoNorth.Controllers.Api
             {
                 return StatusCode((int)HttpStatusCode.BadRequest); 
             }
+            
+            _xssChecker.CheckXss(group.Name);
+            _xssChecker.CheckXss(group.Description);
 
             // Get Task Board
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
@@ -611,6 +625,9 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.BadRequest); 
             }
 
+            _xssChecker.CheckXss(task.Name);
+            _xssChecker.CheckXss(task.Description);
+
             // Get Task Board
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(updatedTaskBoard == null || updatedTaskBoard.TaskGroups == null)
@@ -683,6 +700,9 @@ namespace GoNorth.Controllers.Api
             {
                 return StatusCode((int)HttpStatusCode.BadRequest); 
             }
+
+            _xssChecker.CheckXss(task.Name);
+            _xssChecker.CheckXss(task.Description);
 
             // Get Task Board
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);

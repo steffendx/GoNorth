@@ -21,6 +21,7 @@ using Microsoft.Extensions.Options;
 using GoNorth.Config;
 using System.Text.RegularExpressions;
 using GoNorth.Data.Karta.Marker;
+using GoNorth.Services.Security;
 
 namespace GoNorth.Controllers.Api
 {
@@ -100,6 +101,11 @@ namespace GoNorth.Controllers.Api
         private readonly UserManager<GoNorthUser> _userManager;
 
         /// <summary>
+        /// Xss Checker
+        /// </summary>
+        private readonly IXssChecker _xssChecker;
+
+        /// <summary>
         /// Logger
         /// </summary>
         private readonly ILogger _logger;
@@ -124,10 +130,12 @@ namespace GoNorth.Controllers.Api
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="pageParserService">Page parser service</param>
         /// <param name="userManager">User Manager</param>
+        /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         /// <param name="configuration">Config Data</param>
-        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IProjectDbAccess projectDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, UserManager<GoNorthUser> userManager, ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
+        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IProjectDbAccess projectDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, 
+                                  UserManager<GoNorthUser> userManager, IXssChecker xssChecker, ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
         {
             _pageDbAccess = pageDbAccess;
             _projectDbAccess = projectDbAccess;
@@ -136,6 +144,7 @@ namespace GoNorth.Controllers.Api
             _timelineService = timelineService;
             _pageParserService = pageParserService;
             _userManager = userManager;
+            _xssChecker = xssChecker;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(KirjaApiController));
             _allowedAttachmentMimeTypes = configuration.Value.Misc.KirjaAllowedAttachmentMimeTypes.Split(",").Select(s => "^" + Regex.Escape(s).Replace("\\*", ".*") + "$").ToList();
@@ -278,6 +287,9 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.BadRequest);
             }
 
+            _xssChecker.CheckXss(page.Name);
+            _xssChecker.CheckXss(page.Content);
+
             try
             {
                 GoNorthProject project = await _projectDbAccess.GetDefaultProject();
@@ -313,6 +325,9 @@ namespace GoNorth.Controllers.Api
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdatePage(string id, [FromBody]PageRequest page)
         {
+            _xssChecker.CheckXss(page.Name);
+            _xssChecker.CheckXss(page.Content);
+
             KirjaPage loadedPage = await _pageDbAccess.GetPageById(id);
             List<string> oldImages = null;
             if(loadedPage.UplodadedImages != null)

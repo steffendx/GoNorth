@@ -167,6 +167,12 @@
                         self.switchMap(GoNorth.Util.getParameterFromUrl("id"), true);
                     }
                 });
+
+                GoNorth.Karta.Map.switchToMap = function(mapId) {
+                    if(self.id() != mapId) {
+                        self.switchMap(mapId);
+                    }
+                }
             };
 
             Map.ViewModel.prototype = {

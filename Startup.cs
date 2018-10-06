@@ -44,6 +44,7 @@ using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Dialog;
 using GoNorth.Services.Export.Data;
+using GoNorth.Services.Security;
 
 namespace GoNorth
 {
@@ -97,6 +98,7 @@ namespace GoNorth
             // Application services
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IEncryptionService, AesEncryptionService>();
+            services.AddTransient<IXssChecker, XssChecker>();
             services.AddTransient<ITimelineService, TimelineService>();
             services.AddTransient<ITimelineTemplateService, HtmlTimelineTemplateService>();
 
@@ -183,6 +185,7 @@ namespace GoNorth
             services.AddScoped<IExportSettingsDbAccess, ExportSettingsMongoDbAccess>();
             services.AddScoped<IDialogFunctionGenerationConditionDbAccess, DialogFunctionGenerationConditionMongoDbAccess>();
             services.AddScoped<IDialogFunctionGenerationConditionProvider, DialogFunctionGenerationConditionProvider>();
+            services.AddScoped<IExportFunctionIdDbAccess, ExportFunctionIdMongoDbAccess>();
 
             services.AddScoped<ILanguageKeyDbAccess, LanguageKeyMongoDbAccess>();
 

@@ -42,10 +42,11 @@ namespace GoNorth.Services.Export.Dialog
         /// Parses a dialog for exporting
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="objectId">Object Id</param>
         /// <param name="dialog">Dialog to parse</param>
         /// <param name="errorCollection">Error Collection to send errors to</param>
         /// <returns>Parsed dialog</returns>
-        public async Task<ExportDialogData> GenerateFunctions(string projectId, ExportDialogData dialog, ExportPlaceholderErrorCollection errorCollection)
+        public async Task<ExportDialogData> GenerateFunctions(string projectId, string objectId, ExportDialogData dialog, ExportPlaceholderErrorCollection errorCollection)
         {
             DialogFunctionGenerationConditionCollection dialogFunctionGenerationConditions = await _dialogFunctionGenerationConditionProvider.GetDialogFunctionGenerationConditions(projectId);
 
@@ -57,7 +58,7 @@ namespace GoNorth.Services.Export.Dialog
             {
                 ExportDialogData curData = dialogDataToQueue.Dequeue();
 
-                CheckAndBuildFunctionForDialogStep(curData, dialogFunctionGenerationConditions, errorCollection);
+                await CheckAndBuildFunctionForDialogStep(curData, dialogFunctionGenerationConditions, projectId, objectId, errorCollection);
 
                 foreach(ExportDialogDataChild curChild in curData.Children)
                 {
@@ -77,8 +78,10 @@ namespace GoNorth.Services.Export.Dialog
         /// </summary>
         /// <param name="dialogData">Dialog data for the step</param>
         /// <param name="dialogFunctionGenerationConditions">Dialog Function Generation Conditions</param>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="objectId">Object Id</param>
         /// <param name="errorCollection">Error Collection to send errors to</param>
-        private void CheckAndBuildFunctionForDialogStep(ExportDialogData dialogData, DialogFunctionGenerationConditionCollection dialogFunctionGenerationConditions, ExportPlaceholderErrorCollection errorCollection)
+        private async Task CheckAndBuildFunctionForDialogStep(ExportDialogData dialogData, DialogFunctionGenerationConditionCollection dialogFunctionGenerationConditions, string projectId, string objectId, ExportPlaceholderErrorCollection errorCollection)
         {
             if(EvaluateConditions(dialogData, dialogFunctionGenerationConditions.PreventGenerationRules, errorCollection))
             {
@@ -87,7 +90,7 @@ namespace GoNorth.Services.Export.Dialog
 
             if(EvaluateConditions(dialogData, dialogFunctionGenerationConditions.GenerateRules, errorCollection))
             {
-                dialogData.DialogStepFunctionName = _functionNameGenerator.GetNewDialogStepFunction(GetNodeType(dialogData, errorCollection));
+                dialogData.DialogStepFunctionName = await _functionNameGenerator.GetNewDialogStepFunction(GetNodeType(dialogData, errorCollection), projectId, objectId, dialogData.Id);
             }
         }
 

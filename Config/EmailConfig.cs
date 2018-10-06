@@ -1,7 +1,7 @@
 namespace GoNorth.Config
 {
     /// <summary>
-    /// Mongo Db Config
+    /// Email Config
     /// </summary>
     public class EmailConfig
     {

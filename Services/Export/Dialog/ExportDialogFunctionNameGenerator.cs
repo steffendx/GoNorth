@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using GoNorth.Data.Exporting;
 using GoNorth.Data.Tale;
 using GoNorth.Services.Export.Placeholder;
 
@@ -11,23 +13,45 @@ namespace GoNorth.Services.Export.Dialog
         /// <summary>
         /// Template for the function
         /// </summary>
-        private const string _functionTemplate = "DialogStep_{0}_{1}";
+        private const string FunctionTemplate = "DialogStep_{0}_{1}";
+        
 
         /// <summary>
-        /// current Function Count
-        /// </summary>/
-        private int _curFunctionCount = 0;
+        /// Function Id Db Access
+        /// </summary>
+        private readonly IExportFunctionIdDbAccess _functionIdDbAccess;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="functionIdDbAccess">Export Function Id Db Access</param>
+        public ExportDialogFunctionNameGenerator(IExportFunctionIdDbAccess functionIdDbAccess)
+        {
+            _functionIdDbAccess = functionIdDbAccess;
+        }
 
         /// <summary>
         /// Returns a new dialog step function
         /// </summary>
         /// <param name="stepType">Stype type (Text, Choice)</param>
+        /// <param name="projectId">Proejct id</param>
+        /// <param name="objectId">Object Id</param>
+        /// <param name="functionObjectId">Function object id</param>
         /// <returns>New Dialog Step Function</returns>
-        public string GetNewDialogStepFunction(string stepType)
+        public async Task<string> GetNewDialogStepFunction(string stepType, string projectId, string objectId, string functionObjectId)
         {
-            ++_curFunctionCount;
+            ExportFunctionId functionId = await _functionIdDbAccess.GetExportFunctionId(projectId, objectId, functionObjectId);
+            if(functionId == null)
+            {
+                functionId = new ExportFunctionId();
+                functionId.ProjectId = projectId;
+                functionId.ObjectId = objectId;
+                functionId.FunctionObjectId = functionObjectId;
+                functionId.FunctionId = await _functionIdDbAccess.GetNewExportFuntionIdForObject(projectId, objectId);
+                await _functionIdDbAccess.SaveNewExportFunctionId(functionId);
+            }
 
-            return string.Format(_functionTemplate, _curFunctionCount, stepType);
+            return string.Format(FunctionTemplate, functionId.FunctionId, stepType);
         }
     }
 }

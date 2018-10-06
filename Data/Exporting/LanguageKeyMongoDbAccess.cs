@@ -29,7 +29,7 @@ namespace GoNorth.Data.Exporting
         private IMongoCollection<LanguageKeyIdCounter> _IdCounterCollection;
         
         /// <summary>
-        /// Id Counter Collection
+        /// Language Key Collection
         /// </summary>
         private IMongoCollection<LanguageKey> _LanguageKeyCollection;
 
