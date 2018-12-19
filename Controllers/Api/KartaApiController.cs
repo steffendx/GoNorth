@@ -161,6 +161,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the map</param>
         /// <returns>Maps for the current project</returns>
+        [Produces(typeof(KartaMap))]
+        [HttpGet]
         public async Task<IActionResult> Map(string id)
         {
             KartaMap map = await _mapDbAccess.GetMapById(id);
@@ -188,6 +190,8 @@ namespace GoNorth.Controllers.Api
         /// Returns the maps for the current project
         /// </summary>
         /// <returns>Maps for the current project</returns>
+        [Produces(typeof(List<KartaMap>))]
+        [HttpGet]
         public async Task<IActionResult> Maps()
         {
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
@@ -200,6 +204,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="npcId">Npc Id</param>
         /// <returns>Maps in which an npc is marked</returns>
+        [Produces(typeof(List<KartaMapMarkerQueryResult>))]
+        [HttpGet]
         public async Task<IActionResult> GetMapsByNpcId(string npcId)
         {
             List<KartaMapMarkerQueryResult> maps = await _mapDbAccess.GetAllMapsNpcIsMarkedIn(npcId);
@@ -211,6 +217,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Item Id</param>
         /// <returns>Maps in which an item is marked</returns>
+        [Produces(typeof(List<KartaMapMarkerQueryResult>))]
+        [HttpGet]
         public async Task<IActionResult> GetMapsByItemId(string itemId)
         {
             List<KartaMapMarkerQueryResult> maps = await _mapDbAccess.GetAllMapsItemIsMarkedIn(itemId);
@@ -222,6 +230,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="pageId">Page Id</param>
         /// <returns>Maps in which a kirja page is marked with markers</returns>
+        [Produces(typeof(List<KartaMapMarkerQueryResult>))]
+        [HttpGet]
         public async Task<IActionResult> GetMapsByKirjaPageId(string pageId)
         {
             List<KartaMapMarkerQueryResult> markerQueryResult = await _mapDbAccess.GetAllMapsKirjaPageIsMarkedIn(pageId);
@@ -233,6 +243,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Quest Id</param>
         /// <returns>Maps in which a quest is marked</returns>
+        [Produces(typeof(List<KartaMap>))]
+        [HttpGet]
         public async Task<IActionResult> GetMapsByQuestId(string questId)
         {
             List<KartaMap> maps = await _mapDbAccess.GetAllMapsAikaQuestIsMarkedIn(questId);
@@ -244,6 +256,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Quest Id</param>
         /// <returns>Maps in which a quest is marked</returns>
+        [Produces(typeof(List<MapMarkerQueryResult>))]
+        [HttpGet]
         public async Task<IActionResult> GetAllQuestMarkers(string questId)
         {
             List<MapMarkerQueryResult> markers = await _mapDbAccess.GetAllQuestMarkers(questId);
@@ -261,6 +275,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="maxTileCountX">Max Tile Count of the map on the X-Axis</param>
         /// <param name="maxTileCountY">Max Tile Count of the map on the Y-Axis</param>
         /// <returns>Tile Image</returns>
+        [HttpGet]
         public IActionResult MapImage(string mapId, int z, int x, int y, int maxZoom, int maxTileCountX, int maxTileCountY)
         {
             // Security check mapid
@@ -286,6 +301,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="name">Name of the map</param>
         /// <returns>Created map</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RoleNames.KartaMapManager)]
@@ -348,6 +364,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the map</param>
         /// <param name="name">Name of the map</param>
         /// <returns>Result</returns>
+        [Produces(typeof(string))]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> UpdateMap(string id, string name)
         {
             // Validate data
@@ -485,6 +504,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the map</param>
         /// <param name="name">New Name of the map</param>
         /// <returns>Result</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RoleNames.KartaMapManager)]
@@ -540,6 +560,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Map ID</param>
         /// <returns>Task</returns>
+        [Produces(typeof(string))]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RoleNames.KartaMapManager)]
@@ -568,6 +589,7 @@ namespace GoNorth.Controllers.Api
         /// Returns a new map marker id
         /// </summary>
         /// <returns>Map Marker Id</returns>
+        [Produces(typeof(string))]
         [HttpGet]
         public IActionResult GetNewMapMarkerId()
         {
@@ -581,6 +603,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Map Id</param>
         /// <param name="markerRequest">Marker Request</param>
         /// <returns>Task Result</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task <IActionResult> SaveMapMarker(string id, [FromBody]SaveMarkerRequest markerRequest)
@@ -740,6 +763,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="markerId">Marker Id</param>
         /// <param name="markerType">Marker Type</param>
         /// <returns>Task Result</returns>
+        [Produces(typeof(string))]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task <IActionResult> DeleteMapMarker(string id, string markerId, MarkerType markerType)
@@ -826,6 +850,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Markers</returns>
+        [Produces(typeof(MarkerImplementationQueryResult))]
         [Authorize(Roles = RoleNames.Karta)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]

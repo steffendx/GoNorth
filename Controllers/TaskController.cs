@@ -11,6 +11,7 @@ namespace GoNorth.Controllers
     /// Task controller
     /// </summary>
     [Authorize(Roles = RoleNames.Task)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class TaskController : Controller
     {
         /// <summary>

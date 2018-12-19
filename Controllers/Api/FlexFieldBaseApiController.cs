@@ -282,6 +282,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Folders</returns>
+        [Produces(typeof(FlexFieldBaseApiController<Data.Kortisto.KortistoNpc>.FolderQueryResult))] // Same for all controllers, simply use Kortisto here
         [HttpGet]
         public async Task<IActionResult> Folders(string parentId, int start, int pageSize)
         {
@@ -319,6 +320,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="folder">Folder to create</param>
         /// <returns>Result</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFolder([FromBody]FolderRequest folder)
@@ -353,6 +355,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the folder</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFolder(string id)
@@ -404,6 +407,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Folder Id</param>
         /// <param name="folder">Update folder data</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateFolder(string id, [FromBody]FolderRequest folder)
@@ -434,6 +438,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the flex field folder</param>
         /// <returns>Image Name</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFolderImage(string id)
@@ -885,6 +890,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the flex field object</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFlexFieldObject(string id)
@@ -1031,6 +1037,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the flex field object</param>
         /// <returns>Image Name</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FlexFieldImageUpload(string id)
@@ -1146,6 +1153,8 @@ namespace GoNorth.Controllers.Api
         /// Returns all flex field object Tags
         /// </summary>
         /// <returns>All flex field object Tags</returns>
+        [Produces(typeof(List<string>))]
+        [HttpGet]
         public async Task<IActionResult> FlexFieldObjectTags()
         {
             List<string> allTags = await _tagDbAccess.GetAllTags();

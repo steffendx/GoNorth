@@ -5,7 +5,7 @@
 <button type="button" class="btn btn-default gn-commandWidgetTopMargin gn-buttonMarginLeft" data-bind="click: openDeleteObjectDialog, visible: id, disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-trash"></i> @Model.Localizer["Delete"]</button>
 
 <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
-    <strong>@Model.Localizer["Error"]</strong> @Model.Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+    <strong>@Model.Localizer["Error"]</strong> @Model.Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span> <span data-bind="visible: objectNotFound">@Model.Localizer["ObjectNotFound"]</span>
 </div>
 
 <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">

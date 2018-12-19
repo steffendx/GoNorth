@@ -40,8 +40,9 @@
                         </tr>
                     </tbody>
                 </table>
-
-                <div class="gn-buttonContainer">
+            </div>
+            <div class="modal-footer">   
+                <div class="gn-dialogPagingContainer">
                     <button class="btn btn-default" data-bind="enable: dialogCurrentPage() > 0 && !dialogIsLoading(), click: prevDialogPage" title="@Localizer["PreviousPage"]">
                         <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !dialogIsLoading()"></i>
                         <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogIsLoading"></i>
@@ -51,8 +52,7 @@
                         <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogIsLoading"></i>
                     </button>
                 </div>
-            </div>
-            <div class="modal-footer">
+
                 <button type="button" class="btn btn-default" data-bind="click: cancelDialog">@Localizer["Close"]</button>
             </div>
         </div>

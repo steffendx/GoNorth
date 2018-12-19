@@ -212,5 +212,28 @@ namespace GoNorth.Data.Kirja
             }).ToListAsync();
         }
 
+        /// <summary>
+        /// Resolves the names of a list of pages
+        /// </summary>
+        /// <param name="pageIds">Page ids</param>
+        /// <returns>Pages with names</returns>
+        public async Task<List<KirjaPage>> ResolveNames(List<string> pageIds)
+        {
+            return await  _PageCollection.AsQueryable().Where(n => pageIds.Contains(n.Id)).Select(c => new KirjaPage() {
+                Id = c.Id,
+                Name = c.Name,
+            }).ToListAsync();
+        }
+
+
+        /// <summary>
+        /// Returns all pages that were last modified by a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Kirja page</returns>
+        public async Task<List<KirjaPage>> GetPagesByModifiedUser(string userId)
+        {
+            return await _PageCollection.AsQueryable().Where(p => p.ModifiedBy == userId).ToListAsync();
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace GoNorth.Controllers
     /// Implementation Status Controller
     /// </summary>
     [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ImplementationStatusController : Controller
     {
         /// <summary>

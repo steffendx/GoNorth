@@ -7,6 +7,7 @@ namespace GoNorth.Controllers
     /// Styr controller
     /// </summary>
     [Authorize(Roles = RoleNames.Styr)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class StyrController : Controller
     {
         /// <summary>

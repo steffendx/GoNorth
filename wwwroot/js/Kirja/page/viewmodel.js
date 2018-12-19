@@ -3,8 +3,8 @@
     (function(Kirja) {
         (function(Page) {
 
-            /// Link Dialog Page Size
-            var linkDialogPageSize = 15;
+            /// Version Dialog Page Size
+            var versionDialogPageSize = 25;
 
             /// Scroll Offset
             var headerScrollOffset = 45;
@@ -35,25 +35,83 @@
                 this.isEditMode = new ko.observable(false);
                 this.isDirty = new ko.observable(false);
 
+                this.blockPageReload = false;
                 var self = this;
                 this.pageName = new ko.observable("");
                 this.pageName.subscribe(function() {
                     self.isDirty(true);
                 });
+                this.originalPageContent = null;
                 this.pageContent = new ko.observable("");
                 this.pageContent.subscribe(function() {
                     self.isDirty(true);
                 });
+
+                this.displayVersionId = new ko.observable(null);
+                this.displayVersionName = new ko.observable(null);
+                this.displayVersionHtml = new ko.observable(null);
+                this.displayVersionNumber = new ko.observable(null);
+
+                this.compareVersionId = new ko.observable(null);
+                this.compareVersionName = new ko.observable(null);
+                this.compareVersionHtml = new ko.observable(null);
+                this.compareVersionNumber = new ko.observable(null);
+
                 this.pageContentTransformed = new ko.computed(function() {
-                    var pageContent = this.pageContent();
-                    return this.transformPageContent(pageContent);
+                    var pageContent = null;
+                    if(this.displayVersionHtml())
+                    {
+                        pageContent = this.displayVersionHtml();
+                    }
+                    else
+                    {
+                        pageContent = this.pageContent();
+                    }
+                    var comparePageContent = this.compareVersionHtml();
+                    pageContent = this.transformPageContent(pageContent);
+                    if(comparePageContent)
+                    {
+                        comparePageContent = this.transformPageContent(comparePageContent);
+                        return htmldiff(comparePageContent, pageContent);
+                    }
+
+                    return pageContent;
                 }, this);
+                this.currentPageName = new ko.computed(function() {
+                    var displayVersionName = this.displayVersionName();
+                    var pageName = this.pageName();
+
+                    if(displayVersionName)
+                    {
+                        return displayVersionName;
+                    }
+
+                    return pageName;
+                }, this);
+                this.pageModifiedOn = new ko.observable("");
 
                 this.isDefault = new ko.observable(false);
 
                 this.showConfirmDirtyExitEdit = new ko.observable(false);
+                this.confirmDirtyExitPromise = null;
 
                 this.showConfirmDeleteDialog = new ko.observable(false);
+
+                this.showVersionDialog = new ko.observable(false);
+                this.showVersionDialog.subscribe(function() {
+                    self.syncUrlParamters();
+                });
+                this.versionDialogErrorOccured = new ko.observable(false);
+                this.loadingVersions = new ko.observable(false);
+                this.currentVersionPage = new ko.observable(0);
+                this.hasMoreVersions = new ko.observable(false);
+                this.versionDialogMostRecentVersion = new ko.observable(0);
+                this.versions = new ko.observableArray();
+
+                this.showConfirmRestoreDialog = new ko.observable(false);
+                this.confirmRestoreDialogLoading = new ko.observable(false);
+                this.confirmRestoreDialogErrorOccured = new ko.observable(false);
+                this.confirmRestoreBrokenLinks = new ko.observableArray();
 
                 this.linkDialog = new GoNorth.ChooseObjectDialog.ViewModel();
                 this.linkDialogInsertHtmlCallback = null;
@@ -107,13 +165,36 @@
                     }, 1);
                 }
 
+                var isVersionDialogOpen = GoNorth.Util.getParameterFromUrl("versionDialog") == "1";
+                var initialVersionPage = parseInt(GoNorth.Util.getParameterFromUrl("versionPage"));
+                var compareVersionId = GoNorth.Util.getParameterFromUrl("compareVersionId");
+                var displayVersionId = GoNorth.Util.getParameterFromUrl("displayVersionId");
+                if(isVersionDialogOpen && !isNaN(initialVersionPage))
+                {
+                    this.openVersionDialogWithPage(initialVersionPage);
+                }
+
+                if(compareVersionId)
+                {
+                    this.compareVersion(compareVersionId);
+                }
+
+                if(displayVersionId)
+                {
+                    this.showVersion(displayVersionId);
+                }
+
+                if(compareVersionId === "" && displayVersionId === "")
+                {
+                    this.syncUrlParamters();
+                }
+
                 this.attachmentUploadUrl = new ko.computed(function() {
                     return "/api/KirjaApi/UploadPageAttachment?id=" + this.id();
                 }, this);
                 
                 GoNorth.Util.setupValidation("#gn-kirjaHeaderFields");
 
-                this.blockPageReload = false;
                 GoNorth.Util.onUrlParameterChanged(function() {
                     if(!self.blockPageReload) {
                         self.switchPage(GoNorth.Util.getParameterFromUrl("id"));
@@ -140,6 +221,31 @@
                 },
 
                 /**
+                 * Syncs the url parameters with the valid values
+                 */
+                syncUrlParamters: function() {
+                    var targetUrl = "id=" + this.id();
+                    if(this.compareVersionId())
+                    {
+                        targetUrl += "&compareVersionId=" + this.compareVersionId();
+                    }
+
+                    if(this.displayVersionId())
+                    {
+                        targetUrl += "&displayVersionId=" + this.displayVersionId();
+                    }
+                    
+                    if(this.showVersionDialog())
+                    {
+                        targetUrl += "&versionDialog=1&versionPage=" + this.currentVersionPage();
+                    }
+
+                    this.blockPageReload = true;
+                    GoNorth.Util.replaceUrlParameters(targetUrl);
+                    this.blockPageReload = false;
+                },
+
+                /**
                  * Switches the page to a different page
                  * 
                  * @param {string} id Id of the page to switch to
@@ -150,6 +256,16 @@
                     this.id(id);
                     this.resetErrorState();
                     this.showSidebar(false);
+                    this.showVersionDialog(false);
+                    this.displayVersionId(null);
+                    this.displayVersionName(null);
+                    this.displayVersionHtml(null);
+                    this.displayVersionNumber(null);
+                    this.compareVersionId(null);
+                    this.compareVersionName(null);
+                    this.compareVersionHtml(null);
+                    this.compareVersionNumber(null);
+                    this.syncUrlParamters();
                     this.loadPage();
                 },
 
@@ -180,6 +296,8 @@
 
                         self.pageName(data.name);
                         self.pageContent(self.fixOldLinks(data.content));
+                        self.originalPageContent = self.pageContent();
+                        self.pageModifiedOn(data.modifiedOn);
                         self.isDefault(data.isDefault);
                         if(!self.id())
                         {
@@ -459,6 +577,15 @@
                 enterEditMode: function() {
                     this.showSidebar(false);
                     this.isEditMode(true);
+                    this.displayVersionId(null);
+                    this.displayVersionName(null);
+                    this.displayVersionHtml(null);
+                    this.displayVersionNumber(null);
+                    this.compareVersionId(null);
+                    this.compareVersionName(null);
+                    this.compareVersionHtml(null);
+                    this.compareVersionNumber(null);
+                    this.syncUrlParamters();
                     this.acquireLock();
                 },
 
@@ -466,6 +593,9 @@
                  * Exits the edit mode
                  */
                 exitEditMode: function() {
+                    var confirmDirtyExitPromise = new jQuery.Deferred();
+                    this.confirmDirtyExitPromise = confirmDirtyExitPromise;
+
                     if(this.isDirty())
                     {
                         this.showConfirmDirtyExitEdit(true);
@@ -474,6 +604,16 @@
                     {
                         this.exitEditModeWithoutDirtyCheck()
                     }
+
+                    return confirmDirtyExitPromise.promise();
+                },
+
+                /**
+                 * Discards the changes that are not saved yet
+                 */
+                discardChanges: function() {
+                    this.pageContent(this.originalPageContent);
+                    this.exitEditModeWithoutDirtyCheck();
                 },
 
                 /**
@@ -483,12 +623,23 @@
                     this.isEditMode(false);
                     this.showConfirmDirtyExitEdit(false);
                     GoNorth.LockService.releaseCurrentLock();
+
+                    if(this.confirmDirtyExitPromise)
+                    {
+                        this.confirmDirtyExitPromise.resolve();
+                        this.confirmDirtyExitPromise = null;
+                    }
                 },
 
                 /**
                  * Closes the confirm dirty exit edit dialog
                  */
                 closeConfirmDirtyExitEdit: function() {
+                    if(this.confirmDirtyExitPromise)
+                    {
+                        this.confirmDirtyExitPromise.reject();
+                        this.confirmDirtyExitPromise = null;
+                    }
                     this.showConfirmDirtyExitEdit(false);
                 },
 
@@ -632,14 +783,367 @@
                         self.loadMentionedNpcs(savedPage.mentionedNpcs);
                         self.loadMentionedItems(savedPage.mentionedItems);
                         self.loadMentionedSkills(savedPage.mentionedSkills);
+                        self.pageModifiedOn(savedPage.modifiedOn);
                         self.callPageRefreshGrid();
                         self.isDirty(false);
                         self.isLoading(false);
+                        self.originalPageContent = self.pageContent();
                     }).fail(function(xhr) {
                         self.isLoading(false);
                         self.errorOccured(true);
                     });
                 },
+
+
+                /**
+                 * Opens the version dialog
+                 */
+                openVersionDialog: function() {
+                    this.openVersionDialogWithPage(0);
+                },
+
+                /**
+                 * Opens the version dialog with an initial page
+                 * @param {number} initialPage Initial page
+                 */
+                openVersionDialogWithPage: function(initialPage) {
+                    if(!this.id())
+                    {
+                        return;
+                    }
+
+                    this.showSidebar(false);
+                    this.showVersionDialog(true);
+                    this.versions.removeAll();
+                    this.currentVersionPage(initialPage);
+                    this.hasMoreVersions(false);
+                    this.loadVersionPage();
+                },
+
+                /**
+                 * Previous version page
+                 */
+                prevVersionPage: function() {
+                    if(this.currentVersionPage() == 0)
+                    {
+                        return;
+                    }                 
+
+                    this.currentVersionPage(this.currentVersionPage() - 1);
+                    this.loadVersionPage();
+                },
+                
+                /**
+                 * Next version page
+                 */
+                nextVersionPage: function() {
+                    if(!this.hasMoreVersions())
+                    {
+                        return;
+                    }                 
+
+                    this.currentVersionPage(this.currentVersionPage() + 1);
+                    this.loadVersionPage();
+                },
+
+                /**
+                 * Loads the version page
+                 */
+                loadVersionPage: function() {
+                    this.syncUrlParamters();
+
+                    var startPageIndex = this.currentVersionPage() * versionDialogPageSize;
+                    var pageSizeToLoad = versionDialogPageSize;
+                    if(this.currentVersionPage() == 0)
+                    {
+                        pageSizeToLoad = versionDialogPageSize - 1;
+                    }
+                    else
+                    {
+                        startPageIndex = startPageIndex - 1;
+                    }
+
+                    if(pageSizeToLoad == 0)
+                    {
+                        this.hasMoreVersions(true);
+                        this.versions.removeAll();
+                        return;
+                    }
+
+                    this.loadingVersions(true);
+                    this.versionDialogErrorOccured(false);
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/KirjaApi/GetPageVersions?pageId=" + this.id() + "&start=" + startPageIndex + "&pageSize=" + pageSizeToLoad, 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.loadingVersions(false);
+                        self.hasMoreVersions(data.hasMore);
+                        self.versionDialogMostRecentVersion(data.mostRecentVersion);
+                        self.versions(data.versions);
+                    }).fail(function() {
+                        self.loadingVersions(false);
+                        self.versions.removeAll();
+                        self.versionDialogErrorOccured(true);
+                    });
+                },
+
+                /**
+                 * Closes the version dialog
+                 */
+                closeVersionDialog: function() {
+                    this.showVersionDialog(false);
+                },
+
+                /**
+                 * Compares the currently loaded version with another version
+                 * 
+                 * @param {object} version Version object to compare with
+                 */
+                compareWithVersionObject: function(version) {
+                    if(this.isEditMode())
+                    {
+                        var self = this;
+                        this.exitEditMode().done(function() {
+                            self.closeVersionDialog();
+                            self.compareVersion(version.id);
+                        });
+                    }
+                    else
+                    {
+                        this.closeVersionDialog();
+                        this.compareVersion(version.id);
+                    }
+                },
+
+                /**
+                 * Compares the currently loaded version with another version
+                 * 
+                 * @param {string} versionId Id of the version to compare with
+                 */
+                compareVersion: function(versionId) {
+                    this.isLoading(true);
+                    this.errorOccured(false);
+                    var self = this;
+                    this.loadPageVersion(versionId).done(function(loadedVersion) {
+                        self.isLoading(false);
+                        var version = loadedVersion.version;
+                        if(version && version.id != self.displayVersionId())
+                        {
+                            self.compareVersionId(version.id);
+                            self.compareVersionName(version.name);
+                            self.compareVersionHtml(version.content);
+                            self.compareVersionNumber(version.versionNumber);
+
+                            self.syncUrlParamters();
+                        }
+                        else
+                        {
+                            self.exitCompareMode();
+                        }
+
+                    }).fail(function() {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Exits the compare mode
+                 */
+                exitCompareMode: function() {
+                    this.compareVersionId(null);
+                    this.compareVersionName(null);
+                    this.compareVersionHtml(null);
+                    this.compareVersionNumber(null);
+
+                    this.syncUrlParamters();
+                },
+
+                /**
+                 * Shows a version from an version object
+                 * 
+                 * @param {object} version Version object
+                 */
+                showVersionWithObject: function(version) {
+                    if(this.isEditMode())
+                    {
+                        var self = this;
+                        this.exitEditMode().done(function() {
+                            self.closeVersionDialog();
+                            self.exitCompareMode(); 
+                            self.showVersion(version.id);
+                        });
+                    }
+                    else
+                    {
+                        this.closeVersionDialog();
+                        this.exitCompareMode(); 
+                        this.showVersion(version.id);
+                    }
+                },
+
+                /**
+                 * Shows a version
+                 * 
+                 * @param {string} versionId Version Id
+                 */
+                showVersion: function(versionId) {
+                    this.isLoading(true);
+                    this.errorOccured(false);
+                    var self = this;
+                    this.loadPageVersion(versionId).done(function(loadedVersion) {
+                        self.isLoading(false);
+                        
+                        var version = loadedVersion.version;
+                        if(version && version.versionNumber != loadedVersion.mostRecentVersion)
+                        {
+                            self.displayVersionId(version.id);
+                            self.displayVersionName(version.name);
+                            self.displayVersionHtml(version.content);
+                            self.displayVersionNumber(version.versionNumber);
+
+                            self.syncUrlParamters();
+                        }
+                        else
+                        {
+                            self.exitDisplayMode();
+                        }
+                    }).fail(function() {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Exits the display mode
+                 */
+                exitDisplayMode: function() {
+                    this.displayVersionId(null);
+                    this.displayVersionName(null);
+                    this.displayVersionHtml(null);
+                    this.displayVersionNumber(null);
+                    this.syncUrlParamters();
+                },
+
+                /**
+                 * Exits the display and compare mode
+                 */
+                exitDisplayAndCompareMode: function() {
+                    this.exitDisplayMode();
+                    this.exitCompareMode(); 
+                },
+
+                /**
+                 * Opens the restore dialog
+                 */
+                openRestoreDialog: function() {
+                    if(!this.displayVersionId())
+                    {
+                        return;
+                    }
+
+                    this.showConfirmRestoreDialog(true);
+                    this.confirmRestoreBrokenLinks.removeAll();
+
+                    this.confirmRestoreDialogLoading(true);
+                    this.confirmRestoreDialogErrorOccured(false);
+                    var self = this;
+                    jQuery.ajax({
+                        url: "/api/KirjaApi/ValidateVersionReferences?versionId=" + this.displayVersionId(),
+                        type: "GET"
+                    }).done(function(compareResult) {
+                        self.confirmRestoreDialogLoading(false);
+
+                        var compareHtml = jQuery("<div>" + self.displayVersionHtml() + "</div>");
+                        self.findMissingReferences(compareHtml, "/Kortisto/Npc", GoNorth.Kirja.Page.Npc, compareResult.missingNpcs);
+                        self.findMissingReferences(compareHtml, "/Styr/Item", GoNorth.Kirja.Page.Item, compareResult.missingItems);
+                        self.findMissingReferences(compareHtml, "/Evne/Skill", GoNorth.Kirja.Page.Skill, compareResult.missingSkills);
+                        self.findMissingReferences(compareHtml, "/Aika/Quest", GoNorth.Kirja.Page.Quest, compareResult.missingQuests);
+                        self.findMissingReferences(compareHtml, "/Kirja", GoNorth.Kirja.Page.KirjaPage, compareResult.missingPages);
+                    }).fail(function() {
+                        self.confirmRestoreDialogLoading(false);
+                        self.confirmRestoreDialogErrorOccured(true);
+                    });
+                },
+
+                /**
+                 * Finds missing references in a compare html
+                 * @param {object} compareHtml Compare Html object
+                 * @param {string} urlPrefix Prefix for links
+                 * @param {string} objectLabel Object label 
+                 * @param {object[]} compareResult Compare results to check
+                 */
+                findMissingReferences: function(compareHtml, urlPrefix, objectLabel, compareResult) {
+                    var self = this;
+                    for(var curResult = 0; curResult < compareResult.length; ++curResult)
+                    {
+                        var linkSelector = "a[href^='" + urlPrefix + "?id=" + compareResult[curResult] + "']";
+                        compareHtml.find(linkSelector).each(function() {
+                            self.confirmRestoreBrokenLinks.push({
+                                selector: linkSelector,
+                                linkText: jQuery(this).text(),
+                                objectLabel: objectLabel
+                            })
+                        });
+                    }
+                },
+
+                /**
+                 * Restores the current displayed version
+                 */
+                restoreVersion: function() {
+                    var newHtml = this.removeMissingReferences(this.displayVersionHtml());
+
+                    this.pageName(this.displayVersionName());
+                    this.pageContent(newHtml);
+                    this.closeConfirmRestoreDialog();
+                    this.exitCompareMode();
+                    this.exitDisplayMode();
+
+                    this.save();
+                },
+
+                /**
+                 * Removes the missing references
+                 * @param {string} htmlContent Html Content
+                 * @returns {string} Html without missing references
+                 */
+                removeMissingReferences: function(htmlContent) {
+                    var brokenLinks = this.confirmRestoreBrokenLinks();
+                    if(brokenLinks.length == 0)
+                    {
+                        return htmlContent;
+                    }
+
+                    var htmlContentFix = jQuery("<div>" + htmlContent + "</div>");
+                    for(var curBrokenLink = 0; curBrokenLink < brokenLinks.length; ++curBrokenLink)
+                    {
+                        htmlContentFix.find(brokenLinks[curBrokenLink].selector).contents().unwrap();
+                    }
+
+                    return htmlContentFix.html();
+                },
+
+                /**
+                 * Closes the confirm restore dialog
+                 */
+                closeConfirmRestoreDialog: function() {
+                    this.showConfirmRestoreDialog(false);
+                },
+
+                /**
+                 * Loads a page version
+                 * @param {string} id Id of the version
+                 * @returns {jQuery.Deferred} Deferred
+                 */
+                loadPageVersion: function(id) {
+                    return jQuery.ajax({
+                        url: "/api/KirjaApi/PageVersion?versionId=" + id,
+                        type: "GET"
+                    });
+                },
+
 
                 /**
                  * Loads the pages in which the current page is mentioned

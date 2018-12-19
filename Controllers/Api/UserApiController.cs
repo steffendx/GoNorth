@@ -109,6 +109,11 @@ namespace GoNorth.Controllers.Api
         private readonly IUserCreator _userCreator;
 
         /// <summary>
+        /// User Deleter
+        /// </summary>
+        private readonly IUserDeleter _userDeleter;
+
+        /// <summary>
         /// User Manager
         /// </summary>
         private readonly UserManager<GoNorthUser> _userManager;
@@ -133,15 +138,17 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="userDbAccess">User Db Access</param>
         /// <param name="userCreator">User Creator</param>
+        /// <param name="userDeleter">User Deleter</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public UserApiController(IUserDbAccess userDbAccess, IUserCreator userCreator, UserManager<GoNorthUser> userManager, ITimelineService timelineService, 
+        public UserApiController(IUserDbAccess userDbAccess, IUserCreator userCreator, IUserDeleter userDeleter, UserManager<GoNorthUser> userManager, ITimelineService timelineService, 
                                  ILogger<UserApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _userDbAccess = userDbAccess;
             _userCreator = userCreator;
+            _userDeleter = userDeleter;
             _userManager = userManager;
             _timelineService = timelineService;
             _logger = logger;
@@ -154,6 +161,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start Index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>User Entries</returns>
+        [Produces(typeof(UserQueryResult))]
         [HttpGet]
         public IActionResult Entries(int start, int pageSize)
         {
@@ -173,6 +181,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="userRequest">User request data</param>
         /// <returns>Result</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser([FromBody]UserCreateRequest userRequest)
@@ -204,6 +213,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUser(string id)
@@ -215,7 +225,7 @@ namespace GoNorth.Controllers.Api
             }
 
             GoNorthUser user = await _userDbAccess.GetUserById(id);
-            IdentityResult result = await _userManager.DeleteAsync(user);
+            IdentityResult result = await _userDeleter.DeleteUser(user);
 
             if(result.Succeeded)
             {
@@ -236,6 +246,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">User Id</param>
         /// <param name="roles">Roles to assign (all other roles will be removed)</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetUserRoles(string id, [FromBody]List<string> roles)
@@ -266,6 +277,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmEmailForUser(string id)
@@ -290,6 +302,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateSecurityStampForUser(string id)

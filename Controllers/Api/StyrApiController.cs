@@ -167,6 +167,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="template">Template to create</param>
         /// <returns>Result</returns>
+        [Produces(typeof(StyrItem))]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -180,6 +181,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -194,6 +196,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Template Id</param>
         /// <param name="template">Update template data</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(StyrItem))]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -207,6 +210,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Template Id</param>
         /// <returns>Task</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -220,6 +224,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Image Name</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -346,6 +351,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Items</returns>
+        [Produces(typeof(FlexFieldObjectQueryResult))]
         [Authorize(Roles = RoleNames.Styr)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]

@@ -48,6 +48,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the User Preferences
         /// </summary>
         /// <returns>User Preferences</returns>
+        [Produces(typeof(UserPreferences))]
         [HttpGet]
         public async Task<IActionResult> GetUserPreferences()
         {

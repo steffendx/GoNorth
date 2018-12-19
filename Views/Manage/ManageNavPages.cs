@@ -28,6 +28,11 @@ namespace GoNorth.Views.Manage
         public static string Preferences => "Preferences";
 
         /// <summary>
+        /// Personal data
+        /// </summary>
+        public static string PersonalData => "PersonalData";
+
+        /// <summary>
         /// Index Nav Class
         /// </summary>
         /// <param name="viewContext">View Context</param>
@@ -47,5 +52,12 @@ namespace GoNorth.Views.Manage
         /// <param name="viewContext">View Context</param>
         /// <returns>Nav Class</returns>
         public static string PreferencesNavClass(ViewContext viewContext) => NavPagesBase.PageNavClass(viewContext, Preferences);
+        
+        /// <summary>
+        /// Personal data Nav Class
+        /// </summary>
+        /// <param name="viewContext">View Context</param>
+        /// <returns>Nav Class</returns>
+        public static string PersonalDataNavClass(ViewContext viewContext) => NavPagesBase.PageNavClass(viewContext, PersonalData);
     }
 }

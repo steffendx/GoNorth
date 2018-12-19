@@ -39,6 +39,7 @@
 
     "Error": "Error:",
     "ErrorOccured": "An error occured.",
+    "QuestNotFound": "Quest was not found.",
 
     "Locked": "Locked",
     "LockedPrefix": "The quest is currently being edited by ",

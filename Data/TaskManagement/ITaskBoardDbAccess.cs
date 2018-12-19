@@ -73,5 +73,20 @@ namespace GoNorth.Data.TaskManagement
         /// <param name="board">Board</param>
         /// <returns>Task</returns>
         Task DeleteTaskBoard(TaskBoard board);
+                        
+
+        /// <summary>
+        /// Returns all taskboards that were last modified by a user or contain a task modified by the user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Task Boards</returns>
+        Task<List<TaskBoard>> GetTaskBoardsByModifiedUser(string userId);
+
+        /// <summary>
+        /// Returns all taskboards that have a task or task group assigned to a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Taskboards</returns>
+        Task<List<TaskBoard>> GetAllTaskBoardsByAssignedUser(string userId);
     }
 }

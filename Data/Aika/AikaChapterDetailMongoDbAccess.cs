@@ -192,5 +192,15 @@ namespace GoNorth.Data.Aika
             return chapterDetails;
         }
 
+
+        /// <summary>
+        /// Returns all chapter details that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Chapter details</returns>
+        public async Task<List<AikaChapterDetail>> GetChapterDetailsByModifiedUser(string userId)
+        {
+            return await _ChapterDetailCollection.AsQueryable().Where(q => q.ModifiedBy == userId).ToListAsync();
+        }
     }
 }

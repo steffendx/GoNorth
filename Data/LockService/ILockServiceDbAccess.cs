@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Models;
 
@@ -26,5 +27,19 @@ namespace GoNorth.Data.LockService
         /// <param name="expireDate">Date at which  the lock expires</param>
         /// <returns>Task</returns>
         Task LockResource(string category, string id, string userId, DateTimeOffset expireDate);
+
+        /// <summary>
+        /// Deletes all locks for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        Task DeleteAllLocksOfUser(string userId);
+
+        /// <summary>
+        /// Returns all locks of a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Lock Entry</returns>
+        Task<List<LockEntry>> GetAllLocksOfUser(string userId);
     }
 }

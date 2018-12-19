@@ -99,5 +99,13 @@ namespace GoNorth.Data.Aika
         /// <param name="quest">Quest to delete</param>
         /// <returns>Task</returns>
         Task DeleteQuest(AikaQuest quest);
+
+
+        /// <summary>
+        /// Returns all quests that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Quests</returns>
+        Task<List<AikaQuest>> GetQuestsByModifiedUser(string userId);
     }
 }

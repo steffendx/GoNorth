@@ -1,0 +1,41 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.LegalNoticeModels
+
+@model GoNorth.Models.LegalNoticeModels.IndexViewModel
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["LegalNotice"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <p>@Localizer["InformationRequiredUnder5TMG"]</p>
+    <p>
+        @Model.ContactPerson<br/> 
+        @Model.ContactStreet<br/> 
+        @Model.ContactCity<br/> 
+    </p>
+    <p> 
+        <strong>@Localizer["RepresentedBy"]</strong><br/>
+        @Model.RepresentedByPerson<br/>
+    </p>
+    <p>
+        <strong>@Localizer["Contact"]</strong> <br/>
+        @Localizer["Email"]<a href='mailto:@Model.ContactEmail'>@Model.ContactEmail</a></br>
+    </p>
+    <p>
+        <strong>@Localizer["Disclaimer"]</strong><br/><br/>
+        <strong>@Localizer["LimitationLiabilityInternalContent"]</strong><br/><br/>
+        @Localizer["LimitationLiabilityInternalContentText"]<br/><br/>
+        <strong>@Localizer["LimitationLiabilityExternalLinks"]</strong><br><br>
+        @Localizer["LimitationLiabilityExternalLinksText"]<br><br>
+        <strong>@Localizer["Copyright"]</strong><br><br>
+        @Localizer["CopyrightText"]<br><br>
+        <strong>@Localizer["DataProtection"]</strong><br><br>
+        @Localizer["DataProtectionText"]
+    </p>
+ </div>
+ 

@@ -408,5 +408,15 @@ namespace GoNorth.Data.Karta
                 await UpdateMap(curMap);
             }
         }
+
+        /// <summary>
+        /// Returns all maps that were last modified by a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Maps</returns>
+        public async Task<List<KartaMap>> GetMapsByModifiedUser(string userId)
+        {
+            return await _MapCollection.AsQueryable().Where(p => p.ModifiedBy == userId).ToListAsync();
+        }
     }
 }

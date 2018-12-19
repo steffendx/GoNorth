@@ -79,19 +79,19 @@
                         </div>
                         <div class="form-group">
                             <label for="gn-userDisplayName">@Localizer["Name"]</label>
-                            <input type="text" class="form-control" id="gn-userDisplayName" placeholder="@Localizer["Name"]" name="userDisplayName" data-bind="value: createName" required/>
+                            <input type="text" class="form-control" id="gn-userDisplayName" placeholder="@Localizer["Name"]" name="userDisplayName" data-bind="value: createName, enterPressed: createUser" required/>
                         </div>
                         <div class="form-group">
                             <label for="gn-userEmail">@Localizer["Email"]</label>
-                            <input type="email" class="form-control" id="gn-userEmail" placeholder="@Localizer["Email"]" name="userEmail" data-bind="value: createEmail" required/>
+                            <input type="email" class="form-control" id="gn-userEmail" placeholder="@Localizer["Email"]" name="userEmail" data-bind="value: createEmail, enterPressed: createUser" required/>
                         </div>
                         <div class="form-group">
                             <label for="gn-password">@Localizer["Password"]</label>
-                            <input type="password" class="form-control" id="gn-password" placeholder="@Localizer["Password"]" name="userPassword" data-bind="value: createPassword" minlength="8" required/>
+                            <input type="password" class="form-control" id="gn-password" placeholder="@Localizer["Password"]" name="userPassword" data-bind="value: createPassword, enterPressed: createUser" minlength="8" required/>
                         </div>
                         <div class="form-group">
                             <label for="gn-passwordRepeat">@Localizer["PasswordRepeat"]</label>
-                            <input type="password" class="form-control" id="gn-passwordRepeat" placeholder="@Localizer["PasswordRepeat"]" name="userPasswordRepeat" data-bind="value: createPasswordRepeat" required equalto="#gn-password"/>
+                            <input type="password" class="form-control" id="gn-passwordRepeat" placeholder="@Localizer["PasswordRepeat"]" name="userPasswordRepeat" data-bind="value: createPasswordRepeat, enterPressed: createUser" required equalto="#gn-password"/>
                         </div>
                     </form>
                 </div>

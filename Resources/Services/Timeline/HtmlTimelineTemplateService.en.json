@@ -54,7 +54,7 @@
 
     "KirjaPageCreated": "A new page <a href='/Kirja?id={1}'>{0}</a> was created in Kirja.",
     "KirjaPageDeleted": "The page {0} was deleted in Kirja.",
-    "KirjaPageUpdated": "The page <a href='/Kirja?id={1}'>{0}</a> was updated in Kirja.",
+    "KirjaPageUpdated": "The page <a href='/Kirja?id={1}&displayVersionId={2}&compareVersionId={3}'>{0}</a> was updated in Kirja.",
     "KirjaAttachmentAdded": "The file {2} was uploaded to the Kirja page <a href='/Kirja?id={1}'>{0}</a>.",
     "KirjaAttachmentDeleted": "The file {2} was deleted in the Kirja page <a href='/Kirja?id={1}'>{0}</a>.",
 

@@ -27,6 +27,7 @@ namespace GoNorth.Controllers
     /// </summary>
     [Authorize]
     [Route("[controller]/[action]")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AccountController : Controller
     {
         /// <summary>

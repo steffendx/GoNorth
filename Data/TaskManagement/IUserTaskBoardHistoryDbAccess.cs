@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GoNorth.Data.TaskManagement
@@ -30,5 +31,20 @@ namespace GoNorth.Data.TaskManagement
         /// <param name="projectId">Project Id</param>
         /// <returns>Task</returns>
         Task DeleteUserTaskBoardHistoryForProject(string projectId);
+
+        /// <summary>
+        /// Deletes the taskboard history for a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Task</returns>
+        Task DeleteUserTaskBoardHistoryForUser(string userId);
+
+
+        /// <summary>
+        /// Returns all opened boards of a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Opened boards of the user</returns>
+        Task<List<UserTaskBoardHistory>> GetAllOpenedBoardsOfUser(string userId);
     }
 }

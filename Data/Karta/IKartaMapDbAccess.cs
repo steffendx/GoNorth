@@ -128,5 +128,13 @@ namespace GoNorth.Data.Karta
         /// <param name="questId">Id of the quest for which the markers must be deleted</param>
         /// <returns>Async Task</returns>
         Task DeleteMarkersOfQuest(string questId);
+
+
+        /// <summary>
+        /// Returns all maps that were last modified by a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Maps</returns>
+        Task<List<KartaMap>> GetMapsByModifiedUser(string userId);
     }
 }

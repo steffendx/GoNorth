@@ -2165,6 +2165,7 @@
 
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
+                this.objectNotFound = new ko.observable(false);
 
                 GoNorth.Util.setupValidation("#gn-objectFields");
 
@@ -2270,6 +2271,7 @@
             ObjectForm.BaseViewModel.prototype.resetErrorState = function() {
                 this.errorOccured(false);
                 this.additionalErrorDetails("");
+                this.objectNotFound(false);
             };
 
             /**
@@ -2312,6 +2314,7 @@
                     if(!data)
                     {
                         self.errorOccured(true);
+                        self.objectNotFound(true);
                         return;
                     }
                     

@@ -1,0 +1,63 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Views
+@using GoNorth.Views.Manage
+@using GoNorth.Models.ManageViewModels
+
+@model IndexViewModel
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["PersonalData"];
+    ViewData.AddActivePage(ManageNavPages.PersonalData);
+}
+
+<div id="gn-personalDataContainer">
+    <!-- Delete Data Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>@Localizer["AreYouSureYouWantToDeleteYourData"]</p>
+                </div>
+                <div class="modal-footer">
+                    <form action="/api/PersonalDataApi/DeleteUserData" method="POST" class="gn-personalDataDeleteForm">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-default">@Localizer["Yes"]</button>
+                    </form>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Data -->
+    <h4>@ViewData["Title"]</h4>
+    <div>@Localizer["YourAccountContainsPersonalData"]</div>
+    <div><strong>@Localizer["DeletingThisDataWillPermanentlyDeleteYourAccount"]</strong></div>
+    <div class="gn-personalDataButtons">
+        <a asp-area="" asp-controller="PersonalDataApi" asp-action="DownloadPersonalData" class="btn btn-default" role="button">@Localizer["Download"]</a>
+    </div>
+    <div class="gn-personalDataButtons">
+        <button class="btn btn-default" data-bind="click: openConfirmDeleteDialog">@Localizer["Delete"]</button>
+    </div>
+</div>
+
+@section Scripts {
+        <environment include="Development">
+        <script src="~/js/Manage/personalData.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Manage/personalData.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Manage.PersonalData.ViewModel(), jQuery("#gn-personalDataContainer")[0]);
+        });
+    </script>
+}

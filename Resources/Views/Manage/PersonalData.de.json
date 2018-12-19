@@ -1,0 +1,14 @@
+{
+    "PersonalData": "Persönliche Daten",
+
+    "YourAccountContainsPersonalData": "Dein Benutzerkonto beinhaltet persönliche Daten. Diese Seite erlaubt es dir diese Daten zu löschen oder herunterzuladen.",
+    "DeletingThisDataWillPermanentlyDeleteYourAccount": "Wenn du diese Daten löscht wird auch dein Benutzerkonto gelöscht, dies kann nicht rückgängig gemacht werden.",
+
+    "Download": "Herunterladen",
+    "Delete": "Löschen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteYourData": "Bist du sicher das du deine Daten löschen willst?",
+    "Yes": "Ja",
+    "No": "Nein"
+}

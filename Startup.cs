@@ -45,6 +45,10 @@ using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Dialog;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Security;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Reflection;
+using System.IO;
 
 namespace GoNorth
 {
@@ -73,6 +77,8 @@ namespace GoNorth
         /// <param name="services">Services</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            ConfigurationData configData = Configuration.Get<ConfigurationData>();
+            
             // Add Identity
             services.AddIdentity<GoNorthUser, GoNorthRole>(options => {
                 // Password settings
@@ -92,10 +98,25 @@ namespace GoNorth
                AddUserStore<GoNorthUserStore>().AddRoleStore<GoNorthRoleStore>().AddErrorDescriber<GoNorthIdentityErrorDescriber>().
                AddUserValidator<GoNorthUserValidator>().AddDefaultTokenProviders();
             
+            if(configData.Misc.UseGdpr)
+            {
+                services.Configure<CookiePolicyOptions>(options =>
+                {
+                    options.CheckConsentNeeded = context => true;
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                });
+
+                services.Configure<CookieTempDataProviderOptions>(options => {
+                    options.Cookie.IsEssential = true;
+                });
+            }
+
             // Framework services
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Application services
+            services.AddTransient<IConfigViewAccess, AppSettingsConfigViewAccess>();
+
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IEncryptionService, AesEncryptionService>();
             services.AddTransient<IXssChecker, XssChecker>();
@@ -126,6 +147,7 @@ namespace GoNorth
             services.AddTransient<IImplementationStatusComparer, GenericImplementationStatusComparer>();
 
             services.AddTransient<IUserCreator, UserCreator>();
+            services.AddTransient<IUserDeleter, UserDeleter>();
 
             services.AddTransient<IExportTemplatePlaceholderResolver, ExportTemplatePlaceholderResolver>();
             services.AddTransient<IExportDialogParser, ExportDialogParser>();
@@ -167,6 +189,7 @@ namespace GoNorth
             services.AddScoped<IEvneSkillImplementationSnapshotDbAccess, EvneSkillImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<IKirjaPageDbAccess, KirjaPageMongoDbAccess>();
+            services.AddScoped<IKirjaPageVersionDbAccess, KirjaPageVersionMongoDbAccess>();
 
             services.AddScoped<IKartaMapDbAccess, KartaMapMongoDbAccess>();
             services.AddScoped<IKartaMarkerImplementationSnapshotDbAccess, KartaMarkerImplementationSnapshotMongoDbAccess>();
@@ -214,10 +237,35 @@ namespace GoNorth
                 options.SupportedUICultures = supportedCultures;
             });
 
-            services.AddMvc().AddViewLocalization().AddDataAnnotationsLocalization();
+            services.AddMvc().AddViewLocalization().AddDataAnnotationsLocalization().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);;
 
             // Configuration
             services.Configure<ConfigurationData>(Configuration);
+
+            // Register the Swagger generator
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info 
+                    { 
+                        Title = "GoNorth API", 
+                        Version = "v1",
+                        Description = "A portal to build storys for RPGs and other open world games.",
+                        Contact = new Contact
+                        {
+                            Name = "Steffen Nörtershäuser"
+                        },
+                        License = new License
+                        {
+                            Name = "Use under MIT",
+                            Url = "https://github.com/steffendx/GoNorth/blob/master/LICENSE"
+                        }
+                    });
+
+                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string commentsFileName = Assembly.GetExecutingAssembly().GetName().Name + ".XML";
+                string commentsFile = Path.Combine(baseDirectory, commentsFileName);
+                c.IncludeXmlComments(commentsFile);
+            });
         }
 
         /// <summary>
@@ -227,6 +275,8 @@ namespace GoNorth
         /// <param name="env">Hosting environment</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            ConfigurationData configData = Configuration.Get<ConfigurationData>();
+            
             if (env.IsDevelopment())
             {
                 EnvironmentSettings.IsDevelopment = true;
@@ -248,7 +298,22 @@ namespace GoNorth
 
             app.UseStaticFiles();
 
+            if(configData.Misc.UseGdpr)
+            {
+                app.UseCookiePolicy();
+            }
+
             app.UseAuthentication();
+
+            if(env.IsDevelopment())
+            {
+                app.UseSwagger();
+
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GoNorth Api");
+                });
+            }
 
             app.UseMvc(routes =>
             {

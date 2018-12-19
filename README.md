@@ -11,10 +11,11 @@ It offers modules for:
  * Planning Items and their different values
  * Planning Skills and their different values
  * Exporting of Npcs, Dialogs, Items and skills
- * Wiki component with tight integration into the other modules
+ * Wiki component with versioning and tight integration into the other modules
  * Map component to position Quest marker, Npcs, Items, Wiki pages and map changes
  * Tracking your implementation status and showing changed values after change to already implemented object
  * Simple Task Tracker
+ * GDPR support
 
 ## Deployment
 ![Badge](https://leif-dev.visualstudio.com/_apis/public/build/definitions/31ab5f65-48ba-4e5b-a93d-590ba3af9850/2/badge)
@@ -60,7 +61,7 @@ More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wik
 
 
 ### Wiki Component (Kirja)
-Kirja is the wiki component of GoNorth. Apart from allowing the user to write wiki pages it also features a tight integration into the other systems:
+Kirja is the wiki component of GoNorth. Apart from allowing the user to write wiki pages it also features versioning and a tight integration into the other systems:
 
 ![Wiki](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Kirja.PNG?raw=true)
 
@@ -130,3 +131,4 @@ GoNorth uses the following libraries:
  * [Fantasy Name Generator](https://github.com/skeeto/fantasyname) licensed under The Unlicense
  * [Ace Editor](https://ace.c9.io/) licensed under BSD-License
  * [knockout-sortable](https://github.com/rniemeyer/knockout-sortable/) licensed under MIT
+ * [htmldiff.js](https://github.com/tnwinc/htmldiff.js) licensed under MIT

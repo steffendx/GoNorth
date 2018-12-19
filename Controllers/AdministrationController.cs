@@ -12,6 +12,7 @@ namespace GoNorth.Controllers
     /// </summary>
     [Authorize(Roles = RoleNames.Administrator)]
     [Route("[controller]/[action]")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AdministrationController : Controller
     {
         /// <summary>

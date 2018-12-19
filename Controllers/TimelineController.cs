@@ -7,6 +7,7 @@ namespace GoNorth.Controllers
     /// Timelien controller
     /// </summary>
     [Authorize]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class TimelineController : Controller
     {
         /// <summary>

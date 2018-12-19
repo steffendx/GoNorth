@@ -129,5 +129,13 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="tag">Tag</param>
         /// <returns>true if tag is used, else false</returns>
         Task<bool> AnyFlexFieldObjectUsingTag(string tag);
+
+
+        /// <summary>
+        /// Returns all objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        Task<List<T>> GetFlexFieldObjectsByModifiedUser(string userId);
     }
 }

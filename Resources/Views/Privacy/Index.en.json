@@ -1,0 +1,16 @@
+{
+    "PrivacyPolicy": "Privacy policy",
+
+    "CookiePolicy": "Cookie policy",
+    "WhatAreCookiesExplanation": "Cookies are small pieces of data stored on a User's device.",
+    "WeSaveTheFollowingKindsOfCookies": "The following kinds of cookies are saved:",
+    "EssentialCookiesText": "Essential - cookies that are essential to provide you with services you have requested. For example, these include cookies that make it possible for you to say logged into the application.",
+
+    "DataPolicy": "Data policy",
+    "TheFollowingPersonalDataIsSaved": "The following personal data is saved:",
+    "UserData": "Personal data - To allow you to login we save your email address and name. The email address is required to send you your password in case you forgot.",
+    "DataChangeDate": "Date of change - If you change data, for example an NPC or Item, we save the date you changed it. This allows us to track the time of change for data.",
+    "AssignedTasks": "Assigned Tasks - To track tasks we save the tasks that are assigned to you.",
+    "LastOpenedBoards": "Last opened Taskboards - To open the last taskboard you viewed upon opening the task management, we save your last opened taskboard.",
+    "WeDontShareYourData": "We only use your data for internal purposes and dont share it with anybody."
+}

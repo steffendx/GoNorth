@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Config;
 using Microsoft.Extensions.Options;
@@ -84,6 +85,27 @@ namespace GoNorth.Data.TaskManagement
         public async Task DeleteUserTaskBoardHistoryForProject(string projectId)
         {
             await _UserTaskBoardHistoryCollection.DeleteManyAsync(u => u.ProjectId == projectId);
+        }
+
+        /// <summary>
+        /// Deletes the taskboard history for a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Task</returns>
+        public async Task DeleteUserTaskBoardHistoryForUser(string userId)
+        {
+            await _UserTaskBoardHistoryCollection.DeleteManyAsync(u => u.UserId == userId);
+        }
+
+
+        /// <summary>
+        /// Returns all opened boards of a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Opened boards of the user</returns>
+        public async Task<List<UserTaskBoardHistory>> GetAllOpenedBoardsOfUser(string userId)
+        {
+            return await _UserTaskBoardHistoryCollection.AsQueryable().Where(u => u.UserId == userId).ToListAsync();
         }
     }
 }

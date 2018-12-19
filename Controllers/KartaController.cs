@@ -7,6 +7,7 @@ namespace GoNorth.Controllers
     /// Karta controller
     /// </summary>
     [Authorize(Roles = RoleNames.Karta)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class KartaController : Controller
     {
         /// <summary>

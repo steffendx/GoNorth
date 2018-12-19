@@ -169,6 +169,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="npcId">Id of the npc</param>
         /// <returns>Compare results</returns>
+        [Produces(typeof(FormattedCompareResponse))]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Kortisto)]
         [HttpGet]
@@ -215,6 +216,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Id of the item</param>
         /// <returns>Compare results</returns>
+        [Produces(typeof(FormattedCompareResponse))]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Styr)]
         [HttpGet]
@@ -261,6 +263,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="skillId">Id of the skill</param>
         /// <returns>Compare results</returns>
+        [Produces(typeof(FormattedCompareResponse))]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Evne)]
         [HttpGet]
@@ -307,6 +310,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="dialogId">Id of the dialog</param>
         /// <returns>Compare results</returns>
+        [Produces(typeof(FormattedCompareResponse))]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Tale)]
         [HttpGet]
@@ -359,6 +363,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Id of the quest</param>
         /// <returns>Compare results</returns>
+        [Produces(typeof(FormattedCompareResponse))]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Aika)]
         [HttpGet]
@@ -407,6 +412,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="markerId">Id of the marker</param>
         /// <param name="markerType">Type of the marker</param>
         /// <returns>Compare results</returns>
+        [Produces(typeof(FormattedCompareResponse))]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Karta)]
         [HttpGet]

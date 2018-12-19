@@ -28,11 +28,18 @@ namespace GoNorth.Data
     public class MongoDbSetup : BaseMongoDbAccess, IDbSetup
     {
         /// <summary>
+        /// Timeline Db Access
+        /// </summary>
+        private readonly ITimelineDbAccess _timelineDbAccess;
+
+        /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="timelineDbAccess">Timeline Db Access</param>
         /// <param name="configuration">Configuration</param>
-        public MongoDbSetup(IOptions<ConfigurationData> configuration) : base(configuration)
+        public MongoDbSetup(ITimelineDbAccess timelineDbAccess, IOptions<ConfigurationData> configuration) : base(configuration)
         {
+            _timelineDbAccess = timelineDbAccess;
         }
 
         /// <summary>
@@ -77,6 +84,7 @@ namespace GoNorth.Data
 
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageRecyclingBinCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(KirjaPageVersionMongoDbAccess.KirjaPageVersionCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(KartaMapMongoDbAccess.KartaMapCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KartaMapMongoDbAccess.KartaMapRecyclingBinCollectionName, collectionNames);
@@ -108,6 +116,9 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(UserTaskBoardHistoryMongoDbAccess.TaskBoardUserHistoryCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(LockServiceMongoDbAccess.LockCollectionName, collectionNames);
+
+
+            await CreateIndices();
         }
 
         /// <summary>
@@ -141,6 +152,16 @@ namespace GoNorth.Data
             }
 
             await _Database.CreateCollectionAsync(collectionName);
+        }
+
+        
+        /// <summary>
+        /// Creates the database indices
+        /// </summary>
+        /// <returns>Task</returns>
+        private async Task CreateIndices()
+        {
+            await _timelineDbAccess.CreateTimelineIndices();
         }
     }
 }

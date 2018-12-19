@@ -57,6 +57,7 @@
 
     "Error": "Fehler:",
     "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+    "ObjectNotFound": "Fähigkeit nicht gefunden.",
 
     "Locked": "Gesperrt",
     "LockedTemplatePrefix": "Dieses Template wird gerade von ",

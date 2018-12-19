@@ -149,5 +149,15 @@ namespace GoNorth.Data.Tale
             DeleteResult result = await _DialogCollection.DeleteOneAsync(p => p.Id == dialog.Id);
         }
         
+
+        /// <summary>
+        /// Returns all dialogs that were last modified by a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Dialogs</returns>
+        public async Task<List<TaleDialog>> GetDialogsByModifiedUser(string userId)
+        {
+            return await _DialogCollection.AsQueryable().Where(t => t.ModifiedBy == userId).ToListAsync();
+        }
     }
 }

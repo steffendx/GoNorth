@@ -137,6 +137,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Board id</param>
         /// <returns>Task Board</returns>
+        [Produces(typeof(TaskBoard))]
         [HttpGet]
         public async Task<IActionResult> GetTaskBoard(string id)
         {
@@ -150,6 +151,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Task Boards</returns>
+        [Produces(typeof(TaskBoardQueryResult))]
         [HttpGet]
         public async Task<IActionResult> GetOpenTaskBoards(int start, int pageSize)
         {
@@ -172,6 +174,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Task Boards</returns>
+        [Produces(typeof(TaskBoardQueryResult))]
         [HttpGet]
         public async Task<IActionResult> GetClosedTaskBoards(int start, int pageSize)
         {
@@ -193,6 +196,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="board">Board to create</param>
         /// <returns>Id of the board</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -249,6 +253,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the board</param>
         /// <param name="board">Board to update</param>
         /// <returns>Id of the board</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -295,6 +300,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the board</param>
         /// <param name="closed">true if the board must be closed, else false</param>
         /// <returns>Id of the board</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -343,6 +349,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the board</param>
         /// <returns>Id of the board</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -391,6 +398,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="boardId">Id of the board</param>
         /// <param name="group">Group to create</param>
         /// <returns>Created Task Group</returns>
+        [Produces(typeof(TaskGroup))]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateTaskGroup(string boardId, [FromBody]TaskGroup group)
@@ -460,6 +468,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <param name="group">Group to create</param>
         /// <returns>Updated Task Group</returns>
+        [Produces(typeof(TaskGroup))]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateTaskGroup(string boardId, string groupId, [FromBody]TaskGroup group)
@@ -538,6 +547,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="boardId">Id of the board</param>
         /// <param name="groupId">Id of the group</param>
         /// <returns>Deletes Task Group</returns>
+        [Produces(typeof(string))]
         [ValidateAntiForgeryToken]
         [HttpDelete]
         public async Task<IActionResult> DeleteTaskGroup(string boardId, string groupId)
@@ -615,6 +625,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <param name="task">Task to create</param>
         /// <returns>Created Task</returns>
+        [Produces(typeof(GoNorthTask))]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateTask(string boardId, string groupId, [FromBody]GoNorthTask task)
@@ -691,6 +702,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskId">Id of the task</param>
         /// <param name="task">Task to update</param>
         /// <returns>Updated Task</returns>
+        [Produces(typeof(GoNorthTask))]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateTask(string boardId, string groupId, string taskId, [FromBody]GoNorthTask task)
@@ -777,6 +789,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <param name="taskId">Id of the task</param>
         /// <returns>Task Id</returns>
+        [Produces(typeof(string))]
         [ValidateAntiForgeryToken]
         [HttpDelete]
         public async Task<IActionResult> DeleteTask(string boardId, string groupId, string taskId)
@@ -852,6 +865,7 @@ namespace GoNorth.Controllers.Api
         /// Uploads an image
         /// </summary>
         /// <returns>Image Name</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ImageUpload()
@@ -929,6 +943,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the last opened task board id for the current user
         /// </summary>
         /// <returns>Id of the last opened task board, "" if no task board was opened before</returns>
+        [Produces(typeof(string))]
         [HttpGet]
         public async Task<IActionResult> GetLastOpenedTaskBoard()
         {
@@ -944,6 +959,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="boardId">Id of the board</param>
         /// <returns>Task</returns>
+        [Produces(typeof(string))]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SetLastOpenedTaskBoard(string boardId)

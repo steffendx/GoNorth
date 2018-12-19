@@ -52,6 +52,7 @@
 
     "Error": "Fehler:",
     "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+    "ObjectNotFound": "Item wurde nicht gefunden.",
 
     "Locked": "Gesperrt",
     "LockedTemplatePrefix": "Dieses Template wird gerade von ",

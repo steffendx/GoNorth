@@ -15,6 +15,7 @@ namespace GoNorth.Controllers
     /// Home Controller
     /// </summary>
     [Authorize]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HomeController : Controller
     {
         /// <summary>

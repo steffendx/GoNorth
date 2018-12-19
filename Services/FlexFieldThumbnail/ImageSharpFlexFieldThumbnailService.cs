@@ -7,6 +7,7 @@ using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 namespace GoNorth.Services.FlexFieldThumbnail
@@ -79,7 +80,7 @@ namespace GoNorth.Services.FlexFieldThumbnail
         {
             ResizeOptions fillOptions = new ResizeOptions();
             fillOptions.Mode = ResizeMode.Max;
-            fillOptions.Position = AnchorPosition.TopLeft;
+            fillOptions.Position = AnchorPositionMode.TopLeft;
             fillOptions.Size = new SixLabors.Primitives.Size(ThumbnailSize, ThumbnailSize);
 
             image.Mutate(i => i.Resize(fillOptions));

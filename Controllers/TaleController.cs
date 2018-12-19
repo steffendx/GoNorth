@@ -7,6 +7,7 @@ namespace GoNorth.Controllers
     /// Tale controller
     /// </summary>
     [Authorize(Roles = RoleNames.Tale)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class TaleController : Controller
     {
         /// <summary>

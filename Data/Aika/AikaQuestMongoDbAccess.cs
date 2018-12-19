@@ -224,5 +224,15 @@ namespace GoNorth.Data.Aika
             DeleteResult result = await _QuestCollection.DeleteOneAsync(q => q.Id == quest.Id);
         }
 
+
+        /// <summary>
+        /// Returns all quests that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Quests</returns>
+        public async Task<List<AikaQuest>> GetQuestsByModifiedUser(string userId)
+        {
+            return await _QuestCollection.AsQueryable().Where(q => q.ModifiedBy == userId).ToListAsync();
+        }
     }
 }

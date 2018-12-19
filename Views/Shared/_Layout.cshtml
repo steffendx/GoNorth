@@ -1,7 +1,9 @@
 ﻿@using GoNorth.Data.User
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Http.Features
 
 @inject IViewLocalizer Localizer
+@inject GoNorth.Config.IConfigViewAccess AppSettings
 @inject SignInManager<GoNorthUser> SignInManager
 
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
@@ -10,6 +12,11 @@
     {
         return Xsrf.GetAndStoreTokens(Context).RequestToken;
     }
+}
+
+@{
+    ITrackingConsentFeature consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    bool showingGdprBanner = !consentFeature?.CanTrack ?? false;
 }
 
 <!DOCTYPE html>
@@ -37,7 +44,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNavBar">
                     <span class="sr-only">@Localizer["ToogleNavigation"]</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -45,7 +52,7 @@
                 </button>
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand" title="@Localizer["Home"]">GoNorth</a>
             </div>
-            <div class="navbar-collapse collapse">
+            <div class="navbar-collapse collapse" id="mainNavBar">
                 @if (SignInManager.IsSignedIn(User))
                 {
                 <ul class="nav navbar-nav">
@@ -90,14 +97,30 @@
                 }
                 @await Html.PartialAsync("_LoginPartial")
             </div>
+            @await Html.PartialAsync("_CookieConsentPartial")
         </div>
     </nav>
-    <div class="container body-content">
+
+    <div class="container body-content gn-mainContainer @(showingGdprBanner ? "gn-mainContainerSmall" : "")">
         @RenderBody()
-        <hr />
-        <footer>
-        </footer>
     </div>
+    <hr />
+    <footer>
+        @if(AppSettings.IsUsingGdpr())
+        {
+            <small><a asp-area="" asp-controller="Privacy" asp-action="Index" class="text-muted">@Localizer["PrivacyPolicy"]</a></small>
+        }
+
+        @if(AppSettings.IsUsingGdpr() && AppSettings.IsUsingLegalNotice())
+        {
+            <span class="text-muted">|</span>
+        }
+
+        @if(AppSettings.IsUsingLegalNotice())
+        {
+            <small><a asp-area="" asp-controller="LegalNotice" asp-action="Index" class="text-muted">@Localizer["LegalNotice"]</a></small>
+        }
+    </footer>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>

@@ -1,0 +1,45 @@
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ITrackingConsentFeature consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    bool showBanner = !consentFeature?.CanTrack ?? false;
+    string cookieString = consentFeature?.CreateConsentCookie();
+}
+
+@if (showBanner)
+{
+    <nav id="cookieConsent" class="navbar navbar-inverse navbar-fixed-top" role="alert">
+        <div class="container gn-cookieContainer">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#cookiePolicy" title="@Localizer["ToogleCookiePolicy"]">
+                    <span class="sr-only">@Localizer["ToogleCookiePolicy"]</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <span class="navbar-brand"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+            </div>
+            <div class="collapse navbar-collapse" id="cookiePolicy">
+                <p class="navbar-text gn-cookiePolicySummary">
+                    @Localizer["PrivacySummary"]
+                </p>
+                <div class="navbar-right">
+                    <a asp-area="" asp-controller="Privacy" asp-action="Index" class="btn btn-primary navbar-btn">@Localizer["LearnMore"]</a>
+                    <button type="button" class="btn btn-default navbar-btn" data-cookie-string="@cookieString">@Localizer["Accept"]</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <script>
+        (function () {
+            document.querySelector("#cookieConsent button[data-cookie-string]").addEventListener("click", function (el) {
+                document.cookie = el.target.dataset.cookieString;
+                jQuery("#cookieConsent").remove();
+                jQuery(".gn-mainContainerSmall").removeClass("gn-mainContainerSmall");
+            }, false);
+        })();
+    </script>
+}

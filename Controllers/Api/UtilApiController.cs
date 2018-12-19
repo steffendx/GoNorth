@@ -18,7 +18,7 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Trimmed user for response
         /// </summary>
-        public class TrimmedResponseUser
+        public class TrimmedUtilResponseUser
         {
             /// <summary>
             /// Id
@@ -56,11 +56,12 @@ namespace GoNorth.Controllers.Api
         /// Returns all users
         /// </summary>
         /// <returns>Users</returns>
+        [Produces(typeof(IList<TrimmedUtilResponseUser>))]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             IList<GoNorthUser> users = await _userDbAccess.GetUsers(0, 10000);
-            IList<TrimmedResponseUser> userResponse = users.Select(u => new TrimmedResponseUser {
+            IList<TrimmedUtilResponseUser> userResponse = users.Select(u => new TrimmedUtilResponseUser {
                 Id = u.Id,
                 DisplayName = u.DisplayName
             }).ToList();

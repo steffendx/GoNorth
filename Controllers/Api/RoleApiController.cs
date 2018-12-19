@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the available roles
         /// </summary>
         /// <returns>Available Roles</returns>
+        [Produces(typeof(List<string>))]
         [HttpGet]
         public IActionResult AvailableRoles()
         {

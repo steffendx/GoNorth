@@ -290,6 +290,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the template categories
         /// </summary>
         /// <returns>Result</returns>
+        [Produces(typeof(List<TranslatedTemplateCategory>))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public IActionResult GetTemplateCategories()
@@ -313,6 +314,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="category">Category to query</param>
         /// <returns>Default Templates by Category</returns>
+        [Produces(typeof(List<TranslatedExportTemplate>))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public async Task<IActionResult> GetDefaultTemplatesByCategory(TemplateCategory category)
@@ -328,6 +330,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="templateType">Default Template Type</param>
         /// <returns>Default Template</returns>
+        [Produces(typeof(TranslatedExportTemplate))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public async Task<IActionResult> GetDefaultTemplateByType(TemplateType templateType)
@@ -343,6 +346,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the object for which to check the export template</param>
         /// <returns>Object indicating if an export template exists or not</returns>
+        [Produces(typeof(ObjectTemplateExistsResult))]
         [Authorize(Roles = RoleNames.Kortisto + "," + RoleNames.Evne + "," + RoleNames.Styr)]
         [HttpGet]
         public async Task<IActionResult> DoesExportTemplateExistForObjectId(string id)
@@ -361,6 +365,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the object for which to read the export template</param>
         /// <param name="templateType">Template Type</param>
         /// <returns>Export Template, Default Template for the export type if no overwritten template exists</returns>
+        [Produces(typeof(ObjectExportTemplate))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public async Task<IActionResult> GetExportTemplateByObjectId(string id, TemplateType templateType)
@@ -502,6 +507,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="templateType">Template Type</param>
         /// <param name="code">Code to save</param>
         /// <returns>Result</returns>
+        [Produces(typeof(ExportTemplate))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -524,6 +530,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="templateType">Template Type</param>
         /// <param name="code">Code to save</param>
         /// <returns>Result</returns>
+        [Produces(typeof(ExportTemplate))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -580,6 +587,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the object</param>
         /// <returns>Result</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -605,6 +613,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the export settings
         /// </summary>
         /// <returns>Result</returns>
+        [Produces(typeof(ExportSettings))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public async Task<IActionResult> GetExportSettings()
@@ -654,6 +663,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the dialog function generation conditions
         /// </summary>
         /// <returns>Result</returns>
+        [Produces(typeof(DialogFunctionGenerationConditionCollection))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public async Task<IActionResult> GetDialogFunctionGenerationConditions()
@@ -690,6 +700,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="templateType">Template Type</param>
         /// <returns>Result</returns>
+        [Produces(typeof(List<ExportTemplate>))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public async Task<IActionResult> GetCustomizedTemplatesByType(TemplateType templateType)
@@ -751,6 +762,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="customizedObjectId">Customized object id</param>
         /// <param name="templateType">Template Type</param>
         /// <returns>Result</returns>
+        [Produces(typeof(List<ObjectUsingTemplate>))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public async Task<IActionResult> GetCustomizedTemplatesByParentObject(string customizedObjectId, TemplateType templateType)
@@ -785,6 +797,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="templateType">Template Type</param>
         /// <returns>Result</returns>
+        [Produces(typeof(List<ExportTemplatePlaceholder>))]
         [Authorize(Roles = RoleNames.ManageExportTemplates)]
         [HttpGet]
         public IActionResult GetTemplatePlaceholders(TemplateType templateType)
@@ -802,6 +815,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the object to export</param>
         /// <param name="templateType">Template type</param>
         /// <returns>Export result</returns>
+        [Produces(typeof(ExportObjectResult))]
         [HttpGet]
         public async Task<IActionResult> ExportObject(string exportFormat, string id, TemplateType templateType)
         {
@@ -833,6 +847,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the object to export</param>
         /// <param name="templateType">Template type</param>
         /// <returns>Export result</returns>
+        [Produces(typeof(string))]
         [HttpGet]
         public async Task<IActionResult> ExportObjectDownload(string exportFormat, string id, TemplateType templateType)
         {
@@ -948,6 +963,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="groupId">Group Id</param>
         /// <returns>Result</returns>
+        [Produces(typeof(string))]
         [ValidateAntiForgeryToken]
         [HttpDelete]
         public async Task<IActionResult> DeleteLanguageKeysByGroupId(string groupId)

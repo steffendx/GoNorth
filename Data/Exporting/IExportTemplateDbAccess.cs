@@ -66,5 +66,13 @@ namespace GoNorth.Data.Exporting
         /// <param name="projectId">Project Id</param>
         /// <returns>Task</returns>
         Task DeleteTemplatesForProject(string projectId);
+
+        
+        /// <summary>
+        /// Returns all objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        Task<List<ExportTemplate>> GetExportTemplatesByModifiedUser(string userId);
     }
 }

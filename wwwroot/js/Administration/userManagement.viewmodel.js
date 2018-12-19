@@ -170,7 +170,7 @@
                         self.loadPage();
                     }).fail(function(xhr) {
                         self.dialogLoading(false);
-                        self.createError(xhr.responseJSON ? xhr.responseJSON.join(", ") : GoNorth.Administration.UserManagement.Localization.ErrorOccured);
+                        self.createError(xhr.responseJSON && xhr.responseJSON.length > 0 ? xhr.responseJSON.join(", ") : GoNorth.Administration.UserManagement.Localization.ErrorOccured);
                     });
                 },
 

@@ -42,5 +42,13 @@ namespace GoNorth.Data.Aika
         /// <param name="chapterOverview">Chapter overview to delete</param>
         /// <returns>Task</returns>
         Task DeleteChapterOverview(AikaChapterOverview chapterOverview);
+
+        
+        /// <summary>
+        /// Returns all chapter overviews that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Chapter overviews</returns>
+        Task<List<AikaChapterOverview>> GetChapterOverviewByModifiedUser(string userId);
     }
 }

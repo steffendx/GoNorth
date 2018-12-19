@@ -7,6 +7,7 @@ namespace GoNorth.Controllers
     /// Evne controller
     /// </summary>
     [Authorize(Roles = RoleNames.Evne)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class EvneController : Controller
     {
         /// <summary>

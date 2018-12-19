@@ -140,6 +140,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="relatedObjectId">Related object id</param>
         /// <returns>Dialog</returns>
+        [Produces(typeof(TaleDialog))]
         [HttpGet]
         public async Task<IActionResult> GetDialogByRelatedObjectId(string relatedObjectId)
         {
@@ -152,6 +153,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="relatedObjectId">Related object id</param>
         /// <returns>Dialog Implemented state</returns>
+        [Produces(typeof(DialogImplementedResponse))]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Tale)]
         [HttpGet]
@@ -174,6 +176,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="objectId">Object id</param>
         /// <returns>Dialogs</returns>
+        [Produces(typeof(List<TaleDialog>))]
         [HttpGet]
         public async Task<IActionResult> GetDialogsObjectIsReferenced(string objectId)
         {
@@ -187,6 +190,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="relatedObjectId">Related object id</param>
         /// <param name="dialog">Dialog Data to save</param>
         /// <returns>Dialog</returns>
+        [Produces(typeof(TaleDialog))]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SaveDialog(string relatedObjectId, [FromBody]TaleDialog dialog)
@@ -258,6 +262,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Items</returns>
+        [Produces(typeof(DialogQueryResult))]
         [Authorize(Roles = RoleNames.Tale)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]

@@ -10,6 +10,7 @@ namespace GoNorth.Controllers
     /// Kirja controller
     /// </summary>
     [Authorize(Roles = RoleNames.Kirja)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class KirjaController : Controller
     {
         /// <summary>
@@ -18,12 +19,18 @@ namespace GoNorth.Controllers
         private readonly string _AllowedAttachmentMimeTypes;
 
         /// <summary>
+        /// true if versioning is used
+        /// </summary>
+        private readonly bool _IsUsingVersioning;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="configuration">Configuration</param>
         public KirjaController(IOptions<ConfigurationData> configuration)
         {
             _AllowedAttachmentMimeTypes = configuration.Value.Misc.KirjaAllowedAttachmentMimeTypes;
+            _IsUsingVersioning = configuration.Value.Misc.KirjaMaxVersionCount != 0;
         }
 
         /// <summary>
@@ -35,6 +42,7 @@ namespace GoNorth.Controllers
         {
             KirjaPageViewModel model = new KirjaPageViewModel();
             model.AllowedAttachmentMimeTypes = _AllowedAttachmentMimeTypes;
+            model.IsUsingVersioning = _IsUsingVersioning;
             return View(model);
         }
 

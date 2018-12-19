@@ -1,0 +1,38 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["PrivacyPolicy"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <h4>@Localizer["CookiePolicy"]</h4>
+    <div>@Localizer["WhatAreCookiesExplanation"]</div>
+    <div>@Localizer["WeSaveTheFollowingKindsOfCookies"]</div>
+    <ul>
+        <li>
+            @Localizer["EssentialCookiesText"]
+        </li>
+    </ul>
+    
+    <h4>@Localizer["DataPolicy"]</h4>
+    <div>@Localizer["TheFollowingPersonalDataIsSaved"]</div>
+    <ul>
+        <li>
+            @Localizer["UserData"]
+        </li>
+        <li>
+            @Localizer["DataChangeDate"]
+        </li>
+        <li>
+            @Localizer["AssignedTasks"]
+        </li>
+        <li>
+            @Localizer["LastOpenedBoards"]
+        </li>
+    </ul>
+    <div>@Localizer["WeDontShareYourData"]</div>
+</div>

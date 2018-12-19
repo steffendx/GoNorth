@@ -86,5 +86,12 @@ namespace GoNorth.Data.Aika
         /// <returns>Chapter details which are using the quest with reduced detail</returns>
         Task<List<AikaChapterDetail>> GetChapterDetailsByQuestId(string questId);
 
+
+        /// <summary>
+        /// Returns all chapter details that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Chapter details</returns>
+        Task<List<AikaChapterDetail>> GetChapterDetailsByModifiedUser(string userId);
     }
 }

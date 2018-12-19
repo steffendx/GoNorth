@@ -65,5 +65,13 @@ namespace GoNorth.Data.Tale
         /// <param name="dialog">Dialog</param>
         /// <returns>Task</returns>
         Task DeleteDialog(TaleDialog dialog);
+
+                
+        /// <summary>
+        /// Returns all dialogs that were last modified by a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Dialogs</returns>
+        Task<List<TaleDialog>> GetDialogsByModifiedUser(string userId);
     }
 }

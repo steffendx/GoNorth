@@ -175,6 +175,17 @@
     },
     "sourceMap": false
   },
+  {
+    "outputFileName": "wwwroot/js/Manage/personalData.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Manage/personalData/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
 
   {
     "outputFileName": "wwwroot/js/Kortisto/overview.viewmodel.js",

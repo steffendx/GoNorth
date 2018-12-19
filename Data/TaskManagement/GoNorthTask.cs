@@ -35,7 +35,6 @@ namespace GoNorth.Data.TaskManagement
         /// <summary>
         /// Id of the user the task is assigned to
         /// </summary>
-        /// <returns></returns>
         public string AssignedTo { get; set; }
 
         /// <summary>

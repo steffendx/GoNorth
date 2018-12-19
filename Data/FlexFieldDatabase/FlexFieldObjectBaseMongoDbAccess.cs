@@ -252,7 +252,7 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <returns>true if image file is used, else false</returns>
         public async Task<bool> AnyFlexFieldObjectUsingImage(string imageFile)
         {
-            int count = (int)await _ObjectCollection.CountAsync(Builders<T>.Filter.Eq(n => n.ImageFile, imageFile) | Builders<T>.Filter.Eq(n => n.ThumbnailImageFile, imageFile));
+            int count = (int)await _ObjectCollection.CountDocumentsAsync(Builders<T>.Filter.Eq(n => n.ImageFile, imageFile) | Builders<T>.Filter.Eq(n => n.ThumbnailImageFile, imageFile));
             return count > 0;
         }
 
@@ -265,6 +265,17 @@ namespace GoNorth.Data.FlexFieldDatabase
         {
             tag = tag.ToLowerInvariant();
             return await _ObjectCollection.AsQueryable().Where(n => n.Tags.Any(s => s.ToLowerInvariant() == tag)).AnyAsync();
+        }
+
+
+        /// <summary>
+        /// Returns all objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        public async Task<List<T>> GetFlexFieldObjectsByModifiedUser(string userId)
+        {
+            return await _ObjectCollection.AsQueryable().Where(n => n.ModifiedBy == userId).ToListAsync();
         }
     }
 }

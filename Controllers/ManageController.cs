@@ -26,6 +26,7 @@ namespace GoNorth.Controllers
     /// </summary>
     [Authorize]
     [Route("[controller]/[action]")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ManageController : Controller
     {
         /// <summary>
@@ -268,6 +269,20 @@ namespace GoNorth.Controllers
         [HttpGet]
         public IActionResult Preferences()
         {
+            return View();
+        }
+
+        /// <summary>
+        /// Personal data view
+        /// </summary>
+        /// <returns>Action result</returns>
+        public IActionResult PersonalData()
+        {
+            if(!_configuration.Misc.UseGdpr)
+            {
+                return NotFound();
+            }
+
             return View();
         }
 

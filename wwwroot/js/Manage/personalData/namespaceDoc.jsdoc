@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Manage) {
+
+        /**
+         * Personal Data Namespace
+         * @namespace PersonalData
+         */
+        (function(PersonalData) {
+        }(Manage.PersonalData = Manage.PersonalData || {}));
+        
+    }(GoNorth.Manage = GoNorth.Manage || {}));
+}(window.GoNorth = window.GoNorth || {}));

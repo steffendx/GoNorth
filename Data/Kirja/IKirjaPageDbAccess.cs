@@ -11,8 +11,8 @@ namespace GoNorth.Data.Kirja
         /// <summary>
         /// Creates a Kirja Page
         /// </summary>
-        /// <param name="page">Npc to create</param>
-        /// <returns>Created npc, with filled id</returns>
+        /// <param name="page">Page to create</param>
+        /// <returns>Created page, with filled id</returns>
         Task<KirjaPage> CreatePage(KirjaPage page);
 
         /// <summary>
@@ -97,5 +97,20 @@ namespace GoNorth.Data.Kirja
         /// <param name="skillId">Skill Id</param>
         /// <returns>List of Kirja page</returns>
         Task<List<KirjaPage>> GetPagesBySkill(string skillId);
+
+        /// <summary>
+        /// Resolves the names of a list of pages
+        /// </summary>
+        /// <param name="pageIds">Page ids</param>
+        /// <returns>Pages with names</returns>
+        Task<List<KirjaPage>> ResolveNames(List<string> pageIds);
+
+        
+        /// <summary>
+        /// Returns all pages that were last modified by a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Kirja page</returns>
+        Task<List<KirjaPage>> GetPagesByModifiedUser(string userId);
     }
 }

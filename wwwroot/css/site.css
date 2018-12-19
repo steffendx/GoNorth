@@ -1,6 +1,40 @@
-﻿body {
+﻿/* Shared */
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
     padding-top: 50px;
     padding-bottom: 20px;
+}
+
+.gn-mainContainer {
+    min-height: calc(100% - 51px);
+}
+
+.gn-mainContainerSmall {
+    padding-top: 65px;
+}
+
+footer {
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+/* Cookie policy */
+#cookieConsent {
+    top: 21px;
+    position: relative;
+}
+
+.gn-cookieContainer {
+    padding-right: 30px;
+}
+
+.gn-cookiePolicySummary {
+    margin-top: 13px;
+    margin-right: 10px;
 }
 
 /* Wrapping element */
@@ -242,6 +276,11 @@
     color: #a94442;
 }
 
+.gn-dialogPagingContainer {
+    position: absolute;
+    left: 18px;
+}
+
 /** Home **/
 .gn-homeTileContainer {
     padding: 10px;
@@ -395,6 +434,24 @@
 
 .gn-timelineSmallScreenSpacer {
     margin-top: 20px;
+}
+
+/** Personal Data page **/
+.gn-personalDataButtons {
+    margin-top: 10px;
+}
+
+.gn-personalDataButtons button {
+    min-width: 175px;
+}
+
+.gn-personalDataButtons a {
+    min-width: 175px;
+    display: inline-block;
+}
+
+.gn-personalDataDeleteForm {
+    display: inline-block;
 }
 
 /** User Management **/
@@ -704,6 +761,22 @@
     }
 }
 
+@media(min-width:768px) {
+    .gn-kirjaAlertTextCol {
+        padding-top: 10px;
+    }
+
+    .gn-kirjaAlertButtonCol {
+        text-align: right;
+    }
+}
+
+@media(max-width:768px) {
+    .gn-kirjaAlertButtonCol {
+        margin-top: 10px;
+    }
+}
+
 .gn-kirjaPageNameInput {
     height: 37px;
     margin-top: 20px;
@@ -713,6 +786,16 @@
 
 .gn-kirjaPageContent {
     margin-top: 20px;
+}
+
+#gn-kirjaPageContainer ins {
+    text-decoration: none;
+    background-color: #d4fcbc;
+}
+
+#gn-kirjaPageContainer del {
+    text-decoration: line-through;
+    background-color: #fbb6c2;
 }
 
 .gn-kirjaPageRichTextEditor {
@@ -743,6 +826,11 @@
     font-weight: bold;
 }
 
+.gn-kirjaPageBrokenLinkList {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
 .gn-kirjaButtonContainer {
     display: inline-block;
 }
@@ -764,7 +852,7 @@
     position:absolute; 
     top: 30px; 
     left:-255px;
-    height: 800px; 
+    height: 850px; 
     width: 300px;
     z-index: 10;
 }
@@ -873,6 +961,42 @@ gn-kirjaTableOfContent {
 
 .gn-kirjaTableOfContentTransformed ul {
     padding-left: 25px;
+}
+
+
+.gn-kirjaVersionDialogVersionList {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+@media(min-height:500px) {
+    .gn-kirjaVersionDialogVersionList {
+        max-height: 330px !important;
+    }
+}
+
+@media(min-height:700px) {
+    .gn-kirjaVersionDialogVersionList {
+        max-height: 530px !important;
+    }
+}
+
+@media(min-height:900px) {
+    .gn-kirjaVersionDialogVersionList {
+        max-height: 730px !important;
+    }
+}
+
+@media(min-height:1100px) {
+    .gn-kirjaVersionDialogVersionList {
+        max-height: 930px !important;
+    }
+}
+
+@media(min-height:1200px) {
+    .gn-kirjaVersionDialogVersionList {
+        max-height: 1030px !important;
+    }
 }
 
 /** Karta **/

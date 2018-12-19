@@ -16,7 +16,7 @@ namespace GoNorth
         /// <param name="args">Arguments</param>
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            BuildWebHost(args).Build().Run();
         }
 
         /// <summary>
@@ -24,10 +24,9 @@ namespace GoNorth
         /// </summary>
         /// <param name="args">Arguments</param>
         /// <returns>WebHost</returns>
-        public static IWebHost BuildWebHost(string[] args) =>
+        public static IWebHostBuilder BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureLogging(builder => builder.AddFile())
-                .UseStartup<Startup>()
-                .Build();
+                .UseStartup<Startup>();
     }
 }

@@ -7,6 +7,7 @@ namespace GoNorth.Controllers
     /// Aika controller
     /// </summary>
     [Authorize(Roles = RoleNames.Aika)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AikaController : Controller
     {
         /// <summary>

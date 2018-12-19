@@ -17,6 +17,7 @@ namespace GoNorth.Controllers
     /// Deployment Controller
     /// </summary>
     [AllowAnonymous]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class DeploymentController : Controller
     {
         /// <summary>

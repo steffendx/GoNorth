@@ -7,6 +7,7 @@ namespace GoNorth.Controllers
     /// Kortisto controller
     /// </summary>
     [Authorize(Roles = RoleNames.Kortisto)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class KortistoController : Controller
     {
         /// <summary>

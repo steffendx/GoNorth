@@ -71,7 +71,7 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <returns>Root Folder Count</returns>
         public async Task<int> GetRootFolderCount(string projectId)
         {
-            int count = (int)await _FolderCollection.Find(f => f.ProjectId == projectId && string.IsNullOrEmpty(f.ParentFolderId)).CountAsync();
+            int count = (int)await _FolderCollection.Find(f => f.ProjectId == projectId && string.IsNullOrEmpty(f.ParentFolderId)).CountDocumentsAsync();
             return count;
         }
 
@@ -95,7 +95,7 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <returns>Count of child folders</returns>
         public async Task<int> GetChildFolderCount(string folderId)
         {
-            int count = (int)await _FolderCollection.Find(f => f.ParentFolderId == folderId).CountAsync();
+            int count = (int)await _FolderCollection.Find(f => f.ParentFolderId == folderId).CountDocumentsAsync();
             return count;
         }
 

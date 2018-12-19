@@ -17,6 +17,7 @@ namespace GoNorth.Controllers
     /// Export controller
     /// </summary>
     [Authorize(Roles = RoleNames.ManageExportTemplates)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ExportController : Controller
     {
         /// <summary>

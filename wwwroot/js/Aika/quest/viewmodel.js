@@ -69,6 +69,7 @@
                 this.compareDialog = new GoNorth.ImplementationStatus.CompareDialog.ViewModel();
 
                 this.additionalErrorDetails = new ko.observable("");
+                this.questNotFound = new ko.observable(false);
 
                 if(this.id())
                 {
@@ -474,6 +475,12 @@
                     type: "GET"
                 }).done(function(data) {
                     self.isLoading(false);
+                    if(!data)
+                    {
+                        self.errorOccured(true);
+                        self.questNotFound(true);
+                        return;
+                    }
 
                     self.name(data.name);
                     self.description(data.description);

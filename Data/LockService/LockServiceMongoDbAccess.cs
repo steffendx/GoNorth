@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Config;
 using GoNorth.Models;
@@ -74,6 +75,26 @@ namespace GoNorth.Data.LockService
                 lockEntry.Id = Guid.NewGuid().ToString();
                 await _LockCollection.InsertOneAsync(lockEntry);
             }
+        }
+
+        /// <summary>
+        /// Deletes all locks for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task DeleteAllLocksOfUser(string userId)
+        {
+            await _LockCollection.DeleteManyAsync(l => l.UserId == userId);
+        }
+
+        /// <summary>
+        /// Returns all locks of a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>Lock Entry</returns>
+        public async Task<List<LockEntry>> GetAllLocksOfUser(string userId)
+        {
+            return await _LockCollection.AsQueryable().Where(l => l.UserId == userId).ToListAsync();
         }
     }
 }

@@ -10,6 +10,60 @@
 }
 
 <div id="gn-kirjaPageContainer">
+    <!-- Version Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showVersionDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["Versions"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingVersions"></i></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: versionDialogErrorOccured">
+                        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+                    </div>
+
+                    <div class="gn-kirjaVersionDialogVersionList">
+                        <table class="table table-striped table-bordered table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer["VersionNumber"]</th>
+                                    <th>@Localizer["ModifiedDate"]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ko foreach: versions -->
+                                <tr>
+                                    <td><span data-bind="text: versionNumber, visible: versionNumber != $root.versionDialogMostRecentVersion()"></span><span data-bind="visible: versionNumber == $root.versionDialogMostRecentVersion()">@Localizer["RecentVersion"]</span></td>
+                                    <td data-bind="formattedDateTimeText: modifiedOn"></td>
+                                    <td>
+                                        <a class="gn-clickable" title="@Localizer["ClickHereToCompareWithCurrentLoadedVersion"]" data-bind="click: function(version) { $root.compareWithVersionObject(version); }, visible: $root.displayVersionId() != id && !(versionNumber == $root.versionDialogMostRecentVersion() && !$root.displayVersionId())"><i class="glyphicon glyphicon-transfer"></i></a>
+                                        <a class="gn-clickable" title="@Localizer["ClickHereToShowThisVersion"]" data-bind="click: function(version) { $root.showVersionWithObject(version); }"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="gn-dialogPagingContainer">
+                        <button class="btn btn-default" data-bind="enable: currentVersionPage() > 0 && !loadingVersions(), click: prevVersionPage" title="@Localizer["PreviousPage"]">
+                            <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !loadingVersions()"></i>
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingVersions"></i>
+                        </button>
+                        <button class="btn btn-default" data-bind="enable: hasMoreVersions() && !loadingVersions(), click: nextVersionPage" title="@Localizer["NextPage"]">
+                            <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !loadingVersions()"></i>
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingVersions"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-default" data-bind="click: closeVersionDialog">@Localizer["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Page Dialog -->
     <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
         <div class="modal-dialog">
@@ -38,10 +92,11 @@
                     <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
                 </div>
                 <div class="modal-body">
-                    <p>@Localizer["AreYouSureYouWantToExitEditMode"]</span></p>
+                    <p>@Localizer["AreYouSureYouWantToExitEditMode"]</p>
+                    <p><strong>@Localizer["UnsavedChangesWillBeLost"]</strong></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-bind="click: exitEditModeWithoutDirtyCheck">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: discardChanges">@Localizer["Yes"]</button>
                     <button type="button" class="btn btn-default" data-bind="click: closeConfirmDirtyExitEdit">@Localizer["No"]</button>
                 </div>
             </div>
@@ -62,6 +117,42 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-bind="click: deleteAttachment">@Localizer["Yes"]</button>
                     <button type="button" class="btn btn-default" data-bind="click: closeConfirmAttachmentDeleteDialog">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showConfirmRestoreDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" style="display: none" data-bind="visible: confirmRestoreDialogErrorOccured">
+                        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+                    </div>
+
+                    <p>@Localizer["AreYouSureYouWantToRestoreThisVersion"]</p>
+                    <hr/>
+                    <div data-bind="visible: confirmRestoreBrokenLinks().length > 0">
+                        @Localizer["TheFollowingLinksAreBroken"]
+                        <ul data-bind="foreach: confirmRestoreBrokenLinks" class="gn-kirjaPageBrokenLinkList">
+                            <li>
+                                <span data-bind="text: linkText"></span> (<span data-bind="text: objectLabel"></span>)
+                            </li>
+                        </ul>
+                        <strong>@Localizer["TheLinksWillBeDeleted"]</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-bind="click: restoreVersion, enable: !confirmRestoreDialogLoading() && !confirmRestoreDialogErrorOccured()">
+                        <span data-bind="visible: !confirmRestoreDialogLoading()">@Localizer["Yes"]</i>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: confirmRestoreDialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeConfirmRestoreDialog">@Localizer["No"]</button>
                 </div>
             </div>
         </div>
@@ -92,7 +183,7 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-4 col-md-5 col-lg-5 gn-kirjaNameCol">
                     <div data-bind="visible: !isEditMode()">
-                        <h2 data-bind="text: pageName"></h2>
+                        <h2 data-bind="text: currentPageName"></h2>
                     </div>
                     <div data-bind="visible: isEditMode" style="display: none">
                         <div class="form-group">
@@ -202,6 +293,10 @@
                                 </div>
 
                                 <div class="gn-kirjaSidebarOpenOverview">
+                                    @if(Model.IsUsingVersioning)
+                                    {
+                                        <a class="gn-clickable" data-bind="click: openVersionDialog, visible: id">@Localizer["ShowVersionsOfPage"]</a><br/>
+                                    }
                                     <a href="/Kirja/Pages">@Localizer["OpenPageOverview"]</a>
                                 </div>
                             </div>
@@ -218,6 +313,38 @@
 
     <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
         <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: displayVersionId">
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-5 col-lg-5 gn-kirjaAlertTextCol">
+                <strong>@Localizer["DisplayingVersionNumber"]<span data-bind="text: displayVersionNumber"></span></strong>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-7 col-lg-7 gn-kirjaAlertButtonCol">
+                <button type="button" class="btn btn-default" data-bind="click: openRestoreDialog, disable: isLoading() || isReadonly()">
+                    <i class="glyphicon glyphicon-open-file" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["RestoreThisVersion"]
+                </button>
+                <button type="button" class="btn btn-primary" data-bind="click: exitDisplayAndCompareMode, disable: isLoading() || isReadonly()">
+                    <i class="glyphicon glyphicon-eye-close" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["DisplayCurrentVersion"]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: compareVersionId">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-7 col-lg-7 gn-kirjaAlertTextCol">
+                <strong>@Localizer["CompareVersionNumber"]<span data-bind="text: compareVersionNumber"></span>: </strong> <ins>@Localizer["AddedInCurrentVersion"]</ins> <del>@Localizer["RemovedInCurrentVersion"]</del>
+                <div data-bind="visible: compareVersionName() != currentPageName()" class="gn-defaultContentTopMargin">
+                    @Localizer["CompareName"] <span data-bind="text: compareVersionName"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-5 col-lg-5 gn-kirjaAlertButtonCol">
+                <button type="button" class="btn btn-primary" data-bind="click: exitCompareMode, disable: isLoading() || isReadonly()">
+                    <i class="glyphicon glyphicon-transfer" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["ExitCompare"]
+                </button>
+            </div>
+        </div>
     </div>
 
     <div data-bind="if: !isEditMode()">
@@ -247,6 +374,7 @@
         <script src="~/js/Kirja/page.viewmodel.min.js" asp-append-version="true"></script>
     </environment>
     
+    <script src="~/lib/htmldiff/htmldiff.min.js"></script>
     <script src="~/lib/dropzone/dist/min/dropzone.min.js"></script>
     <script src="~/js/Localization/dropzone.locales.@(Localizer["DropzoneLocale"]).js"></script>
 
@@ -261,6 +389,12 @@
         GoNorth.Kirja.Page.toolbarButtonInsertEvneSkillLinkTitle = "@Localizer["InsertEvneSkillLink"]";
         
         GoNorth.Kirja.Page.kirjaMapMarkerCountTooltip = "@Localizer["MarkedInMapNTimes"]";
+        
+        GoNorth.Kirja.Page.Npc = "@Localizer["Npc"]";
+        GoNorth.Kirja.Page.Item = "@Localizer["Item"]";
+        GoNorth.Kirja.Page.Skill = "@Localizer["Skill"]";
+        GoNorth.Kirja.Page.Quest = "@Localizer["Quest"]";
+        GoNorth.Kirja.Page.KirjaPage = "@Localizer["KirjaPage"]";
 
         GoNorth.Kirja.Page.tableOfContent = "@Localizer["TableOfContent"]";
         

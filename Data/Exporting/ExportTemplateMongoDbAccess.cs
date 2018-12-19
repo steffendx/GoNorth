@@ -164,5 +164,16 @@ namespace GoNorth.Data.Exporting
         {
             await _TemplateCollection.DeleteManyAsync(t => t.ProjectId == projectId);
         }
+
+
+        /// <summary>
+        /// Returns all objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        public async Task<List<ExportTemplate>> GetExportTemplatesByModifiedUser(string userId)
+        {
+            return await _TemplateCollection.AsQueryable().Where(t => t.ModifiedBy == userId).ToListAsync();
+        }
     }
 }

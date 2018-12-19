@@ -31,6 +31,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the time line Entries
         /// </summary>
         /// <returns>Timeline Entries</returns>
+        [Produces(typeof(TimelineEntriesQueryResult))]
         [HttpGet]
         public async Task<IActionResult> Entries(int start, int pageSize)
         {

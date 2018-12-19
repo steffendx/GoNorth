@@ -84,6 +84,7 @@
 
     "Error": "Error:",
     "ErrorOccured": "An error occured.",
+    "ObjectNotFound": "Npc was not found.",
 
     "Locked": "Locked",
     "LockedTemplatePrefix": "The template is currently being edited by ",

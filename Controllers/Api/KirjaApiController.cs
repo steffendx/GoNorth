@@ -22,6 +22,10 @@ using GoNorth.Config;
 using System.Text.RegularExpressions;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Services.Security;
+using GoNorth.Data.Kortisto;
+using GoNorth.Data.Styr;
+using GoNorth.Data.Evne;
+using GoNorth.Data.Aika;
 
 namespace GoNorth.Controllers.Api
 {
@@ -64,11 +68,84 @@ namespace GoNorth.Controllers.Api
             public IList<KirjaPage> Pages { get; set; }
         }
 
+        /// <summary>
+        /// Single Page Version Query Result
+        /// </summary>
+        public class SinglePageVersionQueryResult
+        {
+            /// <summary>
+            /// Most recent version
+            /// </summary>
+            public int MostRecentVersion { get; set; }
+
+            /// <summary>
+            /// Version
+            /// </summary>
+            public KirjaPageVersion Version { get; set; }
+        }
+
+        /// <summary>
+        /// Page Version Query Result
+        /// </summary>
+        public class PageVersionQueryResult
+        {
+            /// <summary>
+            /// true if there are more versions to query, else false
+            /// </summary>
+            public bool HasMore { get; set; }
+
+            /// <summary>
+            /// Most recent version
+            /// </summary>
+            public int MostRecentVersion { get; set; }
+
+            /// <summary>
+            /// Versions
+            /// </summary>
+            public IList<KirjaPageVersion> Versions { get; set; }
+        }
+
+        /// <summary>
+        /// Page version reference validation result
+        /// </summary>
+        public class PageVersionReferenceValidationResult
+        {
+            /// <summary>
+            /// Missing Npcs
+            /// </summary>
+            public List<string> MissingNpcs { get; set; }
+
+            /// <summary>
+            /// Missing Items
+            /// </summary>
+            public List<string> MissingItems { get; set; }
+
+            /// <summary>
+            /// Missing Skills
+            /// </summary>
+            public List<string> MissingSkills { get; set; }
+
+            /// <summary>
+            /// Missing Pages
+            /// </summary>
+            public List<string> MissingPages { get; set; }
+
+            /// <summary>
+            /// Missing Quests
+            /// </summary>
+            public List<string> MissingQuests { get; set; }
+        }
+
 
         /// <summary>
         /// Page Db Access
         /// </summary>
         private readonly IKirjaPageDbAccess _pageDbAccess;
+
+        /// <summary>
+        /// Page Version Db ACcess
+        /// </summary>
+        private readonly IKirjaPageVersionDbAccess _pageVersionDbAccess;
 
         /// <summary>
         /// Project Db Service
@@ -79,6 +156,26 @@ namespace GoNorth.Controllers.Api
         /// Karta Map Db Access
         /// </summary>
         private readonly IKartaMapDbAccess _kartaMapDbAccess;
+
+        /// <summary>
+        /// Npc Db Access
+        /// </summary>
+        private readonly IKortistoNpcDbAccess _npcDbAccess;
+
+        /// <summary>
+        /// Item Db Access
+        /// </summary>
+        private readonly IStyrItemDbAccess _itemDbAccess;
+
+        /// <summary>
+        /// Skill Db Access
+        /// </summary>
+        private readonly IEvneSkillDbAccess _skillDbAccess;
+
+        /// <summary>
+        /// Quest Db Access
+        /// </summary>
+        private readonly IAikaQuestDbAccess _questDbAccess;
 
         /// <summary>
         /// File Access
@@ -119,13 +216,28 @@ namespace GoNorth.Controllers.Api
         /// Allowed Attachment Mime Types
         /// </summary>
         private readonly List<string> _allowedAttachmentMimeTypes;
+
+        /// <summary>
+        /// Version merge time span in minutes
+        /// </summary>
+        private readonly float _versionMergeTimeSpan;
+
+        /// <summary>
+        /// Max Version Count for pages
+        /// </summary>
+        private readonly int _maxVersionCount;
         
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="pageDbAccess">Page Db Access</param>
+        /// <param name="pageVersionDbAccess">Page Version Db Access</param>
         /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
+        /// <param name="npcDbAccess">Npc Db Access</param>
+        /// <param name="itemDbAccess">Item Db Access</param>
+        /// <param name="skillDbAccess">Skill Db Access</param>
+        /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="fileAccess">File Access</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="pageParserService">Page parser service</param>
@@ -134,12 +246,18 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         /// <param name="configuration">Config Data</param>
-        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IProjectDbAccess projectDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, 
-                                  UserManager<GoNorthUser> userManager, IXssChecker xssChecker, ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
+        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IProjectDbAccess projectDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, 
+                                  IAikaQuestDbAccess questDbAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, UserManager<GoNorthUser> userManager, IXssChecker xssChecker, ILogger<KirjaApiController> logger, 
+                                  IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
         {
             _pageDbAccess = pageDbAccess;
+            _pageVersionDbAccess = pageVersionDbAccess;
             _projectDbAccess = projectDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
+            _npcDbAccess = npcDbAccess;
+            _itemDbAccess = itemDbAccess;
+            _skillDbAccess = skillDbAccess;
+            _questDbAccess = questDbAccess;
             _fileAccess = fileAccess;
             _timelineService = timelineService;
             _pageParserService = pageParserService;
@@ -148,6 +266,8 @@ namespace GoNorth.Controllers.Api
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(KirjaApiController));
             _allowedAttachmentMimeTypes = configuration.Value.Misc.KirjaAllowedAttachmentMimeTypes.Split(",").Select(s => "^" + Regex.Escape(s).Replace("\\*", ".*") + "$").ToList();
+            _versionMergeTimeSpan = configuration.Value.Misc.KirjaVersionMergeTimeSpan;
+            _maxVersionCount = configuration.Value.Misc.KirjaMaxVersionCount;
         }
 
         /// <summary>
@@ -155,6 +275,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the page</param>
         /// <returns>Page</returns>
+        [Produces(typeof(KirjaPage))]
         [HttpGet]
         public async Task<IActionResult> Page(string id)
         {
@@ -184,6 +305,25 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
+        /// Returns a page version by its id
+        /// </summary>
+        /// <param name="versionId">Id of the page version</param>
+        /// <returns>Page Version</returns>
+        [Produces(typeof(SinglePageVersionQueryResult))]
+        [HttpGet]
+        public async Task<IActionResult> PageVersion(string versionId)
+        {
+            SinglePageVersionQueryResult queryResult = new SinglePageVersionQueryResult();
+
+            queryResult.Version = await _pageVersionDbAccess.GetPageVersionById(versionId);
+            if(queryResult.Version != null)
+            {
+                queryResult.MostRecentVersion = await _pageVersionDbAccess.GetMaxPageVersionNumber(queryResult.Version.OriginalPageId);
+            }
+            return Ok(queryResult);
+        }
+
+        /// <summary>
         /// Searches pages
         /// </summary>
         /// <param name="searchPattern">Search Pattern</param>
@@ -191,6 +331,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <param name="excludeId">Id to exclude</param>
         /// <returns>Pages</returns>
+        [Produces(typeof(PageQueryResult))]
         [HttpGet]
         public async Task<IActionResult> SearchPages(string searchPattern, int start, int pageSize, string excludeId)
         {
@@ -212,12 +353,39 @@ namespace GoNorth.Controllers.Api
             return Ok(queryResult);
         }
 
+        /// <summary>
+        /// Returns the versions of a page
+        /// </summary>
+        /// <param name="pageId">Page Id</param>
+        /// <param name="start">Start of the page</param>
+        /// <param name="pageSize">Page Size</param>
+        /// <returns>Page Versions</returns>
+        [Produces(typeof(PageVersionQueryResult))]
+        [HttpGet]
+        public IActionResult GetPageVersions(string pageId, int start, int pageSize)
+        {
+            Task<List<KirjaPageVersion>> queryTask;
+            Task<int> countTask;
+            Task<int> maxVersionTask;
+            queryTask = _pageVersionDbAccess.GetVersionsOfPage(pageId, start, pageSize);
+            countTask = _pageVersionDbAccess.GetVersionsOfPageCount(pageId);
+            maxVersionTask = _pageVersionDbAccess.GetMaxPageVersionNumber(pageId);
+            Task.WaitAll(queryTask, countTask, maxVersionTask);
+
+            PageVersionQueryResult queryResult = new PageVersionQueryResult();
+            queryResult.Versions = queryTask.Result;
+            queryResult.MostRecentVersion = maxVersionTask.Result;
+            queryResult.HasMore = start + queryResult.Versions.Count < countTask.Result;
+            return Ok(queryResult);
+        }
+
 
         /// <summary>
         /// Returns all pages a page is mentioned in
         /// </summary>
         /// <param name="pageId">Page Id</param>
         /// <returns>Pages</returns>
+        [Produces(typeof(List<KirjaPage>))]
         [HttpGet]
         public async Task<IActionResult> GetPagesByPage(string pageId)
         {
@@ -230,6 +398,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Quest Id</param>
         /// <returns>Pages</returns>
+        [Produces(typeof(List<KirjaPage>))]
         [HttpGet]
         public async Task<IActionResult> GetPagesByQuest(string questId)
         {
@@ -242,6 +411,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="npcId">Npc Id</param>
         /// <returns>Pages</returns>
+        [Produces(typeof(List<KirjaPage>))]
         [HttpGet]
         public async Task<IActionResult> GetPagesByNpc(string npcId)
         {
@@ -254,6 +424,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Item Id</param>
         /// <returns>Pages</returns>
+        [Produces(typeof(List<KirjaPage>))]
         [HttpGet]
         public async Task<IActionResult> GetPagesByItem(string itemId)
         {
@@ -266,6 +437,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="skillId">Skill Id</param>
         /// <returns>Pages</returns>
+        [Produces(typeof(List<KirjaPage>))]
         [HttpGet]
         public async Task<IActionResult> GetPagesBySkill(string skillId)
         {
@@ -278,6 +450,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="page">Create Page data</param>
         /// <returns>Id</returns>
+        [Produces(typeof(KirjaPage))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePage([FromBody]PageRequest page)
@@ -305,6 +478,7 @@ namespace GoNorth.Controllers.Api
                 await this.SetModifiedData(_userManager, newPage);
 
                 newPage = await _pageDbAccess.CreatePage(newPage);
+                await SaveVersionOfPage(newPage);
                 await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageCreated, newPage.Name, newPage.Id);
                 return Ok(newPage);
             }
@@ -321,6 +495,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Page Id</param>
         /// <param name="page">Update page data</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(KirjaPage))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdatePage(string id, [FromBody]PageRequest page)
@@ -329,6 +504,11 @@ namespace GoNorth.Controllers.Api
             _xssChecker.CheckXss(page.Content);
 
             KirjaPage loadedPage = await _pageDbAccess.GetPageById(id);
+            if(loadedPage == null)
+            {
+                return NotFound();
+            }
+
             List<string> oldImages = null;
             if(loadedPage.UplodadedImages != null)
             {
@@ -349,17 +529,133 @@ namespace GoNorth.Controllers.Api
             await _pageDbAccess.UpdatePage(loadedPage);
             _logger.LogInformation("Page was updated.");
 
-            DeleteUnusedImages(oldImages.Except(loadedPage.UplodadedImages, StringComparer.OrdinalIgnoreCase).ToList());
-            _logger.LogInformation("Unused Images were deleted.");
-
             if(nameChanged) 
             {
                 await SyncPageNameToMarkers(id, page.Name);
             }
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageUpdated, loadedPage.Name, loadedPage.Id);
+            string versionId = await SaveVersionOfPage(loadedPage);
+            string oldVersionId = string.Empty;
+            if(!string.IsNullOrEmpty(versionId))
+            {
+                List<KirjaPageVersion> allVersions = await _pageVersionDbAccess.GetVersionsOfPage(loadedPage.Id, 0, 2);
+                if(allVersions.Count > 1)
+                {
+                    oldVersionId = allVersions[1].Id;
+                }
+            }
+            _logger.LogInformation("Versions were updated.");
+            
+            await DeleteUnusedImages(loadedPage.Id, oldImages.Except(loadedPage.UplodadedImages, StringComparer.OrdinalIgnoreCase).ToList());
+            _logger.LogInformation("Unused Images were deleted.");
+
+            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageUpdated, loadedPage.Name, loadedPage.Id, versionId, oldVersionId);
 
             return Ok(loadedPage);
+        }
+
+        /// <summary>
+        /// Saves a new version of a page
+        /// </summary>
+        /// <param name="page">Page</param>
+        /// <returns>Version Id</returns>
+        private async Task<string> SaveVersionOfPage(KirjaPage page)
+        {
+            if(_maxVersionCount == 0)
+            {
+                return string.Empty;
+            }
+
+            // Check if the last modification to the page was made by the same user and is in the merge time span
+            bool isUpdate = false;
+            KirjaPageVersion version = new KirjaPageVersion();
+            if(_versionMergeTimeSpan > 0)
+            {
+                GoNorthUser currentUser = await _userManager.GetUserAsync(User);
+                KirjaPageVersion existingVersion = await _pageVersionDbAccess.GetLatestVersionOfPage(page.Id);
+                if(existingVersion != null && existingVersion.ModifiedBy == currentUser.Id && (float)(DateTimeOffset.UtcNow - existingVersion.ModifiedOn).TotalMinutes < _versionMergeTimeSpan)
+                {
+                    version = existingVersion;
+                    isUpdate = true;
+                }
+            }
+
+            if(!isUpdate)
+            {
+                int versionNumber = await _pageVersionDbAccess.GetMaxPageVersionNumber(page.Id);
+                ++versionNumber;
+                version.VersionNumber = versionNumber;
+            }
+            
+            version.OriginalPageId = page.Id;
+            version.ProjectId = page.ProjectId;
+            version.IsDefault = page.IsDefault;
+            version.Name = page.Name;
+            version.Content = page.Content;
+            version.MentionedKirjaPages = page.MentionedKirjaPages;
+            version.MentionedQuests = page.MentionedQuests;
+            version.MentionedNpcs = page.MentionedNpcs;
+            version.MentionedItems = page.MentionedItems;
+            version.MentionedSkills = page.MentionedSkills;
+            version.UplodadedImages = page.UplodadedImages;
+            version.Attachments = null;
+            version.ModifiedOn = page.ModifiedOn;
+            version.ModifiedBy = page.ModifiedBy;
+
+            if(isUpdate)
+            {
+                await _pageVersionDbAccess.UpdatePageVersion(version);
+            }
+            else
+            {
+                version = await _pageVersionDbAccess.CreatePageVersion(version);
+            }
+
+            // Delete old versions
+            if(_maxVersionCount > 0)
+            {
+                List<KirjaPageVersion> oldVersions = await _pageVersionDbAccess.GetVersionsOfPage(page.Id, 0, int.MaxValue);
+                List<string> imagesToDelete = new List<string>();
+                HashSet<string> stillUsedImages = page.UplodadedImages != null ? page.UplodadedImages.ToHashSet() : new HashSet<string>();
+                for(int curVersion = 0; curVersion < oldVersions.Count; ++curVersion)
+                {
+                    if(curVersion < _maxVersionCount)
+                    {
+                        if(oldVersions[curVersion].UplodadedImages != null)
+                        {
+                            foreach(string curImage in oldVersions[curVersion].UplodadedImages)
+                            {
+                                if(!stillUsedImages.Contains(curImage))
+                                {
+                                    stillUsedImages.Add(curImage);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(oldVersions[curVersion].Id != version.Id)
+                        {
+                            await _pageVersionDbAccess.DeletePageVersion(oldVersions[curVersion]);
+                            if(oldVersions[curVersion].UplodadedImages != null)
+                            {
+                                imagesToDelete.AddRange(oldVersions[curVersion].UplodadedImages);
+                            }
+                        }
+                    }
+                }
+
+                imagesToDelete = imagesToDelete.Distinct().ToList();
+                foreach(string curImage in imagesToDelete)
+                {
+                    if(!stillUsedImages.Contains(curImage))
+                    {
+                        _fileAccess.DeleteFile(curImage);
+                    }
+                }
+            }
+
+            return version.Id;
         }
 
         /// <summary>
@@ -390,6 +686,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the page</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePage(string id)
@@ -417,10 +714,38 @@ namespace GoNorth.Controllers.Api
             await _pageDbAccess.DeletePage(page);
             _logger.LogInformation("Page was deleted.");
 
+            // Delete Images
+            List<string> allImages = new List<string>();
             if(page.UplodadedImages != null)
             {
-                DeleteUnusedImages(page.UplodadedImages);
+                allImages.AddRange(page.UplodadedImages);
             }
+
+            List<KirjaPageVersion> oldVersions = await _pageVersionDbAccess.GetVersionsOfPage(page.Id, 0, int.MaxValue);
+            foreach(KirjaPageVersion curVersion in oldVersions)
+            {
+                if(curVersion.UplodadedImages != null)
+                {
+                    allImages.AddRange(curVersion.UplodadedImages);
+                }
+            }
+
+            allImages = allImages.Distinct().ToList();
+            foreach(string curImage in allImages)
+            {
+                _fileAccess.DeleteFile(curImage);
+            }
+
+            // Delete Attachments
+            if(page.Attachments != null)
+            {
+                foreach(KirjaPageAttachment curAttachment in page.Attachments)
+                {
+                    _fileAccess.DeleteFile(curAttachment.Filename);
+                }
+            }
+
+            await _pageVersionDbAccess.DeletePageVersionsByPage(page.Id);
 
             await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageDeleted, page.Name);
             return Ok(id);
@@ -432,6 +757,7 @@ namespace GoNorth.Controllers.Api
         /// Uploads an image for kirja
         /// </summary>
         /// <returns>Image Name</returns>
+        [Produces(typeof(string))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ImageUpload()
@@ -489,12 +815,17 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Deletes unusued images
         /// </summary>
+        /// <param name="pageId">Page Id</param>
         /// <param name="imagesToDelete">Images to delete</param>
-        private void DeleteUnusedImages(List<string> imagesToDelete)
+        /// <returns>Task</returns>
+        private async Task DeleteUnusedImages(string pageId, List<string> imagesToDelete)
         {
             foreach(string curImage in imagesToDelete)
             {
-                _fileAccess.DeleteFile(curImage);
+                if(!await _pageVersionDbAccess.AnyVersionUsingImage(pageId, curImage))
+                {
+                    _fileAccess.DeleteFile(curImage);
+                }
             }
         }
 
@@ -503,6 +834,7 @@ namespace GoNorth.Controllers.Api
         /// Uploads a page attachment
         /// </summary>
         /// <param name="id">Id of the page</param>
+        [Produces(typeof(KirjaPageAttachment))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadPageAttachment(string id)
@@ -622,6 +954,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageId">Id of the page which contains the attachment</param>
         /// <param name="attachmentFile">Attachment File</param>
         /// <returns>Attachment File</returns>
+        [Produces(typeof(string))]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAttachment(string pageId, string attachmentFile)
@@ -684,6 +1017,61 @@ namespace GoNorth.Controllers.Api
             }
 
             return null;
+        }
+
+
+        /// <summary>
+        /// Validates the version references
+        /// </summary>
+        /// <param name="versionId">Version references</param>
+        /// <returns>Result of the version reference validation</returns>
+        [Produces(typeof(PageVersionReferenceValidationResult))]
+        [HttpGet]
+        public async Task<IActionResult> ValidateVersionReferences(string versionId)
+        {
+            KirjaPageVersion version = await _pageVersionDbAccess.GetPageVersionById(versionId);
+            if(version == null)
+            {
+                return NotFound();
+            }
+
+            PageVersionReferenceValidationResult validationResult = new PageVersionReferenceValidationResult();
+            validationResult.MissingNpcs = new List<string>();
+            if(version.MentionedNpcs != null)
+            {
+                List<KortistoNpc> npcs = await _npcDbAccess.ResolveFlexFieldObjectNames(version.MentionedNpcs);
+                validationResult.MissingNpcs = version.MentionedNpcs.Where(n => !npcs.Any(npc => npc.Id.ToLowerInvariant() == n.ToLowerInvariant())).ToList();
+            }
+
+            validationResult.MissingItems = new List<string>();
+            if(version.MentionedItems != null)
+            {
+                List<StyrItem> items = await _itemDbAccess.ResolveFlexFieldObjectNames(version.MentionedItems);
+                validationResult.MissingItems = version.MentionedItems.Where(n => !items.Any(item => item.Id.ToLowerInvariant() == n.ToLowerInvariant())).ToList();
+            }
+
+            validationResult.MissingSkills = new List<string>();
+            if(version.MentionedSkills != null)
+            {
+                List<EvneSkill> skills = await _skillDbAccess.ResolveFlexFieldObjectNames(version.MentionedSkills);
+                validationResult.MissingSkills = version.MentionedSkills.Where(n => !skills.Any(skill => skill.Id.ToLowerInvariant() == n.ToLowerInvariant())).ToList();
+            }
+
+            validationResult.MissingQuests = new List<string>();
+            if(version.MentionedQuests != null)
+            {
+                List<AikaQuest> quests = await _questDbAccess.ResolveQuestNames(version.MentionedQuests);
+                validationResult.MissingQuests = version.MentionedQuests.Where(n => !quests.Any(quest => quest.Id.ToLowerInvariant() == n.ToLowerInvariant())).ToList();
+            }
+
+            validationResult.MissingPages = new List<string>();
+            if(version.MentionedKirjaPages != null)
+            {
+                List<KirjaPage> pages = await _pageDbAccess.ResolveNames(version.MentionedKirjaPages);
+                validationResult.MissingPages = version.MentionedKirjaPages.Where(n => !pages.Any(page => page.Id.ToLowerInvariant() == n.ToLowerInvariant())).ToList();
+            }
+
+            return  Ok(validationResult);
         }
 
     }

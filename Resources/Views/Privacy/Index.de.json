@@ -1,0 +1,16 @@
+{
+    "PrivacyPolicy": "Datenschutzbestimmung",
+
+    "CookiePolicy": "Cookie Richtlinie",
+    "WhatAreCookiesExplanation": "Cookies sind kleine Dateien die auf dem Benutzer Gerät gespeichert werden.",
+    "WeSaveTheFollowingKindsOfCookies": "Die folgendenen Arten von Cookies werden gespeichert:",
+    "EssentialCookiesText": "Essentielle - cookies sind wichtig dafür das die Anwendung funktioniert. Diese beinhalten zum Beispiel Cookies die es möglich machen das du dich einloggst und die Anwendung funktioniert.",
+
+    "DataPolicy": "Datenschutz Richtlinie",
+    "TheFollowingPersonalDataIsSaved": "Die folgenden Personenbezogenden Daten werden gespeichert:",
+    "UserData": "Benutzerdaten - Um es dir zu erlauben dich einzuloggen werden Benutzerdaten wie deine E-Mail Adresse und Name gespeichert. Die E-Mail Adresse wird benötigt um dir das Passwort zuzusenden wenn du es vergisst.",
+    "DataChangeDate": "Änderungsdatum von Daten - Wenn du Daten, zum Beispiel einen NPC oder ein Item, speicheren wir das Datum an dem den Eintrag geändert hast. Hierdurch können wir nachhalten wer wann welche Daten geändert hat.",
+    "AssignedTasks": "Zugewiesen Aufgaben - Für die Aufgabenverfolgung werden dir zugewiesen Aufgaben gespeichert.",
+    "LastOpenedBoards": "Zuletzt geöffnete Aufgabenboards - Um dir das zuletzt geöffnete Board anzuzeigen wenn du zur Aufgabenverwaltung wechselst, speichern wir welches Aufgabenboard du zuletzt geöffnet hattest.",
+    "WeDontShareYourData": "Wir nutzen deine Daten auschließlich für interne Zwecke und teilen deine Daten mit niemanden."
+}

@@ -994,6 +994,24 @@ return de;
             };
 
             /**
+             * Formats the text for an element with moment
+             * @param {object} element HTML target element
+             * @param {object} valueAccessor Value accessor
+             * @param {string} formatString Format string
+             */
+            function momentFormatText(element, valueAccessor, formatString)
+            {
+                var koDate = ko.utils.unwrapObservable(valueAccessor());
+                var formattedDate = "";
+                if(koDate)
+                {
+                    formattedDate = moment(koDate).format(formatString);
+                }
+               
+                jQuery(element).text(formattedDate);
+            }
+
+            /**
              * Formatted Date text Binding Handler
              */
             ko.bindingHandlers.formattedDateText = {
@@ -1001,14 +1019,19 @@ return de;
                     
                 },
                 update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
-                    var koDate = ko.utils.unwrapObservable(valueAccessor());
-                    var formattedDate = "";
-                    if(koDate)
-                    {
-                        formattedDate = moment(koDate).format("L");
-                    }
-                   
-                    jQuery(element).text(formattedDate);
+                    momentFormatText(element, valueAccessor, "L");
+                }
+            };
+
+            /**
+             * Formatted Date time text Binding Handler
+             */
+            ko.bindingHandlers.formattedDateTimeText = {
+                init: function (element, valueAccessor, allBindings) {
+                    
+                },
+                update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    momentFormatText(element, valueAccessor, "L LT");
                 }
             };
 

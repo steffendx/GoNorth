@@ -104,5 +104,15 @@ namespace GoNorth.Data.Aika
             DeleteResult result = await _ChapterOverviewCollection.DeleteOneAsync(c => c.Id == chapterOverview.Id);
         }
 
+
+        /// <summary>
+        /// Returns all chapter overviews that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Chapter overviews</returns>
+        public async Task<List<AikaChapterOverview>> GetChapterOverviewByModifiedUser(string userId)
+        {
+            return await _ChapterOverviewCollection.AsQueryable().Where(q => q.ModifiedBy == userId).ToListAsync();
+        }
     }
 }

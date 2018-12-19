@@ -163,5 +163,25 @@ namespace GoNorth.Data.TaskManagement
             DeleteResult result = await _TaskBoardCollection.DeleteOneAsync(b => b.Id == board.Id);
         }
         
+
+        /// <summary>
+        /// Returns all taskboards that were last modified by a user or contain a task modified by the user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Task Boards</returns>
+        public async Task<List<TaskBoard>> GetTaskBoardsByModifiedUser(string userId)
+        {
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.ModifiedBy == userId || b.TaskGroups.Any(t => t.ModifiedBy == userId || t.Tasks.Any(ta => t.ModifiedBy == userId))).ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns all taskboards that have a task or task group assigned to a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Taskboards</returns>
+        public async Task<List<TaskBoard>> GetAllTaskBoardsByAssignedUser(string userId)
+        {
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.TaskGroups.Any(t => t.AssignedTo == userId || t.Tasks.Any(ta => t.AssignedTo == userId))).ToListAsync();
+        }
     }
 }

@@ -5,11 +5,13 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using GoNorth.Config;
 using GoNorth.Data.Project;
 using GoNorth.Data.Timeline;
 using GoNorth.Data.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace GoNorth.Services.Timeline
 {
@@ -21,32 +23,37 @@ namespace GoNorth.Services.Timeline
         /// <summary>
         /// Timeline Db Access
         /// </summary>
-        private ITimelineDbAccess _timelineDbAccess;
+        private readonly ITimelineDbAccess _timelineDbAccess;
 
         /// <summary>
         /// Project Db Accesss
         /// </summary>
-        private IProjectDbAccess _projectDbAccess;
+        private readonly IProjectDbAccess _projectDbAccess;
 
         /// <summary>
         /// Template Service
         /// </summary>
-        private ITimelineTemplateService _templateService;
+        private readonly ITimelineTemplateService _templateService;
 
         /// <summary>
         /// User Manager
         /// </summary>
-        private UserManager<GoNorthUser> _userManager;
+        private readonly UserManager<GoNorthUser> _userManager;
 
         /// <summary>
         /// Http Context
         /// </summary>
-        private IHttpContextAccessor _httpContext;
+        private readonly IHttpContextAccessor _httpContext;
 
         /// <summary>
         /// Entry Role Filters
         /// </summary>
         private Dictionary<TimelineEvent, List<string>> _entryRoleFilter;
+
+        /// <summary>
+        /// Event Merge Time Span
+        /// </summary>
+        private readonly float _eventMergeTimeSpan;
 
         /// <summary>
         /// Constructor
@@ -56,13 +63,16 @@ namespace GoNorth.Services.Timeline
         /// <param name="templateService">Template Service</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="httpContext">Http Context</param>
-        public TimelineService(ITimelineDbAccess timelineDbAccess, IProjectDbAccess projectDbAccess, ITimelineTemplateService templateService, UserManager<GoNorthUser> userManager, IHttpContextAccessor httpContext)
+        /// <param name="configuration">Config Data</param>
+        public TimelineService(ITimelineDbAccess timelineDbAccess, IProjectDbAccess projectDbAccess, ITimelineTemplateService templateService, UserManager<GoNorthUser> userManager, IHttpContextAccessor httpContext, IOptions<ConfigurationData> configuration)
         {
             _timelineDbAccess = timelineDbAccess;
             _projectDbAccess = projectDbAccess;
             _templateService = templateService;
             _userManager = userManager;
             _httpContext = httpContext;
+
+            _eventMergeTimeSpan = configuration.Value.Misc.TimelineMergeTimeSpan;
 
             SetupFilters();
         }
@@ -199,6 +209,48 @@ namespace GoNorth.Services.Timeline
             GoNorthUser currentUser = currentUserTask.Result;
             GoNorthProject project = projectTask.Result;
 
+            string updateId = null;
+            if(_eventMergeTimeSpan > 0)
+            {
+                DateTimeOffset dateLimit = DateTimeOffset.UtcNow.AddMinutes(-_eventMergeTimeSpan);
+                List<TimelineEntry> timelineEntries = await _timelineDbAccess.GetTimelineEntriesByUserInTimeSpan(project.Id, currentUser.UserName, timelineEvent, dateLimit);
+                foreach(TimelineEntry curEntry in timelineEntries)
+                {
+                    if(curEntry.AdditionalValues == null && additionalValues == null)
+                    {
+                        updateId = curEntry.Id;
+                        break;
+                    }
+                    else if(curEntry.AdditionalValues == null || additionalValues == null)
+                    {
+                        continue;
+                    }
+
+                    if(curEntry.AdditionalValues.Length != additionalValues.Length)
+                    {
+                        continue;
+                    }
+
+                    bool isNotValid = false;
+                    for(int curAdditionalValue = 0; curAdditionalValue < additionalValues.Length; ++curAdditionalValue)
+                    {
+                        if(curEntry.AdditionalValues[curAdditionalValue] != additionalValues[curAdditionalValue])
+                        {
+                            isNotValid = true;
+                            break;
+                        }
+                    }
+
+                    if(isNotValid)
+                    {
+                        continue;
+                    }
+
+                    updateId = curEntry.Id;
+                    break;
+                }
+            }
+
             TimelineEntry entry = new TimelineEntry();
             entry.ProjectId = project != null ? project.Id : string.Empty;
             entry.Event = timelineEvent;
@@ -207,7 +259,15 @@ namespace GoNorth.Services.Timeline
             entry.Username = currentUser.UserName;
             entry.UserDisplayName = currentUser.DisplayName;
 
-            await _timelineDbAccess.CreateTimelineEntry(entry);
+            if(string.IsNullOrEmpty(updateId))
+            {
+                await _timelineDbAccess.CreateTimelineEntry(entry);
+            }
+            else
+            {
+                entry.Id = updateId;
+                await _timelineDbAccess.UpdateTimelineEntry(entry);
+            }
         }
 
         /// <summary>

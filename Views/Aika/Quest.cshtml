@@ -84,7 +84,7 @@
     </button>
 
     <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
-        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span> <span data-bind="visible: questNotFound">@Localizer["QuestNotFound"]</span>
     </div>
 
     <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">

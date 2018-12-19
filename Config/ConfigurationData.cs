@@ -20,5 +20,10 @@ namespace GoNorth.Config
         /// Email Configuration
         /// </summary>
         public EmailConfig Email { get; set; }
+
+        /// <summary>
+        /// Legal Notice Configuration
+        /// </summary>
+        public LegalNoticeConfig LegalNotice { get; set; }
     }
 }

@@ -51,6 +51,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="value">Encryption request</param>
         /// <returns>Encrypted value</returns>
+        [Produces(typeof(string))]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult EncryptConfigValue([FromBody]EncryptConfigValueRequest value)

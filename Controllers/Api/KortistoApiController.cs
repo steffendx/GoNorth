@@ -158,6 +158,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="template">Template to create</param>
         /// <returns>Result</returns>
+        [Produces(typeof(KortistoNpc))]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -171,6 +172,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -185,6 +187,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Template Id</param>
         /// <param name="template">Update template data</param>
         /// <returns>Result Status Code</returns>
+        [Produces(typeof(KortistoNpc))]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -198,6 +201,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Template Id</param>
         /// <returns>Task</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -211,6 +215,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Image Name</returns>
+        [Produces(typeof(string))]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -377,6 +382,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the player npc
         /// </summary>
         /// <returns>Npc</returns>
+        [Produces(typeof(KortistoNpc))]
         [HttpGet]
         public async Task<IActionResult> PlayerNpc()
         {
@@ -390,6 +396,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Item id</param>
         /// <returns>Npcs</returns>
+        [Produces(typeof(List<KortistoNpc>))]
         [HttpGet]
         public async Task<IActionResult> GetNpcsByItemInInventory(string itemId)
         {
@@ -402,6 +409,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="skillId">Skill id</param>
         /// <returns>Npcs</returns>
+        [Produces(typeof(List<KortistoNpc>))]
         [HttpGet]
         public async Task<IActionResult> GetNpcsByLearnedSkill(string skillId)
         {
@@ -416,6 +424,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Npcs</returns>
+        [Produces(typeof(FlexFieldObjectQueryResult))]
         [Authorize(Roles = RoleNames.Kortisto)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]
