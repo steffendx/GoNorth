@@ -27,6 +27,8 @@
     "ActionTypeChangeNpcSkillValue":"Change npc skill value",
     "ActionTypePersistDialogState":"Persists dialog state",
     "ActionTypeOpenShop":"Open shop",
+    "ActionTypePlayNpcAnimation":"Play npc animation",
+    "ActionTypePlayPlayerAnimation": "Play player animation",
 
     "GenerationRules": "Rules that generate a function",
     "PreventGenerationRules": "Rules that prevent generating a function",

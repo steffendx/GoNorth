@@ -26,6 +26,16 @@ namespace GoNorth
         /// </summary>
         public const string TaskBoardManager = "TaskBoardManager";
 
+        /// <summary>
+        /// Task Board Category Management role
+        /// </summary>
+        public const string TaskBoardCategoryManager = "TaskBoardCategoryManager";
+        
+        /// <summary>
+        /// Task Type Manager role
+        /// </summary>
+        public const string TaskTypeManager = "TaskTypeManager";
+
 
         /// <summary>
         /// Kortisto role
@@ -86,6 +96,11 @@ namespace GoNorth
         /// Tale role
         /// </summary>
         public const string Tale = "Tale";
+
+        /// <summary>
+        /// Tale config manager role
+        /// </summary>
+        public const string TaleConfigManager = "TaleConfigManager";
 
 
         /// <summary>

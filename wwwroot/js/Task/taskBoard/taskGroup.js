@@ -7,14 +7,19 @@
              * Task Group
              * @param {object} viewModel ViewModel to which the task belongs
              * @param {object} taskGroup Task Group with data
+             * @param {function} resizeColumnFunc Function to resize the height of the columns
              * @class
              */
-            TaskBoard.TaskGroup = function(viewModel, taskGroup)
+            TaskBoard.TaskGroup = function(viewModel, taskGroup, resizeColumnFunc)
             {
                 TaskBoard.Task.apply(this, [ taskGroup ]);
 
                 this.viewModel = viewModel;
                 this.isExpanded = new ko.observable(true);
+                this.isExpanded.subscribe(function() {
+                    resizeColumnFunc();
+                });
+                this.resizeColumnFunc = resizeColumnFunc;
 
                 this.statusColumns = [];
                 this.statusColumnLookup = {};
@@ -22,6 +27,9 @@
                 {
                     var statusValue = viewModel.taskStatus[curStatus].value;
                     var statusColumn = new TaskBoard.StatusColumnTaskContainer(statusValue);
+                    statusColumn.tasks.subscribe(function() {
+                        resizeColumnFunc();
+                    });
                     this.statusColumns.push(statusColumn);
                     this.statusColumnLookup[statusValue] = statusColumn;
                 }

@@ -42,6 +42,7 @@ export default moment.defineLocale('mk', {
         future : 'после %s',
         past : 'пред %s',
         s : 'неколку секунди',
+        ss : '%d секунди',
         m : 'минута',
         mm : '%d минути',
         h : 'час',
@@ -75,7 +76,7 @@ export default moment.defineLocale('mk', {
     },
     week : {
         dow : 1, // Monday is the first day of the week.
-        doy : 7  // The week that contains Jan 1st is the first week of the year.
+        doy : 7  // The week that contains Jan 7th is the first week of the year.
     }
 });
 

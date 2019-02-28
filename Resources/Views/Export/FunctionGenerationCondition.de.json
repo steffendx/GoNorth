@@ -27,6 +27,8 @@
     "ActionTypeChangeNpcSkillValue":"Npc Fähgikeit Wert ändern",
     "ActionTypePersistDialogState":"Dialogzustand speichern",
     "ActionTypeOpenShop":"Handel öffnen",
+    "ActionTypePlayNpcAnimation":"NPC Animation abspielen",
+    "ActionTypePlayPlayerAnimation": "Spieler Animation abspielen",
 
     "GenerationRules": "Regeln die eine Funktion generieren",
     "PreventGenerationRules": "Regeln die Funktionsgenerierung verhindern",

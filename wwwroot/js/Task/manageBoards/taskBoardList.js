@@ -14,10 +14,11 @@
              * @param {string} toogleStatusToolTip Tooltip for the status toogle button
              * @param {string} apiMethod Api Method used to load the boards
              * @param {bool} isExpandedByDefault true if the list is expanded by default, else false
+             * @param {function} getCategoryNameFunction Function that returns the name of a function by its id
              * @param {ko.observable} errorOccuredObservable Observable which will be set to true or false if an error occured or a new load is started
              * @class
              */
-            ManageBoards.TaskBoardList = function(title, toogleStatusIcon, toogleStatusToolTip, apiMethod, isExpandedByDefault, errorOccuredObservable)
+            ManageBoards.TaskBoardList = function(title, toogleStatusIcon, toogleStatusToolTip, apiMethod, isExpandedByDefault, getCategoryNameFunction, errorOccuredObservable)
             {
                 this.apiMethod = apiMethod;
 
@@ -35,6 +36,7 @@
                 this.prevLoading = new ko.observable(false);
                 this.nextLoading = new ko.observable(false);
 
+                this.getCategoryNameFunction = getCategoryNameFunction;
                 this.errorOccured = errorOccuredObservable;
             };
 
@@ -58,10 +60,16 @@
                         url: "/api/TaskApi/" + this.apiMethod + "?start=" + (this.currentPage() * boardPageSize) + "&pageSize=" + boardPageSize, 
                         type: "GET"
                     }).done(function(data) {
-                       self.boards(data.boards);
-                       self.hasMore(data.hasMore);
+                        for(var curBoard = 0; curBoard < data.boards.length; ++curBoard)
+                        {
+                            data.boards[curBoard].categoryName = new ko.pureComputed(function() {
+                                return self.getCategoryNameFunction(this.categoryId);
+                            }, data.boards[curBoard]);
+                        }
+                        self.boards(data.boards);
+                        self.hasMore(data.hasMore);
 
-                       self.resetLoadingState();
+                        self.resetLoadingState();
                     }).fail(function() {
                         self.errorOccured(true);
                         self.resetLoadingState();

@@ -96,5 +96,20 @@ namespace GoNorth.Data.LockService
         {
             return await _LockCollection.AsQueryable().Where(l => l.UserId == userId).ToListAsync();
         }
+
+
+        /// <summary>
+        /// Creates the lock indices
+        /// </summary>
+        /// <returns>Task</returns>
+        public async Task CreateLockIndices()
+        {
+            IndexKeysDefinitionBuilder<LockEntry> lockIndexBuilder = Builders<LockEntry>.IndexKeys;
+            CreateIndexModel<LockEntry> categoryIndex = new CreateIndexModel<LockEntry>(lockIndexBuilder.Ascending(x => x.Category));
+            await _LockCollection.Indexes.CreateOneAsync(categoryIndex);
+
+            CreateIndexModel<LockEntry> resourceIndex = new CreateIndexModel<LockEntry>(lockIndexBuilder.Ascending(x => x.ResourceId));
+            await _LockCollection.Indexes.CreateOneAsync(resourceIndex);
+        }
     }
 }

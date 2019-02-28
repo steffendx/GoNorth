@@ -262,9 +262,24 @@ namespace GoNorth.Controllers.Api
         private readonly ITaleDbAccess _taleDbAccess;
 
         /// <summary>
+        /// Tale Config Db Access
+        /// </summary>
+        private readonly ITaleConfigDbAccess _taleConfigDbAccess;
+
+        /// <summary>
         /// Task Board Db Access
         /// </summary>
         private readonly ITaskBoardDbAccess _taskBoardDbAccess;
+
+        /// <summary>
+        /// Task group type Db Access
+        /// </summary>
+        private readonly ITaskGroupTypeDbAccess _taskGroupTypeDbAccess;
+
+        /// <summary>
+        /// Task type Db Access
+        /// </summary>
+        private readonly ITaskTypeDbAccess _taskTypeDbAccess;
 
         /// <summary>
         /// User Task Board History Db Access
@@ -314,8 +329,11 @@ namespace GoNorth.Controllers.Api
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
+        /// <param name="taleConfigDbAccess">Tale Config Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="taskBoardDbAccess">Task Bord Db Access</param>
+        /// <param name="taskGroupTypeDbAccess">Task Group Type Db Access</param>
+        /// <param name="taskTypeDbAccess">Task Type Db Access</param>
         /// <param name="userTaskBoardHistoryDbAccess">User Task Board History Db Access</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="timelineDbAccess">Timeline Db Access</param>
@@ -325,8 +343,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="userDeleter">User Deleter</param>
         public PersonalDataApiController(IAikaQuestDbAccess questDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, IKortistoNpcDbAccess npcDbAccess, 
                                          IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
-                                         ITaskBoardDbAccess taskBoardDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, 
-                                         UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
+                                         ITaleConfigDbAccess taleConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
+                                         IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
         {
             _questDbAccess = questDbAccess;
             _chapterDetailDbAccess = chapterDetailDbAccess;
@@ -339,7 +357,10 @@ namespace GoNorth.Controllers.Api
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
             _taleDbAccess = taleDbAccess;
+            _taleConfigDbAccess = taleConfigDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
+            _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
+            _taskTypeDbAccess = taskTypeDbAccess;
             _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
             _projectDbAccess = projectDbAccess;
             _timelineDbAccess = timelineDbAccess;
@@ -492,6 +513,13 @@ namespace GoNorth.Controllers.Api
                 });
             }
 
+            List<TaleConfigEntry> taleConfigEntries = await _taleConfigDbAccess.GetConfigEntriesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(taleConfigEntries.Select(p => new TrimmedModifiedData {
+                ObjectType = "TaleConfig",
+                Name = p.Key,
+                ModifiedDate = p.ModifiedOn
+            }));
+
             List<TaskBoard> taskBoards = await _taskBoardDbAccess.GetTaskBoardsByModifiedUser(currentUser.Id);
             foreach(TaskBoard curBoard in taskBoards)
             {
@@ -524,6 +552,20 @@ namespace GoNorth.Controllers.Api
                     }));
                 }
             }
+
+            List<GoNorthTaskType> taskGroupTypes = await _taskGroupTypeDbAccess.GetTaskTypesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(taskGroupTypes.Select(p => new TrimmedModifiedData {
+                ObjectType = "TaskGroupType",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<GoNorthTaskType> taskTypes = await _taskTypeDbAccess.GetTaskTypesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(taskTypes.Select(p => new TrimmedModifiedData {
+                ObjectType = "TaskType",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
         }
 
         /// <summary>

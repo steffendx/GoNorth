@@ -234,5 +234,19 @@
             };
         };
 
+
+        /**
+         * Returns true if the current screen size is a bootstrap xs size, else false
+         * @returns {bool} true if the current screen size is a bootstrap xs size, else false
+         */
+        Util.isBootstrapXs = function() {
+            var testElement = jQuery("<div class='hidden-xs'></div>");
+            testElement.appendTo(jQuery('body'));
+        
+            var isXs = testElement.is(':hidden');
+            testElement.remove();
+            return isXs;
+        };
+
     }(GoNorth.Util = GoNorth.Util || {}));
 }(window.GoNorth = window.GoNorth || {}));

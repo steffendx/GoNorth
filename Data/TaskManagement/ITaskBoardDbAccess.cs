@@ -88,5 +88,40 @@ namespace GoNorth.Data.TaskManagement
         /// <param name="userId">User Id</param>
         /// <returns>List of Taskboards</returns>
         Task<List<TaskBoard>> GetAllTaskBoardsByAssignedUser(string userId);
+
+        /// <summary>
+        /// Returns all taskboards that are using a task type
+        /// </summary>
+        /// <param name="taskTypeId">Task type Id</param>
+        /// <returns>List of Taskboards</returns>
+        Task<List<TaskBoard>> GetAllTaskBoardsUsingTaskType(string taskTypeId);
+
+        /// <summary>
+        /// Returns true if any task board uses a task board category
+        /// </summary>
+        /// <param name="categoryId">Id of the category</param>
+        /// <returns>True if any task board uses the category</returns>
+        Task<bool> AnyTaskBoardUsingCategory(string categoryId);
+
+        /// <summary>
+        /// Returns true if any task board has a task group without a task type
+        /// </summary>
+        /// <param name="projectId">Id of the project</param>
+        /// <returns>true if any task board has a task group without a task type</returns>
+        Task<bool> AnyTaskBoardHasTaskGroupsWithoutType(string projectId);
+
+        /// <summary>
+        /// Returns true if any task board has a task without a task type
+        /// </summary>
+        /// <param name="projectId">Id of the project</param>
+        /// <returns>true if any task board has a task without a task type</returns>
+        Task<bool> AnyTaskBoardHasTasksWithoutType(string projectId);
+
+        /// <summary>
+        /// Resets the reference to a category on all boards
+        /// </summary>
+        /// <param name="categoryId">Id of the category</param>
+        /// <returns>Task</returns>
+        Task ResetCategoryReference(string categoryId);
     }
 }

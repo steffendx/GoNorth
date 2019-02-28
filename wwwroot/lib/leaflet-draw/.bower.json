@@ -1,7 +1,7 @@
 {
   "name": "leaflet-draw",
   "description": "Vector drawing plugin for Leaflet",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "main": [
     "dist/leaflet.draw.js",
     "dist/leaflet.draw.css",
@@ -60,14 +60,14 @@
     "karma-mocha": "~1.2.0",
     "karma-coverage": "~1.1.1"
   },
-  "_release": "1.0.2",
+  "_release": "1.0.4",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.2",
-    "commit": "59f658a2f5bbe1232ac85dc50c475f8acc5cb9e7"
+    "tag": "v1.0.4",
+    "commit": "65d7866b14e926b72465d0077809683a77344019"
   },
   "_source": "https://github.com/Leaflet/Leaflet.draw.git",
-  "_target": "^1.0.2",
+  "_target": "^1.0.4",
   "_originalSource": "leaflet-draw",
   "_direct": true
 }

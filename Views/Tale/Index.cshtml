@@ -49,6 +49,13 @@
         </button>
     }
 
+    @if(User.IsInRole(RoleNames.TaleConfigManager))
+    {
+        <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openConfigPage">
+            <i class="glyphicon glyphicon-cog"></i> @Localizer["Configuration"]
+        </button>
+    }
+
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: returnToNpc, visible: showReturnToNpcButton">
         <i class="glyphicon glyphicon-level-up"></i> @Localizer["ReturnToNpc"]
     </button>

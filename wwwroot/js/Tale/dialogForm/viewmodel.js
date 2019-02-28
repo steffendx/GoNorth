@@ -112,6 +112,11 @@
 
                     return self.objectDialog.openSkillSearch(Tale.Localization.ViewModel.ChooseSkill);                    
                 };
+
+                // Load config lists
+                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
+                    self.errorOccured(true);
+                });
             };
 
             Dialog.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
@@ -224,6 +229,13 @@
                 this.compareDialog.openDialogCompare(this.dialogId(), this.headerName()).done(function() {
                     self.isImplemented(true);
                 });
+            };
+
+            /**
+             * Opens the config page
+             */
+            Dialog.ViewModel.prototype.openConfigPage = function() {
+                window.location = "/Tale/Config";
             };
 
             /**

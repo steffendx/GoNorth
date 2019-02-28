@@ -31,15 +31,22 @@ namespace GoNorth.Data
         /// Timeline Db Access
         /// </summary>
         private readonly ITimelineDbAccess _timelineDbAccess;
+        
+        /// <summary>
+        /// Lock Db Access
+        /// </summary>
+        private readonly ILockServiceDbAccess _lockServiceDbAccess;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="timelineDbAccess">Timeline Db Access</param>
+        /// <param name="lockServiceDbAccess">Lock Service Db Access</param>
         /// <param name="configuration">Configuration</param>
-        public MongoDbSetup(ITimelineDbAccess timelineDbAccess, IOptions<ConfigurationData> configuration) : base(configuration)
+        public MongoDbSetup(ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockServiceDbAccess, IOptions<ConfigurationData> configuration) : base(configuration)
         {
             _timelineDbAccess = timelineDbAccess;
+            _lockServiceDbAccess = lockServiceDbAccess;
         }
 
         /// <summary>
@@ -96,6 +103,7 @@ namespace GoNorth.Data
 
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogRecyclingBinCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(TaleConfigMongoDbAccess.TaleConfigCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleDialogImplementationSnapshotMongoDbAccess.TaleDialogImplementationSnapshotCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(AikaChapterOverviewMongoDbAccess.AikaChapterOverviewCollectionName, collectionNames);
@@ -112,6 +120,9 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(LanguageKeyMongoDbAccess.LanguageKeyCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(TaskBoardMongoDbAccess.TaskBoardCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(TaskTypeMongoDbAccess.TaskTypeCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(TaskGroupTypeMongoDbAccess.TaskGroupTypeCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(TaskBoardCategoryMongoDbAccess.TaskBoardCategoryCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaskNumberMongoDbAccess.TaskNumberCollectionName, collectionNames);
             await CreateCollectionIfNotExists(UserTaskBoardHistoryMongoDbAccess.TaskBoardUserHistoryCollectionName, collectionNames);
 
@@ -162,6 +173,7 @@ namespace GoNorth.Data
         private async Task CreateIndices()
         {
             await _timelineDbAccess.CreateTimelineIndices();
+            await _lockServiceDbAccess.CreateLockIndices();
         }
     }
 }

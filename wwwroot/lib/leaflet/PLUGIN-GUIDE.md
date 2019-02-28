@@ -23,7 +23,7 @@ This guide lists a number of best practices for publishing a Leaflet plugin that
 
 ### Repository
 
-The best place to put your Leaflet plugin to is a separate [GitHub](http://github.com) repository.
+The best place to put your Leaflet plugin is a separate [GitHub](http://github.com) repository.
 If you create a collection of plugins for different uses,
 don't put them in one repo &mdash;
 it's usually easier to work with small, self-contained plugins in individual repositories.
@@ -155,7 +155,7 @@ Here is an example of a `package.json` file for a Leaflet plugin.
 ```
 
 If possible, do not commit your minified files (e.g. `dist`) to a repo; this can
-lead to confussion when trying to debug the wrong file. Instead, use `npm` to
+lead to confusion when trying to debug the wrong file. Instead, use `npm` to
 trigger a build/minification just before publishing your package with a
 [`prepublish` script](https://docs.npmjs.com/misc/scripts#common-uses), for example:
 

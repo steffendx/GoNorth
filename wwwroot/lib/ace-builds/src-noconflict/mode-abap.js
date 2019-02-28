@@ -1,4 +1,4 @@
-ace.define("ace/mode/abap_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/abap_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -73,7 +73,7 @@ var AbapHighlightRules = function() {
             {token : "constant.numeric", regex: "[+-]?\\d+\\b"},
             {token : "variable.parameter", regex : /sy|pa?\d\d\d\d\|t\d\d\d\.|innnn/}, 
             {token : "keyword", regex : compoundKeywords}, 
-            {token : "variable.parameter", regex : /\w+-\w+(?:-\w+)*/}, 
+            {token : "variable.parameter", regex : /\w+-\w[\-\w]*/},
             {token : keywordMapper, regex : "\\b\\w+\\b"},
             {caseInsensitive: true}
         ],
@@ -94,7 +94,7 @@ oop.inherits(AbapHighlightRules, TextHighlightRules);
 exports.AbapHighlightRules = AbapHighlightRules;
 });
 
-ace.define("ace/mode/folding/coffee",[], function(require, exports, module) {
+ace.define("ace/mode/folding/coffee",["require","exports","module","ace/lib/oop","ace/mode/folding/fold_mode","ace/range"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -181,7 +181,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/abap",[], function(require, exports, module) {
+ace.define("ace/mode/abap",["require","exports","module","ace/mode/abap_highlight_rules","ace/mode/folding/coffee","ace/range","ace/mode/text","ace/lib/oop"], function(require, exports, module) {
 "use strict";
 
 var Rules = require("./abap_highlight_rules").AbapHighlightRules;
@@ -211,8 +211,7 @@ oop.inherits(Mode, TextMode);
 
 exports.Mode = Mode;
 
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/abap"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

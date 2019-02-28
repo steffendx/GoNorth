@@ -1,0 +1,41 @@
+{
+    "ManageTaskTypes": "Aufgaben Typen verwalten",
+    "TaskGroupTypes": "Aufgabengruppen Typen",
+    "TaskTypes": "Aufgaben Typen",
+
+    "CreateNewTaskGroupType": "Aufgabengruppen Typ erstellen",
+    "EditTaskGroupType": "Aufgabengruppen Typ editieren",
+    "CreateNewTaskType": "Aufgaben Typ erstellen",
+    "EditTaskType": "Aufgaben Typ editieren",
+
+    "Name": "Name",
+    "Color": "Farbe",
+    "IsDefault": "Standard Typ",
+    "MustEnterAValidColor": "Du musst eine gültige Farbe eingeben.",
+    "Save": "Speichern",
+    "Cancel": "Abbrechen",
+
+    "EditTaskTypeToolTip": "Typ bearbeiten",
+    "DeleteTaskTypeToolTip": "Typ löschen",
+    
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheTaskType": "Bist du sicher das der Typ gelöscht werden soll?",
+    "SelectTypeToRemap": "Wähle einen Typen aus auf den bestehenden Referenzen geändert werden:",
+    "DeletingLastTypeReferencesWillBeRemappedToDefault": "Du löscht den letzten Typen dieser Art. Bestehenden Referenzen werden anschließend den Standardtypen verwenden.",
+    "SelectTaskType": "Typen auswählen...",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "TaskGroupsWithoutTypeExist": "Es gibt Aufgabengruppen ohne Typ. Wenn du diesen Typ als neuen Standard definierst verwenden diese Aufgabengruppen den Typen bis ein Benutzer einen Typen für die Aufgabengruppe auswählt oder ein anderer Standard Typ definiert wird.",
+    "TasksWithoutTypeExist": "Es gibt Aufgaben ohne Typ. Wenn du diesen Typ als neuen Standard definierst verwenden diese Aufgaben den Typen bis ein Benutzer einen Typen für die Aufgabe auswählt oder ein anderer Standard Typ definiert wird.",
+
+    "Info": "Info",
+    "DefaultTaskTypesWillBeProvided": "Da keine Typen definiert sind werden Standard Typen verwendet.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Dieser Typ wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

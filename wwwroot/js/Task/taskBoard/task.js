@@ -12,6 +12,7 @@
             {
                 this.id = serverData.id;
                 this.taskNumber = 0;
+                this.taskTypeId = new ko.observable(null);
                 this.name = new ko.observable("");
                 this.description = new ko.observable("");
                 this.assignedTo = new ko.observable("");
@@ -28,6 +29,7 @@
                  */
                 parseTaskFromServerResponse: function(serverData) {
                     this.taskNumber = serverData.taskNumber;
+                    this.taskTypeId(serverData.taskTypeId);
                     this.name(serverData.name);
                     this.description(serverData.description);
                     this.assignedTo(serverData.assignedTo);

@@ -1,4 +1,4 @@
-ace.define("ace/mode/sh_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/sh_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -30,6 +30,7 @@ var ShHighlightRules = function() {
     }, "identifier");
 
     var integer = "(?:(?:[1-9]\\d*)|(?:0))";
+
     var fraction = "(?:\\.\\d+)";
     var intPart = "(?:\\d+)";
     var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))";
@@ -216,7 +217,7 @@ oop.inherits(ShHighlightRules, TextHighlightRules);
 exports.ShHighlightRules = ShHighlightRules;
 });
 
-ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
+ace.define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -356,7 +357,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/sh",[], function(require, exports, module) {
+ace.define("ace/mode/sh",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/sh_highlight_rules","ace/range","ace/mode/folding/cstyle","ace/mode/behaviour/cstyle"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -425,6 +426,7 @@ oop.inherits(Mode, TextMode);
     };
 
     this.autoOutdent = function(state, doc, row) {
+
         row += 1;
         var indent = this.$getIndent(doc.getLine(row));
         var tab = doc.getTabString();
@@ -436,8 +438,7 @@ oop.inherits(Mode, TextMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/sh"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

@@ -27,6 +27,10 @@
                     </div>
                     <form id="gn-taskDialogForm">
                         <div class="form-group">
+                            <label for="gn-taskDialogType">@Localizer["TaskType"]</label>
+                            <select class="form-control" id="gn-taskDialogType" name="taskDialogType" data-bind="value: taskDialogTaskTypeId, options: taskDialogAllTaskTypes, optionsValue: 'id', optionsText: 'name', disable: isReadonly() || isTaskDialogReadonly()"></select>
+                        </div>
+                        <div class="form-group">
                             <label for="gn-taskDialogName">@Localizer["Name"]</label>
                             <input type="text" class="form-control" id="gn-taskDialogName" placeholder="@Localizer["Name"]" name="taskDialogName" data-bind="value: taskDialogName, enterPressed: function() { $root.saveTaskDialog(true); }, disable: isReadonly() || isTaskDialogReadonly()" required/>
                         </div>
@@ -51,6 +55,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="gn-taskDeleteButton btn btn-default" data-bind="click: openDeleteDialog, disable: isLoading() || isReadonly() || isTaskDialogReadonly(), visible: isTaskEditDialog">@Localizer["Delete"]</button>
+                    <button type="button" class="gn-taskMoveToBoardButton btn btn-default" data-bind="click: openMoveTaskToBoardDialog, disable: isLoading() || isReadonly() || isTaskDialogReadonly(), visible: isTaskEditDialog">@Localizer["MoveToOtherBoard"]</button>
                     <button type="button" class="btn btn-primary" data-bind="click: function() { $root.saveTaskDialog(true); }, disable: isLoading() || isReadonly() || isTaskDialogReadonly()">@Localizer["Save"]</button>
                     <button type="button" class="btn btn-default" data-bind="click: closeTaskDialog">@Localizer["Cancel"]</button>
                 </div>
@@ -82,6 +87,45 @@
         </div>
     </div>
 
+    <!-- Move Task / Task Group Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showMoveTaskToBoardDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["SelectTarget"]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="gn-moveAvailableBoard">@Localizer["TargetBoard"]</label>
+                        <select class="form-control" id="gn-moveAvailableBoard" data-bind="options: allBoardsWithoutCurrent, optionsText: 'name', optionsValue: 'id', optionsCaption: '@Localizer["Choose"]', value: moveTargetTaskBoard, event: { change: loadTargetTaskBoardGroups }" required>
+                        </select>
+                    </div>
+                    <div class="form-group" data-bind="visible: isMovingTaskToBoard">
+                        <label for="gn-moveAvailableTaskGroups">
+                            @Localizer["TargetTaskGroup"]
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoadingMoveTaskGroups"></i>
+                            <i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorOccuredLoadingMoveTaskGroups"></i>
+                        </label>
+                        <select class="form-control" id="gn-moveAvailableTaskGroups" data-bind="options: targetTaskBoardGroups, optionsText: function(taskGroup) { return $root.formatGroupNameForMove(taskGroup); }, optionsValue: 'id', optionsCaption: '@Localizer["Choose"]', value: moveTargetTaskGroup" required>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: moveTaskToBoard, disable: !moveTargetTaskBoard() || (!moveTargetTaskGroup() && isMovingTaskToBoard())">@Localizer["Move"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeMoveTaskToBoardDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="gn-taskboardListTemplate">
+        <a class="gn-clickable" data-bind="click: function(board) { $root.switchBoard(board.id); }">
+            <span data-bind="text: name"></span> 
+            <span class="gn-taskSelectBoardDates" data-bind="text: $root.formatTaskBoardDates($data)"></span>
+        </a>
+    </script>
+
     <div class="row">
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
             <h2><span data-bind="text: boardName">@Localizer["Tasks"]</span> <span class="gn-taskHeaderBoardDates" data-bind="text: currentBoardDates"></span> <i class="glyphicon glyphicon-refresh spinning gn-taskBoardLoading" style="display: none" data-bind="visible: isLoading"></i></h2>
@@ -91,14 +135,37 @@
                 <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-switchBoardButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     @Localizer["SwitchBoard"] <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="gn-switchBoardButton">
-                    <!-- ko foreach: allBoards -->
-                        <li><a class="gn-clickable" data-bind="click: function(board) { $root.switchBoard(board.id); }"><span data-bind="text: name"></span> <span class="gn-taskSelectBoardDates" data-bind="text: $root.formatTaskBoardDates($data)"></span></a></li>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="gn-switchBoardButton">
+                    <!-- ko foreach: groupedBoards -->
+                        <!-- ko if: isCategory -->
+                            <li>
+                                <a class="gn-clickable" data-bind="click: function(category) { $root.toogleBoardCategoryExpanded(category); }, clickBubble: false">
+                                    <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i>
+                                    <span data-bind="text: name"></span>
+                                </a>
+                            </li>
+                            <li class="gn-taskboardListSubNode" data-bind="visible: isExpanded, template: { name: 'gn-taskboardListTemplate', foreach: boards }">
+                            </li>
+                        <!-- /ko -->
+
+                        <!-- ko if: !isCategory -->
+                            <li data-bind="template: { name: 'gn-taskboardListTemplate', data: $data }">
+                            </li>
+                        <!-- /ko -->
                     <!-- /ko -->
-                    @if(User.IsInRole(RoleNames.TaskBoardManager))
+                    @if(User.IsInRole(RoleNames.TaskBoardManager) || User.IsInRole(RoleNames.TaskTypeManager))
                     {
                         <li class="divider"></li>
+                    }
+
+                    @if(User.IsInRole(RoleNames.TaskBoardManager))
+                    {
                         <li><a asp-area="" asp-controller="Task" asp-action="ManageBoards">@Localizer["ManageBoards"]</a></li>
+                    }
+
+                    @if(User.IsInRole(RoleNames.TaskTypeManager))
+                    {
+                        <li><a asp-area="" asp-controller="Task" asp-action="ManageTaskTypes">@Localizer["ManageTaskTypes"]</a></li>
                     }
                 </ul>
             </div>
@@ -135,52 +202,54 @@
             </div>
             <!-- /ko -->
         </div>
-        <!-- ko foreach: taskGroups -->
-        <div class="row gn-taskGroupRow">
-            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-                <div class="gn-taskGroupExpandCollapse gn-clickable" data-bind="click: toogleExpanded"><i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i></div>
-                <div class="gn-taskGroupCard gn-taskGroupCardExpanded" data-bind="visible: isExpanded">
-                    <div class="gn-taskCardTitle gn-taskGroupTitle">
-                        <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a>
-                    </div>
-                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null); } }, disabled: $root.isLoading"></select></div>
-                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: status, options: $root.taskStatus, optionsValue: 'value', optionsText: 'displayName', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null); } }, disabled: $root.isLoading"></select></div>
-                </div>
-                <button class="gn-taskCreateTaskButton btn btn-primary" data-bind="visible: isExpanded() && !$root.isReadonly(), click: function(taskGroup) { $root.openCreateNewTaskDialog(taskGroup); }" title="@Localizer["CreateTaskToolTip"]"><i class="glyphicon glyphicon-plus"></i></button>
-                <div class="gn-taskGroupCard gn-taskGroupCardCollapsed" data-bind="visible: !isExpanded()">
-                    <div class="gn-taskTitle"><a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a></div>
-                </div>
-            </div>
-            <!-- ko foreach: statusColumns -->
-            <div class="col-xs-12 gn-taskGroupColumn" data-bind="css: $root.taskColumnClass">
-                <div class="gn-taskGroupColumnTaskDrop" data-bind="droppableElement: function(draggable, left, top, task) { $root.dropTaskToStatus($parent, task, $data.status); }, droppableAccept: '.gn-task' + $parent.id"></div>
-                <div class="gn-taskGroupColumnTaskContainer">
-                    <!-- ko if: $parent.isExpanded -->
-                        <!-- ko foreach: tasks -->
-                        <div class="gn-taskCard" data-bind="draggableElement: 'original', draggableRevert: true, draggableRevertDuration: 100, draggableZIndex: 100, css: 'gn-task' + $parents[1].id, draggableObject: $data">
-                            <div class="gn-taskCardTitle gn-taskTitle">
-                                <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(task) { $root.openEditTaskDialog($parents[1], task); }"></a>
-                            </div>
-                            <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(task) { $root.saveTaskQuickEdit($parents[1], task); } }, disabled: $root.isLoading"></select></div>
+        <div data-bind="sortable: { data: taskGroups, isEnabled: disableSortables, options: { handle: '.gn-taskGroupCard' }, afterMove: function(sortArg) { $root.reorderTaskGroup(sortArg); } }">
+            <div class="row gn-taskGroupRow">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                    <div class="gn-taskGroupExpandCollapse gn-clickable" data-bind="click: toogleExpanded"><i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i></div>
+                    <div class="gn-taskGroupCard gn-taskGroupCardExpanded" data-bind="visible: isExpanded, taskTypeColorBinding: taskTypeId, taskTypes: $root.taskGroupTypes">
+                        <div class="gn-taskCardTitle gn-taskGroupTitle">
+                            <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a>
                         </div>
-                        <!-- /ko -->
-                    <!-- /ko -->
-                    <!-- ko if: !$parent.isExpanded() -->
-                    <div class="gn-taskColumnCollapsedTaskCount" data-bind="visible: tasks().length > 0">
-                        <span data-bind="text: tasks().length"></span> <span data-bind="visible: tasks().length == 1">@Localizer["TasksSingle"]</span><span data-bind="visible: tasks().length > 1">@Localizer["TasksMulti"]</span>
+                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disabled: $root.isLoading"></select></div>
+                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: status, options: $root.taskStatus, optionsValue: 'value', optionsText: 'displayName', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disabled: $root.isLoading"></select></div>
                     </div>
-                    <!-- /ko -->
+                    <button class="gn-taskCreateTaskButton btn btn-primary" data-bind="visible: isExpanded() && !$root.isReadonly(), click: function(taskGroup) { $root.openCreateNewTaskDialog(taskGroup); }" title="@Localizer["CreateTaskToolTip"]"><i class="glyphicon glyphicon-plus"></i></button>
+                    <div class="gn-taskGroupCard gn-taskGroupCardCollapsed" data-bind="visible: !isExpanded(), taskTypeColorBinding: taskTypeId, taskTypes: $root.taskGroupTypes">
+                        <div class="gn-taskTitle"><a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a></div>
+                    </div>
                 </div>
+                <!-- ko foreach: statusColumns -->
+                <div class="col-xs-12 gn-taskGroupColumn" data-bind="css: $root.taskColumnClass">
+                    <div class="gn-taskGroupBackgroundColor" data-bind="css: { 'gn-taskGroupColumnTaskHover': isHovering }"></div>
+                    <div class="gn-taskGroupColumnTaskContainer" data-bind="css: { 'gn-taskGroupColumnTaskHover': isHovering }">
+                        <!-- ko if: $parent.isExpanded -->
+                            <div data-bind="sortable: { data: tasks, isEnabled: $root.disableSortables, connectClass: 'taskList', options: { change: function() { $root.resizeColumnBackgroundColor(); }, start: function(event, ui) { ui.item.oldParentTaskGroup = $parent; }, over: activateTaskHovering.bind($data), out: disableTaskHovering.bind($data) }, afterMove: function(sortArg, event, ui) { $root.dropTaskToStatus($parent, sortArg.item, ui.item.oldParentTaskGroup, $data.status, sortArg.targetIndex); } }" class="gn-taskGroupTaskSortable">
+                                <div class="gn-taskCard" data-bind="taskTypeColorBinding: taskTypeId, taskTypes: $root.taskTypes">
+                                    <div class="gn-taskCardTitle gn-taskTitle">
+                                        <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(task) { $root.openEditTaskDialog($parents[1], task); }"></a>
+                                    </div>
+                                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(task) { $root.saveTaskQuickEdit($parents[1], task, null, -1); } }, disabled: $root.isLoading"></select></div>
+                                </div>
+                            </div>
+                        <!-- /ko -->
+                        <!-- ko if: !$parent.isExpanded() -->
+                            <div class="gn-taskColumnCollapsedTaskCount" data-bind="visible: tasks().length > 0">
+                                <span data-bind="text: tasks().length"></span> <span data-bind="visible: tasks().length == 1">@Localizer["TasksSingle"]</span><span data-bind="visible: tasks().length > 1">@Localizer["TasksMulti"]</span>
+                            </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <!-- /ko -->
             </div>
-            <!-- /ko -->
         </div>
-        <!-- /ko -->
     </div>
 </div>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+
+    <script src="~/lib/knockout-sortable/build/knockout-sortable.js"></script>
 
     <environment include="Development">
         <script src="~/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js"></script>

@@ -117,6 +117,8 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangeNpcSkillValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionPersistDialogState),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionOpenShop),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionNpcPlayAnimation),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionPlayerPlayAnimation),
             
             // General
             new DefaultTemplateEntry(TemplateCategory.General, TemplateType.GeneralLogicGroup),

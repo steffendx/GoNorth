@@ -1230,6 +1230,13 @@ path.leaflet-interactive {
     margin-top: 0px !important;
 }
 
+/** Tale Config **/
+
+.gn-taleConfigTextArea {
+    margin-top: 10px;
+    height: 150px !important;
+}
+
 /** Aika Chapter Detail **/
 .gn-aikaChapterDetailButton {
     width: 100%;
@@ -1306,6 +1313,27 @@ path.leaflet-interactive {
     margin-top: 30px;
 }
 
+.gn-taskboardListSubNode a {
+    padding-left: 40px !important;
+}
+
+/** Task type **/
+
+.gn-taskTypeListTitle {
+    margin-top: 30px;
+}
+
+.gn-taskTypeColorIndicator {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 1px solid #333;
+}
+
+.gn-taskTypeDefaultRow {
+    font-weight: bold;
+}
+
 /** Task Board **/
 .gn-taskHeaderBoardDates {
     font-size: 18px;
@@ -1360,12 +1388,21 @@ path.leaflet-interactive {
 
 .gn-taskGroupRow {
     margin-top: 10px;
-    overflow: hidden;
 }
 
 .gn-taskGroupColumn {
-    padding-right: 10px;
+    padding-right: 0px;
     padding-left: 0px;
+    border-right: 10px solid #FFF;
+}
+
+.gn-taskGroupBackgroundColor {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: #EEE;
+    z-index: -100;
 }
 
 @media(max-width:768px) {
@@ -1378,15 +1415,12 @@ path.leaflet-interactive {
 .gn-taskGroupColumnTaskDrop {
     position: absolute; 
     top: 0px; 
-    height: 10000px; 
     background-color: transparent; 
-    width: 100%;
+    width: calc(100% - 10px);
 }
 
-@media(max-width:768px) {
-    .gn-taskGroupColumnTaskDrop {
-        height: 100%; 
-    }
+.gn-taskGroupColumnTaskHover {
+    background-color: #E0E0E0 !important;
 }
 
 .gn-taskGroupColumnTaskContainer {
@@ -1399,13 +1433,6 @@ path.leaflet-interactive {
     }
 }
 
-@media(min-width:768px) {
-    .gn-taskGroupColumnTaskContainer {
-        margin-bottom: -99998px;
-        padding-bottom: 99999px;
-    }
-}
-
 .gn-taskGroupExpandCollapse {
     display: inline-block;
     position: absolute;
@@ -1414,10 +1441,12 @@ path.leaflet-interactive {
 
 .gn-taskGroupCard {
     max-width: 250px;
-    border-left: 5px solid #337ab7;
-    border-top: 1px solid #CCC;
-    border-right: 1px solid #CCC;
-    border-bottom: 1px solid #CCC;
+    background-color: #FFFFFF;
+    border-left-width: 5px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-style: solid;
     padding: 8px;
     margin-left: 25px;
     display: inline-block;
@@ -1425,12 +1454,13 @@ path.leaflet-interactive {
 }
 
 .gn-taskCard {
-	border-top: 1px solid #CCC;
-	border-bottom: 1px solid #CCC;
-	border-right: 1px solid #CCC;
+	border-left-width: 5px;
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+    border-right-width: 1px;
+    border-style: solid;
 	display: inline-block;
 	margin: 5px;
-	border-left: 5px solid #f2cb1d;
 	background-color: #FFF;
     padding: 8px;
     max-width: calc(100% - 20px);
@@ -1515,7 +1545,7 @@ path.leaflet-interactive {
     padding: 8px;
 }
 
-.gn-taskDeleteButton {
+.gn-taskDeleteButton, .gn-taskMoveToBoardButton {
     float: left;
 }
 

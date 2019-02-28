@@ -1,4 +1,4 @@
-ace.define("ace/mode/doc_comment_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -48,7 +48,7 @@ exports.DocCommentHighlightRules = DocCommentHighlightRules;
 
 });
 
-ace.define("ace/mode/javascript_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/javascript_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/doc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -92,6 +92,7 @@ var JavaScriptHighlightRules = function(options) {
         "3[0-7][0-7]?|" + // oct
         "[4-7][0-7]?|" + //oct
         ".)";
+
     this.$rules = {
         "no_regex" : [
             DocCommentHighlightRules.getStartRule("doc-start"),
@@ -180,7 +181,8 @@ var JavaScriptHighlightRules = function(options) {
                 next  : "property"
             }, {
                 token : "storage.type",
-                regex : /=>/
+                regex : /=>/,
+                next  : "start"
             }, {
                 token : "keyword.operator",
                 regex : /--|\+\+|\.{3}|===|==|=|!=|!==|<+=?|>+=?|!|&&|\|\||\?:|[!$%&*+\-~\/^]=?/,
@@ -520,7 +522,7 @@ function comments(next) {
 exports.JavaScriptHighlightRules = JavaScriptHighlightRules;
 });
 
-ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
+ace.define("ace/mode/matching_brace_outdent",["require","exports","module","ace/range"], function(require, exports, module) {
 "use strict";
 
 var Range = require("../range").Range;
@@ -560,7 +562,7 @@ var MatchingBraceOutdent = function() {};
 exports.MatchingBraceOutdent = MatchingBraceOutdent;
 });
 
-ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
+ace.define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -700,7 +702,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/javascript",[], function(require, exports, module) {
+ace.define("ace/mode/javascript",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/javascript_highlight_rules","ace/mode/matching_brace_outdent","ace/worker/worker_client","ace/mode/behaviour/cstyle","ace/mode/folding/cstyle"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -787,7 +789,7 @@ oop.inherits(Mode, TextMode);
 exports.Mode = Mode;
 });
 
-ace.define("ace/mode/java_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/java_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/doc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -845,6 +847,7 @@ var JavaHighlightRules = function() {
         "constant.language": buildinConstants,
         "support.function": langClasses
     }, "identifier");
+
     this.$rules = {
         "start" : [
             {
@@ -871,6 +874,36 @@ var JavaHighlightRules = function() {
             }, {
                 token : "constant.language.boolean",
                 regex : "(?:true|false)\\b"
+            }, {
+                regex: "(open(?:\\s+))?module(?=\\s*\\w)",
+                token: "keyword",
+                next: [{
+                    regex: "{",
+                    token: "paren.lparen",
+                    next: [{
+                        regex: "}",
+                        token: "paren.rparen",
+                        next: "start"
+                    }, {
+                        regex: "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b",
+                        token: "keyword" 
+                    }]
+                }, {
+                    token : "text",
+                    regex : "\\s+"
+                }, {
+                    token : "identifier",
+                    regex : "\\w+"
+                }, {
+                    token : "punctuation.operator",
+                    regex : "."
+                }, {
+                    token : "text",
+                    regex : "\\s+"
+                }, {
+                    regex: "", // exit if there is anything else
+                    next: "start"
+                }]
             }, {
                 token : keywordMapper,
                 regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
@@ -899,8 +932,10 @@ var JavaHighlightRules = function() {
         ]
     };
 
+    
     this.embedRules(DocCommentHighlightRules, "doc-",
         [ DocCommentHighlightRules.getEndRule("start") ]);
+    this.normalizeRules();
 };
 
 oop.inherits(JavaHighlightRules, TextHighlightRules);
@@ -908,16 +943,76 @@ oop.inherits(JavaHighlightRules, TextHighlightRules);
 exports.JavaHighlightRules = JavaHighlightRules;
 });
 
-ace.define("ace/mode/java",[], function(require, exports, module) {
+ace.define("ace/mode/folding/java",["require","exports","module","ace/lib/oop","ace/mode/folding/cstyle","ace/range"], function(require, exports, module) {
+"use strict";
+
+var oop = require("../../lib/oop");
+var CStyleFoldMode = require("./cstyle").FoldMode;
+var Range = require("../../range").Range;
+
+var FoldMode = exports.FoldMode = function() {};
+oop.inherits(FoldMode, CStyleFoldMode);
+
+(function() {
+    this.importRegex = /^import /;
+    this.getCStyleFoldWidget = this.getFoldWidget;
+    this.getFoldWidget = function(session, foldStyle, row) {
+        if (foldStyle === "markbegin") {
+            var line = session.getLine(row);
+            if (this.importRegex.test(line)) {
+                if (row == 0 || !this.importRegex.test(session.getLine(row - 1)))
+                    return "start";
+            }
+        }
+
+        return this.getCStyleFoldWidget(session, foldStyle, row);
+    };
+    
+    this.getCstyleFoldWidgetRange = this.getFoldWidgetRange;
+    this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
+        var line = session.getLine(row);
+        var match = line.match(this.importRegex);
+        if (!match || foldStyle !== "markbegin")
+            return this.getCstyleFoldWidgetRange(session, foldStyle, row, forceMultiline);
+
+        var startColumn = match[0].length;
+        var maxRow = session.getLength();
+        var startRow = row;
+        var endRow = row;
+
+        while (++row < maxRow) {
+            var line = session.getLine(row);
+            if (line.match(/^\s*$/))
+                continue;
+
+            if (!line.match(this.importRegex))
+                break;
+
+            endRow = row;
+        }
+
+        if (endRow > startRow) {
+            var endColumn = session.getLine(endRow).length;
+            return new Range(startRow, startColumn, endRow, endColumn);
+        }
+    };
+
+}).call(FoldMode.prototype);
+
+});
+
+ace.define("ace/mode/java",["require","exports","module","ace/lib/oop","ace/mode/javascript","ace/mode/java_highlight_rules","ace/mode/folding/java"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
 var JavaScriptMode = require("./javascript").Mode;
 var JavaHighlightRules = require("./java_highlight_rules").JavaHighlightRules;
+var JavaFoldMode = require("./folding/java").FoldMode;
 
 var Mode = function() {
     JavaScriptMode.call(this);
     this.HighlightRules = JavaHighlightRules;
+    this.foldingRules = new JavaFoldMode();
 };
 oop.inherits(Mode, JavaScriptMode);
 
@@ -931,8 +1026,7 @@ oop.inherits(Mode, JavaScriptMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/java"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

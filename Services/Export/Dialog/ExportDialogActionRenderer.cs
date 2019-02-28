@@ -97,6 +97,8 @@ namespace GoNorth.Services.Export.Dialog
             _actionRenderes.Add(ActionType.ChangeNpcSkillValue, new SkillValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
             _actionRenderes.Add(ActionType.PersistDialogState, new PersistDialogStateActionRenderer(defaultTemplateProvider));
             _actionRenderes.Add(ActionType.OpenShop, new OpenShopActionRenderer(defaultTemplateProvider));
+            _actionRenderes.Add(ActionType.PlayNpcAnimation, new PlayAnimationActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
+            _actionRenderes.Add(ActionType.PlayPlayerAnimation, new PlayAnimationActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
         }
 
         /// <summary>

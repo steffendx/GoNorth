@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Task) {
+
+        /**
+         * Manage Task Types Form Namespace
+         * @namespace ManageTaskTypes
+         */
+        (function(ManageTaskTypes) {
+        }(Task.ManageTaskTypes = Task.ManageTaskTypes || {}));
+
+    }(GoNorth.Task = GoNorth.Task || {}));
+}(window.GoNorth = window.GoNorth || {}));

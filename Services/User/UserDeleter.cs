@@ -80,9 +80,24 @@ namespace GoNorth.Services.User
         private readonly ITaleDbAccess _taleDbAccess;
 
         /// <summary>
+        /// Tale Config Db Access
+        /// </summary>
+        private readonly ITaleConfigDbAccess _taleConfigDbAccess;
+
+        /// <summary>
         /// Task Board Db Access
         /// </summary>
         private readonly ITaskBoardDbAccess _taskBoardDbAccess;
+
+        /// <summary>
+        /// Task group type Db Access
+        /// </summary>
+        private readonly ITaskGroupTypeDbAccess _taskGroupTypeDbAccess;
+
+        /// <summary>
+        /// Task type Db Access
+        /// </summary>
+        private readonly ITaskTypeDbAccess _taskTypeDbAccess;
 
         /// <summary>
         /// Lock Db Service
@@ -118,14 +133,18 @@ namespace GoNorth.Services.User
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
+        /// <param name="taleConfigDbAccess">Tale Config Db Access</param>
         /// <param name="taskBoardDbAccess">Task Bord Db Access</param>
+        /// <param name="taskGroupTypeDbAccess">Task Group Type Db Access</param>
+        /// <param name="taskTypeDbAccess">Task Type Db Access</param>
         /// <param name="userTaskBoardHistoryDbAccess">User Task Board History</param>
         /// <param name="lockDbService">Lock Db Service</param>
         /// <param name="timelineDbAccess">Timeline Db Access</param>
         /// <param name="userManager">User manager</param>
         public UserDeleter(IAikaQuestDbAccess questDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, IKortistoNpcDbAccess npcDbAccess, 
                            IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
-                           ITaskBoardDbAccess taskBoardDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, ILockServiceDbAccess lockDbService, ITimelineDbAccess timelineDbAccess, UserManager<GoNorthUser> userManager)
+                           ITaleConfigDbAccess taleConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
+                           ILockServiceDbAccess lockDbService, ITimelineDbAccess timelineDbAccess, UserManager<GoNorthUser> userManager)
         {
             _questDbAccess = questDbAccess;
             _chapterDetailDbAccess = chapterDetailDbAccess;
@@ -138,7 +157,10 @@ namespace GoNorth.Services.User
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
             _taleDbAccess = taleDbAccess;
+            _taleConfigDbAccess = taleConfigDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
+            _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
+            _taskTypeDbAccess = taskTypeDbAccess;
             _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
             _lockDbService = lockDbService;
             _timelineDbAccess = timelineDbAccess;
@@ -257,6 +279,14 @@ namespace GoNorth.Services.User
                 await _taleDbAccess.UpdateDialog(curDialog);
             }
 
+            List<TaleConfigEntry> taleConfigEntries = await _taleConfigDbAccess.GetConfigEntriesByModifiedUser(user.Id);
+            foreach(TaleConfigEntry curConfig in taleConfigEntries)
+            {
+                curConfig.ModifiedBy = Guid.Empty.ToString();
+                curConfig.ModifiedOn = DateTimeOffset.UtcNow;
+                await _taleConfigDbAccess.UpdateConfig(curConfig);
+            }
+
             List<TaskBoard> taskBoards = await _taskBoardDbAccess.GetTaskBoardsByModifiedUser(user.Id);
             foreach(TaskBoard curBoard in taskBoards)
             {
@@ -284,6 +314,22 @@ namespace GoNorth.Services.User
                 }
 
                 await _taskBoardDbAccess.UpdateTaskBoard(curBoard);
+            }
+
+            List<GoNorthTaskType> taskGroupTypes = await _taskGroupTypeDbAccess.GetTaskTypesByModifiedUser(user.Id);
+            foreach(GoNorthTaskType curType in taskGroupTypes)
+            {
+                curType.ModifiedBy = Guid.Empty.ToString();
+                curType.ModifiedOn = DateTimeOffset.UtcNow;
+                await _taskGroupTypeDbAccess.UpdateTaskType(curType);
+            }
+
+            List<GoNorthTaskType> taskTypes = await _taskTypeDbAccess.GetTaskTypesByModifiedUser(user.Id);
+            foreach(GoNorthTaskType curType in taskTypes)
+            {
+                curType.ModifiedBy = Guid.Empty.ToString();
+                curType.ModifiedOn = DateTimeOffset.UtcNow;
+                await _taskTypeDbAccess.UpdateTaskType(curType);
             }
         }
         

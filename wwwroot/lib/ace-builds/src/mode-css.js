@@ -23,6 +23,7 @@ var CssHighlightRules = function() {
         "support.constant.color": supportConstantColor,
         "support.constant.fonts": supportConstantFonts
     }, "text", true);
+
     this.$rules = {
         "start" : [{
             include : ["strings", "url", "comments"]
@@ -376,7 +377,7 @@ var CssCompletions = function() {
                 caption: property,
                 snippet: property + ': $0;',
                 meta: "property",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -396,7 +397,7 @@ var CssCompletions = function() {
                 caption: value,
                 snippet: value,
                 meta: "property value",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -712,8 +713,7 @@ oop.inherits(Mode, TextMode);
 
 exports.Mode = Mode;
 
-});
-                (function() {
+});                (function() {
                     window.require(["ace/mode/css"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

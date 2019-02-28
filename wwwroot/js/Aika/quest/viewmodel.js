@@ -164,6 +164,11 @@
 
                     return self.chooseObjectDialog.openSkillSearch(Aika.Localization.QuestViewModel.ChooseSkill);                    
                 };
+
+                // Load config lists
+                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
+                    self.errorOccured(true);
+                });
             };
 
             Quest.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);

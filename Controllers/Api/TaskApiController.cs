@@ -53,6 +53,21 @@ namespace GoNorth.Controllers.Api
         private readonly ITaskBoardDbAccess _taskBoardDbAccess;
 
         /// <summary>
+        /// Task group type Db access
+        /// </summary>
+        private readonly ITaskGroupTypeDbAccess _taskGroupTypeDbAccess;
+
+        /// <summary>
+        /// Task type Db access
+        /// </summary>
+        private readonly ITaskTypeDbAccess _taskTypeDbAccess;
+
+        /// <summary>
+        /// Task Board Category Db Access
+        /// </summary>
+        private readonly ITaskBoardCategoryDbAccess _taskBoardCategoryDbAccess;
+
+        /// <summary>
         /// Task Number Db Access
         /// </summary>
         private readonly ITaskNumberDbAccess _taskNumberDbAccess;
@@ -76,6 +91,11 @@ namespace GoNorth.Controllers.Api
         /// Task Image Parser
         /// </summary>
         private readonly ITaskImageParser _taskImageParser;
+
+        /// <summary>
+        /// Task type default provider
+        /// </summary>
+        private readonly ITaskTypeDefaultProvider _taskTypeDefaultProvider;
 
         /// <summary>
         /// Timeline Service
@@ -106,25 +126,34 @@ namespace GoNorth.Controllers.Api
         /// Constructor
         /// </summary>
         /// <param name="taskBoardDbAccess">Task Board Db Access</param>
+        /// <param name="taskGroupTypeDbAccess">Task group type Db Access</param>
+        /// <param name="taskTypeDbAccess">Task type Db Access</param>
+        /// <param name="taskBoardCategoryDbAccess">Task Board category Db Access</param>
         /// <param name="taskNumberDbAccess">Task Number Db Access</param>
         /// <param name="userTaskBoardHistoryDbAccess">User Task Board History Db Access</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="taskImageAccess">Task Image Access</param>
         /// <param name="taskImageParser">Task Image Parser</param>
+        /// <param name="taskTypeDefaultProvider">Task type default provider</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public TaskApiController(ITaskBoardDbAccess taskBoardDbAccess, ITaskNumberDbAccess taskNumberDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITaskImageAccess taskImageAccess, ITaskImageParser taskImageParser, 
+        public TaskApiController(ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, ITaskBoardCategoryDbAccess taskBoardCategoryDbAccess, ITaskNumberDbAccess taskNumberDbAccess, 
+                                 IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITaskImageAccess taskImageAccess, ITaskImageParser taskImageParser,  ITaskTypeDefaultProvider taskTypeDefaultProvider, 
                                  UserManager<GoNorthUser> userManager, ITimelineService timelineService, IXssChecker xssChecker, ILogger<TaskApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _taskBoardDbAccess = taskBoardDbAccess;
+            _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
+            _taskTypeDbAccess = taskTypeDbAccess;
+            _taskBoardCategoryDbAccess = taskBoardCategoryDbAccess;
             _taskNumberDbAccess = taskNumberDbAccess;
             _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
             _projectDbAccess = projectDbAccess;
             _taskImageAccess = taskImageAccess;
             _taskImageParser = taskImageParser;
+            _taskTypeDefaultProvider = taskTypeDefaultProvider;
             _userManager = userManager;
             _timelineService = timelineService;
             _xssChecker = xssChecker;
@@ -213,6 +242,7 @@ namespace GoNorth.Controllers.Api
             newBoard.IsClosed = false;
 
             newBoard.Name = board.Name;
+            newBoard.CategoryId = board.CategoryId;
             newBoard.PlannedStart = board.PlannedStart;
             newBoard.PlannedEnd = board.PlannedEnd;
             newBoard.TaskGroups = new List<TaskGroup>();
@@ -273,6 +303,7 @@ namespace GoNorth.Controllers.Api
             }
 
             updatedTaskBoard.Name = board.Name;
+            updatedTaskBoard.CategoryId = board.CategoryId;
             updatedTaskBoard.PlannedStart = board.PlannedStart;
             updatedTaskBoard.PlannedEnd = board.PlannedEnd;
 
@@ -422,6 +453,7 @@ namespace GoNorth.Controllers.Api
             // Create Task Group
             TaskGroup newGroup = new TaskGroup();
             newGroup.Id = Guid.NewGuid().ToString();
+            newGroup.TaskTypeId = group.TaskTypeId;
             newGroup.TaskNumber = await _taskNumberDbAccess.GetNextTaskNumber(updatedTaskBoard.ProjectId);
             newGroup.Name = group.Name;
             newGroup.Description = group.Description;
@@ -497,7 +529,8 @@ namespace GoNorth.Controllers.Api
             }
 
             List<string> oldImages = _taskImageParser.ParseDescription(updatedGroup.Description);
-
+            
+            updatedGroup.TaskTypeId = group.TaskTypeId;
             updatedGroup.Name = group.Name;
             updatedGroup.Description = group.Description;
             updatedGroup.Status = group.Status;
@@ -524,6 +557,134 @@ namespace GoNorth.Controllers.Api
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Could not delete unused task group images.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            try
+            {
+                await _timelineService.AddTimelineEntry(TimelineEvent.TaskGroupUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not create task group updated timeline entry.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(updatedGroup);
+        }
+
+        /// <summary>
+        /// Moves a task group to a different task board
+        /// </summary>
+        /// <param name="sourceBoardId">Id of the source board</param>
+        /// <param name="groupId">Id of the task group</param>
+        /// <param name="targetBoardId">Id of the target board</param>
+        /// <returns>Updated Task group</returns>
+        [Produces(typeof(TaskGroup))]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> MoveTaskGroupToBoard(string sourceBoardId, string groupId, string targetBoardId)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(sourceBoardId) || string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(targetBoardId))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Get Source
+            TaskBoard sourceBoard = await _taskBoardDbAccess.GetTaskBoardById(sourceBoardId);
+            if(sourceBoard == null || sourceBoard.TaskGroups == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            TaskGroup moveGroup = sourceBoard.TaskGroups.Where(g => g.Id == groupId).FirstOrDefault();
+            if(moveGroup == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            // Get Target
+            TaskBoard targetBoard = await _taskBoardDbAccess.GetTaskBoardById(targetBoardId);
+            if(targetBoard == null || targetBoard.TaskGroups == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            await this.SetModifiedData(_userManager, moveGroup);
+
+            sourceBoard.TaskGroups.Remove(moveGroup);
+            targetBoard.TaskGroups.Add(moveGroup);
+
+            try
+            {
+                await _taskBoardDbAccess.UpdateTaskBoard(targetBoard);
+                await _taskBoardDbAccess.UpdateTaskBoard(sourceBoard);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not updated task board for moving task group.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            try
+            {
+                await _timelineService.AddTimelineEntry(TimelineEvent.TaskGroupMoved, targetBoard.Id, targetBoard.Name, moveGroup.Name);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not create task group moved timeline entry.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(moveGroup);
+        }
+
+        /// <summary>
+        /// Reorders a task group
+        /// </summary>
+        /// <param name="boardId">Id of the board</param>
+        /// <param name="groupId">Id of the group</param>
+        /// <param name="targetIndex">Target index of the group</param>
+        /// <returns>Updated Task Group</returns>
+        [Produces(typeof(TaskGroup))]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> ReorderTaskGroup(string boardId, string groupId, int targetIndex)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Get Task Board
+            TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
+            if(updatedTaskBoard == null || updatedTaskBoard.TaskGroups == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            // Get Task Group
+            TaskGroup updatedGroup = updatedTaskBoard.TaskGroups.Where(t => t.Id == groupId).FirstOrDefault();
+            if(updatedGroup == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            updatedTaskBoard.TaskGroups.Remove(updatedGroup);
+            updatedTaskBoard.TaskGroups.Insert(targetIndex, updatedGroup);
+            await this.SetModifiedData(_userManager, updatedGroup);
+
+            try
+            {
+                await _taskBoardDbAccess.UpdateTaskBoard(updatedTaskBoard);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not updated task board for updating task group.");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
 
@@ -656,6 +817,7 @@ namespace GoNorth.Controllers.Api
             // Create Task
             GoNorthTask newTask = new GoNorthTask();
             newTask.Id = Guid.NewGuid().ToString();
+            newTask.TaskTypeId = task.TaskTypeId;
             newTask.TaskNumber = await _taskNumberDbAccess.GetNextTaskNumber(updatedTaskBoard.ProjectId);
             newTask.Name = task.Name;
             newTask.Description = task.Description;
@@ -695,17 +857,53 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
+        /// Inserts a task in a task group for a given index. This index is based on the same status as the task (i.e. if the Task Status is InProgress and the target index is 1, the task will be inserted as the second InProgress task)
+        /// </summary>
+        /// <param name="taskGroup">Task group to insert the task to</param>
+        /// <param name="task">Task</param>
+        /// <param name="targetIndex">Target index</param>
+        private void InsertTaskAtIndex(TaskGroup taskGroup, GoNorthTask task, int targetIndex)
+        {
+            if(targetIndex == 0)
+            {
+                taskGroup.Tasks.Insert(0, task);
+                return;
+            }
+
+            int curStatusIndex = 0;
+            int curTotalIndex = 0;
+            foreach(GoNorthTask curTask in taskGroup.Tasks)
+            {
+                ++curTotalIndex;
+                if(curTask.Status == task.Status)
+                {
+                    ++curStatusIndex;
+                }
+
+                if(curStatusIndex >= targetIndex)
+                {
+                    taskGroup.Tasks.Insert(curTotalIndex, task);
+                    return;
+                }
+            }
+
+            taskGroup.Tasks.Add(task);
+        }
+
+        /// <summary>
         /// Updates a task
         /// </summary>
         /// <param name="boardId">Id of the board</param>
         /// <param name="groupId">Id of the group</param>
         /// <param name="taskId">Id of the task</param>
+        /// <param name="oldGroupId">Id of the old group of the task</param>
+        /// <param name="targetIndex">Target index of the task</param>
         /// <param name="task">Task to update</param>
         /// <returns>Updated Task</returns>
         [Produces(typeof(GoNorthTask))]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> UpdateTask(string boardId, string groupId, string taskId, [FromBody]GoNorthTask task)
+        public async Task<IActionResult> UpdateTask(string boardId, string groupId, string taskId, string oldGroupId, int targetIndex, [FromBody]GoNorthTask task)
         {
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(taskId) || string.IsNullOrEmpty(task.Name))
@@ -724,7 +922,12 @@ namespace GoNorth.Controllers.Api
             }
 
             // Get Task Group
-            TaskGroup updatedGroup = updatedTaskBoard.TaskGroups.Where(g => g.Id == groupId).FirstOrDefault();
+            string groupIdToSearch = groupId;
+            if(!string.IsNullOrEmpty(oldGroupId))
+            {
+                groupIdToSearch = oldGroupId;
+            }
+            TaskGroup updatedGroup = updatedTaskBoard.TaskGroups.Where(g => g.Id == groupIdToSearch).FirstOrDefault();
             if(updatedGroup == null || updatedGroup.Tasks == null)
             {
                 return StatusCode((int)HttpStatusCode.NotFound); 
@@ -739,12 +942,38 @@ namespace GoNorth.Controllers.Api
 
             List<string> oldImages = _taskImageParser.ParseDescription(updatedTask.Description);
 
+            updatedTask.TaskTypeId = task.TaskTypeId;
             updatedTask.Name = task.Name;
             updatedTask.Description = task.Description;
             updatedTask.Status = task.Status;
             updatedTask.AssignedTo = task.AssignedTo;
 
             await this.SetModifiedData(_userManager, updatedTask);
+
+            if(!string.IsNullOrEmpty(oldGroupId))
+            {
+                // Move task to new group if group is passed
+                TaskGroup newGroup = updatedTaskBoard.TaskGroups.Where(g => g.Id == groupId).FirstOrDefault();
+                if(newGroup == null || newGroup.Tasks == null)
+                {
+                    return StatusCode((int)HttpStatusCode.NotFound); 
+                }
+
+                updatedGroup.Tasks.Remove(updatedTask);
+                if(targetIndex < 0)
+                {
+                    newGroup.Tasks.Add(updatedTask);
+                }
+                else
+                {
+                    InsertTaskAtIndex(newGroup, updatedTask, targetIndex);
+                }
+            }
+            else if(targetIndex >= 0)
+            {
+                updatedGroup.Tasks.Remove(updatedTask);
+                InsertTaskAtIndex(updatedGroup, updatedTask, targetIndex);
+            }
 
             try
             {
@@ -780,6 +1009,88 @@ namespace GoNorth.Controllers.Api
             }
 
             return Ok(updatedTask);
+        }
+
+        /// <summary>
+        /// Moves a task to a different task board
+        /// </summary>
+        /// <param name="sourceBoardId">Id of the source board</param>
+        /// <param name="sourceGroupId">Id of the source task group</param>
+        /// <param name="taskId">Id of the task</param>
+        /// <param name="targetBoardId">Id of the target board</param>
+        /// <param name="targetGroupId">If ot the target task group</param>
+        /// <returns>Updated Task</returns>
+        [Produces(typeof(GoNorthTask))]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> MoveTaskToBoard(string sourceBoardId, string sourceGroupId, string taskId, string targetBoardId, string targetGroupId)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(sourceBoardId) || string.IsNullOrEmpty(sourceGroupId) || string.IsNullOrEmpty(taskId) || string.IsNullOrEmpty(targetBoardId) || string.IsNullOrEmpty(targetGroupId))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Get Source
+            TaskBoard sourceBoard = await _taskBoardDbAccess.GetTaskBoardById(sourceBoardId);
+            if(sourceBoard == null || sourceBoard.TaskGroups == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            TaskGroup sourceGroup = sourceBoard.TaskGroups.Where(g => g.Id == sourceGroupId).FirstOrDefault();
+            if(sourceGroup == null || sourceGroup.Tasks == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            GoNorthTask moveTask = sourceGroup.Tasks.Where(t => t.Id == taskId).FirstOrDefault();
+            if(moveTask == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            // Get Target
+            TaskBoard targetBoard = await _taskBoardDbAccess.GetTaskBoardById(targetBoardId);
+            if(targetBoard == null || targetBoard.TaskGroups == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            TaskGroup targetGroup = targetBoard.TaskGroups.Where(g => g.Id == targetGroupId).FirstOrDefault();
+            if(targetGroup == null || targetGroup.Tasks == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound); 
+            }
+
+            await this.SetModifiedData(_userManager, moveTask);
+
+            sourceGroup.Tasks.Remove(moveTask);
+            targetGroup.Tasks.Add(moveTask);
+
+            try
+            {
+                await _taskBoardDbAccess.UpdateTaskBoard(targetBoard);
+                await _taskBoardDbAccess.UpdateTaskBoard(sourceBoard);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not updated task board for moving task.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            try
+            {
+                await _timelineService.AddTimelineEntry(TimelineEvent.TaskMoved, targetBoard.Id, targetBoard.Name, targetGroup.Name, moveTask.Name);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not create task moved timeline entry.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(moveTask);
         }
 
         /// <summary>
@@ -972,5 +1283,570 @@ namespace GoNorth.Controllers.Api
             return Ok(userId);
         }
         
+
+        /// <summary>
+        /// Returns all task board categories
+        /// </summary>
+        /// <returns>Task board categories</returns>
+        [Produces(typeof(List<TaskBoardCategory>))]
+        [HttpGet]
+        public async Task<IActionResult> GetTaskBoardCategories()
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            List<TaskBoardCategory> categoeries = await _taskBoardCategoryDbAccess.GetTaskBoardCategories(project.Id);
+            return Ok(categoeries);
+        }
+
+        /// <summary>
+        /// Creates a new task board category
+        /// </summary>
+        /// <param name="category">Category to create</param>
+        /// <returns>Id of the board category</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> CreateTaskBoardCategory([FromBody]TaskBoardCategory category)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(category.Name))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Create Task Board category
+            TaskBoardCategory newCategory = new TaskBoardCategory();
+            newCategory.Name = category.Name;
+            newCategory.IsExpandedByDefault = category.IsExpandedByDefault;
+
+            await this.SetModifiedData(_userManager, newCategory);
+
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            newCategory.ProjectId = project.Id;
+
+            try
+            {
+                newCategory = await _taskBoardCategoryDbAccess.CreateTaskBoardCategory(newCategory);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not create task board category.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            try
+            {
+                await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardCategoryCreated, newCategory.Id, newCategory.Name);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not create task board category create timeline entry.");
+                await _taskBoardCategoryDbAccess.DeleteTaskBoardCategory(newCategory);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(newCategory.Id);
+        }
+
+        /// <summary>
+        /// Updates a task board category
+        /// </summary>
+        /// <param name="id">Id of the board category</param>
+        /// <param name="category">Board category to update</param>
+        /// <returns>Id of the board category</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> UpdateTaskBoardCategory(string id, [FromBody]TaskBoardCategory category)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(id) || string.IsNullOrEmpty(category.Name))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Updates a Task Board category
+            TaskBoardCategory updatedTaskBoardCategory = await _taskBoardCategoryDbAccess.GetTaskBoardCategoryById(id);
+            if(updatedTaskBoardCategory == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            updatedTaskBoardCategory.Name = category.Name;
+            updatedTaskBoardCategory.IsExpandedByDefault = category.IsExpandedByDefault;
+
+            await this.SetModifiedData(_userManager, updatedTaskBoardCategory);
+
+            try
+            {
+                await _taskBoardCategoryDbAccess.UpdateTaskBoardCategory(updatedTaskBoardCategory);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not update task board category.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardCategoryUpdated, updatedTaskBoardCategory.Id, updatedTaskBoardCategory.Name);
+
+            return Ok(updatedTaskBoardCategory.Id);
+        }
+
+        /// <summary>
+        /// Checks if an task board is using a category
+        /// </summary>
+        /// <param name="id">Id of the board category</param>
+        /// <returns>true if any task board is using the category</returns>
+        [Produces(typeof(bool))]
+        [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
+        [HttpGet]
+        public async Task<bool> IsTaskBoardCategoryUsedByBoard(string id)
+        {
+            return await _taskBoardDbAccess.AnyTaskBoardUsingCategory(id);
+        }
+
+        /// <summary>
+        /// Deletes a task board category
+        /// </summary>
+        /// <param name="id">Id of the board category</param>
+        /// <returns>Id of the board category</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
+        [ValidateAntiForgeryToken]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTaskBoardCategory(string id)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(id))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Updates a Task Board category
+            TaskBoardCategory updatedTaskBoardCategory = await _taskBoardCategoryDbAccess.GetTaskBoardCategoryById(id);
+            if(updatedTaskBoardCategory == null)
+            {
+                return Ok(id);
+            }
+
+            // Delete board category
+            try
+            {
+                await _taskBoardCategoryDbAccess.DeleteTaskBoardCategory(updatedTaskBoardCategory);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not delete task board category.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+            
+            // Reset references to category
+            try
+            {
+                await _taskBoardDbAccess.ResetCategoryReference(updatedTaskBoardCategory.Id);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not reset reference to category.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardCategoryDeleted, updatedTaskBoardCategory.Name);
+
+            return Ok(id);
+        }
+
+
+        /// <summary>
+        /// Returns the task group types from a database source
+        /// </summary>
+        /// <param name="dbSource">Database source</param>
+        /// <param name="defaultTaskTypeFunction">Default task types function</param>
+        /// <returns>Task Types</returns>
+        private async Task<IActionResult> GetTaskTypesFromDb(ITaskTypeBaseDbAccess dbSource, Func<List<GoNorthTaskType>> defaultTaskTypeFunction)
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            List<GoNorthTaskType> taskTypes = await dbSource.GetTaskTypes(project.Id);
+            if(taskTypes == null || !taskTypes.Any())
+            {
+                taskTypes = defaultTaskTypeFunction();
+            }
+
+            return Ok(taskTypes);
+        }
+
+        /// <summary>
+        /// Returns the task group types
+        /// </summary>
+        /// <returns>Task group Types</returns>
+        [Produces(typeof(List<GoNorthTaskType>))]
+        [HttpGet]
+        public async Task<IActionResult> GetTaskGroupTypes()
+        {
+            return await GetTaskTypesFromDb(_taskGroupTypeDbAccess, () => _taskTypeDefaultProvider.GetDefaultTaskGroupTypes());
+        }
+
+        /// <summary>
+        /// Returns the task types
+        /// </summary>
+        /// <returns>Task Types</returns>
+        [Produces(typeof(List<GoNorthTaskType>))]
+        [HttpGet]
+        public async Task<IActionResult> GetTaskTypes()
+        {
+            return await GetTaskTypesFromDb(_taskTypeDbAccess, () => _taskTypeDefaultProvider.GetDefaultTaskTypes());
+        }
+
+
+        /// <summary>
+        /// Resets the default task type for a database target if a new default task type was provided
+        /// </summary>
+        /// <param name="dbTarget">Database target</param>
+        /// <param name="updatedTaskType">Updated task type</param>
+        /// <param name="project">Project, if null it will be loaded</param>
+        /// <returns></returns>
+        private async Task ResetDefaultTaskTypeIfChanged(ITaskTypeBaseDbAccess dbTarget, GoNorthTaskType updatedTaskType, GoNorthProject project)
+        {
+            if(!updatedTaskType.IsDefault)
+            {
+                return;
+            }
+
+            if(project == null)
+            {
+                project = await _projectDbAccess.GetDefaultProject();
+            }
+
+            GoNorthTaskType defaultTaskType = await dbTarget.GetDefaultTaskType(project.Id);
+            if(defaultTaskType != null && defaultTaskType.Id != updatedTaskType.Id)
+            {
+                defaultTaskType.IsDefault = false;
+                await dbTarget.UpdateTaskType(defaultTaskType);
+            }
+        }
+
+        /// <summary>
+        /// Creates a task type in a target database
+        /// </summary>
+        /// <param name="dbTarget">Target database</param>
+        /// <param name="taskType">Task type</param>
+        /// <param name="timelineEvent">Timeline event</param>
+        /// <returns>Action result</returns>
+        private async Task<IActionResult> CreateTaskTypeInDb(ITaskTypeBaseDbAccess dbTarget, GoNorthTaskType taskType, TimelineEvent timelineEvent)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(taskType.Name) || string.IsNullOrEmpty(taskType.Color))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Create Task Type
+            GoNorthTaskType newTaskType = new GoNorthTaskType();
+
+            newTaskType.Name = taskType.Name;
+            newTaskType.IsDefault = taskType.IsDefault;
+            newTaskType.Color = taskType.Color;
+
+            await this.SetModifiedData(_userManager, newTaskType);
+
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            newTaskType.ProjectId = project.Id;
+
+            try
+            {
+                await ResetDefaultTaskTypeIfChanged(dbTarget, newTaskType, project);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not reset default task type.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            try
+            {
+                newTaskType = await dbTarget.CreateTaskType(newTaskType);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not create task type.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            try
+            {
+                await _timelineService.AddTimelineEntry(timelineEvent, newTaskType.Id, newTaskType.Name);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not create task type create timeline entry.");
+                await dbTarget.DeleteTaskType(newTaskType);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(newTaskType.Id);
+        }
+
+        /// <summary>
+        /// Creates a new task group type
+        /// </summary>
+        /// <param name="taskType">Task group type to create</param>
+        /// <returns>Id of the task group type</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> CreateTaskGroupType([FromBody]GoNorthTaskType taskType)
+        {
+            return await CreateTaskTypeInDb(_taskGroupTypeDbAccess, taskType, TimelineEvent.TaskGroupTypeCreated);
+        }
+
+        /// <summary>
+        /// Creates a new task type
+        /// </summary>
+        /// <param name="taskType">Task type to create</param>
+        /// <returns>Id of the task type</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> CreateTaskType([FromBody]GoNorthTaskType taskType)
+        {
+            return await CreateTaskTypeInDb(_taskTypeDbAccess, taskType, TimelineEvent.TaskTypeCreated);
+        }
+
+
+        /// <summary>
+        /// updates a task type in a target database
+        /// </summary>
+        /// <param name="dbTarget">Target database</param>
+        /// <param name="id">Id of the task type</param>
+        /// <param name="taskType">Task type</param>
+        /// <param name="timelineEvent">Timeline event</param>
+        /// <returns>Action result</returns>
+        private async Task<IActionResult> UpdateTaskTypeInDb(ITaskTypeBaseDbAccess dbTarget, string id, GoNorthTaskType taskType, TimelineEvent timelineEvent)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(id) || string.IsNullOrEmpty(taskType.Name) || string.IsNullOrEmpty(taskType.Color))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Updates a Task type
+            GoNorthTaskType updatedTaskType = await dbTarget.GetTaskTypeById(id);
+            if(updatedTaskType == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            updatedTaskType.Name = taskType.Name;
+            updatedTaskType.IsDefault = taskType.IsDefault;
+            updatedTaskType.Color = taskType.Color;
+
+            await this.SetModifiedData(_userManager, updatedTaskType);
+
+            try
+            {
+                await ResetDefaultTaskTypeIfChanged(dbTarget, updatedTaskType, null);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not reset default task type.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            try
+            {
+                await dbTarget.UpdateTaskType(updatedTaskType);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not update task type.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            await _timelineService.AddTimelineEntry(timelineEvent, updatedTaskType.Id, updatedTaskType.Name);
+
+            return Ok(updatedTaskType.Id);
+        }
+
+        /// <summary>
+        /// Updates a task group type
+        /// </summary>
+        /// <param name="id">Id of the task group type</param>
+        /// <param name="taskType">Task group type to update</param>
+        /// <returns>Id of the task group type</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> UpdateTaskGroupType(string id, [FromBody]GoNorthTaskType taskType)
+        {
+            return await UpdateTaskTypeInDb(_taskGroupTypeDbAccess, id, taskType, TimelineEvent.TaskGroupTypeUpdated);
+        }
+
+        /// <summary>
+        /// Updates a task type
+        /// </summary>
+        /// <param name="id">Id of the task type</param>
+        /// <param name="taskType">Task type to update</param>
+        /// <returns>Id of the task type</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> UpdateTaskType(string id, [FromBody]GoNorthTaskType taskType)
+        {
+            return await UpdateTaskTypeInDb(_taskTypeDbAccess, id, taskType, TimelineEvent.TaskTypeUpdated);
+        }
+
+        /// <summary>
+        /// Deletes a task type from a database
+        /// </summary>
+        /// <param name="dbTarget">Target database</param>
+        /// <param name="id">Id of the task type to delete</param>
+        /// <param name="newTaskTypeId">Id of the task type to which the old tasks using this type must be changed</param>
+        /// <param name="timelineEvent">Timeline event</param>
+        /// <returns></returns>
+        private async Task<IActionResult> DeleteTaskTypeFromDb(ITaskTypeBaseDbAccess dbTarget, string id, string newTaskTypeId, TimelineEvent timelineEvent)
+        {
+            // Validate Data
+            if(string.IsNullOrEmpty(id))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest); 
+            }
+
+            // Delete task type
+            GoNorthTaskType deleteTaskType = await dbTarget.GetTaskTypeById(id);
+            if(deleteTaskType == null)
+            {
+                return Ok(id);
+            }
+
+            // Change references
+            if(string.IsNullOrEmpty(newTaskTypeId))
+            {
+                newTaskTypeId = null;
+            }
+
+            try
+            {
+                List<TaskBoard> boardsUsingType = await _taskBoardDbAccess.GetAllTaskBoardsUsingTaskType(id);
+                foreach(TaskBoard curBoard in boardsUsingType)
+                {
+                    if(curBoard.TaskGroups == null)
+                    {
+                        continue;
+                    }
+
+                    foreach(TaskGroup curGroup in curBoard.TaskGroups)
+                    {
+                        if(curGroup.TaskTypeId == id)
+                        {
+                            curGroup.TaskTypeId = newTaskTypeId;
+                        }
+
+                        if(curGroup.Tasks == null)
+                        {
+                            continue;
+                        }
+                        
+                        foreach(GoNorthTask curTask in curGroup.Tasks)
+                        {
+                            if(curTask.TaskTypeId == id)
+                            {
+                                curTask.TaskTypeId = newTaskTypeId;
+                            }
+                        }
+                    }
+
+                    await _taskBoardDbAccess.UpdateTaskBoard(curBoard);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not reset references to task type.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Delete task type
+            try
+            {
+                await dbTarget.DeleteTaskType(deleteTaskType);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not delete task type.");
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            // Add Timeline entry
+            await _timelineService.AddTimelineEntry(timelineEvent, deleteTaskType.Name);
+
+            return Ok(id);
+        }
+
+        /// <summary>
+        /// Deletes a task group type
+        /// </summary>
+        /// <param name="id">Id of the type</param>
+        /// <param name="newTaskTypeId">Id of the task type to which the old task groups using this type must be changed</param>
+        /// <returns>Id of the type</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [ValidateAntiForgeryToken]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTaskGroupType(string id, string newTaskTypeId)
+        {
+            return await DeleteTaskTypeFromDb(_taskGroupTypeDbAccess, id, newTaskTypeId, TimelineEvent.TaskGroupTypeDeleted);
+        }
+
+        /// <summary>
+        /// Deletes a task type
+        /// </summary>
+        /// <param name="id">Id of the type</param>
+        /// <param name="newTaskTypeId">Id of the task type to which the old tasks using this type must be changed</param>
+        /// <returns>Id of the type</returns>
+        [Produces(typeof(string))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [ValidateAntiForgeryToken]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTaskType(string id, string newTaskTypeId)
+        {
+            return await DeleteTaskTypeFromDb(_taskTypeDbAccess, id, newTaskTypeId, TimelineEvent.TaskTypeDeleted);
+        }
+
+        /// <summary>
+        /// Returns true if any task board has a task group without a task type
+        /// </summary>
+        /// <returns>true if any task board has a task group without a task type</returns>
+        [Produces(typeof(bool))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [HttpGet]
+        public async Task<IActionResult> AnyTaskBoardHasTaskGroupsWithoutType()
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            bool anyWithoutType = await _taskBoardDbAccess.AnyTaskBoardHasTaskGroupsWithoutType(project.Id);
+            return Ok(anyWithoutType);
+        }
+
+        /// <summary>
+        /// Returns true if any task board has a task without a task type
+        /// </summary>
+        /// <returns>true if any task board has a task without a task type</returns>
+        [Produces(typeof(bool))]
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [HttpGet]
+        public async Task<IActionResult> AnyTaskBoardHasTasksWithoutType()
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            bool anyWithoutType = await _taskBoardDbAccess.AnyTaskBoardHasTasksWithoutType(project.Id);
+            return Ok(anyWithoutType);
+        }
     }
 }

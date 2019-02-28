@@ -13,6 +13,7 @@
 
     "SwitchBoard": "Switch task board",
     "ManageBoards": "Manage task boards",
+    "ManageTaskTypes": "Manage task type",
 
     "InsertKirjaLink": "Add link to Kirja page",
     "InsertAikaQuestLink": "Add link to quest",
@@ -25,11 +26,13 @@
     "EditTaskGroup": "Edit task group",
     "NewTask": "New task",
     "EditTask": "Edit task",
+    "TaskType": "Type",
     "Name": "Name",
     "Description": "Description",
     "PressCtrlToOpenLinks": "Ctrl to open links",
     "AssignedTo": "Assigned to",
     "Delete": "Delete",
+    "MoveToOtherBoard": "Move to board",
     "Save": "Save",
     "Cancel": "Cancel",
 
@@ -38,6 +41,12 @@
     "AreYouSureYouWantToDeleteTheTask": "Are you sure you want to delete the task?",
     "Yes": "Yes",
     "No": "No",
+
+    "SelectTarget": "Select target",
+    "TargetBoard": "Target board",
+    "TargetTaskGroup": "Target task group",
+    "Choose": "Choose...",
+    "Move": "Move",
 
     "Unassigned": "Unassigned",
 

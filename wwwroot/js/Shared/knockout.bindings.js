@@ -584,6 +584,14 @@
                         droppableOptions.accept = allBindings.get("droppableAccept");
                     }
 
+                    if(allBindings.get("droppableHoverClass"))
+                    {
+                        droppableOptions.classes = {
+                            "ui-droppable-hover": allBindings.get("droppableHoverClass")
+                        }
+                    }
+                    
+
                     jQuery(element).droppable(droppableOptions);
                 },
                 update: function (element, valueAccessor) {

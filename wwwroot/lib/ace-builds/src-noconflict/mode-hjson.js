@@ -1,10 +1,11 @@
-ace.define("ace/mode/hjson_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/hjson_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 var HjsonHighlightRules = function() {
+
     this.$rules = {
         start: [{
             include: "#comments"
@@ -181,7 +182,7 @@ oop.inherits(HjsonHighlightRules, TextHighlightRules);
 exports.HjsonHighlightRules = HjsonHighlightRules;
 });
 
-ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
+ace.define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -321,7 +322,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/hjson",[], function(require, exports, module) {
+ace.define("ace/mode/hjson",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/hjson_highlight_rules","ace/mode/folding/cstyle"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -342,8 +343,7 @@ oop.inherits(Mode, TextMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/hjson"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

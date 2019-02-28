@@ -1,0 +1,18 @@
+{
+    "TaleConfig": "Tale Konfiguration",
+    
+    "AnimationConfigSectionHeader": "Animationsdaten Konfiguration",
+    "AnimationConfigSectionDescription": "Jede Zeile wird als Animation in der Animation abspielen Aktion angezeigt:",
+    
+    "StateConfigSectionHeader": "Zustands Konfiguration",
+    "StateConfigSectionDescription": "Jede Zeile wird als Zustand in der Zustand festlegen Aktion angezeigt:",
+
+    "Save": "Speichern",
+
+    "Error": "Fehler",
+    "ErrorOccured": "Ein Fehler ist aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Die Konfiguration wird gerade von ",
+    "LockedPostfix": " bearbeitet."
+}

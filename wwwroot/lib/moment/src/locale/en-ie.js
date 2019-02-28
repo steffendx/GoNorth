@@ -13,7 +13,7 @@ export default moment.defineLocale('en-ie', {
     longDateFormat : {
         LT : 'HH:mm',
         LTS : 'HH:mm:ss',
-        L : 'DD-MM-YYYY',
+        L : 'DD/MM/YYYY',
         LL : 'D MMMM YYYY',
         LLL : 'D MMMM YYYY HH:mm',
         LLLL : 'dddd D MMMM YYYY HH:mm'
@@ -30,6 +30,7 @@ export default moment.defineLocale('en-ie', {
         future : 'in %s',
         past : '%s ago',
         s : 'a few seconds',
+        ss : '%d seconds',
         m : 'a minute',
         mm : '%d minutes',
         h : 'an hour',

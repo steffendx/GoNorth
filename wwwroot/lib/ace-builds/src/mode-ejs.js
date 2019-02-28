@@ -23,6 +23,7 @@ var CssHighlightRules = function() {
         "support.constant.color": supportConstantColor,
         "support.constant.fonts": supportConstantFonts
     }, "text", true);
+
     this.$rules = {
         "start" : [{
             include : ["strings", "url", "comments"]
@@ -286,6 +287,7 @@ var JavaScriptHighlightRules = function(options) {
         "3[0-7][0-7]?|" + // oct
         "[4-7][0-7]?|" + //oct
         ".)";
+
     this.$rules = {
         "no_regex" : [
             DocCommentHighlightRules.getStartRule("doc-start"),
@@ -374,7 +376,8 @@ var JavaScriptHighlightRules = function(options) {
                 next  : "property"
             }, {
                 token : "storage.type",
-                regex : /=>/
+                regex : /=>/,
+                next  : "start"
             }, {
                 token : "keyword.operator",
                 regex : /--|\+\+|\.{3}|===|==|=|!=|!==|<+=?|>+=?|!|&&|\|\||\?:|[!$%&*+\-~\/^]=?/,
@@ -1410,7 +1413,7 @@ var CssCompletions = function() {
                 caption: property,
                 snippet: property + ': $0;',
                 meta: "property",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -1430,7 +1433,7 @@ var CssCompletions = function() {
                 caption: value,
                 snippet: value,
                 meta: "property value",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2363,7 +2366,7 @@ var HtmlCompletions = function() {
             return {
                 value: element,
                 meta: "tag",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2381,7 +2384,7 @@ var HtmlCompletions = function() {
                 caption: attribute,
                 snippet: attribute + '="$0"',
                 meta: "attribute",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2401,7 +2404,7 @@ var HtmlCompletions = function() {
                 caption: value,
                 snippet: value,
                 meta: "attribute value",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2414,7 +2417,7 @@ var HtmlCompletions = function() {
                 caption: value,
                 snippet: value,
                 meta: "html entity",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2597,6 +2600,7 @@ var RubyHighlightRules = function() {
         "support.function": builtinFunctions,
         "invalid.deprecated": "debugger" // TODO is this a remnant from js mode?
     }, "identifier");
+
     this.$rules = {
         "start" : [
             {
@@ -2675,6 +2679,7 @@ var RubyHighlightRules = function() {
                     defaultToken: "string"
                 }]
             }],
+
             {
                 token : "text", // namespaces aren't symbols
                 regex : "::"
@@ -3014,8 +3019,7 @@ oop.inherits(Mode, HtmlMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     window.require(["ace/mode/ejs"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

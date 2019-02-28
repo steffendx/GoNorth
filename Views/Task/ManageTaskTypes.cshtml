@@ -1,0 +1,206 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["ManageTaskTypes"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div id="gn-taskManageTypesContainer">
+    <!-- Task Type List Template -->
+    <script type="text/html" id="gn-taskTypeList">
+        <!-- Create / Edit Dialog -->
+        <div class="modal fade" role="dialog" data-bind="modal: showCreateEditTaskTypeDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><span data-bind="text: createEditTaskTypeDialogTitle"></span></h4>
+                    </div>
+                    
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+                            <strong>@Localizer["Error"]</strong> <span>@Localizer["ErrorOccured"]</span>
+                        </div>
+
+                        <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: anyTaskWithoutType() && createEditTaskTypeIsDefault() && !isDialogLocked()">
+                            <strong>@Localizer["Info"]</strong> <span data-bind="text: taskWithoutTypeExistsText"></span>
+                        </div>
+
+                        <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: isDialogLocked">
+                            <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: dialogLockedByUser"></span>@Localizer["LockedPostfix"]
+                        </div>
+
+                        <form id="gn-taskTypeCreateEditForm">
+                            <div class="form-group">
+                                <label for="gn-taskTypeName">@Localizer["Name"]</label>
+                                <input type="text" class="form-control" id="gn-taskTypeName" placeholder="@Localizer["Name"]" name="taskTypeName" data-bind="value: createEditTaskTypeName, enterPressed: saveTaskType, disable: isDialogLocked" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="gn-taskTypeColor">@Localizer["Color"]</label>
+                                <input type="text" class="form-control" id="gn-taskTypeColor" placeholder="@Localizer["Color"]" name="taskTypeColor" data-bind="colorpicker: createEditTaskTypeColor, disable: isDialogLocked" required/>
+                                <div class="text-danger" data-bind="visible: createEditTaskShowColorValidationError" style="display: none">@Localizer["MustEnterAValidColor"]</div>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" data-bind="checked: createEditTaskTypeIsDefault, disable: isDialogLocked"/>@Localizer["IsDefault"]</label>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bind="click: saveTaskType, disable: isLoading() || isDialogLocked()">
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+                            @Localizer["Save"]
+                        </button>
+                        <button type="button" class="btn btn-default" data-bind="click: cancelCreateEditTaskTypeDialog, disable: isLoading">
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+                            @Localizer["Cancel"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete task type -->
+        <div class="modal fade" role="dialog" data-bind="modal: showDeleteTaskTypeDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">
+                            @Localizer["AreYouSure"]
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+                            <strong>@Localizer["Error"]</strong> <span>@Localizer["ErrorOccured"]</span>
+                        </div>
+
+                        <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: isDialogLocked">
+                            <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: dialogLockedByUser"></span>@Localizer["LockedPostfix"]
+                        </div>
+
+                        <p>@Localizer["AreYouSureYouWantToDeleteTheTaskType"]</p>
+
+                        <p data-bind="visible: taskTypesForRemapping().length > 0">
+                            @Localizer["SelectTypeToRemap"] <br/>
+                            <select class="form-control" id="gn-taskDialogType" name="taskDialogType" data-bind="value: taskTypeToRemapDelete, options: taskTypesForRemapping, optionsValue: 'id', optionsText: 'name', optionsCaption: '@Localizer["SelectTaskType"]', disable: isDialogLocked"></select>
+                        </p>
+                        <p data-bind="visible: taskTypesForRemapping().length == 0">
+                             @Localizer["DeletingLastTypeReferencesWillBeRemappedToDefault"]
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bind="click: deleteTaskType, disable: disableDeleteButton">
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+                            @Localizer["Yes"]
+                        </button>
+                        <button type="button" class="btn btn-default" data-bind="click: cancelDeleteTaskTypeDialog, disable: isLoading">@Localizer["No"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- List -->
+        <h4 class="gn-clickable gn-taskTypeListTitle" data-bind="click: toogleVisibility">
+            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i>
+            <span data-bind="text: title"></span>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+        </h4>
+
+        <div data-bind="visible: isExpanded">
+            <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+                <strong>@Localizer["Error"]</strong> <span>@Localizer["ErrorOccured"]</span>
+            </div>
+
+            <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: taskTypes().length == 0 && !isLoading()">
+                <strong>@Localizer["Info"]</strong> @Localizer["DefaultTaskTypesWillBeProvided"]
+            </div>
+
+            <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openNewTaskTypeDialog, disable: isLoading()">
+                <i class="glyphicon glyphicon-plus" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> <span data-bind="text: createNewButtonLabel"></span>
+            </button>
+
+            <div class="container gn-commandWidgetTopMargin">
+                <div class="row gn-gridTableRow">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 gn-gridTableHeader gn-gridTableCell">
+                        @Localizer["Name"]
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableHeader gn-gridTableCell">
+                        @Localizer["Color"]
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableHeader gn-gridTableCell">
+                        @Localizer["IsDefault"]
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableHeader gn-gridTableCell">
+                    </div>
+                </div>
+                <!-- ko foreach: taskTypes -->
+                <div class="row gn-gridTableRow" data-bind="css: { 'gn-taskTypeDefaultRow': isDefault }">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 gn-gridTableCell" data-bind="text: name">
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableCell">
+                        <span class="gn-taskTypeColorIndicator" data-bind="style: { backgroundColor: color }"></span> <span data-bind="text: color"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableCell">
+                        <span data-bind="text: isDefault ? '@Localizer["Yes"]' : '@Localizer["No"]'"></span>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 gn-gridTableCell">
+                        <a class="gn-clickable" data-bind="click: function(taskType) { $parent.openEditTaskTypeDialog(taskType); }" title="@Localizer["EditTaskTypeToolTip"]"><i class="glyphicon glyphicon-pencil"></i></a>
+                        <a class="gn-clickable" data-bind="click: function(taskType) { $parent.openDeleteTaskTypeDialog(taskType); }" title="@Localizer["DeleteTaskTypeToolTip"]"><i class="glyphicon glyphicon-trash"></i></a>
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+    </script>
+
+    <!-- Command Buttons -->
+    <div data-bind="template: { name: 'gn-taskTypeList', data: taskGroupTypeList }"></div>
+
+    <div data-bind="template: { name: 'gn-taskTypeList', data: taskTypeList }"></div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/js/bootstrap-colorpicker.min.js" 
+        asp-fallback-src="~/lib/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"
+        asp-fallback-test="window.jQuery && jQuery.fn.colorpicker"
+        integrity="sha256-Y27a5HlqZwshkK8xfNfu6Y0c6+GGX9wTiRe8Xa8ITGY=" 
+        crossorigin="anonymous"></script>
+
+    <environment include="Development">
+        <script src="~/js/Task/manageTaskTypes.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Task/manageTaskTypes.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.Task.ManageTaskTypes.Localization = {
+            TaskGroupTypes: "@Localizer["TaskGroupTypes"]",
+            TaskTypes: "@Localizer["TaskTypes"]",
+
+            CreateNewTaskGroupType: "@Localizer["CreateNewTaskGroupType"]",
+            EditTaskGroupType: "@Localizer["EditTaskGroupType"]",
+            CreateNewTaskType: "@Localizer["CreateNewTaskType"]",
+            EditTaskType: "@Localizer["EditTaskType"]",
+            TaskGroupsWithoutTypeExist: "@Localizer["TaskGroupsWithoutTypeExist"]",
+            TasksWithoutTypeExist: "@Localizer["TasksWithoutTypeExist"]"
+        };
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Task.ManageTaskTypes.ViewModel(), jQuery("#gn-taskManageTypesContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" integrity="sha256-1kg+SaNnqDn7AaD0skLFrhW4KoZVnAnYnuVP3rC8wqE=" crossorigin="anonymous" asp-fallback-test-call="colorpicker" asp-fallback-test-property="min-width" asp-fallback-test-value="130px" asp-fallback-href="~/lib/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" />
+}

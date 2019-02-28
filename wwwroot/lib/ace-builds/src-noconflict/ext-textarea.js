@@ -1,4 +1,4 @@
-ace.define("ace/theme/textmate",[], function(require, exports, module) {
+ace.define("ace/theme/textmate",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 "use strict";
 
 exports.isDark = false;
@@ -129,7 +129,7 @@ var dom = require("../lib/dom");
 dom.importCssString(exports.cssText, exports.cssClass);
 });
 
-ace.define("ace/ext/textarea",[], function(require, exports, module) {
+ace.define("ace/ext/textarea",["require","exports","module","ace/lib/event","ace/lib/useragent","ace/lib/net","ace/ace","ace/theme/textmate"], function(require, exports, module) {
 "use strict";
 
 var event = require("../lib/event");
@@ -170,7 +170,6 @@ function setupContainer(element, getValue) {
 
     var parentNode = element.parentNode;
     var container = document.createElement('div');
-    //
     var resizeEvent = function() {
         var style = 'position:relative;';
         [
@@ -212,8 +211,6 @@ exports.transformTextarea = function(element, options) {
     });
     element.style.display = 'none';
     container.style.background = 'white';
-
-    //
     var editorDiv = document.createElement("div");
     applyStyles(editorDiv, {
         top: "0px",
@@ -556,8 +553,7 @@ exports.defaultOptions = {
     showInvisibles:     "false"
 };
 
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/ext/textarea"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

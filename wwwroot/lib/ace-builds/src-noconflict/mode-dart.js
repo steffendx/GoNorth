@@ -1,4 +1,4 @@
-ace.define("ace/mode/doc_comment_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -48,7 +48,7 @@ exports.DocCommentHighlightRules = DocCommentHighlightRules;
 
 });
 
-ace.define("ace/mode/c_cpp_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/c_cpp_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/doc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -103,6 +103,7 @@ var c_cppHighlightRules = function() {
           + /(\.((-?\d+)|\*(-?\d+\$)?)?)?/.source // precision
           + /(hh|h|ll|l|j|t|z|q|L|vh|vl|v|hv|hl)?/.source // length modifier
           + /(\[[^"\]]+\]|[diouxXDOUeEfFgGaACcSspn%])/.source; // conversion type
+
     this.$rules = { 
         "start" : [
             {
@@ -241,7 +242,7 @@ oop.inherits(c_cppHighlightRules, TextHighlightRules);
 exports.c_cppHighlightRules = c_cppHighlightRules;
 });
 
-ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
+ace.define("ace/mode/matching_brace_outdent",["require","exports","module","ace/range"], function(require, exports, module) {
 "use strict";
 
 var Range = require("../range").Range;
@@ -281,7 +282,7 @@ var MatchingBraceOutdent = function() {};
 exports.MatchingBraceOutdent = MatchingBraceOutdent;
 });
 
-ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
+ace.define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -421,7 +422,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/c_cpp",[], function(require, exports, module) {
+ace.define("ace/mode/c_cpp",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/c_cpp_highlight_rules","ace/mode/matching_brace_outdent","ace/range","ace/mode/behaviour/cstyle","ace/mode/folding/cstyle"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -493,7 +494,7 @@ oop.inherits(Mode, TextMode);
 exports.Mode = Mode;
 });
 
-ace.define("ace/mode/dart_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/dart_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/doc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -518,11 +519,17 @@ var DartHighlightRules = function() {
         "storage.type.primitive.dart": storageType
     }, "identifier");
 
-    var stringfill = {
+    var stringfill = [{
+        token : "constant.language.escape",
+        regex : /\\./
+    }, {
+        token : "text",
+        regex : /\$(?:\w+|{[^"'}]+})?/
+    }, {
         defaultToken : "string"
-    };
-    this.$rules = 
-        {
+    }];
+
+    this.$rules = {
     "start": [
         {
             token : "comment",
@@ -635,30 +642,34 @@ var DartHighlightRules = function() {
     "qdoc" : [
         {
             token : "string",
-            regex : ".*?'''",
+            regex : "'''",
             next : "start"
-        }, stringfill],
+        }
+    ].concat(stringfill),
 
     "qqdoc" : [
         {
             token : "string",
-            regex : '.*?"""',
+            regex : '"""',
             next : "start"
-        }, stringfill],
+        }
+    ].concat(stringfill),
 
     "qstring" : [
         {
             token : "string",
-            regex : "[^\\\\']*(?:\\\\.[^\\\\']*)*'",
+            regex : "'|$",
             next : "start"
-        }, stringfill],
+        }
+    ].concat(stringfill),
 
     "qqstring" : [
         {
             token : "string",
-            regex : '[^\\\\"]*(?:\\\\.[^\\\\"]*)*"',
+            regex : '"|$',
             next : "start"
-        }, stringfill]
+        }
+    ].concat(stringfill)
 };
 
     this.embedRules(DocCommentHighlightRules, "doc-",
@@ -670,7 +681,7 @@ oop.inherits(DartHighlightRules, TextHighlightRules);
 exports.DartHighlightRules = DartHighlightRules;
 });
 
-ace.define("ace/mode/dart",[], function(require, exports, module) {
+ace.define("ace/mode/dart",["require","exports","module","ace/lib/oop","ace/mode/c_cpp","ace/mode/dart_highlight_rules","ace/mode/folding/cstyle"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -692,8 +703,7 @@ oop.inherits(Mode, CMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/dart"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

@@ -9,6 +9,8 @@
     "ClosedTaskBoards": "Geschlossene Aufgabenboards",
 
     "Name": "Name",
+    "Category": "Kategorie",
+    "NoCategory": "Keine Kategorie",
     "PlannedStart": "Geplanter Beginn",
     "PlannedEnd": "Geplantes Ende",
     "Save": "Speichern",
@@ -20,10 +22,22 @@
     "CloseTaskBoardToolTip": "Aufgabenboard abschließen",
     "ReopenTaskBoardToolTip": "Aufgabenboard erneut öffnen",
 
+    "TaskBoardCategories": "Aufgabenboard Kategorien",
+    "CreateNewBoardCategory": "Neue Kategorie anlegen",
+    "CreateTaskBoardCategory": "Neue Kategorie anlegen",
+    "EditTaskBoardCategory": "Kategorie editieren",
+    "IsExpandedByDefault": "Aufgeklappt",
+    "IsExpandedByDefaultCheckbox": "Standardmäßig aufgeklappt",
+    "EditBoardCategoryToolTip": "Aufgabenboard Kategorie bearbeiten",
+    "DeleteBoardCategoryToolTip": "Aufgabenboard Kategorie löschen",
+    "Warning": "Warnung:",
+    "CategoryIsUsedByBoard": "Diese Kategorie wird von Aufgabenboards verwendet. Die Kategorie dieser Boards wird zurückgesetzt.",
+
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteTheBoard": "Bist du sicher das das Aufgabenboard gelöscht werden soll?",
     "AreYouSureYouWantToCloseTheBoard": "Bist du sicher das das Aufgabenboard abgeschlossen werden soll?",
     "AreYouSureYouWantToReopenTheBoard": "Bist du sicher das das Aufgabenboard erneut geöffnet werden soll?",
+    "AreYouSureYouWantToDeleteTheBoardCategory": "Bist du sicher das die Aufgabenboard Kategorie gelöscht werden soll?",
     "Yes": "Ja",
     "No": "Nein",
 

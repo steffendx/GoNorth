@@ -1134,6 +1134,24 @@
 (function(GoNorth) {
     "use strict";
     (function(Tale) {
+        (function(ConfigKeys) {
+
+            /**
+             * Config key for play an animation
+             */
+            ConfigKeys.PlayAnimationAction = "PlayAnimationAction";
+
+            /**
+             * Config key for setting the npc state
+             */
+            ConfigKeys.SetNpcStateAction = "SetNpcStateAction";
+
+        }(Tale.ConfigKeys = Tale.ConfigKeys || {}));
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Tale) {
         (function(Shapes) {
 
             /// Player Text Type
@@ -1765,6 +1783,65 @@
                 availableActions.push(action);
             }
 
+            /**
+             * Loads the config for an action
+             * 
+             * @param {string} configKey Config key
+             * @returns {jQuery.Deferred} Deferred for the request
+             */
+            function loadActionConfig(configKey) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax("/api/TaleApi/GetNodeConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
+                    if(!loadedConfigData)
+                    {
+                        def.resolve();
+                        return;
+                    }
+                    
+                    try
+                    {
+                        var configLines = JSON.parse(loadedConfigData)
+                        var configList = jQuery("<datalist id='gn-" + configKey + "'></datalist>");
+                        for(var curLine = 0; curLine < configLines.length; ++curLine)
+                        {
+                            configList.append(jQuery("<option></option>").text(configLines[curLine]));
+                        }
+                        jQuery("body").append(configList);
+                        def.resolve();
+                    }
+                    catch(e)
+                    {
+                        self.errorOccured(true);
+                        def.reject();
+                    }
+                }).fail(function() {
+                    def.reject();
+                })
+
+                return def.promise();
+            }
+
+            /**
+             * Loads all the config lists
+             * @returns {jQuery.Deferred} Deferred for the requests
+             */
+            Shapes.loadConfigLists = function() {
+                var usedConfigKeys = {};
+                var loadingPromises = [];
+
+                for(var curAction = 0; curAction < availableActions.length; ++curAction)
+                {
+                    var configKey = availableActions[curAction].getConfigKey();
+                    if(configKey && !usedConfigKeys[configKey])
+                    {
+                        usedConfigKeys[configKey] = true;
+                        loadingPromises.push(loadActionConfig(configKey));
+                    }
+                }
+
+                return jQuery.when.apply(jQuery, loadingPromises);
+            }
 
             joint.shapes.default = joint.shapes.default || {};
 
@@ -2683,6 +2760,15 @@
                  */
                 getContent: function() {
 
+                },
+
+                /**
+                 * Returns the config key for the action
+                 * 
+                 * @returns {string} Config key
+                 */
+                getConfigKey: function() {
+                    return null;
                 },
 
                 /**
@@ -4525,7 +4611,7 @@
              * @returns {string} HTML Content of the action
              */
             Actions.SetObjectStateAction.prototype.getContent = function() {
-                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "'/>";
+                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "' list='gn-SetNpcStateAction'/>";
             };
 
             /**
@@ -4601,6 +4687,15 @@
             Actions.SetObjectStateAction.prototype.getLabel = function() {
                 return "";
             };
+
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.SetObjectStateAction.prototype.getConfigKey = function() {
+                return "SetNpcStateAction";
+            }
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -5404,6 +5499,219 @@
             };
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.OpenShopAction());
+
+        }(Tale.Actions = Tale.Actions || {}));
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Tale) {
+        (function(Actions) {
+
+            /**
+             * Play animation Action
+             * @class
+             */
+            Actions.PlayAnimationAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.PlayAnimationAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.PlayAnimationAction.prototype.getContent = function() {
+                return  "<input type='text' class='gn-nodeActionPlayAnimation' placeholder='" + Tale.Localization.Actions.AnimationPlaceholder + "' list='gn-" + Tale.ConfigKeys.PlayAnimationAction + "'/>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.PlayAnimationAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                // Deserialize
+                this.deserializeData();
+
+                // Handlers
+                var self = this;
+                var animationName = contentElement.find(".gn-nodeActionPlayAnimation");
+                animationName.change(function(e) {
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.PlayAnimationAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-nodeActionPlayAnimation").val(data.animationName);
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.PlayAnimationAction.prototype.saveData = function() {
+                var animationName = this.contentElement.find(".gn-nodeActionPlayAnimation").val();
+                var serializeData = {
+                    animationName: animationName
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            }
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayAnimationAction.prototype.buildAction = function() {
+                return new Actions.PlayAnimationAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayAnimationAction.prototype.getType = function() {
+                return -1;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayAnimationAction.prototype.getLabel = function() {
+                return "";
+            };
+
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.PlayAnimationAction.prototype.getConfigKey = function() {
+                return Tale.ConfigKeys.PlayAnimationAction;
+            }
+
+        }(Tale.Actions = Tale.Actions || {}));
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Tale) {
+        (function(Actions) {
+
+            /// Action Type for playing an npc animation
+            var actionTypePlayNpcAnimation = 26;
+
+            /**
+             * Play npc animation action
+             * @class
+             */
+            Actions.PlayNpcAnimationAction = function()
+            {
+                GoNorth.Tale.Actions.PlayAnimationAction.apply(this);
+            };
+
+            Actions.PlayNpcAnimationAction.prototype = jQuery.extend({ }, GoNorth.Tale.Actions.PlayAnimationAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayNpcAnimationAction.prototype.buildAction = function() {
+                return new Actions.PlayNpcAnimationAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayNpcAnimationAction.prototype.getType = function() {
+                return actionTypePlayNpcAnimation;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayNpcAnimationAction.prototype.getLabel = function() {
+                return Tale.Localization.Actions.PlayNpcAnimationLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayNpcAnimationAction());
+
+        }(Tale.Actions = Tale.Actions || {}));
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Tale) {
+        (function(Actions) {
+
+            /// Action Type for playing a player animation
+            var actionTypePlayPlayerAnimation = 27;
+
+            /**
+             * Play player animation action
+             * @class
+             */
+            Actions.PlayPlayerAnimationAction = function()
+            {
+                GoNorth.Tale.Actions.PlayAnimationAction.apply(this);
+            };
+
+            Actions.PlayPlayerAnimationAction.prototype = jQuery.extend({ }, GoNorth.Tale.Actions.PlayAnimationAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayPlayerAnimationAction.prototype.buildAction = function() {
+                return new Actions.PlayPlayerAnimationAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayPlayerAnimationAction.prototype.getType = function() {
+                return actionTypePlayPlayerAnimation;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayPlayerAnimationAction.prototype.getLabel = function() {
+                return Tale.Localization.Actions.PlayPlayerAnimationLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayPlayerAnimationAction());
 
         }(Tale.Actions = Tale.Actions || {}));
     }(GoNorth.Tale = GoNorth.Tale || {}));
@@ -9276,6 +9584,11 @@
 
                     return self.objectDialog.openSkillSearch(Tale.Localization.ViewModel.ChooseSkill);                    
                 };
+
+                // Load config lists
+                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
+                    self.errorOccured(true);
+                });
             };
 
             Dialog.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
@@ -9388,6 +9701,13 @@
                 this.compareDialog.openDialogCompare(this.dialogId(), this.headerName()).done(function() {
                     self.isImplemented(true);
                 });
+            };
+
+            /**
+             * Opens the config page
+             */
+            Dialog.ViewModel.prototype.openConfigPage = function() {
+                window.location = "/Tale/Config";
             };
 
             /**

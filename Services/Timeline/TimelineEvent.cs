@@ -350,6 +350,54 @@ namespace GoNorth.Services.Timeline
         /// </summary>
         TaskBoardDeleted = 50,
 
+        
+        /// <summary>
+        /// Task group type created
+        /// </summary>
+        TaskGroupTypeCreated = 88,
+
+        /// <summary>
+        /// Task group type updated
+        /// </summary>
+        TaskGroupTypeUpdated = 89,
+        
+        /// <summary>
+        /// Task group type deleted
+        /// </summary>
+        TaskGroupTypeDeleted = 90,
+
+
+        /// <summary>
+        /// Task Type created
+        /// </summary>
+        TaskTypeCreated = 91,
+
+        /// <summary>
+        /// Task Type updated
+        /// </summary>
+        TaskTypeUpdated = 92,
+        
+        /// <summary>
+        /// Task Type deleted
+        /// </summary>
+        TaskTypeDeleted = 93,
+
+        
+        /// <summary>
+        /// Task Board category created
+        /// </summary>
+        TaskBoardCategoryCreated = 83,
+
+        /// <summary>
+        /// Task Board category updated
+        /// </summary>
+        TaskBoardCategoryUpdated = 84,
+
+        /// <summary>
+        /// Task Board category deleted
+        /// </summary>
+        TaskBoardCategoryDeleted = 85,
+
 
         /// <summary>
         /// Task Group created
@@ -360,6 +408,11 @@ namespace GoNorth.Services.Timeline
         /// Task Group updated
         /// </summary>
         TaskGroupUpdated = 52,
+
+        /// <summary>
+        /// A task group was moved to a different board
+        /// </summary>
+        TaskGroupMoved = 86,
 
         /// <summary>
         /// Task Group deleted
@@ -376,6 +429,11 @@ namespace GoNorth.Services.Timeline
         /// Task updated
         /// </summary>
         TaskUpdated = 55,
+
+        /// <summary>
+        /// A task was moved to a different board
+        /// </summary>
+        TaskMoved = 87,
 
         /// <summary>
         /// Task deleted

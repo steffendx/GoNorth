@@ -1,8 +1,9 @@
+/// <reference path="./ace-modules.d.ts" />
 export namespace Ace {
   export type NewLineMode = 'auto' | 'unix' | 'windows';
 
   export interface Anchor extends EventEmitter {
-    getPosition(): Position;
+    getPosition(): Point;
     getDocument(): Document;
     setPosition(row: number, column: number, noClip?: boolean): void;
     detach(): void;
@@ -22,24 +23,24 @@ export namespace Ace {
     getAllLines(): string[];
     getTextRange(range: Range): string;
     getLinesForRange(range: Range): string[];
-    insert(position: Position, text: string): Position;
-    insertInLine(position: Position, text: string): Position;
+    insert(position: Point, text: string): Point;
+    insertInLine(position: Point, text: string): Point;
     clippedPos(row: number, column: number): Point;
     clonePos(pos: Point): Point;
     pos(row: number, column: number): Point;
     insertFullLines(row: number, lines: string[]): void;
-    insertMergedLines(position: Position, lines: string[]): Point;
-    remove(range: Range): Position;
-    removeInLine(row: number, startColumn: number, endColumn: number): Position;
+    insertMergedLines(position: Point, lines: string[]): Point;
+    remove(range: Range): Point;
+    removeInLine(row: number, startColumn: number, endColumn: number): Point;
     removeFullLines(firstRow: number, lastRow: number): string[];
     removeNewLine(row: number): void;
-    replace(range: Range, text: string): Position;
+    replace(range: Range, text: string): Point;
     applyDeltas(deltas: Delta[]): void;
     revertDeltas(deltas: Delta[]): void;
     applyDelta(delta: Delta, doNotValidate?: boolean): void;
     revertDelta(delta: Delta): void;
-    indexToPosition(index: number, startRow: number): Position;
-    positionToIndex(pos: Position, startRow?: number): number;
+    indexToPosition(index: number, startRow: number): Point;
+    positionToIndex(pos: Point, startRow?: number): number;
   }
 
   export interface FoldLine {
@@ -71,6 +72,20 @@ export namespace Ace {
     clone(): Fold;
     addSubFold(fold: Fold): Fold;
     restoreRange(range: Range): void;
+  }
+
+  interface Folding {
+    getFoldAt(row:number, column:number, side:number):Fold;
+    getFoldsInRange(range:Range):Array<Fold>;
+    getFoldsInRangeList(ranges:Array<Range>):Array<Fold>;
+    getAllFolds():Array<Fold>;
+    addFold(placeholder:string, range:Range):Fold;
+    addFolds(folds:Array<Fold>);
+    removeFold(fold:Fold);
+    removeFolds(folds:Array<Fold>);
+    expandFold(fold:Fold);
+    expandFolds(folds:Array<Fold>);
+    foldAll(startRow:number, endRow:number, depth:number);
   }
 
   export interface Range {
@@ -269,6 +284,16 @@ export namespace Ace {
     getLineTokens(line: string, startState: string | string[]): Token[];
   }
 
+  interface TokenIterator{
+    getCurrentToken():Token;
+    getCurrentTokenColumn():number;
+    getCurrentTokenRow():number;
+    getCurrentTokenPosition():Point;
+    getCurrentTokenRange():Range;
+    stepBackward():Token;
+    stepForward():Token;
+  }
+  
   export interface SyntaxMode {
     getTokenizer(): Tokenizer;
     toggleCommentLines(state: any,
@@ -278,7 +303,7 @@ export namespace Ace {
     toggleBlockComment(state: any,
                        session: EditSession,
                        range: Range,
-                       cursor: Position): void;
+                       cursor: Point): void;
     getNextLineIndent(state: any, line: string, tab: string): string;
     checkOutdent(state: any, line: string, input: string): boolean;
     autoOutdent(state: any, doc: Document, row: number): void;
@@ -293,7 +318,7 @@ export namespace Ace {
     getKeywords(append?: boolean): Array<string | RegExp>;
     getCompletions(state: string,
                    session: EditSession,
-                   pos: Position,
+                   pos: Point,
                    prefix: string): Completion[];
   }
 
@@ -337,7 +362,7 @@ export namespace Ace {
     isAtBookmark(): boolean;
   }
 
-  export interface EditSession extends EventEmitter, OptionsProvider {
+  export interface EditSession extends EventEmitter, OptionsProvider, Folding {
     selection: Selection;
 
     on(name: 'changeFold',
@@ -368,7 +393,7 @@ export namespace Ace {
     getUseSoftTabs(): boolean;
     setTabSize(tabSize: number): void;
     getTabSize(): number;
-    isTabStop(position: Position): boolean;
+    isTabStop(position: Point): boolean;
     setNavigateWithinSoftTabs(navigateWithinSoftTabs: boolean): void;
     getNavigateWithinSoftTabs(): boolean;
     setOverwrite(overwrite: boolean): void;
@@ -414,17 +439,17 @@ export namespace Ace {
     getLines(firstRow: number, lastRow: number): string[];
     getLength(): number;
     getTextRange(range: Range): string;
-    insert(position: Position, text: string): void;
+    insert(position: Point, text: string): void;
     remove(range: Range): void;
     removeFullLines(firstRow: number, lastRow: number): void;
     undoChanges(deltas: Delta[], dontSelect?: boolean): void;
     redoChanges(deltas: Delta[], dontSelect?: boolean): void;
     setUndoSelect(enable: boolean): void;
     replace(range: Range, text: string): void;
-    moveText(fromRange: Range, toPosition: Position, copy?: boolean): void;
+    moveText(fromRange: Range, toPosition: Point, copy?: boolean): void;
     indentRows(startRow: number, endRow: number, indentString: string): void;
     outdentRows(range: Range): void;
-    moveLinesUp(firstRow: number, lastRow, number): void;
+    moveLinesUp(firstRow: number, lastRow: number): void;
     moveLinesDown(firstRow: number, lastRow: number): void;
     duplicateLines(firstRow: number, lastRow: number): void;
     setUseWrapMode(useWrapMode: boolean): void;
@@ -438,15 +463,16 @@ export namespace Ace {
     getRowWrapIndent(screenRow: number): number;
     getScreenLastRowColumn(screenRow: number): number;
     getDocumentLastRowColumn(docRow: number, docColumn: number): number;
-    getdocumentLastRowColumnPosition(docRow: number, docColumn: number): Position;
+    getdocumentLastRowColumnPosition(docRow: number, docColumn: number): Point;
     getRowSplitData(row: number): string | undefined;
     getScreenTabSize(screenColumn: number): number;
     screenToDocumentRow(screenRow: number, screenColumn: number): number;
     screenToDocumentColumn(screenRow: number, screenColumn: number): number;
     screenToDocumentPosition(screenRow: number,
                              screenColumn: number,
-                             offsetX?: number): Position;
-    documentToScreenPosition(docRow, docColumn): Position;
+                             offsetX?: number): Point;
+    documentToScreenPosition(docRow: number, docColumn: number): Point;
+    documentToScreenPosition(position: Point): Point;
     documentToScreenColumn(row: number, docColumn: number): number;
     documentToScreenRow(docRow: number, docColumn: number): number;
     getScreenLength(): number;
@@ -540,16 +566,16 @@ export namespace Ace {
     updateCursor(): void;
     hideCursor(): void;
     showCursor(): void;
-    scrollSelectionIntoView(anchor: Position,
-                            lead: Position,
+    scrollSelectionIntoView(anchor: Point,
+                            lead: Point,
                             offset?: number): void;
-    scrollCursorIntoView(cursor: Position, offset?: number): void;
+    scrollCursorIntoView(cursor: Point, offset?: number): void;
     getScrollTop(): number;
     getScrollLeft(): number;
     getScrollTopRow(): number;
     getScrollBottomRow(): number;
     scrollToRow(row: number): void;
-    alignCursor(cursor: Position | number, alignment: number): number;
+    alignCursor(cursor: Point | number, alignment: number): number;
     scrollToLine(line: number,
                  center: boolean,
                  animate: boolean,
@@ -588,8 +614,8 @@ export namespace Ace {
     isMultiLine(): boolean;
     setCursor(row: number, column: number): void;
     setAnchor(row: number, column: number): void;
-    getAnchor(): Position;
-    getCursor(): Position;
+    getAnchor(): Point;
+    getCursor(): Point;
     isBackwards(): boolean;
     getRange(): Range;
     clearSelection(): void;
@@ -651,7 +677,7 @@ export namespace Ace {
     setOption<T extends keyof EditorOptions>(name: T, value: EditorOptions[T]): void;
     getOption<T extends keyof EditorOptions>(name: T): EditorOptions[T];
 
-    setKeyboardHandler(keyboardHandler: string, callback?: () => void);
+    setKeyboardHandler(keyboardHandler: string, callback?: () => void): void;
     getKeyboardHandler(): string;
     setSession(session: EditSession): void;
     getSession(): EditSession;
@@ -659,7 +685,7 @@ export namespace Ace {
     getValue(): string;
     getSelection(): Selection;
     resize(force?: boolean): void;
-    setTheme(theme: string, callback?: () => void);
+    setTheme(theme: string, callback?: () => void): void;
     getTheme(): string;
     setStyle(style: string): void;
     unsetStyle(style: string): void;
@@ -794,213 +820,3 @@ export const Range: {
   fromPoints(start: Ace.Point, end: Ace.Point): Ace.Range;
   comparePoints(p1: Ace.Point, p2: Ace.Point): number;
 };
-
-declare module 'ace-builds/src-noconflict/ext-beautify';
-declare module 'ace-builds/src-noconflict/ext-elastic_tabstops_lite';
-declare module 'ace-builds/src-noconflict/ext-emmet';
-declare module 'ace-builds/src-noconflict/ext-error_marker';
-declare module 'ace-builds/src-noconflict/ext-keybinding_menu';
-declare module 'ace-builds/src-noconflict/ext-language_tools';
-declare module 'ace-builds/src-noconflict/ext-linking';
-declare module 'ace-builds/src-noconflict/ext-modelist';
-declare module 'ace-builds/src-noconflict/ext-options';
-declare module 'ace-builds/src-noconflict/ext-searchbox';
-declare module 'ace-builds/src-noconflict/ext-settings_menu';
-declare module 'ace-builds/src-noconflict/ext-spellcheck';
-declare module 'ace-builds/src-noconflict/ext-split';
-declare module 'ace-builds/src-noconflict/ext-static_highlight';
-declare module 'ace-builds/src-noconflict/ext-statusbar';
-declare module 'ace-builds/src-noconflict/ext-textarea';
-declare module 'ace-builds/src-noconflict/ext-themelist';
-declare module 'ace-builds/src-noconflict/ext-whitespace';
-declare module 'ace-builds/src-noconflict/keybinding-emacs';
-declare module 'ace-builds/src-noconflict/keybinding-vim';
-declare module 'ace-builds/src-noconflict/mode-abap';
-declare module 'ace-builds/src-noconflict/mode-abc';
-declare module 'ace-builds/src-noconflict/mode-actionscript';
-declare module 'ace-builds/src-noconflict/mode-ada';
-declare module 'ace-builds/src-noconflict/mode-apache_conf';
-declare module 'ace-builds/src-noconflict/mode-applescript';
-declare module 'ace-builds/src-noconflict/mode-asciidoc';
-declare module 'ace-builds/src-noconflict/mode-asl';
-declare module 'ace-builds/src-noconflict/mode-assembly_x86';
-declare module 'ace-builds/src-noconflict/mode-autohotkey';
-declare module 'ace-builds/src-noconflict/mode-batchfile';
-declare module 'ace-builds/src-noconflict/mode-bro';
-declare module 'ace-builds/src-noconflict/mode-c9search';
-declare module 'ace-builds/src-noconflict/mode-cirru';
-declare module 'ace-builds/src-noconflict/mode-clojure';
-declare module 'ace-builds/src-noconflict/mode-cobol';
-declare module 'ace-builds/src-noconflict/mode-coffee';
-declare module 'ace-builds/src-noconflict/mode-coldfusion';
-declare module 'ace-builds/src-noconflict/mode-csharp';
-declare module 'ace-builds/src-noconflict/mode-csound_document';
-declare module 'ace-builds/src-noconflict/mode-csound_orchestra';
-declare module 'ace-builds/src-noconflict/mode-csound_score';
-declare module 'ace-builds/src-noconflict/mode-csp';
-declare module 'ace-builds/src-noconflict/mode-css';
-declare module 'ace-builds/src-noconflict/mode-curly';
-declare module 'ace-builds/src-noconflict/mode-c_cpp';
-declare module 'ace-builds/src-noconflict/mode-d';
-declare module 'ace-builds/src-noconflict/mode-dart';
-declare module 'ace-builds/src-noconflict/mode-diff';
-declare module 'ace-builds/src-noconflict/mode-django';
-declare module 'ace-builds/src-noconflict/mode-dockerfile';
-declare module 'ace-builds/src-noconflict/mode-dot';
-declare module 'ace-builds/src-noconflict/mode-drools';
-declare module 'ace-builds/src-noconflict/mode-edifact';
-declare module 'ace-builds/src-noconflict/mode-eiffel';
-declare module 'ace-builds/src-noconflict/mode-ejs';
-declare module 'ace-builds/src-noconflict/mode-elixir';
-declare module 'ace-builds/src-noconflict/mode-elm';
-declare module 'ace-builds/src-noconflict/mode-erlang';
-declare module 'ace-builds/src-noconflict/mode-forth';
-declare module 'ace-builds/src-noconflict/mode-fortran';
-declare module 'ace-builds/src-noconflict/mode-ftl';
-declare module 'ace-builds/src-noconflict/mode-gcode';
-declare module 'ace-builds/src-noconflict/mode-gherkin';
-declare module 'ace-builds/src-noconflict/mode-gitignore';
-declare module 'ace-builds/src-noconflict/mode-glsl';
-declare module 'ace-builds/src-noconflict/mode-gobstones';
-declare module 'ace-builds/src-noconflict/mode-golang';
-declare module 'ace-builds/src-noconflict/mode-graphqlschema';
-declare module 'ace-builds/src-noconflict/mode-groovy';
-declare module 'ace-builds/src-noconflict/mode-haml';
-declare module 'ace-builds/src-noconflict/mode-handlebars';
-declare module 'ace-builds/src-noconflict/mode-haskell';
-declare module 'ace-builds/src-noconflict/mode-haskell_cabal';
-declare module 'ace-builds/src-noconflict/mode-haxe';
-declare module 'ace-builds/src-noconflict/mode-hjson';
-declare module 'ace-builds/src-noconflict/mode-html';
-declare module 'ace-builds/src-noconflict/mode-html_elixir';
-declare module 'ace-builds/src-noconflict/mode-html_ruby';
-declare module 'ace-builds/src-noconflict/mode-ini';
-declare module 'ace-builds/src-noconflict/mode-io';
-declare module 'ace-builds/src-noconflict/mode-jack';
-declare module 'ace-builds/src-noconflict/mode-jade';
-declare module 'ace-builds/src-noconflict/mode-java';
-declare module 'ace-builds/src-noconflict/mode-javascript';
-declare module 'ace-builds/src-noconflict/mode-json';
-declare module 'ace-builds/src-noconflict/mode-jsoniq';
-declare module 'ace-builds/src-noconflict/mode-jsp';
-declare module 'ace-builds/src-noconflict/mode-jssm';
-declare module 'ace-builds/src-noconflict/mode-jsx';
-declare module 'ace-builds/src-noconflict/mode-julia';
-declare module 'ace-builds/src-noconflict/mode-kotlin';
-declare module 'ace-builds/src-noconflict/mode-latex';
-declare module 'ace-builds/src-noconflict/mode-less';
-declare module 'ace-builds/src-noconflict/mode-liquid';
-declare module 'ace-builds/src-noconflict/mode-lisp';
-declare module 'ace-builds/src-noconflict/mode-livescript';
-declare module 'ace-builds/src-noconflict/mode-logiql';
-declare module 'ace-builds/src-noconflict/mode-lsl';
-declare module 'ace-builds/src-noconflict/mode-lua';
-declare module 'ace-builds/src-noconflict/mode-luapage';
-declare module 'ace-builds/src-noconflict/mode-lucene';
-declare module 'ace-builds/src-noconflict/mode-makefile';
-declare module 'ace-builds/src-noconflict/mode-markdown';
-declare module 'ace-builds/src-noconflict/mode-mask';
-declare module 'ace-builds/src-noconflict/mode-matlab';
-declare module 'ace-builds/src-noconflict/mode-maze';
-declare module 'ace-builds/src-noconflict/mode-mel';
-declare module 'ace-builds/src-noconflict/mode-mixal';
-declare module 'ace-builds/src-noconflict/mode-mushcode';
-declare module 'ace-builds/src-noconflict/mode-mysql';
-declare module 'ace-builds/src-noconflict/mode-nix';
-declare module 'ace-builds/src-noconflict/mode-nsis';
-declare module 'ace-builds/src-noconflict/mode-objectivec';
-declare module 'ace-builds/src-noconflict/mode-ocaml';
-declare module 'ace-builds/src-noconflict/mode-pascal';
-declare module 'ace-builds/src-noconflict/mode-perl';
-declare module 'ace-builds/src-noconflict/mode-pgsql';
-declare module 'ace-builds/src-noconflict/mode-php';
-declare module 'ace-builds/src-noconflict/mode-pig';
-declare module 'ace-builds/src-noconflict/mode-plain_text';
-declare module 'ace-builds/src-noconflict/mode-powershell';
-declare module 'ace-builds/src-noconflict/mode-praat';
-declare module 'ace-builds/src-noconflict/mode-prolog';
-declare module 'ace-builds/src-noconflict/mode-properties';
-declare module 'ace-builds/src-noconflict/mode-protobuf';
-declare module 'ace-builds/src-noconflict/mode-python';
-declare module 'ace-builds/src-noconflict/mode-r';
-declare module 'ace-builds/src-noconflict/mode-razor';
-declare module 'ace-builds/src-noconflict/mode-rdoc';
-declare module 'ace-builds/src-noconflict/mode-red';
-declare module 'ace-builds/src-noconflict/mode-redshift';
-declare module 'ace-builds/src-noconflict/mode-rhtml';
-declare module 'ace-builds/src-noconflict/mode-rst';
-declare module 'ace-builds/src-noconflict/mode-ruby';
-declare module 'ace-builds/src-noconflict/mode-rust';
-declare module 'ace-builds/src-noconflict/mode-sass';
-declare module 'ace-builds/src-noconflict/mode-scad';
-declare module 'ace-builds/src-noconflict/mode-scala';
-declare module 'ace-builds/src-noconflict/mode-scheme';
-declare module 'ace-builds/src-noconflict/mode-scss';
-declare module 'ace-builds/src-noconflict/mode-sh';
-declare module 'ace-builds/src-noconflict/mode-sjs';
-declare module 'ace-builds/src-noconflict/mode-smarty';
-declare module 'ace-builds/src-noconflict/mode-snippets';
-declare module 'ace-builds/src-noconflict/mode-soy_template';
-declare module 'ace-builds/src-noconflict/mode-space';
-declare module 'ace-builds/src-noconflict/mode-sparql';
-declare module 'ace-builds/src-noconflict/mode-sql';
-declare module 'ace-builds/src-noconflict/mode-sqlserver';
-declare module 'ace-builds/src-noconflict/mode-stylus';
-declare module 'ace-builds/src-noconflict/mode-svg';
-declare module 'ace-builds/src-noconflict/mode-swift';
-declare module 'ace-builds/src-noconflict/mode-tcl';
-declare module 'ace-builds/src-noconflict/mode-tex';
-declare module 'ace-builds/src-noconflict/mode-text';
-declare module 'ace-builds/src-noconflict/mode-textile';
-declare module 'ace-builds/src-noconflict/mode-toml';
-declare module 'ace-builds/src-noconflict/mode-tsx';
-declare module 'ace-builds/src-noconflict/mode-turtle';
-declare module 'ace-builds/src-noconflict/mode-twig';
-declare module 'ace-builds/src-noconflict/mode-typescript';
-declare module 'ace-builds/src-noconflict/mode-vala';
-declare module 'ace-builds/src-noconflict/mode-vbscript';
-declare module 'ace-builds/src-noconflict/mode-velocity';
-declare module 'ace-builds/src-noconflict/mode-verilog';
-declare module 'ace-builds/src-noconflict/mode-vhdl';
-declare module 'ace-builds/src-noconflict/mode-wollok';
-declare module 'ace-builds/src-noconflict/mode-xml';
-declare module 'ace-builds/src-noconflict/mode-xquery';
-declare module 'ace-builds/src-noconflict/mode-yaml';
-declare module 'ace-builds/src-noconflict/theme-ambiance';
-declare module 'ace-builds/src-noconflict/theme-chaos';
-declare module 'ace-builds/src-noconflict/theme-chrome';
-declare module 'ace-builds/src-noconflict/theme-clouds';
-declare module 'ace-builds/src-noconflict/theme-clouds_midnight';
-declare module 'ace-builds/src-noconflict/theme-cobalt';
-declare module 'ace-builds/src-noconflict/theme-crimson_editor';
-declare module 'ace-builds/src-noconflict/theme-dawn';
-declare module 'ace-builds/src-noconflict/theme-dracula';
-declare module 'ace-builds/src-noconflict/theme-dreamweaver';
-declare module 'ace-builds/src-noconflict/theme-eclipse';
-declare module 'ace-builds/src-noconflict/theme-github';
-declare module 'ace-builds/src-noconflict/theme-gob';
-declare module 'ace-builds/src-noconflict/theme-gruvbox';
-declare module 'ace-builds/src-noconflict/theme-idle_fingers';
-declare module 'ace-builds/src-noconflict/theme-iplastic';
-declare module 'ace-builds/src-noconflict/theme-katzenmilch';
-declare module 'ace-builds/src-noconflict/theme-kr_theme';
-declare module 'ace-builds/src-noconflict/theme-kuroir';
-declare module 'ace-builds/src-noconflict/theme-merbivore';
-declare module 'ace-builds/src-noconflict/theme-merbivore_soft';
-declare module 'ace-builds/src-noconflict/theme-monokai';
-declare module 'ace-builds/src-noconflict/theme-mono_industrial';
-declare module 'ace-builds/src-noconflict/theme-pastel_on_dark';
-declare module 'ace-builds/src-noconflict/theme-solarized_dark';
-declare module 'ace-builds/src-noconflict/theme-solarized_light';
-declare module 'ace-builds/src-noconflict/theme-sqlserver';
-declare module 'ace-builds/src-noconflict/theme-terminal';
-declare module 'ace-builds/src-noconflict/theme-textmate';
-declare module 'ace-builds/src-noconflict/theme-tomorrow';
-declare module 'ace-builds/src-noconflict/theme-tomorrow_night';
-declare module 'ace-builds/src-noconflict/theme-tomorrow_night_blue';
-declare module 'ace-builds/src-noconflict/theme-tomorrow_night_bright';
-declare module 'ace-builds/src-noconflict/theme-tomorrow_night_eighties';
-declare module 'ace-builds/src-noconflict/theme-twilight';
-declare module 'ace-builds/src-noconflict/theme-vibrant_ink';
-declare module 'ace-builds/src-noconflict/theme-xcode';
-declare module 'ace-builds/webpack-resolver';

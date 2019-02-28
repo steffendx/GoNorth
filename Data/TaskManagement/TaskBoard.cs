@@ -24,6 +24,11 @@ namespace GoNorth.Data.TaskManagement
         public string Name { get; set; }        
 
         /// <summary>
+        /// Task board category
+        /// </summary>
+        public string CategoryId { get; set; }
+
+        /// <summary>
         /// Planned start of the board
         /// </summary>
         public DateTimeOffset? PlannedStart { get; set; }
@@ -49,7 +54,7 @@ namespace GoNorth.Data.TaskManagement
         public DateTimeOffset ModifiedOn { get; set; }
 
         /// <summary>
-        /// Id of the user who last modified the page
+        /// Id of the user who last modified the board
         /// </summary>
         public string ModifiedBy { get; set; }
     }

@@ -1,5 +1,5 @@
 /*
- Leaflet.draw 1.0.2, a plugin that adds drawing and editing tools to Leaflet powered maps.
+ Leaflet.draw 1.0.4, a plugin that adds drawing and editing tools to Leaflet powered maps.
  (c) 2012-2017, Jacob Toye, Jon West, Smartrak, Leaflet
 
  https://github.com/Leaflet/Leaflet.draw
@@ -8,7 +8,7 @@
 (function (window, document, undefined) {/**
  * Leaflet.draw assumes that you have already included the Leaflet library.
  */
-L.drawVersion = "1.0.2";
+L.drawVersion = "1.0.4";
 /**
  * @class L.Draw
  * @aka Draw
@@ -685,7 +685,7 @@ L.Draw.Polyline = L.Draw.Feature.extend({
 	// @method completeShape(): void
 	// Closes the polyline between the first and last points
 	completeShape: function () {
-		if (this._markers.length <= 1) {
+		if (this._markers.length <= 1 || !this._shapeIsValid()) {
 			return;
 		}
 
@@ -1351,9 +1351,9 @@ L.Draw.Rectangle = L.Draw.SimpleShape.extend({
 			fill: true,
 			fillColor: null, //same as color by default
 			fillOpacity: 0.2,
-			showArea: true,
 			clickable: true
 		},
+		showArea: true, //Whether to show the area in the tooltip
 		metric: true // Whether to use the metric measurement system or imperial
 	},
 
@@ -1920,7 +1920,7 @@ L.Edit.PolyVerticesEdit = L.Handler.extend({
 		}
 
 		if (path) {
-			if (poly.options.editing.className) {
+			if (poly.options.editing && poly.options.editing.className) {
 				if (poly.options.original.className) {
 					poly.options.original.className.split(' ').forEach(function (className) {
 						L.DomUtil.removeClass(path, className);
@@ -1952,7 +1952,7 @@ L.Edit.PolyVerticesEdit = L.Handler.extend({
 		var path = poly._path;
 
 		if (path) {
-			if (poly.options.editing.className) {
+			if (poly.options.editing && poly.options.editing.className) {
 				poly.options.editing.className.split(' ').forEach(function (className) {
 					L.DomUtil.removeClass(path, className);
 				});
@@ -2077,32 +2077,17 @@ L.Edit.PolyVerticesEdit = L.Handler.extend({
 		var marker = e.target;
 		var poly = this._poly;
 
+		var oldOrigLatLng = L.LatLngUtil.cloneLatLng(marker._origLatLng);
 		L.extend(marker._origLatLng, marker._latlng);
-
-		if (marker._middleLeft) {
-			marker._middleLeft.setLatLng(this._getMiddleLatLng(marker._prev, marker));
-		}
-		if (marker._middleRight) {
-			marker._middleRight.setLatLng(this._getMiddleLatLng(marker, marker._next));
-		}
-
 		if (poly.options.poly) {
 			var tooltip = poly._map._editTooltip; // Access the tooltip
 
 			// If we don't allow intersections and the polygon intersects
 			if (!poly.options.poly.allowIntersection && poly.intersects()) {
-
+				L.extend(marker._origLatLng, oldOrigLatLng);
+				marker.setLatLng(oldOrigLatLng);
 				var originalColor = poly.options.color;
 				poly.setStyle({color: this.options.drawError.color});
-
-				// Manually trigger 'dragend' behavior on marker we are about to remove
-				// WORKAROUND: introduced in 1.0.0-rc2, may be related to #4484
-				if (L.version.indexOf('0.7') !== 0) {
-					marker.dragging._draggable._onUp(e);
-				}
-				this._onMarkerClick(e); // Remove violating marker
-				// FIXME: Reset the marker to it's original position (instead of remove)
-
 				if (tooltip) {
 					tooltip.updateContent({
 						text: L.drawLocal.draw.handlers.polyline.error
@@ -2121,6 +2106,14 @@ L.Edit.PolyVerticesEdit = L.Handler.extend({
 				}, 1000);
 			}
 		}
+
+		if (marker._middleLeft) {
+			marker._middleLeft.setLatLng(this._getMiddleLatLng(marker._prev, marker));
+		}
+		if (marker._middleRight) {
+			marker._middleRight.setLatLng(this._getMiddleLatLng(marker, marker._next));
+		}
+
 		//refresh the bounds when draging
 		this._poly._bounds._southWest = L.latLng(Infinity, Infinity);
 		this._poly._bounds._northEast = L.latLng(-Infinity, -Infinity);
@@ -2783,18 +2776,6 @@ L.Circle.addInitHook(function () {
 			this.editing.enable();
 		}
 	}
-
-	this.on('add', function () {
-		if (this.editing && this.editing.enabled()) {
-			this.editing.addHooks();
-		}
-	});
-
-	this.on('remove', function () {
-		if (this.editing && this.editing.enabled()) {
-			this.editing.removeHooks();
-		}
-	});
 });
 
 
@@ -2838,17 +2819,17 @@ L.Map.TouchExtend = L.Handler.extend({
 	// @method removeHooks(): void
 	// Removes dom listener events from the map container
 	removeHooks: function () {
-		L.DomEvent.off(this._container, 'touchstart', this._onTouchStart);
-		L.DomEvent.off(this._container, 'touchend', this._onTouchEnd);
-		L.DomEvent.off(this._container, 'touchmove', this._onTouchMove);
+		L.DomEvent.off(this._container, 'touchstart', this._onTouchStart, this);
+		L.DomEvent.off(this._container, 'touchend', this._onTouchEnd, this);
+		L.DomEvent.off(this._container, 'touchmove', this._onTouchMove, this);
 		if (this._detectIE()) {
-			L.DomEvent.off(this._container, 'MSPointerDowm', this._onTouchStart);
-			L.DomEvent.off(this._container, 'MSPointerUp', this._onTouchEnd);
-			L.DomEvent.off(this._container, 'MSPointerMove', this._onTouchMove);
-			L.DomEvent.off(this._container, 'MSPointerCancel', this._onTouchCancel);
+			L.DomEvent.off(this._container, 'MSPointerDown', this._onTouchStart, this);
+			L.DomEvent.off(this._container, 'MSPointerUp', this._onTouchEnd, this);
+			L.DomEvent.off(this._container, 'MSPointerMove', this._onTouchMove, this);
+			L.DomEvent.off(this._container, 'MSPointerCancel', this._onTouchCancel, this);
 		} else {
-			L.DomEvent.off(this._container, 'touchcancel', this._onTouchCancel);
-			L.DomEvent.off(this._container, 'touchleave', this._onTouchLeave);
+			L.DomEvent.off(this._container, 'touchcancel', this._onTouchCancel, this);
+			L.DomEvent.off(this._container, 'touchleave', this._onTouchLeave, this);
 		}
 	},
 

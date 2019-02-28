@@ -13,6 +13,7 @@
 
     "SwitchBoard": "Aufgabenboard wechseln",
     "ManageBoards": "Aufgabenboards verwalten",
+    "ManageTaskTypes": "Aufgaben Typen verwalten",
 
     "InsertKirjaLink": "Link zu Kirja Seite einfügen",
     "InsertAikaQuestLink": "Link zu Quest einfügen",
@@ -25,11 +26,13 @@
     "EditTaskGroup": "Aufgabengruppe editieren",
     "NewTask": "Neue Aufgabe",
     "EditTask": "Aufgabe editieren",
+    "TaskType": "Typ",
     "Name": "Name",
     "Description": "Beschreibung",
     "PressCtrlToOpenLinks": "Strg um Links zu öffnen",
     "AssignedTo": "Zugewiesen an",
     "Delete": "Löschen",
+    "MoveToOtherBoard": "Zu Board verschieben",
     "Save": "Speichern",
     "Cancel": "Abbrechen",
 
@@ -38,6 +41,12 @@
     "AreYouSureYouWantToDeleteTheTask": "Bist du sicher das die Aufgabe gelöscht werden soll?",
     "Yes": "Ja",
     "No": "Nein",
+
+    "SelectTarget": "Ziel auswählen",
+    "TargetBoard": "Ziel Board",
+    "TargetTaskGroup": "Ziel Aufgabengruppe",
+    "Choose": "Auswählen...",
+    "Move": "Verschieben",
 
     "Unassigned": "Nicht zugewiesen",
 

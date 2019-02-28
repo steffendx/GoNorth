@@ -13,6 +13,11 @@ namespace GoNorth.Data.TaskManagement
         public string Id { get; set; }
 
         /// <summary>
+        /// Id of the task type thats associated with the task
+        /// </summary>
+        public string TaskTypeId { get; set; }
+
+        /// <summary>
         /// Task number
         /// </summary>
         public int TaskNumber { get; set; }
@@ -43,7 +48,7 @@ namespace GoNorth.Data.TaskManagement
         public DateTimeOffset ModifiedOn { get; set; }
 
         /// <summary>
-        /// Id of the user who last modified the page
+        /// Id of the user who last modified the task
         /// </summary>
         public string ModifiedBy { get; set; }
     }

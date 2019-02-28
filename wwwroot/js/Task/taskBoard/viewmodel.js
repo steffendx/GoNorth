@@ -29,21 +29,50 @@
                 this.taskColumnClass = "col-sm-" + taskColumnWidth + " col-md-" + taskColumnWidth + " col-lg-" + taskColumnWidth;
 
                 this.isLoading = new ko.observable(false);
+                this.disableSortables = new ko.pureComputed(function() {
+                    return !this.isLoading();
+                }, this);
                 this.isReadonly = new ko.observable(false);
 
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
 
+                this.taskGroupTypes = new ko.observableArray();
+                this.taskTypes = new ko.observableArray();
+
+                this.allBoardCategories = new ko.observableArray();
                 this.allBoards = new ko.observableArray();
+                this.allBoardsWithoutCurrent = new ko.pureComputed(function() {
+                    var id = this.id();
+                    var allBoards = this.allBoards();
+                    var targetBoards = [];
+                    for(var curBoard = 0; curBoard < allBoards.length; ++curBoard)
+                    {
+                        if(allBoards[curBoard].id != id)
+                        {
+                            targetBoards.push(allBoards[curBoard]);
+                        }
+                    }
+
+                    return targetBoards;
+                }, this);
+                this.groupedBoards = new ko.observableArray();
                 this.allUsers = new ko.observableArray();
 
                 this.boardName = new ko.observable(Task.TaskBoard.Localization.Tasks);
                 this.currentBoardDates = new ko.observable("");
                 this.taskGroups = new ko.observableArray();
+                
+                var self = this;
+                this.taskGroups.subscribe(function() {
+                    self.resizeColumnHeight();
+                })
 
                 this.showTaskDialog = new ko.observable(false);
                 this.taskDialogTitle = new ko.observable("");
                 this.taskDialogEditNumber = new ko.observable(null);
+                this.taskDialogAllTaskTypes = new ko.observableArray();
+                this.taskDialogTaskTypeId = new ko.observable("");
                 this.taskDialogName = new ko.observable("");
                 this.taskDialogDescription = new ko.observable("");
                 this.taskDialogAssignedTo = new ko.observable(null);
@@ -63,12 +92,20 @@
                 this.showDeleteDialog = new ko.observable(false);
                 this.deleteDialogText = new ko.observable("");
 
+                this.showMoveTaskToBoardDialog = new ko.observable(false);
+                this.isMovingTaskToBoard = new ko.observable(false);
+                this.targetTaskBoardGroups = new ko.observableArray();
+                this.isLoadingMoveTaskGroups = new ko.observable(false);
+                this.errorOccuredLoadingMoveTaskGroups = new ko.observable(false);
+                this.moveTargetTaskBoard = new ko.observable(null);
+                this.moveTargetTaskGroup = new ko.observable(null);
 
                 this.userDeferred = this.loadAllUsers();
                 this.lastOpenedBoardIdDef = this.getLastOpenedBoardId();
+                this.loadAllBoardCategoriesDef = this.loadAllBoardCategories();
                 this.loadAllOpenBoards();
+                this.loadAllTaskTypes();
                 
-                var self = this;
                 this.showTaskDialog.subscribe(function(newValue) {
                     if(!newValue)
                     {
@@ -93,6 +130,10 @@
                         self.switchBoard(id);
                     }
                 });
+
+                jQuery(window).resize(function() {
+                    self.resizeColumnHeight();
+                });
             };
 
             TaskBoard.ViewModel.prototype = {
@@ -102,6 +143,97 @@
                 resetErrorState: function() {
                     this.errorOccured(false);
                     this.additionalErrorDetails("");
+                },
+
+
+                /**
+                 * Resizes the column background color, important to fully fill columns on drag of sortable without disturbing the sortable
+                 */
+                resizeColumnBackgroundColor: GoNorth.Util.debounce(function() {
+                    if(GoNorth.Util.isBootstrapXs())
+                    {
+                        jQuery(".gn-taskGroupBackgroundColor").hide();
+                        return;
+                    }
+
+                    
+                    jQuery(".gn-taskGroupBackgroundColor").show();
+                    jQuery(".gn-taskGroupRow").each(function() {
+                        var height = jQuery(this).outerHeight() + "px";
+                        jQuery(this).find(".gn-taskGroupBackgroundColor").css("height", height);
+                    });
+                }, 5),
+
+                /**
+                 * Resizes the column height
+                 */
+                resizeColumnHeight: GoNorth.Util.debounce(function() {
+                    // Check if is in mobile
+                    if(GoNorth.Util.isBootstrapXs())
+                    {
+                        jQuery(".gn-taskGroupColumnTaskContainer").each(function() { jQuery(this).css("min-height", "85px"); });
+                        jQuery(".gn-taskGroupTaskSortable").each(function() { jQuery(this).css("min-height", "85px"); })
+
+                        this.resizeColumnBackgroundColor();
+                        return;
+                    }
+
+                    // Reset height to allow rows to shrink
+                    jQuery(".gn-taskGroupColumnTaskContainer").each(function() { jQuery(this).css("min-height", "auto"); });
+                    jQuery(".gn-taskGroupTaskSortable").each(function() { jQuery(this).css("min-height", "auto"); })
+
+                    jQuery(".gn-taskGroupRow").each(function() {
+                        var height = jQuery(this).outerHeight() + "px";
+                        jQuery(this).find(".gn-taskGroupColumnTaskContainer").css("min-height", height);
+                        jQuery(this).find(".gn-taskGroupTaskSortable").css("min-height", height);
+                    });
+
+                    this.resizeColumnBackgroundColor();
+                }, 5),
+
+                /**
+                 * Loads all task types
+                 */
+                loadAllTaskTypes: function() {
+                    var self = this;
+                    var taskGroupTypesDef = jQuery.ajax({ 
+                        url: "/api/TaskApi/GetTaskGroupTypes", 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.taskGroupTypes(data);
+                    });
+
+                    var taskTypesDef = jQuery.ajax({ 
+                        url: "/api/TaskApi/GetTaskTypes", 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.taskTypes(data);
+                    });
+
+                    jQuery.when(taskGroupTypesDef, taskTypesDef).fail(function(err) {
+                        self.errorOccured();
+                    });
+                },
+
+                /**
+                 * Loads all board categories
+                 * @returns {jQuery.Deferred} jQuery Deferred
+                 */
+                loadAllBoardCategories: function() {
+                    var def = new jQuery.Deferred();
+
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/TaskApi/GetTaskBoardCategories", 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.allBoardCategories(data);
+                        def.resolve();
+                    }).fail(function() {
+                        def.reject();
+                    });
+
+                    return def.promise();
                 },
 
                 /**
@@ -118,14 +250,26 @@
                         self.allBoards(data.boards);
                         self.isLoading(false);
 
-                        if(!self.id() && data.boards.length > 0)
-                        {
-                            self.lastOpenedBoardIdDef.done(function(lastOpenedBoardId) {
-                                self.userDeferred.done(function() {
-                                    self.loadBoard(lastOpenedBoardId ? lastOpenedBoardId : data.boards[0].id);
+                        
+                        self.loadAllBoardCategoriesDef.done(function() {
+                            self.groupBoards();
+
+                            if(!self.id() && data.boards.length > 0)
+                            {
+                                self.lastOpenedBoardIdDef.done(function(lastOpenedBoardId) {
+                                    self.userDeferred.done(function() {
+
+                                        var boardId = lastOpenedBoardId ? lastOpenedBoardId : data.boards[0].id;
+                                        self.expandCategoryThatContainsBoard(boardId);
+                                        self.loadBoard(boardId);
+                                    });
                                 });
-                            });
-                        }
+                            } 
+                            else if(self.id()) 
+                            {
+                                self.expandCategoryThatContainsBoard(self.id());
+                            }
+                        });
                     }).fail(function() {
                         self.errorOccured(true);
                         self.isLoading(false);
@@ -151,6 +295,77 @@
                     });
 
                     return def.promise();
+                },
+
+                /**
+                 * Groups the boards by category
+                 */
+                groupBoards: function() {
+                    var categories = this.allBoardCategories();
+                    var boards = this.allBoards();
+
+                    var groupedBoards = [];
+                    var categoryLookup = {};
+                    for(var curCategory = 0; curCategory  < categories.length; ++curCategory)
+                    {
+                        var newCategory = {
+                            isCategory: true,
+                            id: categories[curCategory].id,
+                            name: new ko.observable(categories[curCategory].name),
+                            isExpanded: new ko.observable(categories[curCategory].isExpandedByDefault),
+                            boards: new ko.observableArray()
+                        }
+                        categoryLookup[categories[curCategory].id] = newCategory;
+                        groupedBoards.push(newCategory);
+                    }
+
+                    for(var curBoard = 0; curBoard < boards.length; ++curBoard)
+                    {
+                        boards[curBoard].isCategory = false;
+                        if(categoryLookup[boards[curBoard].categoryId])
+                        {
+                            categoryLookup[boards[curBoard].categoryId].boards.push(boards[curBoard])
+                        }
+                        else
+                        {
+                            groupedBoards.push(boards[curBoard]);
+                        }
+                    }
+
+                    this.groupedBoards(groupedBoards);
+                },
+
+                /**
+                 * Expands a category that contains a board
+                 * @param {string} boardId Id of the board
+                 */
+                expandCategoryThatContainsBoard: function(boardId) {
+                    var groupedBoards = this.groupedBoards();
+                    for(var curGroup = 0; curGroup < groupedBoards.length; ++curGroup)
+                    {
+                        if(!groupedBoards[curGroup].isCategory)
+                        {
+                            continue;
+                        }
+
+                        var boards = groupedBoards[curGroup].boards();
+                        for(var curBoard = 0; curBoard < boards.length; ++curBoard)
+                        {
+                            if(boards[curBoard].id == boardId) 
+                            {
+                                groupedBoards[curGroup].isExpanded(true);
+                                return;
+                            }
+                        }
+                    }
+                },
+
+                /**
+                 * Toogles the board category expanded state
+                 * @param {object} category Category to toogle
+                 */
+                toogleBoardCategoryExpanded: function(category) {
+                    category.isExpanded(!category.isExpanded());
                 },
 
                 /**
@@ -201,6 +416,20 @@
                         url: "/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(id),
                         method: "GET"
                     }).done(function(board) {
+                        // If a user has a reference to a board that can no longer be loaded we must fall back to an old board
+                        if(!board)
+                        {
+                            if(self.allBoards().length > 0)
+                            {
+                                self.loadBoard(self.allBoards()[0].id);
+                            }
+                            else
+                            {
+                                self.errorOccured(true);
+                            }
+                            return;
+                        }
+
                         self.boardName(board.name);
                         self.currentBoardDates(self.formatTaskBoardDates(board));
                         self.isReadonly(board.isClosed);
@@ -243,7 +472,7 @@
                     var parsedTaskGroups = [];
                     for(var curTaskGroup = 0; curTaskGroup < taskGroups.length; ++curTaskGroup)
                     {
-                        parsedTaskGroups.push(new TaskBoard.TaskGroup(this, taskGroups[curTaskGroup]));
+                        parsedTaskGroups.push(new TaskBoard.TaskGroup(this, taskGroups[curTaskGroup], this.resizeColumnHeight.bind(this)));
                     }
 
                     return parsedTaskGroups;
@@ -361,6 +590,7 @@
                     this.taskDialogEditNumber(null);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskGroupPrefix);
 
+                    this.taskDialogAllTaskTypes(this.taskGroupTypes());
                     this.resetTaskDialogValues();
                     this.isTaskEditDialog(false);
                     this.editTaskGroup = null;
@@ -388,6 +618,7 @@
                     this.taskDialogEditNumber(taskGroup.taskNumber);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskGroupPrefix);
 
+                    this.taskDialogAllTaskTypes(this.taskGroupTypes());
                     this.setTaskDialogValuesFromTask(taskGroup);
                     this.isTaskEditDialog(true);
                     this.editTaskGroup = taskGroup;
@@ -412,6 +643,7 @@
                     this.taskDialogEditNumber(null);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskPrefix);
 
+                    this.taskDialogAllTaskTypes(this.taskTypes());
                     this.resetTaskDialogValues();
                     this.isTaskEditDialog(false);
                     this.editTaskGroup = null;
@@ -440,6 +672,7 @@
                     this.taskDialogEditNumber(task.taskNumber);
                     this.taskDialogLockedPrefix(Task.TaskBoard.Localization.LockedTaskPrefix);
 
+                    this.taskDialogAllTaskTypes(this.taskTypes());
                     this.setTaskDialogValuesFromTask(task);
                     this.isTaskEditDialog(true);
                     this.editTaskGroup = null;
@@ -470,9 +703,27 @@
                 },
 
                 /**
+                 * Returns the id of the default task type id from a type list
+                 * @returns {string} Id of the task type
+                 */
+                getDefaultTaskTypeIdFromDialogTypeList: function() {
+                    var taskTypeList = this.taskDialogAllTaskTypes();
+                    for(var curType = 0; curType < taskTypeList.length; ++curType)
+                    {
+                        if(taskTypeList[curType].isDefault)
+                        {
+                            return taskTypeList[curType].id;
+                        }
+                    }
+
+                    return taskTypeList.length > 0 ? taskTypeList[taskTypeList.length - 1].id : null;
+                },
+
+                /**
                  * Resets the task dialog values to empty
                  */
                 resetTaskDialogValues: function() {
+                    this.taskDialogTaskTypeId(this.getDefaultTaskTypeIdFromDialogTypeList());
                     this.taskDialogName("");
                     this.taskDialogDescription("");
                     this.taskDialogAssignedTo(null);
@@ -485,6 +736,7 @@
                  * @param {object} task Task to read the values from
                  */
                 setTaskDialogValuesFromTask: function(task) {
+                    this.taskDialogTaskTypeId(task.taskTypeId() ? task.taskTypeId() : this.getDefaultTaskTypeIdFromDialogTypeList());
                     this.taskDialogName(task.name());
                     this.taskDialogDescription(task.description());
                     this.taskDialogAssignedTo(task.assignedTo());
@@ -528,6 +780,7 @@
                     }
 
                     var request = {
+                        taskTypeId: this.taskDialogTaskTypeId(),
                         name: this.taskDialogName(),
                         description: this.taskDialogDescription(),
                         assignedTo: this.taskDialogAssignedTo(),
@@ -570,7 +823,7 @@
                         }
                         else
                         {
-                            var newTaskGroup = new TaskBoard.TaskGroup(self, data);
+                            var newTaskGroup = new TaskBoard.TaskGroup(self, data, self.resizeColumnHeight.bind(self));
                             self.taskGroups.push(newTaskGroup);
                             if(!closeDialog)
                             {
@@ -604,9 +857,11 @@
                  * 
                  * @param {TaskGroup} taskGroup Task Group to save
                  * @param {Task} task Task to save, if null an update for the group will be saved
+                 * @param {TaskGroup} oldParentTaskGroup Old parent task group
+                 * @param {int} targetIndex Target index for the task
                  * @returns {jQuery.Deferred} Deferred for the save process
                  */
-                saveTaskQuickEdit: function(taskGroup, task) {
+                saveTaskQuickEdit: function(taskGroup, task, oldParentTaskGroup, targetIndex) {
                     if(this.isLoading())
                     {
                         return;
@@ -619,6 +874,7 @@
                     }
 
                     var request = {
+                        taskTypeId: saveObj.taskTypeId(),
                         name: saveObj.name(),
                         description: saveObj.description(),
                         assignedTo: saveObj.assignedTo() ? saveObj.assignedTo() : null,
@@ -628,7 +884,11 @@
                     var url = "/api/TaskApi/UpdateTaskGroup?boardId=" + this.id() + "&groupId=" + taskGroup.id; 
                     if(task)
                     {
-                        url = "/api/TaskApi/UpdateTask?boardId=" + this.id() + "&groupId=" + taskGroup.id + "&taskId=" + task.id;
+                        url = "/api/TaskApi/UpdateTask?boardId=" + this.id() + "&groupId=" + taskGroup.id + "&taskId=" + task.id + "&targetIndex=" + targetIndex;
+                        if(oldParentTaskGroup && oldParentTaskGroup.id != taskGroup.id)
+                        {
+                            url += "&oldGroupId=" + oldParentTaskGroup.id;
+                        }
                     }
 
                     var def = new jQuery.Deferred();
@@ -658,22 +918,28 @@
                  * 
                  * @param {TaskGroup} taskGroup Task group
                  * @param {Task} task Task
+                 * @param {TaskGroup} oldParentTaskGroup Old parent task group
                  * @param {int} newStatus New Status
+                 * @param {int} targetIndex Target index for the task
                  */
-                dropTaskToStatus: function(taskGroup, task, newStatus) {
-                    if(task.status() == newStatus || this.isLoading())
+                dropTaskToStatus: function(taskGroup, task, oldParentTaskGroup, newStatus, targetIndex) {
+                    if(this.isLoading())
                     {
                         return;
                     }
 
                     var oldStatus = task.status();
                     task.status(newStatus);
-                    taskGroup.moveTaskToCorrectStatusColumn(task, oldStatus);
 
-                    this.saveTaskQuickEdit(taskGroup, task).fail(function() {
+                    this.saveTaskQuickEdit(taskGroup, task, oldParentTaskGroup, targetIndex).fail(function() {
                         // Move back to old column on error
+                        if(taskGroup.id != oldParentTaskGroup.id)
+                        {
+                            taskGroup.removeTask(task);
+                        }
+
                         task.status(oldStatus);
-                        taskGroup.moveTaskToCorrectStatusColumn(task, newStatus);
+                        oldParentTaskGroup.moveTaskToCorrectStatusColumn(task, newStatus);
                     });
                 },
 
@@ -840,7 +1106,6 @@
                     this.closeDeleteDialog();
                     this.closeTaskDialog();
 
-                    var def = new jQuery.Deferred();
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
@@ -880,6 +1145,153 @@
 
 
                 /**
+                 * Opens the move task to board dialog
+                 */
+                openMoveTaskToBoardDialog: function() {
+                    this.showMoveTaskToBoardDialog(true);
+                    this.isMovingTaskToBoard(this.editTaskGroup == null);
+                    
+                    this.moveTargetTaskBoard(null);
+                    this.moveTargetTaskGroup(null);
+                    this.targetTaskBoardGroups.removeAll();
+                },
+
+                /**
+                 * Loads the target task boards for a selected task board
+                 */
+                loadTargetTaskBoardGroups: function() {
+                    if(this.editTaskGroup)
+                    {
+                        return;
+                    }
+
+                    this.targetTaskBoardGroups.removeAll();
+                    if(!this.moveTargetTaskBoard())
+                    {
+                        return;
+                    }
+
+                    this.isLoadingMoveTaskGroups(true);
+                    this.errorOccuredLoadingMoveTaskGroups(false);
+                    var self = this;
+                    jQuery.ajax({
+                        url: "/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(this.moveTargetTaskBoard()),
+                        method: "GET"
+                    }).done(function(board) {
+                        if(board.taskGroups)
+                        {
+                            self.targetTaskBoardGroups(board.taskGroups)
+                        }
+                        self.isLoadingMoveTaskGroups(false);
+                    }).fail(function() {
+                        self.isLoadingMoveTaskGroups(false);
+                        self.errorOccuredLoadingMoveTaskGroups(true);
+                    });
+                },
+
+                /**
+                 * Formats the name of a group for moving a task
+                 * @param {object} taskGroup Task group to format
+                 * @returns {string} Name of the group to display
+                 */
+                formatGroupNameForMove: function(taskGroup) {
+                    var name = taskGroup.name;
+                    for(var curStatus = 0; curStatus < this.taskStatus.length; ++curStatus)
+                    {
+                        if(this.taskStatus[curStatus].value == taskGroup.status)
+                        {
+                            name += " (" + this.taskStatus[curStatus].displayName + ")";
+                            break;
+                        }
+                    }
+                    return name;
+                },
+
+                /**
+                 * Moves a task to a new target board
+                 */
+                moveTaskToBoard: function() {
+                    // Validate data, jQuery validate had problems with the two selects, therefore fallback to using observable is used
+                    if(!this.moveTargetTaskBoard() || (!this.moveTargetTaskGroup() && this.isMovingTaskToBoard()))
+                    {
+                        return
+                    }
+                    
+                    // Build Url
+                    var url = ""
+                    if(this.editTaskGroup)
+                    {
+                        url = "/api/TaskApi/MoveTaskGroupToBoard?sourceBoardId=" + this.id() + "&groupId=" + this.editTaskGroup.id + "&targetBoardId=" + this.moveTargetTaskBoard();
+                    }
+                    else if(this.editTask)
+                    {
+                        url = "/api/TaskApi/MoveTaskToBoard?sourceBoardId=" + this.id() + "&sourceGroupId=" + this.groupForEditTask.id + "&taskId=" + this.editTask.id + "&targetBoardId=" + this.moveTargetTaskBoard() + "&targetGroupId=" + this.moveTargetTaskGroup();
+                    }
+
+                    if(!url)
+                    {
+                        return;
+                    }
+
+                    // Send request
+                    this.closeMoveTaskToBoardDialog();
+                    this.closeTaskDialog();
+
+                    this.isLoading(true);
+                    this.resetErrorState();
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: url, 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        type: "POST",
+                    }).done(function() {
+                        if(self.editTaskGroup)
+                        {
+                            self.taskGroups.remove(self.editTaskGroup);
+                        }
+                        else
+                        {
+                            self.groupForEditTask.removeTask(self.editTask);
+                        }
+
+                        self.isLoading(false);
+                    }).fail(function() {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Closes the move task to board dialog
+                 */
+                closeMoveTaskToBoardDialog: function() {
+                    this.showMoveTaskToBoardDialog(false);
+                },
+
+
+                /**
+                 * Reorders the task group
+                 * @param {object} sortArg Sortable arguments
+                 */
+                reorderTaskGroup: function(sortArg) {
+                    this.isLoading(true);
+                    this.resetErrorState();
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/TaskApi/ReorderTaskGroup?boardId=" + this.id() + "&groupId=" + sortArg.item.id + "&targetIndex=" + sortArg.targetIndex, 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(data) {
+                        self.isLoading(false);
+                    }).fail(function(xhr) {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+
+                /**
                  * Releases the current lock
                  */
                 releaseLock: function() {
@@ -889,9 +1301,9 @@
                 },
 
                 /**
-                 * Acquires a lock
+                 * Acquires a lock for the task dialog
                  * 
-                 * @param {string} category Categroy of the task / taskgroup
+                 * @param {string} category Category of the task / taskgroup
                  * @param {string} id Id of the task / taskgroup
                  */
                 acquireLock: function(category, id) {

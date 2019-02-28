@@ -14,6 +14,7 @@ using GoNorth.Extensions;
 using GoNorth.Data.Project;
 using System.Linq;
 using GoNorth.Services.ImplementationStatusCompare;
+using System.IO;
 
 namespace GoNorth.Controllers.Api
 {
@@ -84,6 +85,11 @@ namespace GoNorth.Controllers.Api
         private readonly ITaleDbAccess _taleDbAccess;
 
         /// <summary>
+        /// Tale Config Db Access
+        /// </summary>
+        private readonly ITaleConfigDbAccess _taleConfigDbAccess;
+
+        /// <summary>
         /// Tale Db Service
         /// </summary>
         private readonly IKortistoNpcDbAccess _npcDbAccess;
@@ -117,16 +123,18 @@ namespace GoNorth.Controllers.Api
         /// Constructor
         /// </summary>
         /// <param name="taleDbAccess">Tale Db Access</param>
+        /// <param name="taleConfigDbAccess">Tale config Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation status comparer</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
-        public TaleApiController(ITaleDbAccess taleDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, 
-                                 ITimelineService timelineService, ILogger<TaleApiController> logger)
+        public TaleApiController(ITaleDbAccess taleDbAccess, ITaleConfigDbAccess taleConfigDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager, 
+                                 IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<TaleApiController> logger)
         {
             _taleDbAccess = taleDbAccess;
+            _taleConfigDbAccess = taleConfigDbAccess;
             _npcDbAccess = npcDbAccess;
             _projectDbAccess = projectDbAccess;
             _userManager = userManager;
@@ -288,5 +296,66 @@ namespace GoNorth.Controllers.Api
             return Ok(queryResult);
         }
 
+
+        /// <summary>
+        /// Returns a config entry by key
+        /// </summary>
+        /// <param name="configKey">Config key</param>
+        /// <returns>Config entry</returns>
+        [Produces(typeof(string))]
+        [HttpGet]
+        public async Task<IActionResult> GetNodeConfigByKey(string configKey)
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            TaleConfigEntry configEntry = await _taleConfigDbAccess.GetConfigByKey(project.Id, configKey);
+            if(configEntry != null)
+            {
+                return Ok(configEntry.ConfigData);
+            }
+            else
+            {
+                return Ok(string.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Saves a config entry
+        /// </summary>
+        /// <param name="configKey">Config key</param>
+        /// <returns>Save result</returns>
+        [Authorize(Roles = RoleNames.TaleConfigManager)]
+        [Produces(typeof(string))]
+        [HttpPost]
+        public async Task<IActionResult> SaveNodeConfigByKey(string configKey)
+        {
+            string configData = string.Empty;
+            using (StreamReader reader = new StreamReader(Request.Body))
+            {
+                configData = reader.ReadToEnd();
+            }
+
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            TaleConfigEntry configEntry = await _taleConfigDbAccess.GetConfigByKey(project.Id, configKey);
+            if(configEntry != null)
+            {
+                await this.SetModifiedData(_userManager, configEntry);
+                configEntry.ConfigData = configData;
+
+                await _taleConfigDbAccess.UpdateConfig(configEntry);
+            }
+            else
+            {
+                configEntry = new TaleConfigEntry();
+                configEntry.ProjectId = project.Id;
+                configEntry.Key = configKey;
+                configEntry.ConfigData = configData;
+                
+                await this.SetModifiedData(_userManager, configEntry);
+                
+                await _taleConfigDbAccess.CreateConfig(configEntry);
+            }
+
+            return Ok(configKey);
+        }
     }
 }

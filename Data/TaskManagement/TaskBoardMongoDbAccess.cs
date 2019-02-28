@@ -71,6 +71,7 @@ namespace GoNorth.Data.TaskManagement
             List<TaskBoard> taskBoards = await _TaskBoardCollection.AsQueryable().Where(b => b.ProjectId == projectId && b.IsClosed == searchClosed).OrderBy(b => b.PlannedStart).ThenBy(b => b.Name).Skip(start).Take(pageSize).Select(b => new TaskBoard {
                 Id = b.Id,
                 Name = b.Name,
+                CategoryId = b.CategoryId,
                 PlannedStart = b.PlannedStart,
                 PlannedEnd = b.PlannedEnd,
                 IsClosed = b.IsClosed
@@ -182,6 +183,56 @@ namespace GoNorth.Data.TaskManagement
         public async Task<List<TaskBoard>> GetAllTaskBoardsByAssignedUser(string userId)
         {
             return await _TaskBoardCollection.AsQueryable().Where(b => b.TaskGroups.Any(t => t.AssignedTo == userId || t.Tasks.Any(ta => t.AssignedTo == userId))).ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns all taskboards that are using a task type
+        /// </summary>
+        /// <param name="taskTypeId">Task type Id</param>
+        /// <returns>List of Taskboards</returns>
+        public async Task<List<TaskBoard>> GetAllTaskBoardsUsingTaskType(string taskTypeId)
+        {
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.TaskGroups.Any(t => t.TaskTypeId == taskTypeId || t.Tasks.Any(ta => ta.TaskTypeId == taskTypeId))).ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns ture if any task board uses a task board category
+        /// </summary>
+        /// <param name="categoryId">Id of the category</param>
+        /// <returns>True if any task board uses the category</returns>
+        public async Task<bool> AnyTaskBoardUsingCategory(string categoryId)
+        {
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.CategoryId == categoryId).AnyAsync();
+        }
+
+        /// <summary>
+        /// Returns true if any task board has a task group without a task type
+        /// </summary>
+        /// <param name="projectId">Id of the project</param>
+        /// <returns>true if any task board has a task group without a task type</returns>
+        public async Task<bool> AnyTaskBoardHasTaskGroupsWithoutType(string projectId)
+        {
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.ProjectId == projectId && b.TaskGroups.Any(t => string.IsNullOrEmpty(t.TaskTypeId))).AnyAsync();
+        }
+
+        /// <summary>
+        /// Returns true if any task board has a task group or task without a task type
+        /// </summary>
+        /// <param name="projectId">Id of the project</param>
+        /// <returns>true if any task board has a task group or task without a task type</returns>
+        public async Task<bool> AnyTaskBoardHasTasksWithoutType(string projectId)
+        {
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.ProjectId == projectId && b.TaskGroups.Any(t => t.Tasks.Any(ta => string.IsNullOrEmpty(t.TaskTypeId)))).AnyAsync();
+        }
+
+        /// <summary>
+        /// Resets the reference to a category on all boards
+        /// </summary>
+        /// <param name="categoryId">Id of the category</param>
+        /// <returns>Task</returns>
+        public async Task ResetCategoryReference(string categoryId)
+        {
+            await _TaskBoardCollection.UpdateManyAsync(Builders<TaskBoard>.Filter.Eq(b => b.CategoryId, categoryId), Builders<TaskBoard>.Update.Set(p => p.CategoryId, null));
         }
     }
 }

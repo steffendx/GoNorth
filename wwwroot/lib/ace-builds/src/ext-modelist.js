@@ -44,6 +44,7 @@ var supportedModes = {
     ASL:         ["dsl|asl"],
     Assembly_x86:["asm|a"],
     AutoHotKey:  ["ahk"],
+    Apex:        ["apex|cls|trigger|tgr"],
     BatchFile:   ["bat|cmd"],
     Bro:         ["bro"],
     C_Cpp:       ["cpp|c|cc|cxx|h|hh|hpp|ino"],
@@ -73,6 +74,8 @@ var supportedModes = {
     Erlang:      ["erl|hrl"],
     Forth:       ["frt|fs|ldr|fth|4th"],
     Fortran:     ["f|f90"],
+    FSharp:      ["fsi|fs|ml|mli|fsx|fsscript"],
+    FSL:         ["fsl"],
     FTL:         ["ftl"],
     Gcode:       ["gcode"],
     Gherkin:     ["feature"],
@@ -129,8 +132,11 @@ var supportedModes = {
     OCaml:       ["ml|mli"],
     Pascal:      ["pas|p"],
     Perl:        ["pl|pm"],
+	Perl6:       ["p6|pl6|pm6"],
     pgSQL:       ["pgsql"],
-    PHP:         ["php|phtml|shtml|php3|php4|php5|phps|phpt|aw|ctp|module"],
+    PHP_Laravel_blade: ["blade.php"],
+    PHP:         ["inc|php|phtml|shtml|php3|php4|php5|phps|phpt|aw|ctp|module"],
+    Puppet:      ["epp|pp"],
     Pig:         ["pig"],
     Powershell:  ["ps1"],
     Praat:       ["praat|praatscript|psc|proc"],
@@ -153,6 +159,7 @@ var supportedModes = {
     SCSS:        ["scss"],
     SH:          ["sh|bash|^.bashrc"],
     SJS:         ["sjs"],
+    Slim:        ["slim|skim"],
     Smarty:      ["smarty|tpl"],
     snippets:    ["snippets"],
     Soy_Template:["soy"],
@@ -163,18 +170,20 @@ var supportedModes = {
     SVG:         ["svg"],
     Swift:       ["swift"],
     Tcl:         ["tcl"],
+    Terraform:   ["tf", "tfvars", "terragrunt"],
     Tex:         ["tex"],
     Text:        ["txt"],
     Textile:     ["textile"],
     Toml:        ["toml"],
     TSX:         ["tsx"],
-    Twig:        ["twig|swig"],
+    Twig:        ["latte|twig|swig"],
     Typescript:  ["ts|typescript|str"],
     Vala:        ["vala"],
     VBScript:    ["vbs|vb"],
     Velocity:    ["vm"],
     Verilog:     ["v|vh|sv|svh"],
     VHDL:        ["vhd|vhdl"],
+    Visualforce: ["vfp|component|page"],
     Wollok:      ["wlk|wpgm|wtest"],
     XML:         ["xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl|xaml"],
     XQuery:      ["xq"],
@@ -193,7 +202,9 @@ var nameOverrides = {
     coffee: "CoffeeScript",
     HTML_Ruby: "HTML (Ruby)",
     HTML_Elixir: "HTML (Elixir)",
-    FTL: "FreeMarker"
+    FTL: "FreeMarker",
+    PHP_Laravel_blade: "PHP (Blade Template)",
+    Perl6: "Perl 6"
 };
 var modesByName = {};
 for (var name in supportedModes) {
@@ -211,8 +222,7 @@ module.exports = {
     modesByName: modesByName
 };
 
-});
-                (function() {
+});                (function() {
                     window.require(["ace/ext/modelist"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

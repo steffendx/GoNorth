@@ -103,6 +103,16 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <summary>
         /// Open shop
         /// </summary>
-        OpenShop = 25
+        OpenShop = 25,
+        
+        /// <summary>
+        /// Play npc animation
+        /// </summary>
+        PlayNpcAnimation = 26,
+        
+        /// <summary>
+        /// Play player animation
+        /// </summary>
+        PlayPlayerAnimation = 27
     }
 }

@@ -1,10 +1,11 @@
-ace.define("ace/mode/io_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/io_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 var IoHighlightRules = function() {
+
     this.$rules = { start: 
        [ { token: [ 'text', 'meta.empty-parenthesis.io' ],
            regex: '(\\()(\\))',
@@ -80,7 +81,7 @@ oop.inherits(IoHighlightRules, TextHighlightRules);
 exports.IoHighlightRules = IoHighlightRules;
 });
 
-ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
+ace.define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -220,7 +221,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/io",[], function(require, exports, module) {
+ace.define("ace/mode/io",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/io_highlight_rules","ace/mode/folding/cstyle"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -242,8 +243,7 @@ oop.inherits(Mode, TextMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/io"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

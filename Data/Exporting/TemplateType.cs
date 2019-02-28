@@ -240,6 +240,16 @@ namespace GoNorth.Data.Exporting
         /// Tale Action open shop
         /// </summary>
         TaleActionOpenShop = 320,
+                        
+        /// <summary>
+        /// Tale Action npc play animation
+        /// </summary>
+        TaleActionNpcPlayAnimation = 321,
+
+        /// <summary>
+        /// Tale Action player play animation
+        /// </summary>
+        TaleActionPlayerPlayAnimation = 322,
 
 
         /// <summary>

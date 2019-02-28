@@ -39,5 +39,16 @@ namespace GoNorth.Controllers
         {
             return View();
         }
+        
+        /// <summary>
+        /// Manage Task type view
+        /// </summary>
+        /// <returns>View</returns>
+        [Authorize(Roles = RoleNames.TaskTypeManager)]
+        [HttpGet]
+        public IActionResult ManageTaskTypes()
+        {
+            return View();
+        }
     }
 }

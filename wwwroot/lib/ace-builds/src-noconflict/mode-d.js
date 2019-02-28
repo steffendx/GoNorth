@@ -1,4 +1,4 @@
-ace.define("ace/mode/doc_comment_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -48,7 +48,7 @@ exports.DocCommentHighlightRules = DocCommentHighlightRules;
 
 });
 
-ace.define("ace/mode/d_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/d_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/doc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -116,6 +116,7 @@ var DHighlightRules = function() {
     }, "identifier");
     
     var identifierRe = "[a-zA-Z_\u00a1-\uffff][a-zA-Z\\d_\u00a1-\uffff]*\\b";
+
     this.$rules = {
         "start" : [
             {     //-------------------------------------------------------- COMMENTS
@@ -347,7 +348,7 @@ oop.inherits(DHighlightRules, TextHighlightRules);
 exports.DHighlightRules = DHighlightRules;
 });
 
-ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
+ace.define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -487,7 +488,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/d",[], function(require, exports, module) {
+ace.define("ace/mode/d",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/d_highlight_rules","ace/mode/folding/cstyle"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -509,8 +510,7 @@ oop.inherits(Mode, TextMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/d"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

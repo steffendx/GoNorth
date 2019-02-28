@@ -54,6 +54,8 @@
     "TemplateTypeTaleActionChangeNpcSkillValue": "Action: Change npc skill value",
     "TemplateTypeTaleActionPersistDialogState": "Action: Save dialog state",
     "TemplateTypeTaleActionOpenShop": "Action: Open trade",
+    "TemplateTypeTaleActionNpcPlayAnimation": "Action: Play npc animation",
+    "TemplateTypeTaleActionPlayerPlayAnimation": "Action: Play player animation",
 
     
     "TemplateTypeGeneralLogicGroup": "Logic: Group",

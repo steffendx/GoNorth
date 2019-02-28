@@ -14,13 +14,14 @@
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
 
-                this.openBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.OpenTaskBoards, "glyphicon-ok", GoNorth.Task.ManageBoards.Localization.CloseTaskBoardToolTip, "GetOpenTaskBoards", true, this.errorOccured);
-                this.closedBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.ClosedTaskBoards, "glyphicon-repeat", GoNorth.Task.ManageBoards.Localization.ReopenTaskBoardToolTip, "GetClosedTaskBoards", false, this.errorOccured);
+                this.openBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.OpenTaskBoards, "glyphicon-ok", GoNorth.Task.ManageBoards.Localization.CloseTaskBoardToolTip, "GetOpenTaskBoards", true, this.getBoardCategoryNameById.bind(this), this.errorOccured);
+                this.closedBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.ClosedTaskBoards, "glyphicon-repeat", GoNorth.Task.ManageBoards.Localization.ReopenTaskBoardToolTip, "GetClosedTaskBoards", false, this.getBoardCategoryNameById.bind(this), this.errorOccured);
 
                 this.showBoardCreateEditDialog = new ko.observable(false);
                 this.showDateValidationError = new ko.observable(false);
                 this.isEditingBoard = new ko.observable(false);
                 this.createEditBoardName = new ko.observable("");
+                this.createEditBoardCategory = new ko.observable(null);
                 this.createEditBoardPlannedStart = new ko.observable(null);
                 this.createEditBoardPlannedEnd = new ko.observable(null);
                 this.editingBoard = null;
@@ -32,6 +33,9 @@
                 this.isToogleStatusClosing = new ko.observable(false);
                 this.toogleStatusBoardId = null;
 
+                this.taskBoardCategoryList = new ManageBoards.TaskBoardCategoryList(this.reloadBoards.bind(this), this.errorOccured);
+
+                this.taskBoardCategoryList.loadBoardCategories();
                 this.openBoardList.loadBoards();
                 this.closedBoardList.loadBoards();
             };
@@ -59,11 +63,49 @@
 
 
                 /**
+                 * Returns a board category by id
+                 * @param {string} categoryId Category id
+                 * @returns {object} Board category
+                 */
+                getBoardCategoryById: function(categoryId) {
+                    if(!categoryId) {
+                        return null;
+                    }
+
+                    var categories = this.taskBoardCategoryList.boardCategories();
+                    for(var curCategory = 0; curCategory < categories.length; ++curCategory)
+                    {
+                        if(categories[curCategory].id == categoryId) 
+                        {
+                            return categories[curCategory];
+                        }
+                    }
+
+                    return null;
+                },
+
+                /**
+                 * Returns the name of a category by its id
+                 * @param {string} categoryId Id of the category
+                 * @returns {string} name of the category
+                 */
+                getBoardCategoryNameById: function(categoryId) {
+                    var category = this.getBoardCategoryById(categoryId);
+                    if(category) 
+                    {
+                        return category.name;
+                    }
+
+                    return "";
+                },
+
+                /**
                  * Opens the new board dialog
                  */
                 openNewBoardDialog: function() {
                     this.isEditingBoard(false);
                     this.createEditBoardName("");
+                    this.createEditBoardCategory(null);
                     this.createEditBoardPlannedStart(null);
                     this.createEditBoardPlannedEnd(null);
                     this.editingBoard = null;
@@ -79,6 +121,7 @@
                 openEditBoardDialog: function(board) {
                     this.isEditingBoard(true);
                     this.createEditBoardName(board.name);
+                    this.createEditBoardCategory(this.getBoardCategoryById(board.categoryId));
                     this.createEditBoardPlannedStart(board.plannedStart ? board.plannedStart : null);
                     this.createEditBoardPlannedEnd(board.plannedEnd ? board.plannedEnd : null);
                     this.editingBoard = board;
@@ -121,6 +164,7 @@
 
                     var request = {
                         name: this.createEditBoardName(),
+                        categoryId: this.createEditBoardCategory() ? this.createEditBoardCategory().id : null,
                         plannedStart: this.createEditBoardPlannedStart(),
                         plannedEnd: this.createEditBoardPlannedEnd()
                     };
@@ -136,7 +180,15 @@
                         contentType: "application/json"
                     }).done(function(save) {
                         self.isLoading(false);
-                        self.openBoardList.loadBoards();
+
+                        if(!self.editingBoard || !self.editingBoard.isClosed)
+                        {
+                            self.openBoardList.loadBoards();
+                        }
+                        else
+                        {
+                            self.closedBoardList.loadBoards();
+                        }
                         self.cancelBoardDialog();
                     }).fail(function(xhr) {
                         self.isLoading(false);
@@ -241,6 +293,15 @@
                 closeConfirmToogleStatusDialog: function() {
                     this.showConfirmToogleStatusDialog(false);
                     this.toogleStatusBoardId = null;
+                },
+
+
+                /**
+                 * Reloads the boards
+                 */
+                reloadBoards: function() {
+                    this.openBoardList.loadBoards();
+                    this.closedBoardList.loadBoards();
                 }
             };
 

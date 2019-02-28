@@ -54,6 +54,8 @@
     "TemplateTypeTaleActionChangeNpcSkillValue": "Aktion: Npc Fähigkeits Wert ändern",
     "TemplateTypeTaleActionPersistDialogState": "Aktion: Dialogzustand speichern",
     "TemplateTypeTaleActionOpenShop": "Aktion: Handel öffnen",
+    "TemplateTypeTaleActionNpcPlayAnimation": "Aktion: NPC Animation abspielen",
+    "TemplateTypeTaleActionPlayerPlayAnimation": "Aktion: Spieler Animation abspielen",
 
     
     "TemplateTypeGeneralLogicGroup": "Logik: Gruppe",

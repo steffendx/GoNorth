@@ -139,6 +139,7 @@ namespace GoNorth
             services.AddTransient<ITaskImageAccess, TaskImageFileSystemAccess>();
             services.AddTransient<ITaskImageParser, TaskImageParser>();
             services.AddTransient<ITaskNumberFill, TaskNumberFill>();
+            services.AddTransient<ITaskTypeDefaultProvider, TaskTypeDefaultProvider>();
 
             services.AddTransient<IKortistoThumbnailService, ImageSharpKortistoThumbnailService>();
             services.AddTransient<IEvneThumbnailService, ImageSharpEvneThumbnailService>();
@@ -195,6 +196,7 @@ namespace GoNorth
             services.AddScoped<IKartaMarkerImplementationSnapshotDbAccess, KartaMarkerImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<ITaleDbAccess, TaleMongoDbAccess>();
+            services.AddScoped<ITaleConfigDbAccess, TaleConfigMongoDbAccess>();
             services.AddScoped<ITaleDialogImplementationSnapshotDbAccess, TaleDialogImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<IAikaChapterOverviewDbAccess, AikaChapterOverviewMongoDbAccess>();
@@ -213,6 +215,9 @@ namespace GoNorth
             services.AddScoped<ILanguageKeyDbAccess, LanguageKeyMongoDbAccess>();
 
             services.AddScoped<ITaskBoardDbAccess, TaskBoardMongoDbAccess>();
+            services.AddScoped<ITaskTypeDbAccess, TaskTypeMongoDbAccess>();
+            services.AddScoped<ITaskGroupTypeDbAccess, TaskGroupTypeMongoDbAccess>();
+            services.AddScoped<ITaskBoardCategoryDbAccess, TaskBoardCategoryMongoDbAccess>();
             services.AddScoped<ITaskNumberDbAccess, TaskNumberMongoDbAccess>();
             services.AddScoped<IUserTaskBoardHistoryDbAccess, UserTaskBoardHistoryMongoDbAccess>();
 

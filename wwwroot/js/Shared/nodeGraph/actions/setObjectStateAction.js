@@ -20,7 +20,7 @@
              * @returns {string} HTML Content of the action
              */
             Actions.SetObjectStateAction.prototype.getContent = function() {
-                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "'/>";
+                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "' list='gn-SetNpcStateAction'/>";
             };
 
             /**
@@ -96,6 +96,15 @@
             Actions.SetObjectStateAction.prototype.getLabel = function() {
                 return "";
             };
+
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.SetObjectStateAction.prototype.getConfigKey = function() {
+                return "SetNpcStateAction";
+            }
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));

@@ -81,12 +81,26 @@
     "TaskBoardReopened": "Das Aufgabenboard <a href='/Task?id={0}'>{1}</a> wurde wieder geöffnet.",
     "TaskBoardDeleted": "Das Aufgabenboard {0} wurde gelöscht.",
 
+    "TaskGroupTypeCreated": "Ein neuer Aufgabengruppen Typ {1} wurde angelegt.",
+    "TaskGroupTypeUpdated": "Der Aufgabengruppen Typ {1} wurde aktualisiert.",
+    "TaskGroupTypeDeleted": "Der Aufgabengruppen Typ {0} wurde gelöscht.",
+
+    "TaskTypeCreated": "Ein neuer Aufgaben Typ {1} wurde angelegt.",
+    "TaskTypeUpdated": "Der Aufgaben Typ {1} wurde aktualisiert.",
+    "TaskTypeDeleted": "Der Aufgaben Typ {0} wurde gelöscht.",
+
+    "TaskBoardCategoryCreated": "Eine neue Aufgabenboard Kategorie {1} wurde angelegt.",
+    "TaskBoardCategoryUpdated": "Die Aufgabenboard Kategorie {1} wurde aktualisiert.",
+    "TaskBoardCategoryDeleted": "Die Aufgabenboard Kategorie {0} wurde gelöscht.",
+
     "TaskGroupCreated": "Eine neue Aufgabengruppe {2} wurde dem Aufgabenboard <a href='/Task?id={0}'>{1}</a> hinzugefügt.",
     "TaskGroupUpdated": "Die Aufgabengruppe {2} wurde im Aufgabenboard <a href='/Task?id={0}'>{1}</a> aktualisiert.",
+    "TaskGroupMoved": "Die Aufgabengruppe {2} wurde zum Aufgabenboard <a href='/Task?id={0}'>{1}</a> verschoben.",
     "TaskGroupDeleted": "Die Aufgabengruppe {2} wurde im Aufgabenboard <a href='/Task?id={0}'>{1}</a> gelöscht.",
 
     "TaskCreated": "Eine neue Aufgabe {3} wurde der Aufgabengruppe {2} im Aufgabenboard <a href='/Task?id={0}'>{1}</a> hinzugefügt.",
     "TaskUpdated": "Die Aufgabe {3} wurde in der Aufgabengruppe {2} im Aufgabenboard <a href='/Task?id={0}'>{1}</a> aktualisiert.",
+    "TaskMoved": "Die Aufgabe {3} wurde in die Aufgabengruppe {2} im Aufgabenboard <a href='/Task?id={0}'>{1}</a> verschoben.",
     "TaskDeleted": "Die Aufgabe {3} wurde in der Aufgabengruppe {2} im Aufgabenboard <a href='/Task?id={0}'>{1}</a> gelöscht.",
 
     "ImplementedNpc": "Der Npc <a href='/Kortisto/Npc?id={0}'>{1}</a> wurde implementiert.",

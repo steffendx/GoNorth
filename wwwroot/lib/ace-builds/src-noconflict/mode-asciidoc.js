@@ -1,4 +1,4 @@
-ace.define("ace/mode/asciidoc_highlight_rules",[], function(require, exports, module) {
+ace.define("ace/mode/asciidoc_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -155,6 +155,7 @@ var AsciidocHighlightRules = function() {
         var prefix = /\w/.test(ch) ? "\\b" : "(?:\\B|^)";
         return prefix + ch + "[^" + ch + "].*?" + ch + "(?![\\w*])";
     }
+
     var tokenMap = {
         macro: "constant.character",
         tableBlock: "doc.comment",
@@ -192,7 +193,7 @@ oop.inherits(AsciidocHighlightRules, TextHighlightRules);
 exports.AsciidocHighlightRules = AsciidocHighlightRules;
 });
 
-ace.define("ace/mode/folding/asciidoc",[], function(require, exports, module) {
+ace.define("ace/mode/folding/asciidoc",["require","exports","module","ace/lib/oop","ace/mode/folding/fold_mode","ace/range"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../../lib/oop");
@@ -305,7 +306,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 
 });
 
-ace.define("ace/mode/asciidoc",[], function(require, exports, module) {
+ace.define("ace/mode/asciidoc",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/asciidoc_highlight_rules","ace/mode/folding/asciidoc"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -338,8 +339,7 @@ oop.inherits(Mode, TextMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     ace.require(["ace/mode/asciidoc"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

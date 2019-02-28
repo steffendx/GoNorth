@@ -14,7 +14,7 @@ It offers modules for:
  * Wiki component with versioning and tight integration into the other modules
  * Map component to position Quest marker, Npcs, Items, Wiki pages and map changes
  * Tracking your implementation status and showing changed values after change to already implemented object
- * Simple Task Tracker
+ * Task Tracker
  * GDPR support
 
 ## Deployment
@@ -86,7 +86,7 @@ This way its much easier to keep track of the integration progress and not forge
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Implementation-Status-Tracking).
 
 ## Task Management
-A simple Kanban Board is integrated into GoNorth:
+A Kanban Board supporting different task types is integrated into GoNorth:
 
 ![Task Management](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Task.PNG?raw=true)
 

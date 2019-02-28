@@ -5951,6 +5951,65 @@
                 availableActions.push(action);
             }
 
+            /**
+             * Loads the config for an action
+             * 
+             * @param {string} configKey Config key
+             * @returns {jQuery.Deferred} Deferred for the request
+             */
+            function loadActionConfig(configKey) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax("/api/TaleApi/GetNodeConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
+                    if(!loadedConfigData)
+                    {
+                        def.resolve();
+                        return;
+                    }
+                    
+                    try
+                    {
+                        var configLines = JSON.parse(loadedConfigData)
+                        var configList = jQuery("<datalist id='gn-" + configKey + "'></datalist>");
+                        for(var curLine = 0; curLine < configLines.length; ++curLine)
+                        {
+                            configList.append(jQuery("<option></option>").text(configLines[curLine]));
+                        }
+                        jQuery("body").append(configList);
+                        def.resolve();
+                    }
+                    catch(e)
+                    {
+                        self.errorOccured(true);
+                        def.reject();
+                    }
+                }).fail(function() {
+                    def.reject();
+                })
+
+                return def.promise();
+            }
+
+            /**
+             * Loads all the config lists
+             * @returns {jQuery.Deferred} Deferred for the requests
+             */
+            Shapes.loadConfigLists = function() {
+                var usedConfigKeys = {};
+                var loadingPromises = [];
+
+                for(var curAction = 0; curAction < availableActions.length; ++curAction)
+                {
+                    var configKey = availableActions[curAction].getConfigKey();
+                    if(configKey && !usedConfigKeys[configKey])
+                    {
+                        usedConfigKeys[configKey] = true;
+                        loadingPromises.push(loadActionConfig(configKey));
+                    }
+                }
+
+                return jQuery.when.apply(jQuery, loadingPromises);
+            }
 
             joint.shapes.default = joint.shapes.default || {};
 
@@ -6257,6 +6316,15 @@
                  */
                 getContent: function() {
 
+                },
+
+                /**
+                 * Returns the config key for the action
+                 * 
+                 * @returns {string} Config key
+                 */
+                getConfigKey: function() {
+                    return null;
                 },
 
                 /**
@@ -9296,6 +9364,11 @@
 
                     return self.chooseObjectDialog.openSkillSearch(Aika.Localization.QuestViewModel.ChooseSkill);                    
                 };
+
+                // Load config lists
+                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
+                    self.errorOccured(true);
+                });
             };
 
             Quest.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);

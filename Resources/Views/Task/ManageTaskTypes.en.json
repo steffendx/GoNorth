@@ -1,0 +1,41 @@
+{
+    "ManageTaskTypes": "Manage task types",
+    "TaskGroupTypes": "Task group types",
+    "TaskTypes": "Task types",
+
+    "CreateNewTaskGroupType": "Create task group type",
+    "EditTaskGroupType": "Edit task group type",
+    "CreateNewTaskType": "Create task type",
+    "EditTaskType": "Edit task type",
+
+    "Name": "Name",
+    "Color": "Color",
+    "IsDefault": "Default type",
+    "MustEnterAValidColor": "You must enter a valid hex color.",
+    "Save": "Save",
+    "Cancel": "Cancel",
+
+    "EditTaskTypeToolTip": "Edit type",
+    "DeleteTaskTypeToolTip": "Delete type",
+    
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheTaskType": "Are you sure you want to delete the type?",
+    "SelectTypeToRemap": "Select a type to remap existing references:",
+    "DeletingLastTypeReferencesWillBeRemappedToDefault": "You are deleting the last type of this kind. Existing references will use the default type after deletion.",
+    "SelectTaskType": "Select type...",
+    "Yes": "Yes",
+    "No": "No",
+
+    "TaskGroupsWithoutTypeExist": "Task groups without a type exist. If you set this type as the new default type, these task groups will use this type until a user selects a type or a different default type is defined.",
+    "TasksWithoutTypeExist": "Tasks without a type exist. If you set this type as the new default type, these tasks will use this type until a user selects a type or a different default type is defined.",
+
+    "Info": "Info",
+    "DefaultTaskTypesWillBeProvided": "Since no task types exist, default types will be provided.",
+
+    "Locked": "Locked",
+    "LockedPrefix": "This type is currently being edited by ",
+    "LockedPostfix": ".",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured."
+}

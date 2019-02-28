@@ -467,6 +467,8 @@
 
       "wwwroot/js/Shared/flexFieldUtil.js",
       
+      "wwwroot/js/Tale/shared/configKeys.js",
+
       "wwwroot/js/Tale/dialogForm/textLine.js",
 
       "wwwroot/js/Tale/dialogForm/choiceNode.js",
@@ -507,6 +509,9 @@
       "wwwroot/js/Tale/dialogForm/actions/changeNpcSkillValueAction.js",
       "wwwroot/js/Tale/dialogForm/actions/persistDialogStateAction.js",
       "wwwroot/js/Tale/dialogForm/actions/openShopAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/playAnimationAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/playNpcAnimationAction.js",
+      "wwwroot/js/Tale/dialogForm/actions/playPlayerAnimationAction.js",
 
       "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
       "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
@@ -556,6 +561,19 @@
     "outputFileName": "wwwroot/js/Tale/taleLang.en.js",
     "inputFiles": [
       "wwwroot/js/Tale/dialogForm/taleLang.en.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Tale/config.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Tale/shared/configKeys.js",
+      "wwwroot/js/Tale/config/textareaConfigSection.js",
+      "wwwroot/js/Tale/config/viewmodel.js"
     ],
     "minify": {
       "enabled": true,
@@ -725,6 +743,7 @@
     "outputFileName": "wwwroot/js/Task/taskBoard.viewmodel.js",
     "inputFiles": [
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+      "wwwroot/js/Task/taskBoard/taskTypeColorBinding.js",
       "wwwroot/js/Task/taskBoard/task.js",
       "wwwroot/js/Task/taskBoard/statusColumnTaskContainer.js",
       "wwwroot/js/Task/taskBoard/taskGroup.js",
@@ -740,7 +759,21 @@
     "outputFileName": "wwwroot/js/Task/manageBoards.viewmodel.js",
     "inputFiles": [
       "wwwroot/js/Task/manageBoards/taskBoardList.js",
+      "wwwroot/js/Task/manageBoards/taskBoardCategoryList.js",
       "wwwroot/js/Task/manageBoards/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Task/manageTaskTypes.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Task/manageTaskTypes/colorPickerBinding.js",
+      "wwwroot/js/Task/manageTaskTypes/taskTypeList.js",
+      "wwwroot/js/Task/manageTaskTypes/viewmodel.js"
     ],
     "minify": {
       "enabled": true,

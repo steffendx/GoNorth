@@ -68,6 +68,11 @@
 
                     return self.chooseObjectDialog.openNpcSearch(Evne.Localization.SkillViewModel.ChooseNpc);                    
                 };
+
+                // Load config lists
+                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
+                    self.errorOccured(true);
+                });
             };
 
             Skill.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);

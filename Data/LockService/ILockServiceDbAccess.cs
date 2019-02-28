@@ -41,5 +41,12 @@ namespace GoNorth.Data.LockService
         /// <param name="userId">User Id</param>
         /// <returns>Lock Entry</returns>
         Task<List<LockEntry>> GetAllLocksOfUser(string userId);
+
+
+        /// <summary>
+        /// Creates the lock indices
+        /// </summary>
+        /// <returns>Task</returns>
+        Task CreateLockIndices();
     }
 }

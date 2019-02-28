@@ -81,12 +81,26 @@
     "TaskBoardReopened": "The task board <a href='/Task?id={0}'>{1}</a> was reopened.",
     "TaskBoardDeleted": "The task board {0} was deleted.",
 
+    "TaskGroupTypeCreated": "A new task group type {1} was created.",
+    "TaskGroupTypeUpdated": "The task group type {1} was updated.",
+    "TaskGroupTypeDeleted": "The task group type {0} was deleted.",
+
+    "TaskTypeCreated": "The task type {1} was created.",
+    "TaskTypeUpdated": "The task type {1} was updated.",
+    "TaskTypeDeleted": "The task type {0} was deleted.",
+
+    "TaskBoardCategoryCreated": "A new task board category {1} was created.",
+    "TaskBoardCategoryUpdated": "The task board category {1} was updated.",
+    "TaskBoardCategoryDeleted": "The task board category {0} was deleted.",
+
     "TaskGroupCreated": "A new task group {2} was added to the task board <a href='/Task?id={0}'>{1}</a>.",
     "TaskGroupUpdated": "The task group {2} was updated in the task board <a href='/Task?id={0}'>{1}</a>.",
+    "TaskGroupMoved": "The task group {2} was moved to the task board <a href='/Task?id={0}'>{1}</a>.",
     "TaskGroupDeleted": "The task group {2} was deleted in the task board <a href='/Task?id={0}'>{1}</a>.",
 
     "TaskCreated": "A new task {3} was added to the task group {2} in the task board <a href='/Task?id={0}'>{1}</a>.",
     "TaskUpdated": "The task {3} was updated in the task group {2} in the task board <a href='/Task?id={0}'>{1}</a>.",
+    "TaskMoved": "The taks {3} Was moved to the task group {2} in the task board <a href='/Task?id={0}'>{1}</a>.",
     "TaskDeleted": "The task {3} was deleted in the task group {2} in the task board <a href='/Task?id={0}'>{1}</a>.",
 
     "ImplementedNpc": "The npc <a href='/Kortisto/Npc?id={0}'>{1}</a> was implemented.",

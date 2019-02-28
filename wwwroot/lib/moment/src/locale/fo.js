@@ -1,6 +1,7 @@
 //! moment.js locale configuration
 //! locale : Faroese [fo]
 //! author : Ragnar Johannesen : https://github.com/ragnar123
+//! author : Kristian Sakarisson : https://github.com/sakarisson
 
 import moment from '../moment';
 
@@ -30,13 +31,14 @@ export default moment.defineLocale('fo', {
         future : 'um %s',
         past : '%s síðani',
         s : 'fá sekund',
-        m : 'ein minutt',
+        ss : '%d sekundir',
+        m : 'ein minuttur',
         mm : '%d minuttir',
         h : 'ein tími',
         hh : '%d tímar',
         d : 'ein dagur',
         dd : '%d dagar',
-        M : 'ein mánaði',
+        M : 'ein mánaður',
         MM : '%d mánaðir',
         y : 'eitt ár',
         yy : '%d ár'

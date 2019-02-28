@@ -71,6 +71,15 @@
                 },
 
                 /**
+                 * Returns the config key for the action
+                 * 
+                 * @returns {string} Config key
+                 */
+                getConfigKey: function() {
+                    return null;
+                },
+
+                /**
                  * Gets called once the action was intialized
                  * 
                  * @param {object} contentElement Content element

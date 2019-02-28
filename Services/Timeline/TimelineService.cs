@@ -170,13 +170,27 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.TaskBoardClosed, new List<string>() { RoleNames.Task });
             _entryRoleFilter.Add(TimelineEvent.TaskBoardReopened, new List<string>() { RoleNames.Task });
             _entryRoleFilter.Add(TimelineEvent.TaskBoardDeleted, new List<string>() { RoleNames.Task });
-            
+
+            _entryRoleFilter.Add(TimelineEvent.TaskGroupTypeCreated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskGroupTypeUpdated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskGroupTypeDeleted, new List<string>() { RoleNames.Task });
+
+            _entryRoleFilter.Add(TimelineEvent.TaskTypeCreated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskTypeUpdated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskTypeDeleted, new List<string>() { RoleNames.Task });
+
+            _entryRoleFilter.Add(TimelineEvent.TaskBoardCategoryCreated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskBoardCategoryUpdated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskBoardCategoryDeleted, new List<string>() { RoleNames.Task });
+
             _entryRoleFilter.Add(TimelineEvent.TaskGroupCreated, new List<string>() { RoleNames.Task });
             _entryRoleFilter.Add(TimelineEvent.TaskGroupUpdated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskGroupMoved, new List<string>() { RoleNames.Task });
             _entryRoleFilter.Add(TimelineEvent.TaskGroupDeleted, new List<string>() { RoleNames.Task });
 
             _entryRoleFilter.Add(TimelineEvent.TaskCreated, new List<string>() { RoleNames.Task });
             _entryRoleFilter.Add(TimelineEvent.TaskUpdated, new List<string>() { RoleNames.Task });
+            _entryRoleFilter.Add(TimelineEvent.TaskMoved, new List<string>() { RoleNames.Task });
             _entryRoleFilter.Add(TimelineEvent.TaskDeleted, new List<string>() { RoleNames.Task });
 
             // Implementation Status

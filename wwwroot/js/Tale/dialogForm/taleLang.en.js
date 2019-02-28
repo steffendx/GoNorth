@@ -55,6 +55,10 @@
             Localization.Actions.OpenShopLabel = "Open shop";
             Localization.Actions.WillOpenAShopForTheCurrentNpc = "A trade will be started with the current npc.";
 
+            Localization.Actions.AnimationPlaceholder = "Animation name";
+            Localization.Actions.PlayNpcAnimationLabel = "Play npc animation";
+            Localization.Actions.PlayPlayerAnimationLabel = "Play player animation";
+
             // Condition
             Localization.Conditions = {};
             Localization.Conditions.CheckNpcValueLabel = "Check npc value";

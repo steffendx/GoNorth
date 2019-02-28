@@ -92,6 +92,7 @@ var JavaScriptHighlightRules = function(options) {
         "3[0-7][0-7]?|" + // oct
         "[4-7][0-7]?|" + //oct
         ".)";
+
     this.$rules = {
         "no_regex" : [
             DocCommentHighlightRules.getStartRule("doc-start"),
@@ -180,7 +181,8 @@ var JavaScriptHighlightRules = function(options) {
                 next  : "property"
             }, {
                 token : "storage.type",
-                regex : /=>/
+                regex : /=>/,
+                next  : "start"
             }, {
                 token : "keyword.operator",
                 regex : /--|\+\+|\.{3}|===|==|=|!=|!==|<+=?|>+=?|!|&&|\|\||\?:|[!$%&*+\-~\/^]=?/,
@@ -812,6 +814,7 @@ var CssHighlightRules = function() {
         "support.constant.color": supportConstantColor,
         "support.constant.fonts": supportConstantFonts
     }, "text", true);
+
     this.$rules = {
         "start" : [{
             include : ["strings", "url", "comments"]
@@ -1125,7 +1128,7 @@ var CssCompletions = function() {
                 caption: property,
                 snippet: property + ': $0;',
                 meta: "property",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -1145,7 +1148,7 @@ var CssCompletions = function() {
                 caption: value,
                 snippet: value,
                 meta: "property value",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2363,7 +2366,7 @@ var HtmlCompletions = function() {
             return {
                 value: element,
                 meta: "tag",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2381,7 +2384,7 @@ var HtmlCompletions = function() {
                 caption: attribute,
                 snippet: attribute + '="$0"',
                 meta: "attribute",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2401,7 +2404,7 @@ var HtmlCompletions = function() {
                 caption: value,
                 snippet: value,
                 meta: "attribute value",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2414,7 +2417,7 @@ var HtmlCompletions = function() {
                 caption: value,
                 snippet: value,
                 meta: "html entity",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2509,9 +2512,10 @@ var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var CSharpHighlightRules = function() {
     var keywordMapper = this.createKeywordMapper({
         "variable.language": "this",
-        "keyword": "abstract|event|new|struct|as|explicit|null|switch|base|extern|object|this|bool|false|operator|throw|break|finally|out|true|byte|fixed|override|try|case|float|params|typeof|catch|for|private|uint|char|foreach|protected|ulong|checked|goto|public|unchecked|class|if|readonly|unsafe|const|implicit|ref|ushort|continue|in|return|using|decimal|int|sbyte|virtual|default|interface|sealed|volatile|delegate|internal|partial|short|void|do|is|sizeof|while|double|lock|stackalloc|else|long|static|enum|namespace|string|var|dynamic",
+        "keyword": "abstract|async|await|event|new|struct|as|explicit|null|switch|base|extern|object|this|bool|false|operator|throw|break|finally|out|true|byte|fixed|override|try|case|float|params|typeof|catch|for|private|uint|char|foreach|protected|ulong|checked|goto|public|unchecked|class|if|readonly|unsafe|const|implicit|ref|ushort|continue|in|return|using|decimal|int|sbyte|virtual|default|interface|sealed|volatile|delegate|internal|partial|short|void|do|is|sizeof|while|double|lock|stackalloc|else|long|static|enum|namespace|string|var|dynamic",
         "constant.language": "null|true|false"
     }, "identifier");
+
     this.$rules = {
         "start" : [
             {
@@ -2657,6 +2661,7 @@ oop.inherits(RazorLangHighlightRules, CSharpHighlightRules);
 
 var RazorHighlightRules = function() {
     HtmlHighlightRules.call(this);
+
     var blockStartRule = {
         regex: '@[({]|@functions{',
         onMatch: function(value, state, stack) {
@@ -2686,6 +2691,7 @@ var RazorHighlightRules = function() {
             return 'punctuation.block.razor';
         }
     };
+
     var shortStartRule = {
         regex: "@(?![{(])",
         onMatch: function(value, state, stack) {
@@ -2700,6 +2706,7 @@ var RazorHighlightRules = function() {
         regex: "(?=[^A-Za-z_\\.()\\[\\]])",
         next: 'pop'
     };
+
     var ifStartRule = {
         regex: "@(?=if)",
         onMatch: function(value, state, stack) {
@@ -2713,6 +2720,7 @@ var RazorHighlightRules = function() {
             return 'punctuation.control.razor';
         }
     };
+
     var razorStartRules = [
         {
             start: "@\\*",
@@ -2804,7 +2812,7 @@ var RazorCompletions = function() {
             return {
                 value: element,
                 meta: "keyword",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2814,7 +2822,7 @@ var RazorCompletions = function() {
             return {
                 value: element,
                 meta: "keyword",
-                score: Number.MAX_VALUE
+                score: 1000000
             };
         });
     };
@@ -2857,8 +2865,7 @@ oop.inherits(Mode, HtmlMode);
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
-});
-                (function() {
+});                (function() {
                     window.require(["ace/mode/razor"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
                             module.exports = m;

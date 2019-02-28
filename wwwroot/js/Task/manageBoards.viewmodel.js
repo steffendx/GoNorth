@@ -14,10 +14,11 @@
              * @param {string} toogleStatusToolTip Tooltip for the status toogle button
              * @param {string} apiMethod Api Method used to load the boards
              * @param {bool} isExpandedByDefault true if the list is expanded by default, else false
+             * @param {function} getCategoryNameFunction Function that returns the name of a function by its id
              * @param {ko.observable} errorOccuredObservable Observable which will be set to true or false if an error occured or a new load is started
              * @class
              */
-            ManageBoards.TaskBoardList = function(title, toogleStatusIcon, toogleStatusToolTip, apiMethod, isExpandedByDefault, errorOccuredObservable)
+            ManageBoards.TaskBoardList = function(title, toogleStatusIcon, toogleStatusToolTip, apiMethod, isExpandedByDefault, getCategoryNameFunction, errorOccuredObservable)
             {
                 this.apiMethod = apiMethod;
 
@@ -35,6 +36,7 @@
                 this.prevLoading = new ko.observable(false);
                 this.nextLoading = new ko.observable(false);
 
+                this.getCategoryNameFunction = getCategoryNameFunction;
                 this.errorOccured = errorOccuredObservable;
             };
 
@@ -58,10 +60,16 @@
                         url: "/api/TaskApi/" + this.apiMethod + "?start=" + (this.currentPage() * boardPageSize) + "&pageSize=" + boardPageSize, 
                         type: "GET"
                     }).done(function(data) {
-                       self.boards(data.boards);
-                       self.hasMore(data.hasMore);
+                        for(var curBoard = 0; curBoard < data.boards.length; ++curBoard)
+                        {
+                            data.boards[curBoard].categoryName = new ko.pureComputed(function() {
+                                return self.getCategoryNameFunction(this.categoryId);
+                            }, data.boards[curBoard]);
+                        }
+                        self.boards(data.boards);
+                        self.hasMore(data.hasMore);
 
-                       self.resetLoadingState();
+                        self.resetLoadingState();
                     }).fail(function() {
                         self.errorOccured(true);
                         self.resetLoadingState();
@@ -107,6 +115,220 @@
         (function(ManageBoards) {
 
             /**
+             * List of Task Board categories
+             * 
+             * @param {function} reloadBoardsFunc Function to reload the boards
+             * @param {ko.observable} errorOccuredObservable Observable which will be set to true or false if an error occured or a new load is started
+             * @class
+             */
+            ManageBoards.TaskBoardCategoryList = function(reloadBoardsFunc, errorOccuredObservable)
+            {
+                this.isExpanded = new ko.observable(false);
+
+                this.boardCategories = new ko.observableArray();
+
+                this.showCreateEditCategoryDialog = new ko.observable(false);
+                this.showCreateEditCategoryName = new ko.observable("");
+                this.showCreateEditCategoryExpandedByDefault = new ko.observable(false);
+                this.isEditingCategory = new ko.observable(false);
+                this.categoryToEdit = null;
+
+                this.showConfirmDeleteDialog = new ko.observable(false);
+                this.isCategoryToDeleteUsedByBoard = new ko.observable(false);
+                this.categoryToDelete = null;
+
+                this.isLoading = new ko.observable(false);
+
+                this.reloadBoardsFunc = reloadBoardsFunc;
+                this.errorOccured = errorOccuredObservable;
+            };
+
+            ManageBoards.TaskBoardCategoryList.prototype = {
+
+                /**
+                 * Toogles the visibility of the list
+                 */
+                toogleVisibility: function() {
+                    this.isExpanded(!this.isExpanded());
+                },
+
+                /**
+                 * Loads the board categories
+                 */
+                loadBoardCategories: function() {
+                    this.errorOccured(false);
+                    this.isLoading(true);
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/TaskApi/GetTaskBoardCategories", 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.boardCategories(data);
+
+                        self.isLoading(false);
+                    }).fail(function() {
+                        self.errorOccured(true);
+                        self.isLoading(false);
+                    });
+                },
+
+                /**
+                 * Opens the new board category dialog
+                 */
+                openNewBoardCategoryDialog: function() {
+                    this.showCreateEditCategoryName("");
+                    this.showCreateEditCategoryExpandedByDefault(false);
+                    this.isEditingCategory(false);
+                    this.categoryToEdit = null;
+
+                    this.openEditBoardCategoryDialogShared();
+                },
+
+                /**
+                 * Opens the edit board category dialog
+                 * @param {object} category Category to edit
+                 */
+                openEditBoardCategoryDialog: function(category) {
+                    this.showCreateEditCategoryName(category.name);
+                    this.showCreateEditCategoryExpandedByDefault(category.isExpandedByDefault);
+                    this.isEditingCategory(true);
+                    this.categoryToEdit = category;
+
+                    this.openEditBoardCategoryDialogShared();
+                },
+
+                /**
+                 * Sets the shared values for opening the edit board category
+                 */
+                openEditBoardCategoryDialogShared: function() {
+                    this.showCreateEditCategoryDialog(true);
+                    GoNorth.Util.setupValidation("#gn-taskBoardCategoryCreateEditForm");
+                },
+
+                /**
+                 * Saves the board category
+                 */
+                saveBoardCategory: function() {
+                    // Valdiate Data
+                    if(!jQuery("#gn-taskBoardCategoryCreateEditForm").valid())
+                    {
+                        return;
+                    }
+
+                    var url = "/api/TaskApi/CreateTaskBoardCategory";
+                    if(this.categoryToEdit) {
+                        url = "/api/TaskApi/UpdateTaskBoardCategory?id=" + this.categoryToEdit.id;
+                    }
+
+                    var request = {
+                        name: this.showCreateEditCategoryName(),
+                        isExpandedByDefault: this.showCreateEditCategoryExpandedByDefault()
+                    };
+
+                    this.isLoading(true);
+                    this.errorOccured(false);
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: url, 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify(request), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function() {
+                        self.isLoading(false);
+                        self.loadBoardCategories();
+                        self.cancelBoardCategoryDialog();
+                    }).fail(function() {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Cancels the edit board category dialog
+                 */
+                cancelBoardCategoryDialog: function() {
+                    this.showCreateEditCategoryDialog(false);
+                    this.categoryToEdit = null;
+                },
+
+
+                /**
+                 * Opens the delete board category dialog
+                 * @param {object} category Category to delete
+                 */
+                openDeleteBoardCategoryDialog: function(category) {
+                    this.isCategoryToDeleteUsedByBoard(false);
+                    this.showConfirmDeleteDialog(true);
+                    this.categoryToDelete = category;
+
+                    this.checkCategoryIsUsedByBoard(category);
+                },
+
+                /**
+                 * Checks if a category is used by any board
+                 * @param {object} category Category to check
+                 */
+                checkCategoryIsUsedByBoard: function(category) {
+                    this.errorOccured(false);
+                    this.isLoading(true);
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/TaskApi/IsTaskBoardCategoryUsedByBoard?id=" + category.id, 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.isCategoryToDeleteUsedByBoard(data);
+                        self.isLoading(false);
+                    }).fail(function() {
+                        self.errorOccured(true);
+                        self.isLoading(false);
+                    });  
+                },
+
+                /**
+                 * Deletes a board category
+                 */
+                deleteBoardCategory: function() {
+                    this.errorOccured(false);
+                    this.isLoading(true);
+                    var self = this;
+                    jQuery.ajax({ 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        url: "/api/TaskApi/DeleteTaskBoardCategory?id=" + this.categoryToDelete.id, 
+                        type: "DELETE"
+                    }).done(function(data) {
+                        self.isLoading(false);
+                        self.closeConfirmDeleteBoardCategoryDialog();
+                        self.loadBoardCategories();
+
+                        if(self.isCategoryToDeleteUsedByBoard())
+                        {
+                            self.reloadBoardsFunc();
+                        }
+                    }).fail(function() {
+                        self.errorOccured(true);
+                        self.isLoading(false);
+                    });  
+                },
+
+                /**
+                 * Closes the confirm delete board category
+                 */
+                closeConfirmDeleteBoardCategoryDialog: function() {
+                    this.showConfirmDeleteDialog(false);
+                    this.categoryToDelete = null;
+                }
+            };
+
+        }(Task.ManageBoards = Task.ManageBoards || {}));
+    }(GoNorth.Task = GoNorth.Task || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Task) {
+        (function(ManageBoards) {
+
+            /**
              * Manage Boards View Model
              * @class
              */
@@ -117,13 +339,14 @@
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
 
-                this.openBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.OpenTaskBoards, "glyphicon-ok", GoNorth.Task.ManageBoards.Localization.CloseTaskBoardToolTip, "GetOpenTaskBoards", true, this.errorOccured);
-                this.closedBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.ClosedTaskBoards, "glyphicon-repeat", GoNorth.Task.ManageBoards.Localization.ReopenTaskBoardToolTip, "GetClosedTaskBoards", false, this.errorOccured);
+                this.openBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.OpenTaskBoards, "glyphicon-ok", GoNorth.Task.ManageBoards.Localization.CloseTaskBoardToolTip, "GetOpenTaskBoards", true, this.getBoardCategoryNameById.bind(this), this.errorOccured);
+                this.closedBoardList = new ManageBoards.TaskBoardList(GoNorth.Task.ManageBoards.Localization.ClosedTaskBoards, "glyphicon-repeat", GoNorth.Task.ManageBoards.Localization.ReopenTaskBoardToolTip, "GetClosedTaskBoards", false, this.getBoardCategoryNameById.bind(this), this.errorOccured);
 
                 this.showBoardCreateEditDialog = new ko.observable(false);
                 this.showDateValidationError = new ko.observable(false);
                 this.isEditingBoard = new ko.observable(false);
                 this.createEditBoardName = new ko.observable("");
+                this.createEditBoardCategory = new ko.observable(null);
                 this.createEditBoardPlannedStart = new ko.observable(null);
                 this.createEditBoardPlannedEnd = new ko.observable(null);
                 this.editingBoard = null;
@@ -135,6 +358,9 @@
                 this.isToogleStatusClosing = new ko.observable(false);
                 this.toogleStatusBoardId = null;
 
+                this.taskBoardCategoryList = new ManageBoards.TaskBoardCategoryList(this.reloadBoards.bind(this), this.errorOccured);
+
+                this.taskBoardCategoryList.loadBoardCategories();
                 this.openBoardList.loadBoards();
                 this.closedBoardList.loadBoards();
             };
@@ -162,11 +388,49 @@
 
 
                 /**
+                 * Returns a board category by id
+                 * @param {string} categoryId Category id
+                 * @returns {object} Board category
+                 */
+                getBoardCategoryById: function(categoryId) {
+                    if(!categoryId) {
+                        return null;
+                    }
+
+                    var categories = this.taskBoardCategoryList.boardCategories();
+                    for(var curCategory = 0; curCategory < categories.length; ++curCategory)
+                    {
+                        if(categories[curCategory].id == categoryId) 
+                        {
+                            return categories[curCategory];
+                        }
+                    }
+
+                    return null;
+                },
+
+                /**
+                 * Returns the name of a category by its id
+                 * @param {string} categoryId Id of the category
+                 * @returns {string} name of the category
+                 */
+                getBoardCategoryNameById: function(categoryId) {
+                    var category = this.getBoardCategoryById(categoryId);
+                    if(category) 
+                    {
+                        return category.name;
+                    }
+
+                    return "";
+                },
+
+                /**
                  * Opens the new board dialog
                  */
                 openNewBoardDialog: function() {
                     this.isEditingBoard(false);
                     this.createEditBoardName("");
+                    this.createEditBoardCategory(null);
                     this.createEditBoardPlannedStart(null);
                     this.createEditBoardPlannedEnd(null);
                     this.editingBoard = null;
@@ -182,6 +446,7 @@
                 openEditBoardDialog: function(board) {
                     this.isEditingBoard(true);
                     this.createEditBoardName(board.name);
+                    this.createEditBoardCategory(this.getBoardCategoryById(board.categoryId));
                     this.createEditBoardPlannedStart(board.plannedStart ? board.plannedStart : null);
                     this.createEditBoardPlannedEnd(board.plannedEnd ? board.plannedEnd : null);
                     this.editingBoard = board;
@@ -224,6 +489,7 @@
 
                     var request = {
                         name: this.createEditBoardName(),
+                        categoryId: this.createEditBoardCategory() ? this.createEditBoardCategory().id : null,
                         plannedStart: this.createEditBoardPlannedStart(),
                         plannedEnd: this.createEditBoardPlannedEnd()
                     };
@@ -239,7 +505,15 @@
                         contentType: "application/json"
                     }).done(function(save) {
                         self.isLoading(false);
-                        self.openBoardList.loadBoards();
+
+                        if(!self.editingBoard || !self.editingBoard.isClosed)
+                        {
+                            self.openBoardList.loadBoards();
+                        }
+                        else
+                        {
+                            self.closedBoardList.loadBoards();
+                        }
                         self.cancelBoardDialog();
                     }).fail(function(xhr) {
                         self.isLoading(false);
@@ -344,6 +618,15 @@
                 closeConfirmToogleStatusDialog: function() {
                     this.showConfirmToogleStatusDialog(false);
                     this.toogleStatusBoardId = null;
+                },
+
+
+                /**
+                 * Reloads the boards
+                 */
+                reloadBoards: function() {
+                    this.openBoardList.loadBoards();
+                    this.closedBoardList.loadBoards();
                 }
             };
 

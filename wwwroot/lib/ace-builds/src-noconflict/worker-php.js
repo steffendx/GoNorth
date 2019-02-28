@@ -134,7 +134,7 @@ window.define = function(id, deps, factory) {
         exports: {},
         factory: function() {
             var module = this;
-            var returnExports = factory.apply(this, deps.map(function(dep) {
+            var returnExports = factory.apply(this, deps.slice(0, factory.length).map(function(dep) {
                 switch (dep) {
                     // Because "require", "exports" and "module" aren't actual
                     // dependencies, we must handle them seperately.
@@ -517,6 +517,7 @@ function validateDelta(docLines, delta) {
 }
 
 exports.applyDelta = function(docLines, delta, doNotValidate) {
+    
     var row = delta.start.row;
     var startColumn = delta.start.column;
     var line = docLines[row] || "";
@@ -598,10 +599,15 @@ EventEmitter._signal = function(eventName, e) {
 
 EventEmitter.once = function(eventName, callback) {
     var _self = this;
-    callback && this.addEventListener(eventName, function newCallback() {
+    this.addEventListener(eventName, function newCallback() {
         _self.removeEventListener(eventName, newCallback);
         callback.apply(null, arguments);
     });
+    if (!callback) {
+        return new Promise(function(resolve) {
+            callback = resolve;
+        });
+    }
 };
 
 
@@ -629,7 +635,6 @@ EventEmitter.removeDefaultHandler = function(eventName, callback) {
     var disabled = handlers._disabled_[eventName];
     
     if (handlers[eventName] == callback) {
-        var old = handlers[eventName];
         if (disabled)
             this.setDefaultHandler(eventName, disabled.pop());
     } else if (disabled) {
@@ -734,6 +739,7 @@ var Anchor = exports.Anchor = function(doc, row, column) {
                 column: point.column + (point.row == deltaEnd.row ? deltaColShift : 0)
             };
         }
+        
         return {
             row: deltaStart.row,
             column: deltaStart.column
@@ -982,7 +988,7 @@ var Document = function(textOrLines) {
             column = this.$lines[row].length;
         }
         this.insertMergedLines({row: row, column: column}, lines);
-    };
+    };    
     this.insertMergedLines = function(position, lines) {
         var start = this.clippedPos(position.row, position.column);
         var end = {
@@ -1255,7 +1261,7 @@ exports.escapeRegExp = function(str) {
 };
 
 exports.escapeHTML = function(str) {
-    return str.replace(/&/g, "&#38;").replace(/"/g, "&#34;").replace(/'/g, "&#39;").replace(/</g, "&#60;");
+    return ("" + str).replace(/&/g, "&#38;").replace(/"/g, "&#34;").replace(/'/g, "&#39;").replace(/</g, "&#60;");
 };
 
 exports.getMatchOffsets = function(string, regExp) {
@@ -3593,6 +3599,7 @@ oop.inherits(PhpWorker, Mirror);
                 type: "error"
             });
         }
+
         this.sender.emit("annotate", errors);
     };
 
@@ -3602,8 +3609,6 @@ oop.inherits(PhpWorker, Mirror);
 
 ace.define("ace/lib/es5-shim",[], function(require, exports, module) {
 
-//
-//
 function Empty() {}
 
 if (!Function.prototype.bind) {
@@ -3616,6 +3621,7 @@ if (!Function.prototype.bind) {
         var bound = function () {
 
             if (this instanceof bound) {
+
                 var result = target.apply(
                     this,
                     args.concat(slice.call(arguments))
@@ -3639,7 +3645,6 @@ if (!Function.prototype.bind) {
             bound.prototype = new Empty();
             Empty.prototype = null;
         }
-        //
         return bound;
     };
 }
@@ -3660,9 +3665,6 @@ if ((supportsAccessors = owns(prototypeOfObject, "__defineGetter__"))) {
     lookupGetter = call.bind(prototypeOfObject.__lookupGetter__);
     lookupSetter = call.bind(prototypeOfObject.__lookupSetter__);
 }
-
-//
-//
 if ([1,2].splice(0).length != 2) {
     if(function() { // test IE < 9 to splice bug - see issue #138
         function makeArray(l) {
@@ -3985,9 +3987,6 @@ if (!Array.prototype.lastIndexOf || ([0, 1].lastIndexOf(0, -3) != -1)) {
         return -1;
     };
 }
-
-//
-//
 if (!Object.getPrototypeOf) {
     Object.getPrototypeOf = function getPrototypeOf(object) {
         return object.__proto__ || (
@@ -4071,6 +4070,7 @@ if (!Object.create) {
         return object;
     };
 }
+
 function doesDefinePropertyWork(object) {
     try {
         Object.defineProperty(object, "sentinel", {});
@@ -4236,18 +4236,11 @@ if (!Object.keys) {
     };
 
 }
-
-//
-//
 if (!Date.now) {
     Date.now = function now() {
         return new Date().getTime();
     };
 }
-
-
-//
-//
 var ws = "\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003" +
     "\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028" +
     "\u2029\uFEFF";
@@ -4260,8 +4253,6 @@ if (!String.prototype.trim || ws.trim()) {
     };
 }
 
-//
-//
 function toInteger(n) {
     n = +n;
     if (n !== n) { // isNaN
