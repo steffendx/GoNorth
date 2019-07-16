@@ -12,22 +12,27 @@
              */
             Map.ViewModel = function()
             {
+                this.isLoading = new ko.observable(false);
+                this.isReadonly = new ko.observable(false);
+                this.showWaitOnPageDialog = new ko.observable(false);
+                this.lockedByUser = new ko.observable("");
+                this.errorOccured = new ko.observable(false);
+                this.additionalError = new ko.observable("");
+
                 this.id = new ko.observable("");
                 this.preSelectType = GoNorth.Util.getParameterFromUrl("preSelectType");
                 this.preSelectId = GoNorth.Util.getParameterFromUrl("preSelectId");
                 this.zoomOnMarkerType = GoNorth.Util.getParameterFromUrl("zoomOnMarkerType");
                 this.zoomOnMarkerId = GoNorth.Util.getParameterFromUrl("zoomOnMarkerId");
                 this.preSelectChapter = parseInt(GoNorth.Util.getParameterFromUrl("chapter"));
+
+                this.dailyRoutineEditor = new Map.DailyRoutineEditor(this, this.isLoading, this.errorOccured);
+
                 var paramId = GoNorth.Util.getParameterFromUrl("id");
                 if(paramId)
                 {
                     this.setId(paramId);
                 }
-                
-                this.isLoading = new ko.observable(false);
-                this.isReadonly = new ko.observable(false);
-                this.showWaitOnPageDialog = new ko.observable(false);
-                this.lockedByUser = new ko.observable("");
 
                 this.map = null;
                 this.mapGeometryToolbar = null;
@@ -64,6 +69,11 @@
                 this.showMarkerNameDialogDescription = new ko.observable(false);
                 this.dialogMarkerDescription = new ko.observable("");
                 this.dialogMarkerNameDef = null;
+
+                this.showMarkerExportNameDialog = new ko.observable(false);
+                this.markerExportName = new ko.observable("");
+                this.markerToEditExportName = null;
+                this.markerToEditSaveCallback = null;
                 
                 this.compareDialog = new GoNorth.ImplementationStatus.CompareDialog.ViewModel();
 
@@ -125,8 +135,6 @@
                     return false;
                 }, this);
 
-                this.errorOccured = new ko.observable(false);
-
                 this.loadAllMaps();
 
                 var chapterDef = null;
@@ -176,6 +184,14 @@
             };
 
             Map.ViewModel.prototype = {
+                /**
+                 * Resets the error state
+                 */
+                resetErrorState: function() {
+                    this.errorOccured(false);
+                    this.additionalError("");
+                },
+
                 /**
                  * Checks the pre selection
                  */
@@ -236,6 +252,8 @@
                     this.aikaMarkerManager.parseUnparsedMarkers(map);
                     this.noteMarkerManager.parseUnparsedMarkers(map);
 
+                    this.dailyRoutineEditor.createLayerForMap(map);
+
                     this.checkPreSelection();
                     this.checkZoomOnMarker();
 
@@ -245,6 +263,7 @@
                     {
                         this.refreshUrlMapLocations();
                     }
+                    this.refreshUrlParameters();
                 },
                 
                 /**
@@ -262,7 +281,7 @@
                  * Loads all available maps
                  */
                 loadAllMaps: function() {
-                    this.errorOccured(false);
+                    this.resetErrorState();
                     var self = this;
                     jQuery.ajax({
                         url: "/api/KartaApi/Maps",
@@ -286,7 +305,7 @@
                 loadChapters: function() {
                     var def = new jQuery.Deferred();
 
-                    this.errorOccured(false);
+                    this.resetErrorState();
                     var self = this;
                     jQuery.ajax({
                         url: "/api/AikaApi/GetChapters",
@@ -412,9 +431,7 @@
                         return;
                     }
 
-                    var parameterValue = this.buildUrlParameters();
-                    GoNorth.Util.replaceUrlParameters(parameterValue);
-                    this.refreshUrlMapLocations();
+                    this.refreshUrlParameters();
                 },
 
                 /**
@@ -459,6 +476,15 @@
                 },
 
                 /**
+                 * Refreshes the url parameters
+                 */
+                refreshUrlParameters: function() {
+                    var parameterValue = this.buildUrlParameters();
+                    GoNorth.Util.replaceUrlParameters(parameterValue);
+                    this.refreshUrlMapLocations();
+                },
+
+                /**
                  * Builds the url parameters
                  * 
                  * @returns {string} Url parameters
@@ -468,6 +494,11 @@
                     if(this.isNonDefaultChapterSelected && this.isNonDefaultChapterSelected() && this.selectedChapter())
                     {
                         parameterValue += "&chapter=" + this.selectedChapter().number;
+                    }
+
+                    if(this.dailyRoutineEditor.isEditingDailyRoutine())
+                    {
+                        parameterValue += this.dailyRoutineEditor.buildUrlParameters();
                     }
 
                     return parameterValue;
@@ -491,6 +522,7 @@
                     this.kartaMarkerManager.resetMarkers();
                     this.aikaMarkerManager.resetMarkers();
                     this.noteMarkerManager.resetMarkers();
+                    this.dailyRoutineEditor.leaveEditMode();
                     this.loadMap(id, dontPushState);
                 },
 
@@ -501,7 +533,7 @@
                  * @param {bool} dontPushState true if the url change should not be pushed as a state, else false
                  */
                 loadMap: function(id, dontPushState) {
-                    this.errorOccured(false);
+                    this.resetErrorState();
                     this.isLoading(true);
                     var self = this;
                     jQuery.ajax({
@@ -566,26 +598,46 @@
                  * @param {object} latLng Click coordinates
                  */
                 addMarkerToMap: function(map, latLng) {
-                    if(!this.currentValidManager || this.isLoading()) {
+                    if(this.isLoading()) {
                         return;
                     }
 
-                    this.errorOccured(false);
+                    if(this.currentValidManager) {
+                        this.addMarkerForValidManager(map, latLng);
+                    } else if(this.dailyRoutineEditor.isEditingDailyRoutine()) {
+                        this.dailyRoutineEditor.addMarker(map, latLng);
+                    }
+                },
+
+                /**
+                 * Adds a marker for the valid manager
+                 * 
+                 * @param {object} map Map Object
+                 * @param {object} latLng Click coordinates
+                 */
+                addMarkerForValidManager: function(map, latLng) {
+                    this.resetErrorState();
 
                     var markerDef = this.currentValidManager.createMarker(this.selectedMarkerObjectId(), latLng);
 
                     var self = this;
                     markerDef.done(function(marker) {
                         self.setMarkerDragCallback(marker);
-                        self.setMarkerPixelPosition(marker, map, true);
-
+                        self.setupNewMarker(marker);
                         if(self.isNonDefaultChapterSelected())
                         {
                             marker.setAddedInChapter(self.selectedChapter().number);
                         }
-
                         self.saveNewMarker(marker, map);
                     });
+                },
+
+                /**
+                 * Sets a markers position on the map
+                 * @param {GoNorth.Karta.Map.BaseMarker} marker Marker to setup
+                 */
+                setupNewMarker: function(marker) {
+                    this.setMarkerPixelPosition(marker, this.map, true);
                 },
 
                 /**
@@ -601,9 +653,9 @@
                 },
 
                 /**
-                 * Sets a markers drag callback function
+                 * Opens the delete dialog for a marker
                  * 
-                 * @param {object} marker Marker to set the drag callback for
+                 * @param {object} marker Marker to open the dialog for
                  * @param {object} manager Manager to which the marker belongs
                  */
                 openDeleteDialog: function(marker, manager) {
@@ -621,8 +673,7 @@
                 deleteMarker: function() {
                     if(!this.isNonDefaultChapterSelected() || (this.markerToDelete.getAddedInChapter() >= 0 && this.markerToDelete.getAddedInChapter() == this.getSelectedChapterNumber()))
                     {
-                        this.markerToDeleteManager.removeMarker(this.markerToDelete, this.selectedChapter());
-                        this.sendDeleteMarkerRequest(this.markerToDelete);
+                        this.sendDeleteMarkerRequest(this.markerToDelete, this.markerToDeleteManager);
                     }
                     else
                     {
@@ -639,8 +690,9 @@
                  * 
                  * @param {object} marker Marker to delete
                  */
-                sendDeleteMarkerRequest: function(marker) {
+                sendDeleteMarkerRequest: function(marker, markerToDeleteManager) {
                     // Send delete request
+                    this.resetErrorState();
                     this.isLoading(true);
                     var self = this;
                     jQuery.ajax({ 
@@ -648,10 +700,20 @@
                         headers: GoNorth.Util.generateAntiForgeryHeader(),
                         type: "DELETE"
                     }).done(function(data) {
+                        markerToDeleteManager.removeMarker(marker, self.selectedChapter());
+
                         self.isLoading(false);
                     }).fail(function(xhr) {
                         self.errorOccured(true);
                         self.isLoading(false);
+
+                        // If marker is related to anything that prevents deleting a bad request (400) will be returned
+                        if(xhr.status == 400 && xhr.responseText)
+                        {
+                            self.additionalError(xhr.responseText);
+                        }
+
+                        marker.addTo(self.map);
                     });
                 },
 
@@ -662,6 +724,51 @@
                     this.showConfirmDeleteDialog(false);
                     this.markerToDelete = null;
                     this.markerToDeleteManager = null;
+                },
+
+
+                
+                /**
+                 * Opens the edit export name dialog
+                 * 
+                 * @param {object} marker Marker to edit the export name for 
+                 * @param {function} markerToEditSaveCallback Callback function that will be triggered on save of the export name of the marker, if null the default save will be triggered
+                 */
+                openEditExportNameDialog: function(marker, markerToEditSaveCallback) {
+                    this.showMarkerExportNameDialog(true);
+                    this.markerExportName(marker.exportName ? marker.exportName : "");
+                    this.markerToEditExportName = marker;
+                    this.markerToEditSaveCallback = markerToEditSaveCallback ? markerToEditSaveCallback : null;
+                },
+
+                /**
+                 * Saves the marker export name
+                 */
+                saveMarkerExportName: function() {
+                    if(!this.markerToEditExportName)
+                    {
+                        return;
+                    }
+
+                    if(this.markerToEditSaveCallback) {
+                        this.markerToEditSaveCallback(this.markerExportName());
+                        this.closeMarkerExportNameDialog();
+                        return;
+                    }
+
+                    this.markerToEditExportName.setExportName(this.markerExportName());
+                    this.saveMarker(this.markerToEditExportName);
+
+                    this.closeMarkerExportNameDialog();
+                },
+
+                /**
+                 * Closes the confirm delete dialog
+                 */
+                closeMarkerExportNameDialog: function() {
+                    this.showMarkerExportNameDialog(false);
+                    this.markerToEditExportName = null;
+                    this.markerToEditSaveCallback = null;
                 },
 
 
@@ -770,6 +877,8 @@
                         this.currentValidManager.resetSelectionData();
                     }
                     this.currentValidManager = null;
+
+                    this.dailyRoutineEditor.leaveEditMode();
                 },
 
                 /**
@@ -780,6 +889,8 @@
                     {
                         this.leaveGeometryEditMode()
                     }
+
+                    this.dailyRoutineEditor.leaveEditMode();
 
                     this.selectedMarkerObjectId(objectId);
                     if(this.currentValidManager && this.currentValidManager != markerManager)
@@ -908,7 +1019,7 @@
                         var layer = event.layer;
                         
                         self.isLoading(true);
-                        self.errorOccured(false);
+                        self.resetErrorState();
                         jQuery.ajax({
                             url: "/api/KartaApi/GetNewMapMarkerId",
                             type: "GET"

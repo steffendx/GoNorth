@@ -34,9 +34,10 @@ namespace GoNorth.Services.Export.Dialog
         /// </summary>
         /// <param name="defaultTemplateProvider">Default Template Provider</param>
         /// <param name="cachedDbAccess">Cached Db Access</param>
+        /// <param name="dailyRoutineEventPlaceholderResolver">Daily routine event placeholder resolver</param>
         /// <param name="languageKeyGenerator">Language Key Generator</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public ConditionRenderer(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator, IStringLocalizerFactory localizerFactory)
+        public ConditionRenderer(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, IDailyRoutineEventPlaceholderResolver dailyRoutineEventPlaceholderResolver, ILanguageKeyGenerator languageKeyGenerator, IStringLocalizerFactory localizerFactory)
         {
             _defaultTemplateProvider = defaultTemplateProvider;
 
@@ -49,13 +50,16 @@ namespace GoNorth.Services.Export.Dialog
             _elementRenderes.Add(ConditionType.ChooseQuestValueCondition, new QuestValueConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _elementRenderes.Add(ConditionType.QuestStateCondition, new QuestStateConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _elementRenderes.Add(ConditionType.NpcAliveStateCondition, new NpcAliveStateConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
-            _elementRenderes.Add(ConditionType.GameTimeCondition, new GameTimeConditionResolver(defaultTemplateProvider, localizerFactory));
+            _elementRenderes.Add(ConditionType.GameTimeCondition, new GameTimeConditionResolver(defaultTemplateProvider, cachedDbAccess, localizerFactory));
             _elementRenderes.Add(ConditionType.PlayerSkillValueCondition, new SkillValueConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
             _elementRenderes.Add(ConditionType.NpcSkillValueCondition, new SkillValueConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
             _elementRenderes.Add(ConditionType.PlayerLearnedSkillCondition, new LearnedSkillConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, true));
             _elementRenderes.Add(ConditionType.PlayerNotLearnedSkillCondition, new LearnedSkillConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false));
             _elementRenderes.Add(ConditionType.NpcLearnedSkillCondition, new LearnedSkillConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, true));
             _elementRenderes.Add(ConditionType.NpcNotLearnedSkillCondition, new LearnedSkillConditionResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false));
+            _elementRenderes.Add(ConditionType.RandomValueCondition, new RandomValueConditionResolver(defaultTemplateProvider, localizerFactory));
+            _elementRenderes.Add(ConditionType.DailyRoutineEventIsDisabledCondition, new DailyRoutineEventStateConditionResolver(defaultTemplateProvider, cachedDbAccess, dailyRoutineEventPlaceholderResolver, languageKeyGenerator, localizerFactory, true));
+            _elementRenderes.Add(ConditionType.DailyRoutineEventIsEnabledCondition, new DailyRoutineEventStateConditionResolver(defaultTemplateProvider, cachedDbAccess, dailyRoutineEventPlaceholderResolver, languageKeyGenerator, localizerFactory, false));
         }
 
         /// <summary>

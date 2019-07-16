@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Tale;
-using GoNorth.Services.Export.Placeholder;
 
 namespace GoNorth.Services.Export.Dialog
 {
@@ -34,7 +32,7 @@ namespace GoNorth.Services.Export.Dialog
         /// Returns a new dialog step function
         /// </summary>
         /// <param name="stepType">Stype type (Text, Choice)</param>
-        /// <param name="projectId">Proejct id</param>
+        /// <param name="projectId">Project id</param>
         /// <param name="objectId">Object Id</param>
         /// <param name="functionObjectId">Function object id</param>
         /// <returns>New Dialog Step Function</returns>

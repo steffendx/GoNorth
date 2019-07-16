@@ -37,5 +37,29 @@ namespace GoNorth.Data.Kortisto
         /// <param name="skillId">Skill id</param>
         /// <returns>Npcs</returns>
         Task<List<KortistoNpc>> GetNpcsByLearnedSkill(string skillId);
+
+
+        /// <summary>
+        /// Returns all npcs an object is referenced in the daily routine (not including the relatedobjectid itself)
+        /// </summary>
+        /// <param name="objectId">Object Id</param>
+        /// <returns>All npcs the object is referenced in without detail information and the entrie with relatedobjectid = itself</returns>
+        Task<List<KortistoNpc>> GetNpcsObjectIsReferencedInDailyRoutine(string objectId);
+        
+        /// <summary>
+        /// Returns all npcs that have a movement target in a map with full informations
+        /// </summary>
+        /// <param name="mapId">Map Id</param>
+        /// <returns>All npcs that have a movement target in a map with full informations</returns>
+        Task<List<KortistoNpc>> GetNpcsWithMovementTargetInMap(string mapId);
+
+
+        /// <summary>
+        /// Returns the npcs which have a daily routine event that is later than a given time
+        /// </summary>
+        /// <param name="hours">Hours</param>
+        /// <param name="minutes">Minutes</param>
+        /// <returns>Npcs</returns>
+        Task<List<KortistoNpc>> GetNpcsWithDailyRoutineAfterTime(int hours, int minutes);
     }
 }

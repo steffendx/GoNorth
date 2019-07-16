@@ -122,7 +122,7 @@
                 <strong>@Localizer["Info"]</strong> @Localizer["DefaultTaskTypesWillBeProvided"]
             </div>
 
-            <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openNewTaskTypeDialog, disable: isLoading()">
+            <button type="button" class="btn btn-primary gn-commandWidgetTopMargin gn-manageTaskTypeCreateTaskTypeButton" data-bind="click: openNewTaskTypeDialog, disable: isLoading()">
                 <i class="glyphicon glyphicon-plus" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> <span data-bind="text: createNewButtonLabel"></span>
             </button>
 

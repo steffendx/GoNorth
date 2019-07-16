@@ -1,0 +1,28 @@
+{
+    "ProjectConfig": "Project Configuration",
+
+    "AnimationConfigSectionHeader": "Play animation config",
+    "AnimationConfigSectionDescription": "Add one line for each animation that will be suggested in the play animation action:",
+    
+    "StateConfigSectionHeader": "Set state config",
+    "StateConfigSectionDescription": "Add one line for each state that will be suggested in the set state action:",
+
+    "DayHourMinutesConfig": "Time config",
+    "HoursPerDay": "Hours per day:",
+    "MinutesPerHour": "Minutes per hour:",
+
+    "Warning": "Warning:",
+    "ThereAreNpcsWithEventsOutsideTheSpecifiedTimeSpan": "There are npcs with daily routine events that are outside of the specified time span.",
+    "ClickHereToShowTheseNpcs": "Click here to show these npcs.",
+    "NpcsOutsideTimeSpan": "Npcs outside timespan",
+    "Ok": "Ok",
+
+    "Save": "Save",
+    
+    "Error": "Error",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedPrefix": "The config is currently being edited by ",
+    "LockedPostfix": "."
+}

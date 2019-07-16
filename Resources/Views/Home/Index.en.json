@@ -28,5 +28,8 @@
     "TrackCurrentImplementationProgress": "Current implementation progress",
 
     "ExportSettings": "Export",
-    "ManageExportSettings": "Manage export settings"
+    "ManageExportSettings": "Manage export settings",
+
+    "ProjectSettings": "Settings",
+    "ManageProjectSettings": "Manage project settings"
 }

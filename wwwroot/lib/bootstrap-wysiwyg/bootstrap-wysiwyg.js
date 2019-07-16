@@ -316,8 +316,17 @@
 					try {
 						selection.removeAllRanges();
 					} catch (ex) {
-						document.body.createTextRange().select();
-						document.selection.empty();
+						if(document.body.createTextRange)
+						{
+							document.body.createTextRange().select();
+							document.selection.empty();
+						}
+						else
+						{
+							var range = document.createRange();
+							window.getSelection().addRange(range);
+							window.getSelection().empty()
+						}
 					}
 
 					selection.addRange(selectedRange);
@@ -352,6 +361,10 @@
 					{
 						options.fileUploadError(bootstrapWysiwyg.local.unsupportedFileType);
 						return;
+					}
+
+					if(userOptions.fileUploadStarted) {
+						userOptions.fileUploadStarted();
 					}
 
 					var uploadUrl = userOptions.imageUploadUrl.replace(/{filename}/g, encodeURIComponent(files[0].name))
@@ -623,6 +636,11 @@
 				});
 				toolbar.find(".gn-table-add-header-row").click(function() {
 					var parentTable = $(getSelectionInsideElement("table"));
+					if(parentTable.length == 0)
+					{
+						return;
+					}
+
 					var clonedTable = parentTable.clone();
 					var tableHead = clonedTable.find("thead");
 					if(tableHead.find("tr").length > 0)

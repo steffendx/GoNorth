@@ -7,12 +7,12 @@
 @inject GoNorth.Config.IConfigViewAccess AppSettings
 
 <ul class="nav nav-pills nav-stacked">
-    <li class="@ManageNavPages.IndexNavClass(ViewContext)"><a asp-action="Index">@Localizer["Profile"]</a></li>
-    <li class="@ManageNavPages.ChangePasswordNavClass(ViewContext)"><a asp-action="ChangePassword">@Localizer["Password"]</a></li>
-    <li class="@ManageNavPages.PreferencesNavClass(ViewContext)"><a asp-action="Preferences">@Localizer["Preferences"]</a></li>
+    <li class="@ManageNavPages.IndexNavClass(ViewContext)"><a asp-action="Index" id="gn-userManageProfile">@Localizer["Profile"]</a></li>
+    <li class="@ManageNavPages.ChangePasswordNavClass(ViewContext)"><a asp-action="ChangePassword" id="gn-userManageChangePassword">@Localizer["Password"]</a></li>
+    <li class="@ManageNavPages.PreferencesNavClass(ViewContext)"><a asp-action="Preferences" id="gn-userManagePreferences">@Localizer["Preferences"]</a></li>
     @if(AppSettings.IsUsingGdpr())
     {
-        <li class="@ManageNavPages.PersonalDataNavClass(ViewContext)"><a asp-action="PersonalData">@Localizer["PersonalData"]</a></li>
+        <li class="@ManageNavPages.PersonalDataNavClass(ViewContext)"><a asp-action="PersonalData" id="gn-userManagePersonalData">@Localizer["PersonalData"]</a></li>
     }
 </ul>
 

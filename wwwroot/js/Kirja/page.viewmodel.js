@@ -97,6 +97,26 @@
             },
 
             /**
+             * Opens the dialog to search for daily routines
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openDailyRoutineSearch: function(dialogTitle) {
+                return this.openDialog(dialogTitle, this.searchDailyRoutines, null, null);
+            },
+
+            /**
+             * Opens the dialog to search for markers
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openMarkerSearch: function(dialogTitle) {
+                return this.openDialog(dialogTitle, this.searchMarkers, null, null);
+            },
+
+            /**
              * Opens the dialog
              * 
              * @param {string} dialogTitle Title of the dialog
@@ -126,6 +146,21 @@
 
                 this.choosingDeferred = new jQuery.Deferred();
                 return this.choosingDeferred.promise();
+            },
+
+            /**
+             * Expands an object if it has an expand callback, or selects an object
+             * @param {object} selectedObject Selected object
+             */
+            handleObjectClick: function(selectedObject) {
+                if(selectedObject.expandCallback) 
+                {
+                    selectedObject.expandCallback(selectedObject);
+                }
+                else
+                {
+                    this.selectObject(selectedObject);
+                }
             },
 
             /**
@@ -208,6 +243,7 @@
             /**
              * Creates a dialog object
              * 
+             * @param {string} id Id of the object
              * @param {string} name Name of the object
              * @param {string} openLink Link to open the object
              */
@@ -215,8 +251,29 @@
                 return {
                     id: id,
                     name: name,
-                    openLink: openLink
+                    openLink: openLink,
+                    expandCallback: null,
+                    isExpanded: new ko.observable(false),
+                    isLoadingExpandedObject: new ko.observable(false),
+                    errorLoadingExpandedObject: new ko.observable(false),
+                    expandedObjects: new ko.observableArray(),
+                    hasExpandedObjectsLoaded: false
                 };
+            },
+            
+            /**
+             * Creates a dialog object
+             * 
+             * @param {string} id Id of the object
+             * @param {string} name Name of the object
+             * @param {string} openLink Link to open the object
+             * @param {function} expandCallback Callback function to expand
+             */
+            createExpandableDialogObject: function(id, name, openLink, expandCallback) {
+                var dialogObject = this.createDialogObject(id, name, openLink);
+                dialogObject.expandCallback = expandCallback;
+                
+                return dialogObject;
             },
 
             /**
@@ -431,7 +488,123 @@
                 });
 
                 return def.promise();
-            }
+            },
+            
+            /**
+             * Searches daily routines
+             * 
+             * @param {string} searchPattern Search Pattern
+             * @returns {jQuery.Deferred} Deferred for the result
+             */
+            searchDailyRoutines: function(searchPattern) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
+                    type: "GET"
+                }).done(function(data) {
+                    var result = {
+                        hasMore: data.hasMore,
+                        entries: []
+                    };
+
+                    for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
+                    {
+                        result.entries.push(self.createExpandableDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc?id=" + data.flexFieldObjects[curEntry].id, function(dailyRoutineEventNpc) { self.expandDailyRoutineNpc(dailyRoutineEventNpc); }));
+                    }
+
+                    def.resolve(result);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            },
+
+            /**
+             * Expands a daily routine npc
+             * @param {object} dailyRoutineEventNpc Daily routine npc
+             */
+            expandDailyRoutineNpc: function(dailyRoutineEventNpc) {
+                dailyRoutineEventNpc.isExpanded(!dailyRoutineEventNpc.isExpanded());
+                if(dailyRoutineEventNpc.hasExpandedObjectsLoaded)
+                {
+                    return;
+                }
+
+                dailyRoutineEventNpc.isLoadingExpandedObject(true);
+                dailyRoutineEventNpc.errorLoadingExpandedObject(false);
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id, 
+                    type: "GET"
+                }).done(function(data) {
+                    var dailyRoutineObjects = [];
+                    if(data.dailyRoutine)
+                    {
+                        for(var curEvent = 0; curEvent < data.dailyRoutine.length; ++curEvent)
+                        {
+                            data.dailyRoutine[curEvent].parentObject = dailyRoutineEventNpc;
+                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan("hh:mm", data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
+                            var additionalName = "";
+                            if(data.dailyRoutine[curEvent].scriptName)
+                            {
+                                additionalName = data.dailyRoutine[curEvent].scriptName;
+                            }
+                            else if(data.dailyRoutine[curEvent].movementTarget && data.dailyRoutine[curEvent].movementTarget.name)
+                            {
+                                additionalName = data.dailyRoutine[curEvent].movementTarget.name;
+                            }
+                            data.dailyRoutine[curEvent].additionalName = additionalName;
+                            dailyRoutineObjects.push(data.dailyRoutine[curEvent]);
+                        }
+                    }
+                    dailyRoutineEventNpc.isLoadingExpandedObject(false);
+                    dailyRoutineEventNpc.expandedObjects(dailyRoutineObjects);
+                    dailyRoutineEventNpc.hasExpandedObjectsLoaded = true;
+                }).fail(function(xhr) {
+                    dailyRoutineEventNpc.isLoadingExpandedObject(false);
+                    dailyRoutineEventNpc.errorLoadingExpandedObject(true);
+                });
+            },
+
+            
+            /**
+             * Searches markers
+             * 
+             * @param {string} searchPattern Search Pattern
+             * @returns {jQuery.Deferred} Deferred for the result
+             */
+            searchMarkers: function(searchPattern) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
+                    type: "GET"
+                }).done(function(data) {
+                    var result = {
+                        hasMore: data.hasMore,
+                        entries: []
+                    };
+
+                    for(var curEntry = 0; curEntry < data.markers.length; ++curEntry)
+                    {
+                        var dialogObject = self.createDialogObject(data.markers[curEntry].markerId, data.markers[curEntry].markerName + " (" + data.markers[curEntry].mapName + ")", "/Karta?id=" + data.markers[curEntry].mapId + "&zoomOnMarkerId=" + data.markers[curEntry].markerId + "&zoomOnMarkerType=" + data.markers[curEntry].markerType);
+                        dialogObject.markerName = data.markers[curEntry].markerName;
+                        dialogObject.markerType = data.markers[curEntry].markerType;
+                        dialogObject.mapId = data.markers[curEntry].mapId;
+                        dialogObject.mapName = data.markers[curEntry].mapName;
+                        result.entries.push(dialogObject);
+                    }
+
+                    def.resolve(result);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            },
             
         };
 
@@ -536,6 +709,12 @@
                     {
                         pageContent = this.pageContent();
                     }
+
+                    if(this.isEditMode())
+                    {
+                        return pageContent;
+                    }
+
                     var comparePageContent = this.compareVersionHtml();
                     pageContent = this.transformPageContent(pageContent);
                     if(comparePageContent)
@@ -1143,6 +1322,14 @@
                  */
                 buildAttachmentUrl: function(attachment) {
                     return "/api/KirjaApi/KirjaAttachment?pageId=" + this.id() + "&attachmentFile=" + encodeURIComponent(attachment.filename);
+                },
+
+                /**
+                 * Callback if an image upload is started
+                 */
+                uploadStart: function() {
+                    this.isLoading(true);
+                    this.resetErrorState();
                 },
 
                 /**

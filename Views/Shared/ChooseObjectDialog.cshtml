@@ -2,7 +2,15 @@
 
 @inject IViewLocalizer Localizer
 
-<div class="modal fade" role="dialog" data-bind="modal: showDialog">
+<script type="text/javascript">
+    window.GoNorth = window.GoNorth || {};
+    window.GoNorth.ChooseObjectDialog = window.GoNorth.ChooseObjectDialog || {};
+    window.GoNorth.ChooseObjectDialog.Localization = {
+        TimeFormat: "@Localizer["TimeFormat"]"
+    }
+</script>
+
+<div class="modal fade gn-chooseObjectDialog" role="dialog" data-bind="modal: showDialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -35,7 +43,24 @@
                     </thead>
                     <tbody data-bind="foreach: dialogEntries">
                         <tr>
-                            <td><a class="gn-clickable" data-bind="text: name, click: function(obj) { $parent.selectObject(obj); }"></a></td>
+                            <td>
+                                <a class="gn-clickable" data-bind="click: function(obj) { $parent.handleObjectClick(obj); }">
+                                    <i class="glyphicon glyphicon-triangle-right" data-bind="visible: expandCallback && !isLoadingExpandedObject() && !errorLoadingExpandedObject() && !isExpanded()"></i>
+                                    <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: expandCallback && !isLoadingExpandedObject() && !errorLoadingExpandedObject() && isExpanded()" style="display: none"></i> 
+                                    <i class="glyphicon glyphicon-refresh spinning" data-bind="visible: expandCallback && isLoadingExpandedObject() && !errorLoadingExpandedObject()" style="display: none"></i> 
+                                    <i class="glyphicon glyphicon-warning-sign text-danger" data-bind="visible: expandCallback && !isLoadingExpandedObject() && errorLoadingExpandedObject()" style="display: none" title="@Localizer["ErrorOccured"]"></i>
+                                    <span data-bind="text: name"></span>
+                                </a>
+                                <div data-bind="foreach: expandedObjects, visible: isExpanded" class="gn-chooseObjectDialogExpandedObjectsContainer">
+                                    <div class="gn-chooseObjectDialogExpandedObjectsRow row">
+                                        <div class="col-xs-4">
+                                            <a class="gn-clickable" data-bind="text: name, click: function(obj) { $parents[1].handleObjectClick(obj); }"></a>
+                                        </div>
+                                        <div class="col-xs-8" data-bind="text: additionalName">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
                             <td><a data-bind="attr: { href: openLink }" target="_blank">@Localizer["Open"]</td>
                         </tr>
                     </tbody>

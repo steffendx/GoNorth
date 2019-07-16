@@ -18,7 +18,7 @@ namespace GoNorth.Data.NodeGraph
         /// <summary>
         /// Object dependencies for the condition
         /// </summary>
-        public List<ConditionObjectDependency> DependsOnObjects { get; set; }
+        public List<NodeObjectDependency> DependsOnObjects { get; set; }
 
         /// <summary>
         /// Serialized condition elements

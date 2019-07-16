@@ -1,0 +1,1 @@
+BaseNpc_WalkNpcToNpc(BaseNpc_GetNpcById({{Tale_Action_Npc_Value_Id}}), BaseNpc_GetNpcById({{Tale_Action_TargetNpc_Value_Id}}))

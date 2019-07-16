@@ -46,17 +46,20 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Returns a new export function id for an object
         /// </summary>
+        /// <param name="search">Search</param>
         /// <param name="projectId">Project Id</param>
         /// <param name="objectId">Object Id</param>
+        /// <param name="subCategory">Sub Category</param>
         /// <returns>New export function id</returns>
-        public async Task<int> GetNewExportFuntionIdForObject(string projectId, string objectId)
+        private async Task<int> GetNewExportFuntionIdForObjectInternal(IFindFluent<ExportFunctionIdCounter, ExportFunctionIdCounter> search, string projectId, string objectId, string subCategory)
         {
-            ExportFunctionIdCounter exportFunctionIdCounter = await _IdCounterCollection.Find(t => t.ProjectId == projectId && t.ObjectId == objectId).FirstOrDefaultAsync();
+            ExportFunctionIdCounter exportFunctionIdCounter = await search.FirstOrDefaultAsync();
             if(exportFunctionIdCounter == null)
             {
                 exportFunctionIdCounter = new ExportFunctionIdCounter();
                 exportFunctionIdCounter.ProjectId = projectId;
                 exportFunctionIdCounter.ObjectId = objectId;
+                exportFunctionIdCounter.SubCategory = subCategory;
                 exportFunctionIdCounter.CurExportFunctionId = 0;
             }
 
@@ -74,6 +77,30 @@ namespace GoNorth.Data.Exporting
 
             return exportFunctionIdCounter.CurExportFunctionId;
         }
+
+        /// <summary>
+        /// Returns a new export function id for an object
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="objectId">Object Id</param>
+        /// <returns>New export function id</returns>
+        public async Task<int> GetNewExportFuntionIdForObject(string projectId, string objectId)
+        {
+            return await GetNewExportFuntionIdForObjectInternal(_IdCounterCollection.Find(t => t.ProjectId == projectId && t.ObjectId == objectId && string.IsNullOrEmpty(t.SubCategory)), projectId, objectId, string.Empty);
+        }
+               
+        /// <summary>
+        /// Returns a new export function id for an object
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="objectId">Object Id</param>
+        /// <param name="subCategory">Sub Category for the object</param>
+        /// <returns>New export function id</returns>
+        public async Task<int> GetNewExportFuntionIdForObjectAndSubCategory(string projectId, string objectId, string subCategory)
+        {
+            return await GetNewExportFuntionIdForObjectInternal(_IdCounterCollection.Find(t => t.ProjectId == projectId && t.ObjectId == objectId && t.SubCategory == subCategory), projectId, objectId, subCategory);
+        }
+
 
         /// <summary>
         /// Returns an existing export function id

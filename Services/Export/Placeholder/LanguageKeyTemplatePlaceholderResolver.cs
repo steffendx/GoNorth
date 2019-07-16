@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Project;
@@ -26,6 +27,27 @@ namespace GoNorth.Services.Export.Placeholder
         /// End of the content for the language keys
         /// </summary>
         private const string Placeholder_LanguageKeys_End = "LanguageKeys_End";
+
+        /// <summary>
+        /// Start of the content for the referenced language keys
+        /// </summary>
+        private const string Placeholder_Referenced_LanguageKeys_Start = "Referenced_LanguageKeys_Start";
+
+        /// <summary>
+        /// End of the content for the referenced language keys
+        /// </summary>
+        private const string Placeholder_Referenced_LanguageKeys_End = "Referenced_LanguageKeys_End";
+
+        /// <summary>
+        /// Start of the content that is only rendered if the object has referenced language keys
+        /// </summary>
+        private const string Placeholder_Has_Referenced_LanguageKeys_Start = "Has_Referenced_LanguageKeys_Start";
+
+        /// <summary>
+        /// End of the content that is only rendered if the object has referenced language keys
+        /// </summary>
+        private const string Placeholder_Has_Referenced_LanguageKeys_End = "Has_Referenced_LanguageKeys_End";
+
 
         /// <summary>
         /// Start of the content that is only rendered if it is the first key
@@ -129,8 +151,19 @@ namespace GoNorth.Services.Export.Placeholder
                 return Task.FromResult(code);
             }
 
+            List<LanguageKey> referencedLanguageKeys = null;
+            if(data.ExportData.ContainsKey(ExportConstants.ExportDataReferencedLanguageIds))
+            {
+                referencedLanguageKeys = data.ExportData[ExportConstants.ExportDataReferencedLanguageIds] as List<LanguageKey>;
+            }
+
+            if(referencedLanguageKeys == null)
+            {
+                referencedLanguageKeys = new List<LanguageKey>();
+            }
+
             // Replace Language Key Placeholders
-            return FillLanguageKeyPlaceholders(code, flexFieldObject);
+            return FillLanguageKeyPlaceholders(code, flexFieldObject, referencedLanguageKeys);
         }
 
         /// <summary>
@@ -138,16 +171,21 @@ namespace GoNorth.Services.Export.Placeholder
         /// </summary>
         /// <param name="code">Code to fill</param>
         /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <param name="referencedLanguageKeys">Referenced language keys</param>
         /// <returns>Filled Code</returns>
-        private async Task<string> FillLanguageKeyPlaceholders(string code, IFlexFieldExportable flexFieldObject)
+        private async Task<string> FillLanguageKeyPlaceholders(string code, IFlexFieldExportable flexFieldObject, List<LanguageKey> referencedLanguageKeys)
         {
             GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
             List<LanguageKey> languageKeys = await _languageKeyDbAccess.GetLanguageKeysByGroupId(project.Id, flexFieldObject.Id);
             ExportSettings exportSettings = await _cachedDbAccess.GetExportSettings(project.Id);
 
+            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_Has_Referenced_LanguageKeys_Start, Placeholder_Has_Referenced_LanguageKeys_End, referencedLanguageKeys != null && referencedLanguageKeys.Any());
             code = ExportUtil.BuildPlaceholderRegex(Placeholder_ObjectName).Replace(code, flexFieldObject.Name);
             code = ExportUtil.BuildRangePlaceholderRegex(Placeholder_LanguageKeys_Start, Placeholder_LanguageKeys_End).Replace(code, m => {
                 return BuildLanguageKeyList(m.Groups[1].Value, languageKeys, exportSettings);
+            });
+            code = ExportUtil.BuildRangePlaceholderRegex(Placeholder_Referenced_LanguageKeys_Start, Placeholder_Referenced_LanguageKeys_End).Replace(code, m => {
+                return BuildLanguageKeyList(m.Groups[1].Value, referencedLanguageKeys, exportSettings);
             });
 
             return code;
@@ -206,6 +244,10 @@ namespace GoNorth.Services.Export.Placeholder
                     CreatePlaceHolder(Placeholder_ObjectName),
                     CreatePlaceHolder(Placeholder_LanguageKeys_Start),
                     CreatePlaceHolder(Placeholder_LanguageKeys_End),
+                    CreatePlaceHolder(Placeholder_Has_Referenced_LanguageKeys_Start),
+                    CreatePlaceHolder(Placeholder_Has_Referenced_LanguageKeys_End),
+                    CreatePlaceHolder(Placeholder_Referenced_LanguageKeys_Start),
+                    CreatePlaceHolder(Placeholder_Referenced_LanguageKeys_End),
                     CreatePlaceHolder(Placeholder_LanguageKeys_IsFirst_Start),
                     CreatePlaceHolder(Placeholder_LanguageKeys_IsFirst_End),
                     CreatePlaceHolder(Placeholder_LanguageKeys_IsNotFirst_Start),

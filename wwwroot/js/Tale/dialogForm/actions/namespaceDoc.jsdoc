@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Tale) {
+
+    /**
+     * Tale Actions namespace
+     * @namespace Actions
+     */
+    (function(Actions) {
+    }(Tale.Actions = Tale.Actions || {}));
+
+    }(GoNorth.Tale = GoNorth.Tale || {}));
+}(window.GoNorth = window.GoNorth || {}));

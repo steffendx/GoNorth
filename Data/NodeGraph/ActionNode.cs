@@ -26,6 +26,11 @@ namespace GoNorth.Data.NodeGraph
         public string ActionRelatedToObjectId { get; set; } 
 
         /// <summary>
+        /// Additional Object dependencies for the action
+        /// </summary>
+        public List<NodeObjectDependency> ActionRelatedToAdditionalObjects { get; set; }
+
+        /// <summary>
         /// Action Data
         /// </summary>
         [ValueCompareAttribute(LabelKey = "", TextKey = "ActionDataChanged")]

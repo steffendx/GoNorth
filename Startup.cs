@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using GoNorth.Data;
-using GoNorth.Models;
 using GoNorth.Services.Email;
 using GoNorth.Services.Encryption;
 using GoNorth.Data.User;
@@ -39,7 +36,6 @@ using GoNorth.Services.User;
 using GoNorth.Data.Evne;
 using GoNorth.Services.FlexFieldThumbnail;
 using GoNorth.Data.Exporting;
-using GoNorth.Services.Export;
 using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Dialog;
@@ -49,6 +45,10 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Reflection;
 using System.IO;
+using GoNorth.Data.ProjectConfig;
+using GoNorth.Services.DataMigration;
+using GoNorth.Services.ProjectConfig;
+using GoNorth.Services.Export.NodeGraphExport;
 
 namespace GoNorth
 {
@@ -117,6 +117,8 @@ namespace GoNorth
             // Application services
             services.AddTransient<IConfigViewAccess, AppSettingsConfigViewAccess>();
 
+            services.AddTransient<IProjectConfigProvider, ProjectConfigProvider>();
+
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IEncryptionService, AesEncryptionService>();
             services.AddTransient<IXssChecker, XssChecker>();
@@ -155,14 +157,24 @@ namespace GoNorth
             services.AddTransient<IExportDialogFunctionGenerator, ExportDialogFunctionGenerator>();
             services.AddTransient<IExportDialogRenderer, ExportDialogRenderer>();
             services.AddScoped<ILanguageKeyGenerator, LanguageKeyGenerator>();
+            services.AddScoped<ILanguageKeyReferenceCollector, LanguageKeyReferenceCollector>();
             services.AddScoped<IExportDialogFunctionNameGenerator, ExportDialogFunctionNameGenerator>();
+            services.AddScoped<IDailyRoutineFunctionNameGenerator, DailyRoutineFunctionNameGenerator>();
             services.AddTransient<IConditionRenderer, ConditionRenderer>();
+            services.AddTransient<IDailyRoutineEventPlaceholderResolver, DailyRoutineEventPlaceholderResolver>();
+            services.AddTransient<IDailyRoutineEventContentPlaceholderResolver, DailyRoutineEventContentPlaceholderResolver>();
+            services.AddTransient<IDailyRoutineNodeGraphRenderer, DailyRoutineNodeGraphRenderer>();
+            services.AddTransient<IDailyRoutineNodeGraphFunctionGenerator, DailyRoutineNodeGraphFunctionGenerator>();
             services.AddScoped<IExportCachedDbAccess, ExportCachedDbAccess>();
+            services.AddTransient<INodeGraphExporter, NodeGraphExporter>();
+            services.AddTransient<INodeGraphParser, NodeGraphParser>();
 
             services.AddScoped<GoNorthUserManager>();
 
             services.AddScoped<IUserClaimsPrincipalFactory<GoNorthUser>, GoNorthUserClaimsPrincipalFactory>();
 
+            services.AddTransient<IDataMigrator, AutoDataMigrator>();
+            
             // Database
             services.AddScoped<ILockServiceDbAccess, LockServiceMongoDbAccess>();
             services.AddScoped<IUserDbAccess, UserMongoDbAccess>();
@@ -170,6 +182,8 @@ namespace GoNorth
             services.AddScoped<IRoleDbAccess, RoleMongoDbAccess>();
             services.AddScoped<ITimelineDbAccess, TimelineMongoDbAccess>();
             services.AddScoped<IProjectDbAccess, ProjectMongoDbAccess>();
+
+            services.AddScoped<IProjectConfigDbAccess, ProjectConfigMongoDbAccess>();
 
             services.AddScoped<IKortistoFolderDbAccess, KortistoFolderMongoDbAccess>();
             services.AddScoped<IKortistoNpcTemplateDbAccess, KortistoNpcTemplateMongoDbAccess>();
@@ -196,7 +210,6 @@ namespace GoNorth
             services.AddScoped<IKartaMarkerImplementationSnapshotDbAccess, KartaMarkerImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<ITaleDbAccess, TaleMongoDbAccess>();
-            services.AddScoped<ITaleConfigDbAccess, TaleConfigMongoDbAccess>();
             services.AddScoped<ITaleDialogImplementationSnapshotDbAccess, TaleDialogImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<IAikaChapterOverviewDbAccess, AikaChapterOverviewMongoDbAccess>();
@@ -278,7 +291,8 @@ namespace GoNorth
         /// </summary>
         /// <param name="app">Application builder</param>
         /// <param name="env">Hosting environment</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        /// <param name="dataMigrator">Data migrator</param>
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IDataMigrator dataMigrator)
         {
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
             
@@ -324,6 +338,8 @@ namespace GoNorth
             {
                 routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseAutoDataMigration(dataMigrator);
         }
     }
 }

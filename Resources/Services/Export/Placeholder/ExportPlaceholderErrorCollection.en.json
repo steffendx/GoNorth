@@ -14,8 +14,11 @@
     "DialogItemNotFoundError": "A referenced item was not found. The item was probably deleted.",
     "DialogQuestNotFoundError": "A referenced quest was not found. The quest was probably deleted.",
     "DialogSkillNotFoundError": "A referenced skill was not found. The skill was probably deleted.",
+    "DialogNpcNotFoundError": "A referenced npc was not found. The npc was probably deleted.",
+    "DialogMarkerNotFoundError": "A referenced map marker was not found. The map marker was probably deleted.",
     "DialogUnknownActionTypeError": "An unknown action type '{0}' was encountered. The action can not be generated.",
     "DialogUnknownActionOperator": "An unknown action operator '{0}' was encountered. The action can not be correctly generated.",
+    "DialogDailyRoutineEventNotFoundError": "A referenced daily routine event was not found in the npc {0} . The event was probably deleted.",
 
     "NoPlayerNpcExistsError": "No player npc exists."
 }

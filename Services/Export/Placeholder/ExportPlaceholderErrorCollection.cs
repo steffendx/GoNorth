@@ -152,6 +152,31 @@ namespace GoNorth.Services.Export.Placeholder
         }
 
         /// <summary>
+        /// Adds a npc not found error
+        /// </summary>        
+        public void AddDialogNpcNotFoundError()
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.DialogNpcNotFoundError, _localizer[ExportPlaceholderErrorType.DialogNpcNotFoundError.ToString()].Value);
+        }
+
+        /// <summary>
+        /// Adds a marker not found error
+        /// </summary>        
+        public void AddDialogMarkerNotFoundError()
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.DialogMarkerNotFoundError, _localizer[ExportPlaceholderErrorType.DialogMarkerNotFoundError.ToString()].Value);
+        }
+
+        /// <summary>
+        /// Adds a daily routine event not found
+        /// </summary>        
+        /// <param name="npcName">Name of the npc</param>
+        public void AddDialogDailyRoutineEventNotFoundError(string npcName)
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.DialogDailyRoutineEventNotFoundError, _localizer[ExportPlaceholderErrorType.DialogDailyRoutineEventNotFoundError.ToString(), npcName].Value);
+        }
+
+        /// <summary>
         /// Adds an unknown action type error
         /// </summary>
         /// <param name="actionType">Unknown action type</param>

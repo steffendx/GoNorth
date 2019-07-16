@@ -8,24 +8,24 @@
             <input type="checkbox" class="from-control" data-bind="checked: isSelected"/>
             <i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorOccured"></i>
         </td>
-        <!-- ko if: $parents[$parents.length - 2].isConditionTypeSelectable($data); -->
+        <!-- ko if: GoNorth.DefaultNodeShapes.Conditions.findConditionDialog($parents).isConditionTypeSelectable($data); -->
         <td>
-            <select data-bind="value: conditionType, options: $parents[$parents.length - 2].selectableConditionTypes, optionsText: function(condition) { return condition.getLabel(); }, optionsValue: function(condition) { return condition.getType(); }" class="form-control"></select>
+            <select data-bind="value: conditionType, options: GoNorth.DefaultNodeShapes.Conditions.findConditionDialog($parents).selectableConditionTypes, optionsText: function(condition) { return condition.getLabel(); }, optionsValue: function(condition) { return condition.getType(); }" class="form-control"></select>
         </td>
         <!-- /ko -->
         <!-- ko template: { name: conditionTemplate } -->
         <!-- /ko -->
         <td>
-            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].moveConditionElementUp(condition); }" title="@Localizer["MoveConditionUp"]">
+            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { GoNorth.DefaultNodeShapes.Conditions.findConditionDialog($parents).moveConditionElementUp(condition); }" title="@Localizer["MoveConditionUp"]">
                 <i class="glyphicon glyphicon-arrow-up"></i>
             </a>
-            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].moveConditionElementDown(condition); }" title="@Localizer["MoveConditionDown"]">
+            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { GoNorth.DefaultNodeShapes.Conditions.findConditionDialog($parents).moveConditionElementDown(condition); }" title="@Localizer["MoveConditionDown"]">
                 <i class="glyphicon glyphicon-arrow-down"></i>
             </a>
             <a class="gn-clickable gn-nodeConditionIcon gn-nodeConditionElementMove" data-bind="draggableElement: 'clone', draggableObject: $data, draggableDropIndicators: { '.gn-nodeConditionGroupOperator': 'gn-nodeConditionMoveDropIndicator', '.gn-nodeConditionDialogMoveToRoot': 'gn-nodeConditionMoveDropIndicator' }" title="@Localizer["DragOnOperatorToMove"]">
                 <i class="glyphicon glyphicon glyphicon-move"></i>
             </a>
-            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { $parents[$parents.length - 2].deleteConditionElement(condition); }" title="@Localizer["DeleteCondition"]">
+            <a class="gn-clickable gn-nodeConditionIcon" data-bind="click: function(condition) { GoNorth.DefaultNodeShapes.Conditions.findConditionDialog($parents).deleteConditionElement(condition); }" title="@Localizer["DeleteCondition"]">
                 <i class="glyphicon glyphicon-trash"></i>
             </a>
         </td>
@@ -37,10 +37,10 @@
 
 <script type="text/html" id="gn-nodeConditionGroup">
 <!-- ko with: conditionData -->
-    <td colspan="4" class="gn-nodeConditionGroupCell">
+    <td colspan="5" class="gn-nodeConditionGroupCell">
         <table class="gn-nodeConditionGroupTable">
             <tr>
-                <td class="gn-nodeConditionGroupOperator" data-bind="text: operatorText, dblClick: toggleOperator, droppableElement: function(draggable, left, top, conditionElement) { $parents[$parents.length - 2].dropConditionToGroup($parent, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'" title="@Localizer["DoubleClickToChangeOperator"]"></td>
+                <td class="gn-nodeConditionGroupOperator" data-bind="text: operatorText, dblClick: toggleOperator, droppableElement: function(draggable, left, top, conditionElement) { GoNorth.DefaultNodeShapes.Conditions.findConditionDialog($parents).dropConditionToGroup($parent, conditionElement); }, droppableAccept: '.gn-nodeConditionElementMove'" title="@Localizer["DoubleClickToChangeOperator"]"></td>
                 <td>
                     <table class="gn-nodeConditionDialogElementTable">
                         <tbody data-bind="template: { name: 'gn-nodeConditionRow', foreach: conditionElements }">
@@ -71,6 +71,14 @@
 <!-- /ko -->
 </script>
 
+<script type="text/html" id="gn-nodeConditionInventoryCheck">
+<!-- ko with: conditionData -->
+    <td colspan="2"><select data-bind="value: operator, options: availableOperators, optionsText: 'title', optionsValue: 'value'" class="form-control"></td>
+    <td><input type="text" data-bind="numeric: quantity" class="form-control" /></td>
+    <td><a data-bind="text: selectedItemName, click: chooseItem" class="gn-clickable"></a></td>
+<!-- /ko -->
+</script>
+
 <script type="text/html" id="gn-nodeConditionChooseSkillCheck">
 <!-- ko with: conditionData -->
     <td colspan="4"><a data-bind="text: selectedSkillName, click: chooseSkill" class="gn-clickable"></a></td>
@@ -94,12 +102,26 @@
 <script type="text/html" id="gn-nodeGameTimeCheck">
 <!-- ko with: conditionData -->
     <td colspan="2"><select data-bind="value: selectedGameTimeOperator, options: gameTimeOperators, optionsText: 'label', optionsValue: 'operator'" class="form-control"></td>
-    <td><select data-bind="value: selectedGameTimeHour, options: gameTimeHours" class="form-control"></select></td>
-    <td><select data-bind="value: selectedGameTimeMinutes, options: gameTimeMinutes" class="form-control"></select></td>
+    <td colspan="2"><input type="text" class="form-control" placeholder="@Localizer["CompareTime"]" data-bind="timepicker: selectedGameTime, timepickerFormat: '@Localizer["TimeFormat"]', timepickerHoursPerDay: hoursPerDay, timepickerMinutesPerHour: minutesPerHour"/></td>
 <!-- /ko -->
 </script>
 
-<div class="modal fade" role="dialog" data-bind="modal: isOpen">
+<script type="text/html" id="gn-nodeCheckRandomValue">
+<!-- ko with: conditionData -->
+    <td><input type="text" data-bind="numeric: minValue" class="form-control" placeholder="@Localizer["MinValue"]" /></td>
+    <td><input type="text" data-bind="numeric: maxValue" class="form-control" placeholder="@Localizer["MaxValue"]" /></td>
+    <td><select data-bind="value: selectedOperator, options: availableOperators" class="form-control"></td>
+    <td><input type="text" data-bind="numeric: compareValue" class="form-control" placeholder="@Localizer["CompareValue"]" /></td>
+<!-- /ko -->
+</script>
+
+<script type="text/html" id="gn-nodeConditionCheckDailyRoutineEventState">
+<!-- ko with: conditionData -->
+    <td colspan="4"><a data-bind="text: selectedDailyRoutineEventDisplay, click: chooseDailyRoutineEvent" class="gn-clickable"></a></td>
+<!-- /ko -->
+</script>
+
+<div class="modal fade gn-nodeConditionDialogContainer" role="dialog" data-bind="modal: isOpen">
     <div class="modal-dialog gn-nodeConditionDialog">
         <div class="modal-content">
             <div class="modal-header">

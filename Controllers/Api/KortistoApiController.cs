@@ -25,6 +25,8 @@ using GoNorth.Services.FlexFieldThumbnail;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
+using GoNorth.Services.ProjectConfig;
+using GoNorth.Data.ProjectConfig;
 
 namespace GoNorth.Controllers.Api
 {
@@ -119,6 +121,11 @@ namespace GoNorth.Controllers.Api
         private readonly IKartaMapDbAccess _kartaMapDbAccess;
 
         /// <summary>
+        /// Project Config provider
+        /// </summary>
+        private readonly IProjectConfigProvider _projectConfigProvider;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="folderDbAccess">Folder Db Access</param>
@@ -135,6 +142,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
+        /// <param name="projectConfigProvider">Project config provider</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation Status Comparer</param>
         /// <param name="timelineService">Timeline Service</param>
@@ -143,7 +151,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="localizerFactory">Localizer Factory</param>
         public KortistoApiController(IKortistoFolderDbAccess folderDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
                                      ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IKortistoNpcImageAccess imageAccess, IKortistoThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, 
-                                     IKartaMapDbAccess kartaMapDbAccess, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<KortistoApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                     IKartaMapDbAccess kartaMapDbAccess, IProjectConfigProvider projectConfigProvider, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<KortistoApiController> logger, 
+                                     IStringLocalizerFactory localizerFactory) 
                                      : base(folderDbAccess, templateDbAccess, npcDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, imageAccess, thumbnailService, userManager, 
                                             implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
@@ -151,6 +160,7 @@ namespace GoNorth.Controllers.Api
             _taleDbAccess = taleDbAccess;
             _kirjaPageDbAccess = kirjaPageDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
+            _projectConfigProvider = projectConfigProvider;
         }
 
         /// <summary>
@@ -283,6 +293,13 @@ namespace GoNorth.Controllers.Api
                 return _localizer["CanNotDeleteNpcReferencedInTaleDialog", referencedInDialogs].Value;
             }
 
+            List<KortistoNpc> referencedInDailyRoutines = await ((IKortistoNpcDbAccess)_objectDbAccess).GetNpcsObjectIsReferencedInDailyRoutine(id);
+            if(referencedInDailyRoutines.Count > 0)
+            {
+                string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
+                return _localizer["CanNotDeleteNpcUsedInDailyRoutine", usedInDailyRoutines].Value;
+            }
+
             return string.Empty;
         }
 
@@ -299,6 +316,73 @@ namespace GoNorth.Controllers.Api
                 await _taleDbAccess.DeleteDialog(dialog);
             }
             _logger.LogInformation("Dialog was deleted.");
+        }
+
+        /// <summary>
+        /// Checks if an update is valid
+        /// </summary>
+        /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <param name="loadedFlexFieldObject">Loaded Flex Field Object</param>
+        /// <returns>Empty string if update is valid, error string if update is not valid</returns>
+        protected override async Task<string> CheckUpdateValid(KortistoNpc flexFieldObject, KortistoNpc loadedFlexFieldObject)
+        { 
+            return await CheckForDeletedReferencedDailyRoutines(flexFieldObject, loadedFlexFieldObject);
+        }
+
+        /// <summary>
+        /// Checks if an update is valid
+        /// </summary>
+        /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <param name="loadedFlexFieldObject">Loaded Flex Field Object</param>
+        /// <returns>Empty string if update is valid, error string if update is not valid</returns>
+        private async Task<string> CheckForDeletedReferencedDailyRoutines(KortistoNpc flexFieldObject, KortistoNpc loadedFlexFieldObject)
+        {
+            List<string> oldEventIds = new List<string>();
+            if(loadedFlexFieldObject.DailyRoutine != null)
+            {
+                oldEventIds = loadedFlexFieldObject.DailyRoutine.Select(e => e.EventId).ToList();
+            }
+
+            List<string> newEventIds = new List<string>();
+            if(flexFieldObject.DailyRoutine != null)
+            {
+                newEventIds = flexFieldObject.DailyRoutine.Select(e => e.EventId).ToList();
+            }
+
+            oldEventIds = oldEventIds.Except(newEventIds).ToList();
+            if(!oldEventIds.Any())
+            {
+                return string.Empty;
+            }
+
+            // Check Events
+            foreach(string curDeletedEventId in oldEventIds)
+            {
+                List<KortistoNpc> usedNpcs = await ((IKortistoNpcDbAccess)_objectDbAccess).GetNpcsObjectIsReferencedInDailyRoutine(curDeletedEventId);
+                usedNpcs = usedNpcs.Where(n => n.Id != loadedFlexFieldObject.Id).ToList();
+                if(usedNpcs.Count > 0)
+                {
+                    string referencedInNpcs = string.Join(", ", usedNpcs.Select(p => p.Name));
+                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInNpc", referencedInNpcs].Value;
+                }
+
+                List<TaleDialog> taleDialogs = await _taleDbAccess.GetDialogsObjectIsReferenced(curDeletedEventId);
+                if(taleDialogs.Count > 0)
+                {
+                    List<KortistoNpc> npcs = await _objectDbAccess.ResolveFlexFieldObjectNames(taleDialogs.Select(t => t.RelatedObjectId).ToList());
+                    string referencedInDialogs = string.Join(", ", npcs.Select(n => n.Name));
+                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInTaleDialog", referencedInDialogs].Value;
+                }
+
+                List<AikaQuest> aikaQuests = await _aikaQuestDbAccess.GetQuestsObjectIsReferenced(curDeletedEventId);
+                if(aikaQuests.Count > 0)
+                {
+                    string referencedInQuests = string.Join(", ", aikaQuests.Select(p => p.Name));
+                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInAikaQuest", referencedInQuests].Value;
+                }
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -329,6 +413,18 @@ namespace GoNorth.Controllers.Api
             if(User.IsInRole(RoleNames.Evne))
             {
                 loadedFlexFieldObject.Skills = flexFieldObject.Skills;
+            }
+
+            loadedFlexFieldObject.DailyRoutine = flexFieldObject.DailyRoutine;
+            if(loadedFlexFieldObject.DailyRoutine != null)
+            {
+                foreach(KortistoNpcDailyRoutineEvent curEvent in loadedFlexFieldObject.DailyRoutine)
+                {
+                    if(string.IsNullOrEmpty(curEvent.EventId))
+                    {
+                        curEvent.EventId = Guid.NewGuid().ToString();
+                    }
+                }
             }
             
             return loadedFlexFieldObject;
@@ -375,6 +471,125 @@ namespace GoNorth.Controllers.Api
         protected override async Task<CompareResult> CompareObjectWithImplementationSnapshot(KortistoNpc flexFieldObject)
         {
             return await _implementationStatusComparer.CompareNpc(flexFieldObject.Id, flexFieldObject);
+        }
+
+
+        /// <summary>
+        /// Saves a single daily routine event
+        /// </summary>
+        /// <param name="id">Id of the npc to update the daily routine for</param>
+        /// <param name="routineEvent">Event data</param>
+        /// <returns>Id of the event</returns>
+        [Produces(typeof(string))]
+        [HttpPost]
+        public async Task<IActionResult> SaveDailyRoutineEvent(string id, [FromBody]KortistoNpcDailyRoutineEvent routineEvent)
+        {
+            KortistoNpc npc = await _objectDbAccess.GetFlexFieldObjectById(id);
+            if(npc == null)
+            {
+                return NotFound();
+            }
+
+            // Update / Create event
+            if(npc.DailyRoutine == null)
+            {
+                npc.DailyRoutine = new List<KortistoNpcDailyRoutineEvent>();
+            }
+
+            if(string.IsNullOrEmpty(routineEvent.EventId))
+            {
+                routineEvent.EventId = Guid.NewGuid().ToString();
+                npc.DailyRoutine.Add(routineEvent);
+            }
+            else
+            {
+                int targetIndex = npc.DailyRoutine.FindIndex(d => d.EventId == routineEvent.EventId);
+                if(targetIndex == -1)
+                {
+                    return BadRequest();
+                }
+
+                npc.DailyRoutine[targetIndex] = routineEvent;
+            }
+
+            await SaveNpcAfterEventUpdate(npc);
+
+            return Ok(routineEvent.EventId);
+        }
+
+        /// <summary>
+        /// Deletes a single daily routine event
+        /// </summary>
+        /// <param name="id">Id of the npc to delete the daily routine for</param>
+        /// <param name="eventId">Event id</param>
+        /// <returns>Id of the event</returns>
+        [Produces(typeof(string))]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDailyRoutineEvent(string id, string eventId)
+        {
+            KortistoNpc npc = await _objectDbAccess.GetFlexFieldObjectById(id);
+            if(npc == null)
+            {
+                return NotFound();
+            }
+
+            // Delete event
+            if(npc.DailyRoutine == null)
+            {
+                return NotFound();
+            }
+
+            int removeCount = npc.DailyRoutine.RemoveAll(e => e.EventId == eventId);
+            if(removeCount == 0)
+            {
+                return NotFound();
+            }
+
+            await SaveNpcAfterEventUpdate(npc);
+
+            return Ok(eventId);
+        }
+
+        /// <summary>
+        /// Saves a npc after an event update
+        /// </summary>
+        /// <param name="npc">Npc to save</param>
+        /// <returns>Task</returns>
+        private async Task SaveNpcAfterEventUpdate(KortistoNpc npc)
+        {
+            await this.SetModifiedData(_userManager, npc);
+            await SetNotImplementedFlagOnChange(npc);
+            await _objectDbAccess.UpdateFlexFieldObject(npc);
+            await _timelineService.AddTimelineEntry(ObjectUpdatedEvent, npc.Name, npc.Id);
+        }
+
+
+        /// <summary>
+        /// Returns all npcs that have a daily routine with events outside of the configured time frame
+        /// </summary>
+        /// <returns>Npcs that have a daily routine with events outside of the configured time frame</returns>
+        [Produces(typeof(List<KortistoNpc>))]
+        [HttpGet]
+        public async Task<IActionResult> GetNpcsWithDailyRoutineOutsideTimeRange()
+        {
+            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            MiscProjectConfig miscConfig = await _projectConfigProvider.GetMiscConfig(defaultProject.Id);
+
+            List<KortistoNpc> npcs = await ((IKortistoNpcDbAccess)_objectDbAccess).GetNpcsWithDailyRoutineAfterTime(miscConfig.HoursPerDay, miscConfig.MinutesPerHour);
+            return Ok(npcs);
+        }
+
+        /// <summary>
+        /// Returns all npcs an object is referenced in the daily routine (not including the relatedobjectid itself)
+        /// </summary>
+        /// <param name="objectId">Object id</param>
+        /// <returns>Dialogs</returns>
+        [Produces(typeof(List<KortistoNpc>))]
+        [HttpGet]
+        public async Task<IActionResult> GetNpcsObjectIsReferencedInDailyRoutine(string objectId)
+        {
+            List<KortistoNpc> npcs = await ((IKortistoNpcDbAccess)_objectDbAccess).GetNpcsObjectIsReferencedInDailyRoutine(objectId);
+            return Ok(npcs);
         }
 
 

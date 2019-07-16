@@ -97,6 +97,26 @@
             },
 
             /**
+             * Opens the dialog to search for daily routines
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openDailyRoutineSearch: function(dialogTitle) {
+                return this.openDialog(dialogTitle, this.searchDailyRoutines, null, null);
+            },
+
+            /**
+             * Opens the dialog to search for markers
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openMarkerSearch: function(dialogTitle) {
+                return this.openDialog(dialogTitle, this.searchMarkers, null, null);
+            },
+
+            /**
              * Opens the dialog
              * 
              * @param {string} dialogTitle Title of the dialog
@@ -126,6 +146,21 @@
 
                 this.choosingDeferred = new jQuery.Deferred();
                 return this.choosingDeferred.promise();
+            },
+
+            /**
+             * Expands an object if it has an expand callback, or selects an object
+             * @param {object} selectedObject Selected object
+             */
+            handleObjectClick: function(selectedObject) {
+                if(selectedObject.expandCallback) 
+                {
+                    selectedObject.expandCallback(selectedObject);
+                }
+                else
+                {
+                    this.selectObject(selectedObject);
+                }
             },
 
             /**
@@ -208,6 +243,7 @@
             /**
              * Creates a dialog object
              * 
+             * @param {string} id Id of the object
              * @param {string} name Name of the object
              * @param {string} openLink Link to open the object
              */
@@ -215,8 +251,29 @@
                 return {
                     id: id,
                     name: name,
-                    openLink: openLink
+                    openLink: openLink,
+                    expandCallback: null,
+                    isExpanded: new ko.observable(false),
+                    isLoadingExpandedObject: new ko.observable(false),
+                    errorLoadingExpandedObject: new ko.observable(false),
+                    expandedObjects: new ko.observableArray(),
+                    hasExpandedObjectsLoaded: false
                 };
+            },
+            
+            /**
+             * Creates a dialog object
+             * 
+             * @param {string} id Id of the object
+             * @param {string} name Name of the object
+             * @param {string} openLink Link to open the object
+             * @param {function} expandCallback Callback function to expand
+             */
+            createExpandableDialogObject: function(id, name, openLink, expandCallback) {
+                var dialogObject = this.createDialogObject(id, name, openLink);
+                dialogObject.expandCallback = expandCallback;
+                
+                return dialogObject;
             },
 
             /**
@@ -431,7 +488,123 @@
                 });
 
                 return def.promise();
-            }
+            },
+            
+            /**
+             * Searches daily routines
+             * 
+             * @param {string} searchPattern Search Pattern
+             * @returns {jQuery.Deferred} Deferred for the result
+             */
+            searchDailyRoutines: function(searchPattern) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
+                    type: "GET"
+                }).done(function(data) {
+                    var result = {
+                        hasMore: data.hasMore,
+                        entries: []
+                    };
+
+                    for(var curEntry = 0; curEntry < data.flexFieldObjects.length; ++curEntry)
+                    {
+                        result.entries.push(self.createExpandableDialogObject(data.flexFieldObjects[curEntry].id, data.flexFieldObjects[curEntry].name, "/Kortisto/Npc?id=" + data.flexFieldObjects[curEntry].id, function(dailyRoutineEventNpc) { self.expandDailyRoutineNpc(dailyRoutineEventNpc); }));
+                    }
+
+                    def.resolve(result);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            },
+
+            /**
+             * Expands a daily routine npc
+             * @param {object} dailyRoutineEventNpc Daily routine npc
+             */
+            expandDailyRoutineNpc: function(dailyRoutineEventNpc) {
+                dailyRoutineEventNpc.isExpanded(!dailyRoutineEventNpc.isExpanded());
+                if(dailyRoutineEventNpc.hasExpandedObjectsLoaded)
+                {
+                    return;
+                }
+
+                dailyRoutineEventNpc.isLoadingExpandedObject(true);
+                dailyRoutineEventNpc.errorLoadingExpandedObject(false);
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id, 
+                    type: "GET"
+                }).done(function(data) {
+                    var dailyRoutineObjects = [];
+                    if(data.dailyRoutine)
+                    {
+                        for(var curEvent = 0; curEvent < data.dailyRoutine.length; ++curEvent)
+                        {
+                            data.dailyRoutine[curEvent].parentObject = dailyRoutineEventNpc;
+                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan("hh:mm", data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
+                            var additionalName = "";
+                            if(data.dailyRoutine[curEvent].scriptName)
+                            {
+                                additionalName = data.dailyRoutine[curEvent].scriptName;
+                            }
+                            else if(data.dailyRoutine[curEvent].movementTarget && data.dailyRoutine[curEvent].movementTarget.name)
+                            {
+                                additionalName = data.dailyRoutine[curEvent].movementTarget.name;
+                            }
+                            data.dailyRoutine[curEvent].additionalName = additionalName;
+                            dailyRoutineObjects.push(data.dailyRoutine[curEvent]);
+                        }
+                    }
+                    dailyRoutineEventNpc.isLoadingExpandedObject(false);
+                    dailyRoutineEventNpc.expandedObjects(dailyRoutineObjects);
+                    dailyRoutineEventNpc.hasExpandedObjectsLoaded = true;
+                }).fail(function(xhr) {
+                    dailyRoutineEventNpc.isLoadingExpandedObject(false);
+                    dailyRoutineEventNpc.errorLoadingExpandedObject(true);
+                });
+            },
+
+            
+            /**
+             * Searches markers
+             * 
+             * @param {string} searchPattern Search Pattern
+             * @returns {jQuery.Deferred} Deferred for the result
+             */
+            searchMarkers: function(searchPattern) {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
+                    type: "GET"
+                }).done(function(data) {
+                    var result = {
+                        hasMore: data.hasMore,
+                        entries: []
+                    };
+
+                    for(var curEntry = 0; curEntry < data.markers.length; ++curEntry)
+                    {
+                        var dialogObject = self.createDialogObject(data.markers[curEntry].markerId, data.markers[curEntry].markerName + " (" + data.markers[curEntry].mapName + ")", "/Karta?id=" + data.markers[curEntry].mapId + "&zoomOnMarkerId=" + data.markers[curEntry].markerId + "&zoomOnMarkerType=" + data.markers[curEntry].markerType);
+                        dialogObject.markerName = data.markers[curEntry].markerName;
+                        dialogObject.markerType = data.markers[curEntry].markerType;
+                        dialogObject.mapId = data.markers[curEntry].mapId;
+                        dialogObject.mapName = data.markers[curEntry].mapName;
+                        result.entries.push(dialogObject);
+                    }
+
+                    def.resolve(result);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            },
             
         };
 
@@ -481,6 +654,294 @@
         }
 
     }(GoNorth.Util = GoNorth.Util || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(BindingHandlers) {
+
+        if(typeof ko !== "undefined")
+        {
+            /**
+             * Builds a time object for custom time frame
+             * @param {number} hours Hours
+             * @param {number} minutes Minutes
+             * @returns {object} Time object
+             */
+            BindingHandlers.buildTimeObject = function(hours, minutes) {
+                return {
+                    hours: hours,
+                    minutes: minutes
+                };
+            }
+
+            /**
+             * Compares two time objects
+             * @param {object} d1 Time object 1
+             * @param {object} d2 Time object 2
+             * @returns {number} Compare value
+             */
+            BindingHandlers.compareTimes = function(d1, d2) {
+                if(d1.hours < d2.hours) {
+                    return -1;
+                } else if(d2.hours < d1.hours) {
+                    return 1;
+                } else if(d1.minutes < d2.minutes) {
+                    return -1;
+                } else if(d2.minutes < d1.minutes) {
+                    return 1;
+                }
+
+                return 0;
+            }
+
+            /**
+             * Returns the time values for a timepicker
+             * @param {object} containerElement Container element
+             * @param {object} hoursPerDay Hours per day
+             * @param {object} minutesPerHour Minutes per hour
+             * @returns {object} Time Values
+             */
+            function getTimeValue(containerElement, hoursPerDay, minutesPerHour) {
+                var hours = parseInt(containerElement.find(".gn-timePickerHour").val());
+                if(isNaN(hours)) {
+                    hours = 0;
+                }
+
+                var minutes = parseInt(containerElement.find(".gn-timePickerMinutes").val());
+                if(isNaN(minutes)) {
+                    minutes = 0;
+                }
+
+                hoursPerDay = ko.utils.unwrapObservable(hoursPerDay);
+                minutesPerHour = ko.utils.unwrapObservable(minutesPerHour);
+                hours = Math.abs(hours) % hoursPerDay;
+                minutes = Math.abs(minutes) % minutesPerHour;
+
+                return BindingHandlers.buildTimeObject(hours, minutes);
+            }
+
+            /**
+             * Updates the time value
+             * @param {object} containerElement Container Element
+             * @param {function} changeCallback Change callback
+             * @param {object} hoursPerDay Hours per day
+             * @param {object} minutesPerHour Minutes per hour
+             */
+            function updateTimeValue(containerElement, changeCallback, hoursPerDay, minutesPerHour)
+            {
+                changeCallback(getTimeValue(containerElement, hoursPerDay, minutesPerHour));
+
+                updateTimeDisplay(containerElement, hoursPerDay, minutesPerHour);
+            }
+
+            /**
+             * Updates the time display
+             * @param {object} element HTML Element to fill
+             * @param {object} hoursPerDay Hours per day
+             * @param {object} minutesPerHour Minutes per hour
+             */
+            function updateTimeDisplay(element, hoursPerDay, minutesPerHour) {
+                var containerElement = jQuery(element).closest(".gn-timePickerMainContainer");
+                var timeValues = getTimeValue(containerElement, hoursPerDay, minutesPerHour);
+
+                var targetElement = containerElement.find(".gn-timePickerMain");
+                var format = targetElement.data("gn-timePickerFormat");
+                var formattedTime = GoNorth.Util.formatTime(timeValues.hours, timeValues.minutes, format);
+                targetElement.val(formattedTime);
+            }
+
+            /**
+             * Changes the time value in a given direction
+             * @param {object} element HTML Input element
+             * @param {number} direction Direction
+             * @param {function} changeCallback Change callback
+             * @param {number} hoursPerDay Hours per day
+             * @param {number} minutesPerHour Minutes per hour
+             */
+            function changeTimeValue(element, direction, changeCallback, hoursPerDay, minutesPerHour) {
+                var value = parseInt(jQuery(element).val());
+                if(isNaN(value)) {
+                    value = 0;
+                } else {
+                    value += direction;
+                }
+
+                var maxValue = 0;
+                if(jQuery(element).hasClass("gn-timePickerHour")) {
+                    maxValue = ko.utils.unwrapObservable(hoursPerDay);
+                } else {
+                    maxValue = ko.utils.unwrapObservable(minutesPerHour);
+                }
+
+                if(value < 0) {
+                    value = maxValue - 1;
+                } else if(value >= maxValue) {
+                    value = 0;
+                }
+
+                jQuery(element).val(value);
+                updateTimeDisplay(element, hoursPerDay, minutesPerHour);
+                updateTimeValue(jQuery(element).closest(".gn-timePickerMainContainer"), changeCallback, hoursPerDay, minutesPerHour);
+            }
+
+            /**
+             * Initializes the time picker
+             * @param {object} element HTML Element
+             * @param {function} changeCallback Change callback function
+             * @param {number} hoursPerDay Hours per day
+             * @param {number} minutesPerHour Minutes per hour
+             * @param {string} timeFormat Time format
+             * @param {function} onOpen Optional callback function on opening the time callout
+             * @param {function} onClose Optiona callback function on closing the time callout
+             * @param {boolean} dontStyle true if the timepicker formats should not be applied, else false
+             */
+            BindingHandlers.initTimePicker = function(element, changeCallback, hoursPerDay, minutesPerHour, timeFormat, onOpen, onClose, dontStyle) {
+                jQuery(element).wrap("<div class='gn-timePickerMainContainer" + (!dontStyle ? " gn-timePickerMainContainerStyling" : "") + "'></div>");
+                jQuery('<div class="dropdown-menu">' +
+                    '<div class="gn-timePickerControlContainer">' +
+                        '<div class="gn-timePickerSingleControlContainer gn-timePickerSingleControlContainerHours">' +
+                            '<button class="btn btn-link gn-timePickerButtonUp gn-timePickerButtonHours" tabindex="-1" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>' +
+                            '<input type="text" class="' + (!dontStyle ? 'form-control ' : '') + 'gn-timePickerInput gn-timePickerHour">' +
+                            '<button class="btn btn-link gn-timePickerButtonDown gn-timePickerButtonHours" tabindex="-1" type="button"><span class="glyphicon glyphicon-chevron-down"></span></button>' +
+                        '</div>' +
+                        '<div class="gn-timePickerSeperator">:</div>' +
+                        '<div class="gn-timePickerSingleControlContainer">' +
+                            '<button class="btn btn-link gn-timePickerButtonUp gn-timePickerButtonMinutes" tabindex="-1" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>' +
+                            '<input type="text" class="' + (!dontStyle ? 'form-control ' : '') + 'gn-timePickerInput gn-timePickerMinutes"> ' +
+                            '<button class="btn btn-link gn-timePickerButtonDown gn-timePickerButtonMinutes" tabindex="-1" type="button"><span class="glyphicon glyphicon-chevron-down"></span></button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>').insertAfter(element);
+                jQuery(element).prop("readonly", true);
+                jQuery(element).addClass("gn-timePickerMain");
+                if(!dontStyle) {
+                    jQuery(element).addClass("gn-timePickerMainStyling");
+                }
+                if(!timeFormat) {
+                    timeFormat = "hh:mm";
+                }
+                jQuery(element).data("gn-timePickerFormat", timeFormat);
+
+                var containerElement = jQuery(element).parent();
+                jQuery(element).focus(function() {
+                    if(onOpen) {
+                        onOpen();
+                    }
+                    containerElement.children(".dropdown-menu").addClass("show");
+                    containerElement.find(".gn-timePickerHour").focus();
+                    setTimeout(function() {
+                        containerElement.find(".gn-timePickerHour").focus();
+                    }, 50);
+                });
+                containerElement.find("input").blur(function() {
+                    var target = jQuery(event.relatedTarget);
+                    if(!target.closest(containerElement).length) {
+                        containerElement.children(".dropdown-menu").removeClass("show");
+                        if(onClose) {
+                            onClose();
+                        }
+                    }
+
+                    updateTimeValue(containerElement, changeCallback, hoursPerDay, minutesPerHour);
+                });
+                var closeHandler = null;
+                closeHandler = function() {
+                    if(!jQuery.contains(document, containerElement[0]))
+                    {
+                        jQuery(document).unbind("click", closeHandler);
+                        return;
+                    }
+
+                    var target = jQuery(event.target);
+                    if(!target.closest(containerElement).length) {
+                        containerElement.children(".dropdown-menu").removeClass("show");
+                        if(onClose) {
+                            onClose();
+                        }
+                    }
+                };
+                jQuery(document).on("click", closeHandler);
+
+                containerElement.find("input").keydown(function(e) {
+                    if(e.keyCode == 38) {           // Arrow up
+                        changeTimeValue(this, 1, changeCallback, hoursPerDay, minutesPerHour);
+                        e.preventDefault();
+                        return;
+                    } else if(e.keyCode == 40) {    // Arrow down
+                        changeTimeValue(this, -1, changeCallback, hoursPerDay, minutesPerHour);
+                        e.preventDefault();
+                        return;
+                    }
+
+                    GoNorth.Util.validateNumberKeyPress(element, e);
+                });
+
+                containerElement.find(".btn-link").click(function() {
+                    var targetElement = ".gn-timePickerHour";
+                    if(jQuery(this).hasClass("gn-timePickerButtonMinutes")) {
+                        targetElement = ".gn-timePickerMinutes";
+                    }
+
+                    var direction = 1;
+                    if(jQuery(this).hasClass("gn-timePickerButtonDown")) {
+                        direction = -1;
+                    }
+
+                    changeTimeValue(containerElement.find(targetElement), direction, changeCallback, hoursPerDay, minutesPerHour);
+                });
+            }
+
+            /**
+             * Sets the time picker value
+             * @param {object} element HTML Element
+             * @param {number} hours Hours
+             * @param {number} minutes Minutes
+             * @param {number} hoursPerDay Hours per day
+             * @param {number} minutesPerHour Minutes per hours
+             */
+            BindingHandlers.setTimePickerValue = function(element, hours, minutes, hoursPerDay, minutesPerHour) {
+                var containerElement = jQuery(element).parent();
+                containerElement.find(".gn-timePickerHour").val(hours);
+                containerElement.find(".gn-timePickerMinutes").val(minutes);
+                updateTimeDisplay(element, hoursPerDay, minutesPerHour);
+            }
+
+            /**
+             * Timepicker Binding Handler with custom timeframe (hours, minutes)
+             */
+            ko.bindingHandlers.timepicker = {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    var updatedFunction = function(newValue) {
+                        valueAccessor()(newValue);
+                    };
+                    BindingHandlers.initTimePicker(element, updatedFunction, allBindings.get("timepickerHoursPerDay"), allBindings.get("timepickerMinutesPerHour"), allBindings.get("timepickerFormat"));
+                },
+                update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    var timeValues = ko.utils.unwrapObservable(valueAccessor());
+                    BindingHandlers.setTimePickerValue(element, timeValues.hours, timeValues.minutes, allBindings.get("timepickerHoursPerDay"), allBindings.get("timepickerMinutesPerHour"));
+                }
+            };
+        }
+
+    }(GoNorth.BindingHandlers = GoNorth.BindingHandlers || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(ProjectConfig) {
+        (function(ConfigKeys) {
+
+            /**
+             * Config key for play an animation
+             */
+            ConfigKeys.PlayAnimationAction = "PlayAnimationAction";
+
+            /**
+             * Config key for setting the npc state
+             */
+            ConfigKeys.SetNpcStateAction = "SetNpcStateAction";
+
+        }(ProjectConfig.ConfigKeys = ProjectConfig.ConfigKeys || {}));
+    }(GoNorth.ProjectConfig = GoNorth.ProjectConfig || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
@@ -1849,7 +2310,6 @@
                         return;
                     }
 
-                    // TODO: Check for field edit to ignore current ifeld
                     if(this.fieldManager.isFieldNameInUse(this.createEditFieldName(), this.fieldToEdit))
                     {
                         this.showDuplicateFieldNameError(true);
@@ -2162,6 +2622,10 @@
                 this.referencedInTaleDialogs = new ko.observableArray();
                 this.loadingReferencedInTaleDialogs = new ko.observable(false);
                 this.errorLoadingReferencedInTaleDialogs = new ko.observable(false);
+                
+                this.referencedInDailyRoutines = new ko.observableArray();
+                this.loadingReferencedInDailyRoutines = new ko.observable(false);
+                this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
 
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
@@ -2232,6 +2696,11 @@
                     if(GoNorth.FlexFieldDatabase.ObjectForm.hasTaleRights && !this.isTemplateMode())
                     {
                         this.loadTaleDialogs();
+                    } 
+
+                    if(GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights && !this.isTemplateMode())
+                    {
+                        this.loadUsedInDailyRoutines();
                     } 
 
                     this.loadAdditionalDependencies();
@@ -2470,6 +2939,12 @@
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
+
+                    // If object is related to anything that prevents deleting a bad request (400) will be returned
+                    if(xhr.status == 400 && xhr.responseText)
+                    {
+                        self.additionalErrorDetails(xhr.responseText);
+                    }
                 });
             };
 
@@ -2889,6 +3364,36 @@
 
 
             /**
+             * Loads the npcs in which the daily routines are used
+             */
+            ObjectForm.BaseViewModel.prototype.loadUsedInDailyRoutines = function() {
+                this.loadingReferencedInDailyRoutines(true);
+                this.errorLoadingReferencedInDailyRoutines(false);
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id(), 
+                    type: "GET"
+                }).done(function(data) {
+                    self.referencedInDailyRoutines(data);
+                    self.loadingReferencedInDailyRoutines(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInDailyRoutines(true);
+                    self.loadingReferencedInDailyRoutines(false);
+                });
+            };
+
+            /**
+             * Builds the url for a Npcs
+             * 
+             * @param {object} npc Npc to build the url for
+             * @returns {string} Url for the npc
+             */
+            ObjectForm.BaseViewModel.prototype.buildDailyRoutineNpcUrl = function(npc) {
+                return "/Kortisto/Npc?id=" + npc.id;
+            };
+
+
+            /**
              * Acquires a lock
              */
             ObjectForm.BaseViewModel.prototype.acquireLock = function() {
@@ -3019,6 +3524,9 @@
 
             /// Object Resource for Skills
             Shapes.ObjectResourceSkill = 5;
+            
+            /// Object Resource for Project misc config
+            Shapes.ObjectResourceProjectMiscConfig = 6;
 
 
             /// Cached loaded objects
@@ -3070,9 +3578,10 @@
                 /**
                  * Returns the object resource
                  * 
+                 * @param {object} existingData Optional Existing data
                  * @returns {int} Object Resource
                  */
-                getObjectResource: function() {
+                getObjectResource: function(existingData) {
 
                 },
 
@@ -3100,8 +3609,8 @@
                 loadObjectShared: function(existingData) {
                     var objectId = this.getObjectId(existingData);
     
-                    if(loadedObjects[this.getObjectResource()]) {
-                        var existingObject = loadedObjects[this.getObjectResource()][objectId];
+                    if(loadedObjects[this.getObjectResource(existingData)]) {
+                        var existingObject = loadedObjects[this.getObjectResource(existingData)][objectId];
                         if(existingObject)
                         {
                             var def = new jQuery.Deferred();
@@ -3110,44 +3619,54 @@
                         }
                     }
     
-                    if(objectsLoadingDeferreds[this.getObjectResource()])
+                    var self = this;
+                    if(objectsLoadingDeferreds[this.getObjectResource(existingData)])
                     {
-                        var existingDef = objectsLoadingDeferreds[this.getObjectResource()][objectId];
+                        var existingDef = objectsLoadingDeferreds[this.getObjectResource(existingData)][objectId];
                         if(existingDef)
                         {
+                            existingDef.fail(function() {
+                                if(self.showErrorCallback) {
+                                    self.showErrorCallback();
+                                }
+                            });
                             return existingDef;
                         }
                     }
     
-                    var loadingDef = this.loadObject(objectId);
-                    if(!objectsLoadingDeferreds[this.getObjectResource()])
+                    var loadingDef = this.loadObject(objectId, existingData);
+                    if(!objectsLoadingDeferreds[this.getObjectResource(existingData)])
                     {
-                        objectsLoadingDeferreds[this.getObjectResource()] = {};
+                        objectsLoadingDeferreds[this.getObjectResource(existingData)] = {};
                     }
 
-                    objectsLoadingDeferreds[this.getObjectResource()][objectId] = loadingDef;
+                    objectsLoadingDeferreds[this.getObjectResource(existingData)][objectId] = loadingDef;
     
-                    var self = this;
                     loadingDef.then(function(object) {
-                        if(!loadedObjects[self.getObjectResource()])
+                        if(!loadedObjects[self.getObjectResource(existingData)])
                         {
-                            loadedObjects[self.getObjectResource()] = {};
+                            loadedObjects[self.getObjectResource(existingData)] = {};
                         }
 
-                        loadedObjects[self.getObjectResource()][objectId] = object;
+                        loadedObjects[self.getObjectResource(existingData)][objectId] = object;
+                    }, function() {
+                        if(self.showErrorCallback) {
+                            self.showErrorCallback();
+                        }
                     });
     
                     return loadingDef;
                 },
 
                 /**
-                 * Loads and object
+                 * Loads an object
                  * 
                  * @param {string} objectId Optional Object Id extracted using getObjectId before
+                 * @param {object} existingData Existing data
                  * @returns {jQuery.Deferred} Deferred for the loading process
                  */
-                loadObject: function(objectId) {
-
+                loadObject: function(objectId, existingData) {
+                    
                 }
             };
 
@@ -5200,9 +5719,11 @@
             Conditions.CheckGameTimeCondition = function()
             {
                 GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
             };
 
             Conditions.CheckGameTimeCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+            Conditions.CheckGameTimeCondition.prototype = jQuery.extend(Conditions.CheckGameTimeCondition.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
 
             /**
              * Returns the template name for the condition
@@ -5251,6 +5772,44 @@
             };
 
             /**
+             * Returns the object resource
+             * 
+             * @returns {string} Object Id
+             */
+            Conditions.CheckGameTimeCondition.prototype.getObjectId = function() {
+                return "ProjectMiscConfig";
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckGameTimeCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceProjectMiscConfig;
+            };
+            
+            /**
+             * Loads the project config
+             * 
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckGameTimeCondition.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+                
+                jQuery.ajax({ 
+                    url: "/api/ProjectConfigApi/GetMiscConfig", 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
              * Creates a time operator object
              * 
              * @param {number} timeOperator Time operator
@@ -5272,12 +5831,6 @@
              * @returns {object} Condition data
              */
             Conditions.CheckGameTimeCondition.prototype.buildConditionData = function(existingData, element) {
-                var gameTimeHours = [];
-                for(var curHour = 0; curHour < 24; ++curHour)
-                {
-                    gameTimeHours.push(curHour);
-                }
-
                 var gameTimeMinutes = [];
                 for(var curMinute = 0; curMinute < 60; curMinute += 5)
                 {
@@ -5287,22 +5840,28 @@
 
                 var conditionData = {
                     selectedGameTimeOperator: new ko.observable(),
-                    selectedGameTimeHour: new ko.observable(),
-                    selectedGameTimeMinutes: new ko.observable(),
+                    selectedGameTime: new ko.observable(GoNorth.BindingHandlers.buildTimeObject(0, 0)),
                     gameTimeOperators: [
                         this.createTimeOperator(gameTimeOperatorBefore),
                         this.createTimeOperator(gameTimeOperatorAfter)
                     ],
-                    gameTimeHours: gameTimeHours,
-                    gameTimeMinutes: gameTimeMinutes
+                    hoursPerDay: new ko.observable(24),
+                    minutesPerHour: new ko.observable(60)
                 };
+
+                // Load config
+                this.loadObjectShared({}).done(function(miscConfig) {
+                    conditionData.hoursPerDay(miscConfig.hoursPerDay);
+                    conditionData.minutesPerHour(miscConfig.minutesPerHour);
+                }).fail(function() {
+                    element.errorOccured(true);
+                })
 
                 // Load existing data
                 if(existingData)
                 {
                     conditionData.selectedGameTimeOperator(existingData.operator);
-                    conditionData.selectedGameTimeHour(existingData.hour);
-                    conditionData.selectedGameTimeMinutes(existingData.minutes)
+                    conditionData.selectedGameTime(GoNorth.BindingHandlers.buildTimeObject(existingData.hour, existingData.minutes));
                 }
 
                 return conditionData;
@@ -5317,8 +5876,8 @@
             Conditions.CheckGameTimeCondition.prototype.serializeConditionData = function(conditionData) {
                 return {
                     operator: conditionData.selectedGameTimeOperator(),
-                    hour: conditionData.selectedGameTimeHour(),
-                    minutes: conditionData.selectedGameTimeMinutes()
+                    hour: conditionData.selectedGameTime().hours,
+                    minutes: conditionData.selectedGameTime().minutes
                 };
             };
 
@@ -5360,6 +5919,136 @@
             };
 
             GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckGameTimeCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking a random game value
+            var conditionTypeCheckRandomValue = 19;
+
+            /**
+             * Check random value condition
+             * @class
+             */
+            Conditions.CheckRandomValueCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+            };
+
+            Conditions.CheckRandomValueCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+
+            /**
+             * Returns the template name for the condition
+             * 
+             * @returns {string} Template name
+             */
+            Conditions.CheckRandomValueCondition.prototype.getTemplateName = function() {
+                return "gn-nodeCheckRandomValue";
+            };
+            
+            /**
+             * Returns true if the condition can be selected in the dropdown list, else false
+             * 
+             * @returns {bool} true if the condition can be selected, else false
+             */
+            Conditions.CheckRandomValueCondition.prototype.canBeSelected = function() {
+                return true;
+            };
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckRandomValueCondition.prototype.getType = function() {
+                return conditionTypeCheckRandomValue;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckRandomValueCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckRandomValueLabel;
+            };
+
+            /**
+             * Returns the objects on which an object depends
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {object[]} Objects on which the condition depends
+             */
+            Conditions.CheckRandomValueCondition.prototype.getConditionDependsOnObject = function(existingData) {
+                return [];
+            };
+
+            /**
+             * Returns the data for the condition
+             * 
+             * @param {object} existingData Existing condition data
+             * @param {object} element Element to which the data belongs
+             * @returns {object} Condition data
+             */
+            Conditions.CheckRandomValueCondition.prototype.buildConditionData = function(existingData, element) {
+                var conditionData = {
+                    selectedOperator: new ko.observable(),
+                    minValue: new ko.observable(),
+                    maxValue: new ko.observable(),
+                    compareValue: new ko.observable(),
+                    availableOperators: [ "=", "!=", "<=", "<", ">=", ">" ]
+                };
+
+                // Load existing data
+                if(existingData)
+                {
+                    conditionData.selectedOperator(existingData.operator);
+                    conditionData.minValue(existingData.minValue);
+                    conditionData.maxValue(existingData.maxValue);
+                    conditionData.compareValue(existingData.compareValue);
+                }
+
+                return conditionData;
+            };
+
+            /**
+             * Serializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @returns {object} Serialized data
+             */
+            Conditions.CheckRandomValueCondition.prototype.serializeConditionData = function(conditionData) {
+                return {
+                    operator: conditionData.selectedOperator(),
+                    minValue: conditionData.minValue() ? conditionData.minValue() : 0,
+                    maxValue: conditionData.maxValue() ? conditionData.maxValue() : 0,
+                    compareValue: conditionData.compareValue() ? conditionData.compareValue() : 0
+                };
+            };
+
+            /**
+             * Returns the condition data as a display string
+             * 
+             * @param {object} existingData Serialzied condition data
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckRandomValueCondition.prototype.getConditionString = function(existingData) {
+                var def = new jQuery.Deferred();
+                
+                var conditionString = DefaultNodeShapes.Localization.Conditions.Rand;
+                conditionString += "(" + existingData.minValue + "," + existingData.maxValue + ")";
+                conditionString += " " + existingData.operator + " " + existingData.compareValue;
+                def.resolve(conditionString);
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckRandomValueCondition());
 
         }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -5446,8 +6135,8 @@
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                             '<span class="gn-nodeLoading" style="display: none"><i class="glyphicon glyphicon-refresh spinning"></i></span>',
                             '<span class="gn-nodeError text-danger" style="display: none" title="' + GoNorth.DefaultNodeShapes.Localization.ErrorOccured + '"><i class="glyphicon glyphicon-warning-sign"></i></span>',
-                            '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
-                            '<button class="gn-nodeAddCondition gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.Conditions.AddCondition + '">+</button>',
+                            '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '" type="button">x</button>',
+                            '<button class="gn-nodeAddCondition gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.Conditions.AddCondition + '" type="button">+</button>',
                         '</div>',
                     ].join(''),
 
@@ -5847,11 +6536,29 @@
         (function(Conditions) {
 
             /**
+             * Finds the condition dialog in a parents list
+             * @param {object[]} parents Knockout parents elements
+             * @returns {object} Condition Dialog context
+             */
+            Conditions.findConditionDialog = function(parents) {
+                for(var curParent = 0; curParent < parents.length; ++curParent)
+                {
+                    if(parents[curParent].isConditionDialogViewModel) {
+                        return parents[curParent];
+                    }
+                }
+
+                return parents[0];
+            }
+
+            /**
              * Condition Dialog Model
              * @class
              */
             Conditions.ConditionDialog = function()
             {
+                this.isConditionDialogViewModel = true;
+
                 this.isOpen = new ko.observable(false);
                 this.condition = null;
                 this.closingDeferred = null;
@@ -6256,7 +6963,7 @@
             function loadActionConfig(configKey) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax("/api/TaleApi/GetNodeConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
+                jQuery.ajax("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
                     if(!loadedConfigData)
                     {
                         def.resolve();
@@ -6333,6 +7040,7 @@
                             actionType: null,
                             actionRelatedToObjectType: null,
                             actionRelatedToObjectId: null,
+                            actionRelatedToAdditionalObjects: [],
                             actionData: null
                         },
                         joint.shapes.default.Base.prototype.defaults
@@ -6405,7 +7113,18 @@
                     resetActionData: function() {
                         this.model.set("actionRelatedToObjectType", null);
                         this.model.set("actionRelatedToObjectId", null);
+                        this.model.set("actionRelatedToAdditionalObjects", []);
                         this.model.set("actionData", null);
+
+                        if(this.model.get("actionCustomAttributes")) 
+                        {
+                            var customAttributes = this.model.get("actionCustomAttributes");
+                            for(var curAttribute = 0; curAttribute < customAttributes.length; ++curAttribute)
+                            {
+                                this.model.set(customAttributes[curAttribute], null);
+                            }
+                            this.model.set("actionCustomAttributes", null);
+                        }
                     },
 
                     /**
@@ -6424,6 +7143,11 @@
 
                         var actionContent = this.$box.find(".gn-actionNodeActionContent");
                         actionContent.html(currentAction.getContent());
+                        this.model.set("actionCustomAttributes", currentAction.getCustomActionAttributes());
+                        var self = this;
+                        currentAction.showErrorCallback = function() {
+                            self.showError();
+                        };
                         currentAction.onInitialized(actionContent, this);
                     },
 
@@ -6509,6 +7233,7 @@
                     actionType: node.actionType,
                     actionRelatedToObjectType: node.actionRelatedToObjectType,
                     actionRelatedToObjectId: node.actionRelatedToObjectId,
+                    actionRelatedToAdditionalObjects: node.actionRelatedToAdditionalObjects,
                     actionData: node.actionData
                 };
 
@@ -6528,6 +7253,7 @@
                     actionType: node.actionType,
                     actionRelatedToObjectType: node.actionRelatedToObjectType,
                     actionRelatedToObjectId: node.actionRelatedToObjectId,
+                    actionRelatedToAdditionalObjects: node.actionRelatedToAdditionalObjects,
                     actionData: node.actionData
                 };
 
@@ -6558,6 +7284,15 @@
 
             /// Actions that are related to items
             Actions.RelatedToObjectItem = "Item";
+
+            /// Actions that are related to map markers
+            Actions.RelatedToObjectMapMarker = "MapMarker";
+
+            /// Actions that are related to a map
+            Actions.RelatedToObjectMap = "Map";
+
+            /// Actions that are related to a daily routine
+            Actions.RelatedToObjectDailyRoutine = "NpcDailyRoutineEvent";
 
             /**
              * Base Action
@@ -6621,6 +7356,15 @@
                  */
                 getConfigKey: function() {
                     return null;
+                },
+
+                /**
+                 * Returns the names of the custom action attributes
+                 * 
+                 * @returns {string[]} Name of the custom action attributes
+                 */
+                getCustomActionAttributes: function() {
+                    return [];
                 },
 
                 /**
@@ -6984,7 +7728,10 @@
              * @returns {string} HTML Content of the action
              */
             Actions.ChangeValueChooseObjectAction.prototype.getContent = function() {
-                return  "<div class='gn-actionNodeObjectSelectContainer'><a class='gn-actionNodeObjectSelect gn-clickable'>" + this.getChooseLabel() + "</a></div>" +
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeObjectSelect gn-clickable'>" + this.getChooseLabel() + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenObject' title='" + this.getOpenObjectTooltip() + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
                         "<select class='gn-actionNodeAttributeSelect'></select>" +
                         "<select class='gn-actionNodeAttributeOperator'></select>" +
                         "<input type='text' class='gn-actionNodeAttributeChange'/>";
@@ -6996,6 +7743,15 @@
              * @returns {string} Choose object label
              */
             Actions.ChangeValueChooseObjectAction.prototype.getChooseLabel = function() {
+                return "NOT IMPLEMENTED";
+            };
+
+            /**
+             * Returns the open object tool label
+             * 
+             * @returns {string} Open object label
+             */
+            Actions.ChangeValueChooseObjectAction.prototype.getOpenObjectTooltip = function() {
                 return "NOT IMPLEMENTED";
             };
 
@@ -7018,12 +7774,29 @@
             };
 
             /**
+             * Returns the names of the custom action attributes
+             * 
+             * @returns {string[]} Name of the custom action attributes
+             */
+            Actions.ChangeValueChooseObjectAction.prototype.getCustomActionAttributes = function() {
+                return [ "objectId" ];
+            };
+
+            /**
              * Returns true if the object can be loaded, else false
              * 
              * @returns {bool} true if the object can be loaded, else false
              */
             Actions.ChangeValueChooseObjectAction.prototype.canLoadObject = function() {
                 return !!this.nodeModel.get("objectId");
+            };
+
+            /**
+             * Opens the object
+             * @param {string} id Id of the object
+             */
+            Actions.ChangeValueChooseObjectAction.prototype.openObject = function(id) {
+
             };
 
             /**
@@ -7053,13 +7826,31 @@
              */
             Actions.ChangeValueChooseObjectAction.prototype.onInitializeAdditional = function(contentElement, actionNode) {
                 var self = this;
+
+                var openObjectLink = contentElement.find(".gn-nodeActionOpenObject");
+
                 contentElement.find(".gn-actionNodeObjectSelect").on("click", function() {
                     self.openSearchDialog().then(function(fieldObject) {
                         self.nodeModel.set("objectId", fieldObject.id);
                         self.loadFields(contentElement, actionNode);
 
                         contentElement.find(".gn-actionNodeObjectSelect").text(fieldObject.name);
+
+                        openObjectLink.show();
                     });
+                });
+
+                if(this.nodeModel.get("objectId"))
+                {
+                    openObjectLink.show();
+                }
+
+                openObjectLink.on("click", function() {
+                    var objectId = self.nodeModel.get("objectId");
+                    if(objectId) 
+                    {
+                        self.openObject(objectId);
+                    }
                 });
             };
 
@@ -7309,7 +8100,7 @@
              * @returns {string} HTML Content of the action
              */
             Actions.SetObjectStateAction.prototype.getContent = function() {
-                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "' list='gn-SetNpcStateAction'/>";
+                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
             };
 
             /**
@@ -7392,7 +8183,7 @@
              * @returns {string} Config key
              */
             Actions.SetObjectStateAction.prototype.getConfigKey = function() {
-                return "SetNpcStateAction";
+                return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
             }
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
@@ -7726,6 +8517,166 @@
             };
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.WaitAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for setting the game time
+            var actionTypeSetGameTime = 36;
+
+            /**
+             * Set game time action
+             * @class
+             */
+            Actions.SetGameTimeAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.SetGameTimeAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.SetGameTimeAction.prototype = jQuery.extend(Actions.SetGameTimeAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.SetGameTimeAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeTimeContainer'><input type='text' class='gn-actionNodeTime' placeholder=''/></div>";
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.SetGameTimeAction.prototype.getObjectId = function() {
+                return "ProjectMiscConfig";
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.SetGameTimeAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceProjectMiscConfig;
+            };
+            
+            /**
+             * Loads the project config
+             * 
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Actions.SetGameTimeAction.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+                
+                jQuery.ajax({ 
+                    url: "/api/ProjectConfigApi/GetMiscConfig", 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.SetGameTimeAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                var self = this;
+                this.loadObjectShared({}).done(function(miscConfig) {
+                    var actionNodeTime = self.contentElement.find(".gn-actionNodeTime");
+                    GoNorth.BindingHandlers.initTimePicker(actionNodeTime, function(timeValue) {
+                        self.serialize(timeValue.hours, timeValue.minutes);
+                    }, miscConfig.hoursPerDay, miscConfig.minutesPerHour, DefaultNodeShapes.Localization.Actions.TimeFormat, function() {
+                        contentElement.closest(".node").addClass("gn-actionNodeTimeOverflow");
+                    }, function() {
+                        contentElement.closest(".node").removeClass("gn-actionNodeTimeOverflow");
+                    }, true);
+
+                    GoNorth.BindingHandlers.setTimePickerValue(actionNodeTime, 0, 0, miscConfig.hoursPerDay, miscConfig.minutesPerHour);
+                    
+                    self.deserialize(actionNodeTime, miscConfig);
+                });
+
+            };
+
+            /**
+             * Deserializes the data
+             * 
+             * @param {object} actionNodeTime HTML Element for the time picker
+             * @param {object} miscConfig Misc config
+             */
+            Actions.SetGameTimeAction.prototype.deserialize = function(actionNodeTime, miscConfig) {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return;
+                }
+
+                var data = JSON.parse(actionData);
+
+                GoNorth.BindingHandlers.setTimePickerValue(actionNodeTime, data.hours, data.minutes, miscConfig.hoursPerDay, miscConfig.minutesPerHour);
+            };
+
+            /**
+             * Saves the data
+             * 
+             * @param {number} hours Hours
+             * @param {number} minutes Minutes
+             */
+            Actions.SetGameTimeAction.prototype.serialize = function(hours, minutes) {
+                var serializeData = {
+                    hours: hours,
+                    minutes: minutes
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SetGameTimeAction.prototype.buildAction = function() {
+                return new Actions.SetGameTimeAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SetGameTimeAction.prototype.getType = function() {
+                return actionTypeSetGameTime;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SetGameTimeAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SetGameTimeActionLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SetGameTimeAction());
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));

@@ -27,7 +27,7 @@
             <!-- ko foreach: objects -->
             <div class="row gn-gridTableRow">
                 <div class="col-xs-12 gn-gridTableCell"  data-bind="css: { 'col-sm-8 col-md-8 col-lg-9': !$parent.hasMarkerTypeRow, 'col-sm-4 col-md-4 col-lg-6': $parent.hasMarkerTypeRow }">
-                    <a class="gn-clickable" data-bind="text: name, click: function(obj) { $parent.openCompare(obj); }"></a>
+                    <a class="gn-clickable gn-implementationStatusObjectListEntryCompareButton" data-bind="text: name, click: function(obj) { $parent.openCompare(obj); }"></a>
                 </div>
                 <!-- ko if: $parent.hasMarkerTypeRow -->
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 gn-gridTableCell">
@@ -71,32 +71,32 @@
             <ul class="nav nav-pills nav-stacked">
                 @if(User.IsInRole(RoleNames.Kortisto))
                 {
-                    <li data-bind="css: { 'active': isNpcListSelected }"><a class="gn-clickable" data-bind="click: selectNpcList">@Localizer["Npcs"]</a></li>
+                    <li data-bind="css: { 'active': isNpcListSelected }"><a class="gn-clickable" data-bind="click: selectNpcList" id="gn-implementationStatusNpcListNavButton">@Localizer["Npcs"]</a></li>
                 }
 
                 @if(User.IsInRole(RoleNames.Tale))
                 {
-                    <li data-bind="css: { 'active': isDialogListSelected }"><a class="gn-clickable" data-bind="click: selectDialogList">@Localizer["Dialogs"]</a></li>
+                    <li data-bind="css: { 'active': isDialogListSelected }"><a class="gn-clickable" data-bind="click: selectDialogList" id="gn-implementationStatusDialogsListNavButton">@Localizer["Dialogs"]</a></li>
                 }
                 
                 @if(User.IsInRole(RoleNames.Styr))
                 {
-                    <li data-bind="css: { 'active': isItemListSelected }"><a class="gn-clickable" data-bind="click: selectItemList">@Localizer["Items"]</a></li>
+                    <li data-bind="css: { 'active': isItemListSelected }"><a class="gn-clickable" data-bind="click: selectItemList" id="gn-implementationStatusItemsListNavButton">@Localizer["Items"]</a></li>
                 }
 
                 @if(User.IsInRole(RoleNames.Evne))
                 {
-                    <li data-bind="css: { 'active': isSkillListSelected }"><a class="gn-clickable" data-bind="click: selectSkillList">@Localizer["Skills"]</a></li>
+                    <li data-bind="css: { 'active': isSkillListSelected }"><a class="gn-clickable" data-bind="click: selectSkillList" id="gn-implementationStatusSkillsListNavButton">@Localizer["Skills"]</a></li>
                 }
 
                 @if(User.IsInRole(RoleNames.Aika))
                 {
-                    <li data-bind="css: { 'active': isQuestListSelected }"><a class="gn-clickable" data-bind="click: selectQuestList">@Localizer["Quests"]</a></li>
+                    <li data-bind="css: { 'active': isQuestListSelected }"><a class="gn-clickable" data-bind="click: selectQuestList" id="gn-implementationStatusQuestsListNavButton">@Localizer["Quests"]</a></li>
                 }
 
                 @if(User.IsInRole(RoleNames.Karta))
                 {
-                    <li data-bind="css: { 'active': isMarkerListSelected }"><a class="gn-clickable" data-bind="click: selectMarkerList">@Localizer["Markers"]</a></li>
+                    <li data-bind="css: { 'active': isMarkerListSelected }"><a class="gn-clickable" data-bind="click: selectMarkerList" id="gn-implementationStatusMarkersListNavButton">@Localizer["Markers"]</a></li>
                 }
             </ul>
         </div>
@@ -106,7 +106,7 @@
                 <div data-bind="visible: isNpcListSelected" style="display: none">
                     <h4>@Localizer["Npcs"]</h4>
 
-                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: npcList }"></div>
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: npcList }" id="gn-implementationStatusObjectListNpc"></div>
                 </div>
             }
 
@@ -115,7 +115,7 @@
                 <div data-bind="visible: isDialogListSelected" style="display: none">
                     <h4>@Localizer["Dialogs"]</h4>
 
-                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: dialogList }"></div>
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: dialogList }" id="gn-implementationStatusObjectListDialogs"></div>
                 </div>
             }
 
@@ -124,7 +124,7 @@
                 <div data-bind="visible: isItemListSelected" style="display: none">
                     <h4>@Localizer["Items"]</h4>
 
-                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: itemList }"></div>
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: itemList }" id="gn-implementationStatusObjectListItems"></div>
                 </div>
             }
 
@@ -133,7 +133,7 @@
                 <div data-bind="visible: isSkillListSelected" style="display: none">
                     <h4>@Localizer["Skills"]</h4>
 
-                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: skillList }"></div>
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: skillList }" id="gn-implementationStatusObjectListSkill"></div>
                 </div>
             }
 
@@ -142,7 +142,7 @@
                 <div data-bind="visible: isQuestListSelected" style="display: none">
                     <h4>@Localizer["Quests"]</h4>
 
-                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: questList }"></div>
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: questList }" id="gn-implementationStatusObjectListQuest"></div>
                 </div>
             }
 
@@ -151,7 +151,7 @@
                 <div data-bind="visible: isMarkerListSelected" style="display: none">
                     <h4>@Localizer["Markers"]</h4>
 
-                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: markerList }"></div>
+                    <div data-bind="template: { name: 'gn-implementationStatusObjectList', data: markerList }" id="gn-implementationStatusObjectListMarker"></div>
                 </div>
             }
         </div>

@@ -1,0 +1,13 @@
+{
+    "ChooseScriptType": "Choose script type",
+
+    "NodeGraphScriptTitle": "Node system",
+    "NodeGraphScriptDescription": "A node system allows you to define logic without the need to be able to code. A lot of different actions like playing an animation, displaying text, changing the NPC state and much more are available.",
+    "CreateNodeGraphScript": "Create node system",
+
+    "CodeScriptTitle": "Script",
+    "CodeScriptDescription": "A script allows you to write code and therefore gives you the most flexibility. You will need to be able to code for this.",
+    "CreateCodeScript": "Create script",
+
+    "Cancel": "Cancel"
+}

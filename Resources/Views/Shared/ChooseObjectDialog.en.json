@@ -10,5 +10,7 @@
     "NextPage": "Next page",
     
     "Error": "Error:",
-    "ErrorOccured": "An error occured."
+    "ErrorOccured": "An error occured.",
+
+    "TimeFormat": "hh:mm"
 }

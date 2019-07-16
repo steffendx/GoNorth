@@ -33,5 +33,11 @@ namespace GoNorth.Data.Kortisto
         /// </summary>
         [ListCompareAttribute(LabelKey = "SkillChanged")]
         public List<KortistoNpcSkill> Skills { get; set; }
+        
+        /// <summary>
+        /// Daily Routine
+        /// </summary>
+        [ListCompareAttribute(LabelKey = "DailyRoutineChanged")]
+        public List<KortistoNpcDailyRoutineEvent> DailyRoutine { get; set; }
     }
 }

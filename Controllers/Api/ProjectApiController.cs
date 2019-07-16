@@ -8,6 +8,7 @@ using GoNorth.Data.Karta;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
+using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using GoNorth.Data.TaskManagement;
@@ -97,9 +98,9 @@ namespace GoNorth.Controllers.Api
         private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
 
         /// <summary>
-        /// Tale Config Db Access
+        /// Project Config Db Access
         /// </summary>
-        private readonly ITaleConfigDbAccess _taleConfigDbAccess;
+        private readonly IProjectConfigDbAccess _projectConfigDbAccess;
 
         /// <summary>
         /// Timeline Service
@@ -133,13 +134,13 @@ namespace GoNorth.Controllers.Api
         /// <param name="userTaskBoardHistoryDbAccess">User Task board history db access</param>
         /// <param name="exportSettingsDbAccess">Export Settings Db Access</param>
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
-        /// <param name="taleConfigDbAccess">Tale Config Db Access</param>
+        /// <param name="projectConfigDbAccess">Project Config Db Access</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ProjectApiController(IProjectDbAccess projectDbAccess, IKortistoFolderDbAccess kortistoFolderDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrFolderDbAccess styrFolderDbAccess, IStyrItemDbAccess itemDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, 
                                     IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskNumberDbAccess taskNumberDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
-                                    IExportSettingsDbAccess exportSettingsDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, ITaleConfigDbAccess taleConfigDbAccess, ITimelineService timelineService, ILogger<ProjectApiController> logger, IStringLocalizerFactory localizerFactory)
+                                    IExportSettingsDbAccess exportSettingsDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IProjectConfigDbAccess projectConfigDbAccess, ITimelineService timelineService, ILogger<ProjectApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _projectDbAccess = projectDbAccess;
             _kortistoFolderDbAccess = kortistoFolderDbAccess;
@@ -155,7 +156,7 @@ namespace GoNorth.Controllers.Api
             _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
-            _taleConfigDbAccess = taleConfigDbAccess;
+            _projectConfigDbAccess = projectConfigDbAccess;
             _timelineService = timelineService;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(ProjectApiController));
@@ -306,7 +307,7 @@ namespace GoNorth.Controllers.Api
             await _userTaskBoardHistoryDbAccess.DeleteUserTaskBoardHistoryForProject(project.Id);
             await _exportTemplateDbAccess.DeleteTemplatesForProject(project.Id);
             await _exportSettingsDbAccess.DeleteExportSettings(project.Id);
-            await _taleConfigDbAccess.DeleteConfigsForProject(project.Id);
+            await _projectConfigDbAccess.DeleteConfigsForProject(project.Id);
         }
 
 

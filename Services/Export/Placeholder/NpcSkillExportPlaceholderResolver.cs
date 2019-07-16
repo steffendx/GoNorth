@@ -16,6 +16,17 @@ namespace GoNorth.Services.Export.Placeholder
     public class NpcSkillExportTemplatePlaceholderResolver : BaseExportPlaceholderResolver, IExportTemplateTopicPlaceholderResolver
     {
         /// <summary>
+        /// Start of the content that will only be rendered if the Npc has skills
+        /// </summary>
+        private const string Placeholder_HasSkills_Start = "Npc_HasSkills_Start";
+        
+        /// <summary>
+        /// End of the content that will only be rendered if the Npc has skills
+        /// </summary>
+        private const string Placeholder_HasSkills_End = "Npc_HasSkills_End";
+
+
+        /// <summary>
         /// Skills
         /// </summary>
         private const string Placeholder_Skills = "Npc_Skills";
@@ -117,6 +128,8 @@ namespace GoNorth.Services.Export.Placeholder
                 return ExportUtil.IndentListTemplate(skillTemplate.Code, m.Groups[1].Value);
             });
 
+            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_HasSkills_Start, Placeholder_HasSkills_End, npc.Skills != null && npc.Skills.Count > 0);
+
             code = ExportUtil.BuildRangePlaceholderRegex(Placeholder_Skill_Start, Placeholder_Skill_End).Replace(code, m => {
                 return ExportUtil.TrimEmptyLines(BuildSkills(m.Groups[1].Value, npc));
             });
@@ -183,6 +196,8 @@ namespace GoNorth.Services.Export.Placeholder
             }
 
             exportPlaceholders.AddRange(new List<ExportTemplatePlaceholder>() {
+                CreatePlaceHolder(Placeholder_HasSkills_Start),
+                CreatePlaceHolder(Placeholder_HasSkills_End),
                 CreatePlaceHolder(Placeholder_Skill_Start),
                 CreatePlaceHolder(Placeholder_Skill_End),
                 CreatePlaceHolder(Placeholder_CurSkill_Index)

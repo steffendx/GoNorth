@@ -352,7 +352,7 @@
         </div>
     </div>
     <div data-bind="if: isEditMode, visible: isEditMode" style="display: none">
-        <div data-bind="richText: pageContent, richTextAddditionalButtons: generateRichTextButtons, richTextImageUploadUrl: '/api/KirjaApi/ImageUpload?imageFile={filename}', richTextImageUploadSuccess: imageUploaded, richTextAddditionalImageUploadError: uploadError, richTextAfterImageInserted: save" class="gn-kirjaPageRichTextEditor gn-kirjaPageContentFormats" tabindex="2">
+        <div data-bind="richText: pageContent, richTextAddditionalButtons: generateRichTextButtons, richTextImageUploadUrl: '/api/KirjaApi/ImageUpload?imageFile={filename}', richTextImageUploadSuccess: imageUploaded, richTextImageUploadStarted: uploadStart, richTextAddditionalImageUploadError: uploadError, richTextAfterImageInserted: save" class="gn-kirjaPageRichTextEditor gn-kirjaPageContentFormats" tabindex="2">
         </div>
     </div>
 </div>

@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Tale_Condition_RandomValue_Operator": "Vergleichsoperator der genutzt wird. Dieser wird auf Basis der verschiedenen Operator Templates generiert.",
+    "PlaceholderDesc_Tale_Condition_RandomValue_MinValue": "Minimaler Wert der zum Generieren der Zufallszahl benutzt wird.",
+    "PlaceholderDesc_Tale_Condition_RandomValue_MaxValue": "Maximaler Wert der zum Generieren der Zufallszahl benutzt wird.",
+    "PlaceholderDesc_Tale_Condition_RandomValue_CompareValue": "Wert der mit der generierten Zufallszahl verglichen wird."
+}

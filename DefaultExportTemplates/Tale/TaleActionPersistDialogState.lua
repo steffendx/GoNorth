@@ -1,1 +1,1 @@
-BaseNpc_PersistDialogState(this, "{{Tale_ChildNode_Function}}")
+BaseNpc_PersistDialogState(this, "{{Tale_ChildNode_Unused_Function}}")

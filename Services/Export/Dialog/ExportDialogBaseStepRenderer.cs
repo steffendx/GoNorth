@@ -1,11 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
-using GoNorth.Data.NodeGraph;
-using GoNorth.Data.Project;
-using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;
 using Microsoft.Extensions.Localization;
 
@@ -35,6 +28,21 @@ namespace GoNorth.Services.Export.Dialog
         /// Placeholder for the end of content that will only be rendered if the child node has a function
         /// </summary>
         private const string Placeholder_ChildNode_HasFunction_End = "Tale_ChildNode_HasFunction_End";
+
+        /// <summary>
+        /// Placeholder for the start of content that will only be rendered if the child node has a function that was not used before
+        /// </summary>
+        private const string Placeholder_ChildNode_HasUnusedFunction_Start = "Tale_ChildNode_HasUnusedFunction_Start";
+
+        /// <summary>
+        /// Placeholder for the end of content that will only be rendered if the child node has a function was not used before
+        /// </summary>
+        private const string Placeholder_ChildNode_HasUnusedFunction_End = "Tale_ChildNode_HasUnusedFunction_End";
+
+        /// <summary>
+        /// Placeholder for the child node unused function
+        /// </summary>
+        private const string Placeholder_ChildNodeUnusedFunction = "Tale_ChildNode_Unused_Function";
 
         /// <summary>
         /// Placeholder for the start of content that will only be rendered if the child node has no function
@@ -147,9 +155,22 @@ namespace GoNorth.Services.Export.Dialog
             code = ExportUtil.RenderPlaceholderIfFuncTrue(code, Placeholder_IsChildNodeNotOfType_Start, Placeholder_IsChildNodeNotOfType_End, m => {
                 return m.Groups[1].Value.ToLowerInvariant() != GetStepType(nextStep);
             });
-            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_ChildNode_HasFunction_Start, Placeholder_ChildNode_HasFunction_End, nextStep != null && !string.IsNullOrEmpty(nextStep.DialogStepFunctionName));
-            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_ChildNode_HasNoFunction_Start, Placeholder_ChildNode_HasNoFunction_End, nextStep == null || string.IsNullOrEmpty(nextStep.DialogStepFunctionName));
+            bool hasChildFunction = nextStep != null && !string.IsNullOrEmpty(nextStep.DialogStepFunctionName);
+            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_ChildNode_HasFunction_Start, Placeholder_ChildNode_HasFunction_End, hasChildFunction);
+            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_ChildNode_HasNoFunction_Start, Placeholder_ChildNode_HasNoFunction_End, !hasChildFunction);
+            bool functionWasUsed = false;
             code = ExportUtil.BuildPlaceholderRegex(Placeholder_ChildNodeFunction).Replace(code, m => {
+                functionWasUsed = true;
+                if(nextStep == null)
+                {
+                    _errorCollection.AddNodeHasNoChildForFunction();
+                    return string.Empty;
+                }
+
+                return nextStep.DialogStepFunctionName;
+            });
+            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_ChildNode_HasUnusedFunction_Start, Placeholder_ChildNode_HasUnusedFunction_End, !functionWasUsed && hasChildFunction);
+            code = ExportUtil.BuildPlaceholderRegex(Placeholder_ChildNodeUnusedFunction).Replace(code, m => {
                 if(nextStep == null)
                 {
                     _errorCollection.AddNodeHasNoChildForFunction();
@@ -189,6 +210,9 @@ namespace GoNorth.Services.Export.Dialog
                 ExportUtil.CreatePlaceHolder(Placeholder_ChildNode_HasFunction_End, _baseLocalizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_ChildNode_HasNoFunction_Start, _baseLocalizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_ChildNode_HasNoFunction_End, _baseLocalizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_ChildNodeUnusedFunction, _baseLocalizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_ChildNode_HasUnusedFunction_Start, _baseLocalizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_ChildNode_HasUnusedFunction_End, _baseLocalizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_NodeId, _baseLocalizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_HasChild_Start, _baseLocalizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_HasChild_End, _baseLocalizer),

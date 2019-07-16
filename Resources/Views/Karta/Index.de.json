@@ -16,6 +16,38 @@
     "Kortisto": "Kortisto",
     "ShowKortistoMarker": "Kortisto Markierungen anzeigen",
 
+    "KortistoEditDailyRoutineTooltip": "Tagesablauf bearbeiten",
+    "EditingDailyRoutinePrefix": "Du bearbeitest den Tagesablauf von ",
+    "EditingDailyRoutinePostfix": ".",
+    "AddEvent": "Ereignis einfügen",
+    "EditEvent": "Ereignis bearbeiten",
+    "RandomTimeFrame": "Zeitpunkt (Zufallswert im Zeitraum)",
+    "EarliestTime": "Frühestens",
+    "LatestTime": "Spätestens",
+    "TargetState": "Ziel Zustand",
+    "ScriptOnTargetReached": "Skript bei Zielerreichung",
+    "ClickHereToAddScript": "<Hier klicken um ein Skript hinzuzufügen>",
+    "DeleteScriptTooltip": "Hier klicken um das Skript zu entfernen",
+    "AreYouSureYouWantToRemoveTheScript": "Bist du sicher das du das Skript löschen willst?",
+    "EnabledByDefault": "Standardmäßig aktiv",
+    "AreYouSureYouWantToDeleteTheEvent": "Bist du sicher das du das Bewegungsziel löschen willst?",
+    "NpcIsLocked": "Npc ist gesperrt",
+    "NpcIsLockedByPrefix": "Der Npc wird aktuell durch ",
+    "NpcIsLockedByPostfix": " bearbeitet.",
+    "DailyRoutineOf": "Tagesablauf von ",
+    "Time": "Uhrzeit",
+    "EventType": "Eventtyp",
+    "MovementTarget": "Bewegungsziel",
+    "MovementEvent": "Bewegungsziel",
+    "ScriptEvent": "Skriptereigniss",
+    "Warning": "Warnung:",
+    "TimeEventsOverlap": "Es gibt aktive Ereignisse die sich überlappen. Der Tagesablauf könnte nicht vorhersehbar sein.",
+    "HideDisabledEvents": "Deaktivierte Ereignisse verstecken",
+    "ShowAllEvents": "Alle Ereignisse anzeigen",
+    "PleaseNote": "Hinweis:",
+    "ChapterAreNotSupportedForDailyRoutines": "Kapiteländerungen für Tagesabläufe werden nicht unterstützt. Änderungen am Tagesablauf wirken sich auf alle Kapitel aus. Bitte benutze einen Aktionsknoten in einem Dialog oder Quest um den Tagesablauf anzupassen.",
+    "Ok": "Ok",
+
     "Styr": "Styr",
     "ShowStyrMarker": "Styr Markierungen anzeigen",
 
@@ -27,6 +59,8 @@
     "Notes": "Notizen",
     "NoteMarkerNewNote": "<Neue Notiz>",
     "ShowNoteMarker": "Notiz Markierungen anzeigen",
+
+    "ShowDailyRoutineMarker": "Tagesablauf Markierungen anzeigen",
 
     "ShowMarkerLabels": "Markierungs Titel anzeigen",
 
@@ -47,10 +81,12 @@
     
     "EditingDefaultChapter": "Standardkapitel bearbeiten",
 
-    "YouAreEditingANonDefaultChapter": "Du bearbeitest aktuell nicht die Markierungen des Standardkapitel. Alle Änderungen gelten erst ab dem ausgewählten Kapitel.",
+    "YouAreEditingANonDefaultChapter": "Du bearbeitest aktuell nicht die Markierungen des Standardkapitel. Alle Änderungen, außer Änderungen an Tagesabläufen, gelten erst ab dem ausgewählten Kapitel.",
 
     "SuccessfullyCopiedToClipboard": "Link wurde in die zwischenablage kopiert",
 
+    "SetExportNameTooltip": "Export Name der Markierung festlegen.",
+    "CurrentExportNameTooltip": " Aktueller Name: {{0}}",
     "CopyLinkToMarkerTooltip": "Link zu Markierung kopieren",
     "EditMarkerGeometryTooltip": "Geometrie der Markierung bearbeiten",
     "EditMarkerTooltip": "Markierung bearbeiten",
@@ -91,10 +127,15 @@
     "GeometryColorWhite": "Weiss",
     "GeometryColorYellow": "Gelb",
 
+    "SetExportName": "Exportnamen festlegen",
+    "ExportName": "Exportname",
+
     "Error": "Fehler:",
     "ErrorOccured": "Es ist ein Fehler aufgetreten.",
 
     "Locked": "Gesperrt",
     "LockedPrefix": "Diese Karte wird gerade von ",
-    "LockedPostfix": " bearbeitet."
+    "LockedPostfix": " bearbeitet.",
+    
+    "TimeFormat": "hh:mm"
 }

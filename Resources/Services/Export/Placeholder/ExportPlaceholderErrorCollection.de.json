@@ -14,8 +14,11 @@
     "DialogItemNotFoundError": "Ein referenziertes Item konnte nicht gefunden werden. Das Item wurde wahrscheinlich gelöscht.",
     "DialogQuestNotFoundError": "Ein referenzierter Quest konnte nicht gefunden werden. Der Quest wurde wahrscheinlich gelöscht.",
     "DialogSkillNotFoundError": "Ein referenzierter Skill konnte nicht gefunden werden. Der Skill wurde wahrscheinlich gelöscht.",
+    "DialogNpcNotFoundError": "Ein referenzierter Npc konnte nicht gefunden werden. Der Npc wurde wahrscheinlich gelöscht.",
+    "DialogMarkerNotFoundError": "Eine referenzierter Kartenmarkierung konnte nicht gefunden werden. Die Kartenmarkierung wurde wahrscheinlich gelöscht.",
     "DialogUnknownActionTypeError": "Ein unbekannter Aktionstyp '{0}' wurde gefunden. Die Aktion kann nicht generiert werden.",
     "DialogUnknownActionOperator": "Ein unbekannter Operator '{0}' wurde gefunden. Die Aktion kann nicht korrekt generiert werden.",
+    "DialogDailyRoutineEventNotFoundError": "Ein referenziertes Tagesablauf Ereignis konnte im Npc {0} nicht gefunden werden. Das  Tagesablauf Ereignis wurde wahrscheinlich gelöscht.",
 
     "NoPlayerNpcExistsError": "Es existiert kein Spieler Npc."
 }

@@ -409,6 +409,12 @@
                         if(this.markers[curMarker] == marker)
                         {
                             this.markers.splice(curMarker, 1);
+                            
+                            if(this.markerLayer)
+                            {
+                                marker.removeFrom(this.markerLayer);
+                            }
+
                             return;
                         }
                     }
@@ -475,6 +481,18 @@
                 },
 
                 /**
+                 * Sets a markers edit export name callback function
+                 * 
+                 * @param {object} marker Marker to set the edit export name callback for
+                 */
+                setEditExportNameCallback: function(marker) {
+                    var self = this;
+                    marker.setEditExportNameCallback(function() {
+                        self.viewModel.openEditExportNameDialog(marker);
+                    });
+                },
+
+                /**
                  * Checks if a new marker can be pushed to be the map
                  * 
                  * @param {marker} Marker Marker to push
@@ -493,6 +511,7 @@
                     this.setEditGeometryCallback(marker);
                     this.setEditCallback(marker);
                     this.setDeleteCallback(marker);
+                    this.setEditExportNameCallback(marker);
                     marker.setMapId(this.viewModel.id());
                     marker.setMarkerType(this.markerType);
                     marker.setCompareDialog(this.viewModel.compareDialog);

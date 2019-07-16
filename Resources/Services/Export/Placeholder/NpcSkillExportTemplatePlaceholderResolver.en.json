@@ -1,4 +1,6 @@
 {
+    "PlaceholderDesc_Npc_HasSkills_Start": "Start of the content that will only be rendered if the npc has skills. Must be closed with Npc_HasSkills_End.",
+    "PlaceholderDesc_Npc_HasSkills_End": "End of the content that will only be rendered if the npc has skills.",
     "PlaceholderDesc_Npc_Skills": "Skills of the npc. The skill list template will be used for this.",
     "PlaceholderDesc_Skills_Start": "Start of the skill list. The list must be closed with Skills_End. Attributes of the skill can be used with the FlexField placeholders but using CurSkill_ instead of FlexField_.",
     "PlaceholderDesc_Skills_End": "End of the skill list.",

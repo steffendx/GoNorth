@@ -1131,6 +1131,13 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteQuestReferencedInTaleDialog", referencedInDialogs].Value);
             }
 
+            List<KortistoNpc> referencedInDailyRoutines = await _kortistoNpcDbAccess.GetNpcsObjectIsReferencedInDailyRoutine(id);
+            if(referencedInDailyRoutines.Count > 0)
+            {
+                string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
+                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteQuestUsedInDailyRoutine", usedInDailyRoutines].Value);
+            }
+
             // Delete Quest
             AikaQuest deletedQuest = await _questDbAccess.GetQuestById(id);
             await _questDbAccess.DeleteQuest(deletedQuest);

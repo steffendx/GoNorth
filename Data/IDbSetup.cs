@@ -12,5 +12,11 @@ namespace GoNorth.Data
         /// </summary>
         /// <returns>Task</returns>
         Task SetupDatabaseAsync();
+
+        /// <summary>
+        /// Checks if there are migration tasks required for the database
+        /// </summary>
+        /// <returns>Task</returns>
+        Task CheckForNeededMigrations();
     }
 }

@@ -1,14 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Data.Styr;
 using GoNorth.Services.Export.Data;
-using GoNorth.Services.Export.Dialog.ActionConditionShared;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;
 using Microsoft.Extensions.Localization;
@@ -77,6 +73,11 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// true if the action renderer is for a transfer, else false
         /// </summary>
         private readonly bool _isTransfer;
+        
+        /// <summary>
+        /// true if the action renderer is for a removal, else false
+        /// </summary>
+        private readonly bool _isRemoval;
 
         /// <summary>
         /// Constructor
@@ -87,8 +88,9 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="localizerFactory">Localizer Factory</param>
         /// <param name="isPlayer">True if the action is for the player, else false</param>
         /// <param name="isTransfer">True if the action is for a transfer, false for spawn</param>
+        /// <param name="isRemoval">True if the action is for a removal, else false</param>
         public InventoryActionRenderer(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator, IStringLocalizerFactory localizerFactory,
-                                       bool isPlayer, bool isTransfer)
+                                       bool isPlayer, bool isTransfer, bool isRemoval)
         {
             _defaultTemplateProvider = defaultTemplateProvider;
             _cachedDbAccess = cachedDbAccess;
@@ -97,6 +99,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
 
             _isPlayer = isPlayer;
             _isTransfer = isTransfer;
+            _isRemoval = isRemoval;
         }
 
         /// <summary>
@@ -149,11 +152,11 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
             string prefix = "";
             if(_isPlayer) 
             {
-                prefix = _isTransfer ? "TransferItemToPlayer" :  "SpawnItemInPlayerInventory";
+                prefix = _isRemoval ? "RemoveItemFromPlayerInventory" : (_isTransfer ? "TransferItemToPlayer" :  "SpawnItemInPlayerInventory");
             }
             else
             {
-                prefix = _isTransfer ? "TransferItemToNpc" :  "SpawnItemInNpcInventory";
+                prefix = _isRemoval ? "RemoveItemFromNpcInventory" : (_isTransfer ? "TransferItemToNpc" :  "SpawnItemInNpcInventory");
             }
 
             return prefix + " (" + valueObject.Name + ")";
@@ -169,10 +172,10 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         {
             if(_isPlayer) 
             {
-                return await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, _isTransfer ? TemplateType.TaleActionTransferItemToPlayer : TemplateType.TaleActionSpawnItemForPlayer);
+                return await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, _isRemoval ? TemplateType.TaleActionRemoveItemFromPlayer : (_isTransfer ? TemplateType.TaleActionTransferItemToPlayer : TemplateType.TaleActionSpawnItemForPlayer));
             }
 
-            return await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, _isTransfer ? TemplateType.TaleActionTransferItemToNpc : TemplateType.TaleActionSpawnItemForNpc);
+            return await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, _isRemoval ? TemplateType.TaleActionRemoveItemFromNpc : (_isTransfer ? TemplateType.TaleActionTransferItemToNpc : TemplateType.TaleActionSpawnItemForNpc));
         }
 
         /// <summary>
@@ -202,9 +205,9 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         {
             if(_isPlayer) 
             {
-                return (templateType == TemplateType.TaleActionTransferItemToPlayer && _isTransfer) || (templateType == TemplateType.TaleActionSpawnItemForPlayer && !_isTransfer);
+                return (templateType == TemplateType.TaleActionRemoveItemFromPlayer && _isRemoval) || (templateType == TemplateType.TaleActionTransferItemToPlayer && (_isTransfer && !_isRemoval)) || (templateType == TemplateType.TaleActionSpawnItemForPlayer && (!_isTransfer && !_isRemoval));
             }
-            return (templateType == TemplateType.TaleActionTransferItemToNpc && _isTransfer) || (templateType == TemplateType.TaleActionSpawnItemForNpc && !_isTransfer);
+            return (templateType == TemplateType.TaleActionRemoveItemFromNpc && _isRemoval) || (templateType == TemplateType.TaleActionTransferItemToNpc && (_isTransfer && !_isRemoval)) || (templateType == TemplateType.TaleActionSpawnItemForNpc && (!_isTransfer && !_isRemoval));
         }   
 
         /// <summary>

@@ -20,6 +20,9 @@
 
             /// Object Resource for Skills
             Shapes.ObjectResourceSkill = 5;
+            
+            /// Object Resource for Project misc config
+            Shapes.ObjectResourceProjectMiscConfig = 6;
 
 
             /// Cached loaded objects
@@ -71,9 +74,10 @@
                 /**
                  * Returns the object resource
                  * 
+                 * @param {object} existingData Optional Existing data
                  * @returns {int} Object Resource
                  */
-                getObjectResource: function() {
+                getObjectResource: function(existingData) {
 
                 },
 
@@ -101,8 +105,8 @@
                 loadObjectShared: function(existingData) {
                     var objectId = this.getObjectId(existingData);
     
-                    if(loadedObjects[this.getObjectResource()]) {
-                        var existingObject = loadedObjects[this.getObjectResource()][objectId];
+                    if(loadedObjects[this.getObjectResource(existingData)]) {
+                        var existingObject = loadedObjects[this.getObjectResource(existingData)][objectId];
                         if(existingObject)
                         {
                             var def = new jQuery.Deferred();
@@ -111,44 +115,54 @@
                         }
                     }
     
-                    if(objectsLoadingDeferreds[this.getObjectResource()])
+                    var self = this;
+                    if(objectsLoadingDeferreds[this.getObjectResource(existingData)])
                     {
-                        var existingDef = objectsLoadingDeferreds[this.getObjectResource()][objectId];
+                        var existingDef = objectsLoadingDeferreds[this.getObjectResource(existingData)][objectId];
                         if(existingDef)
                         {
+                            existingDef.fail(function() {
+                                if(self.showErrorCallback) {
+                                    self.showErrorCallback();
+                                }
+                            });
                             return existingDef;
                         }
                     }
     
-                    var loadingDef = this.loadObject(objectId);
-                    if(!objectsLoadingDeferreds[this.getObjectResource()])
+                    var loadingDef = this.loadObject(objectId, existingData);
+                    if(!objectsLoadingDeferreds[this.getObjectResource(existingData)])
                     {
-                        objectsLoadingDeferreds[this.getObjectResource()] = {};
+                        objectsLoadingDeferreds[this.getObjectResource(existingData)] = {};
                     }
 
-                    objectsLoadingDeferreds[this.getObjectResource()][objectId] = loadingDef;
+                    objectsLoadingDeferreds[this.getObjectResource(existingData)][objectId] = loadingDef;
     
-                    var self = this;
                     loadingDef.then(function(object) {
-                        if(!loadedObjects[self.getObjectResource()])
+                        if(!loadedObjects[self.getObjectResource(existingData)])
                         {
-                            loadedObjects[self.getObjectResource()] = {};
+                            loadedObjects[self.getObjectResource(existingData)] = {};
                         }
 
-                        loadedObjects[self.getObjectResource()][objectId] = object;
+                        loadedObjects[self.getObjectResource(existingData)][objectId] = object;
+                    }, function() {
+                        if(self.showErrorCallback) {
+                            self.showErrorCallback();
+                        }
                     });
     
                     return loadingDef;
                 },
 
                 /**
-                 * Loads and object
+                 * Loads an object
                  * 
                  * @param {string} objectId Optional Object Id extracted using getObjectId before
+                 * @param {object} existingData Existing data
                  * @returns {jQuery.Deferred} Deferred for the loading process
                  */
-                loadObject: function(objectId) {
-
+                loadObject: function(objectId, existingData) {
+                    
                 }
             };
 

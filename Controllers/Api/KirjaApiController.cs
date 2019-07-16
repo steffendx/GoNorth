@@ -808,8 +808,15 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
 
-            Stream imageStream = _fileAccess.OpenFile(imageFile);
-            return File(imageStream, mimeType);
+            try
+            {
+                Stream imageStream = _fileAccess.OpenFile(imageFile);
+                return File(imageStream, mimeType);
+            }
+            catch(FileNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>
@@ -944,8 +951,15 @@ namespace GoNorth.Controllers.Api
             }
 
             // Return File
-            Stream imageStream = _fileAccess.OpenFile(attachment.Filename);
-            return File(imageStream, attachment.MimeType, attachment.OriginalFilename);
+            try
+            {
+                Stream imageStream = _fileAccess.OpenFile(attachment.Filename);
+                return File(imageStream, attachment.MimeType, attachment.OriginalFilename);
+            }
+            catch(FileNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>

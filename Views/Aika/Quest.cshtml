@@ -176,6 +176,16 @@
                 </li>
             </ul>
         }
+        
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <h5>@Localizer["ReferencedInDailyRoutines"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInDailyRoutines"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInDailyRoutines"></i></h5>
+            <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: referencedInDailyRoutines">
+                <li>
+                    <a class="gn-clickable" data-bind="text: name, href: $root.buildDailyRoutineNpcUrl" target="_blank"></a>
+                </li>
+            </ul>
+        }
     </div>
 
     <!-- Node System -->

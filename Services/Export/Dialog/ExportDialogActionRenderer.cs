@@ -62,11 +62,12 @@ namespace GoNorth.Services.Export.Dialog
         /// <param name="errorCollection">Error Collection</param>
         /// <param name="defaultTemplateProvider">Default Template Provider</param>
         /// <param name="cachedDbAccess">Cached Db Access</param>
+        /// <param name="dailyRoutineEventPlaceholderResolver">Daily routine event placeholder resolver</param>
         /// <param name="languageKeyGenerator">Language Key Generator</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <param name="project">Project</param>
-        public ExportDialogActionRenderer(ExportPlaceholderErrorCollection errorCollection, ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess,
+        public ExportDialogActionRenderer(ExportPlaceholderErrorCollection errorCollection, ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, IDailyRoutineEventPlaceholderResolver dailyRoutineEventPlaceholderResolver,
                                           ILanguageKeyGenerator languageKeyGenerator, IStringLocalizerFactory localizerFactory, ExportSettings exportSettings, GoNorthProject project) : 
                                           base(errorCollection, localizerFactory)
         {
@@ -79,10 +80,12 @@ namespace GoNorth.Services.Export.Dialog
             _actionRenderes = new Dictionary<ActionType, IActionRenderer>();
             _actionRenderes.Add(ActionType.ChangePlayerValue, new NpcValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
             _actionRenderes.Add(ActionType.ChangeNpcValue, new NpcValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
-            _actionRenderes.Add(ActionType.SpawnItemInPlayerInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false));
-            _actionRenderes.Add(ActionType.TransferItemToPlayerInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, true));
-            _actionRenderes.Add(ActionType.SpawnItemInNpcInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false));
-            _actionRenderes.Add(ActionType.TransferItemToNpcInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, true));
+            _actionRenderes.Add(ActionType.SpawnItemInPlayerInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false, false));
+            _actionRenderes.Add(ActionType.TransferItemToPlayerInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, true, false));
+            _actionRenderes.Add(ActionType.RemoveItemFromPlayerInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false, true));
+            _actionRenderes.Add(ActionType.SpawnItemInNpcInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false, false));
+            _actionRenderes.Add(ActionType.TransferItemToNpcInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, true, false));
+            _actionRenderes.Add(ActionType.RemoveItemFromNpcInventory, new InventoryActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false, true));
             _actionRenderes.Add(ActionType.ChangeQuestValue, new QuestValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _actionRenderes.Add(ActionType.ChangeQuestState, new SetQuestStateActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _actionRenderes.Add(ActionType.AddQuestText, new AddQuestTextRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
@@ -99,6 +102,24 @@ namespace GoNorth.Services.Export.Dialog
             _actionRenderes.Add(ActionType.OpenShop, new OpenShopActionRenderer(defaultTemplateProvider));
             _actionRenderes.Add(ActionType.PlayNpcAnimation, new PlayAnimationActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
             _actionRenderes.Add(ActionType.PlayPlayerAnimation, new PlayAnimationActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
+            _actionRenderes.Add(ActionType.CodeAction, new CodeActionRenderer(defaultTemplateProvider, localizerFactory));
+            _actionRenderes.Add(ActionType.ShowFloatingTextAboveNpc, new ShowFloatingTextAboveNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
+            _actionRenderes.Add(ActionType.ShowFloatingTextAbovePlayer, new ShowFloatingTextAboveNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
+            _actionRenderes.Add(ActionType.ShowFloatingTextAboveChooseNpc, new ShowFloatingTextAboveChooseNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
+            _actionRenderes.Add(ActionType.FadeToBlack, new FadeToFromBlackRenderer(defaultTemplateProvider, localizerFactory, true));
+            _actionRenderes.Add(ActionType.FadeFromBlack, new FadeToFromBlackRenderer(defaultTemplateProvider, localizerFactory, false));
+            _actionRenderes.Add(ActionType.SetGameTime, new SetGameTimeActionRenderer(defaultTemplateProvider, cachedDbAccess, localizerFactory));
+            _actionRenderes.Add(ActionType.DisableDailyRoutineEvent, new SetDailyRoutineEventState(defaultTemplateProvider, cachedDbAccess, dailyRoutineEventPlaceholderResolver, languageKeyGenerator, localizerFactory, true));
+            _actionRenderes.Add(ActionType.EnableDailyRoutineEvent, new SetDailyRoutineEventState(defaultTemplateProvider, cachedDbAccess, dailyRoutineEventPlaceholderResolver, languageKeyGenerator, localizerFactory, false));
+            _actionRenderes.Add(ActionType.TeleportNpc, new MoveNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false, false));
+            _actionRenderes.Add(ActionType.TeleportPlayer, new MoveNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, true, false));
+            _actionRenderes.Add(ActionType.TeleportChooseNpc, new MoveNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false, true));
+            _actionRenderes.Add(ActionType.WalkNpcToMarker, new MoveNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false, false));
+            _actionRenderes.Add(ActionType.WalkChooseNpcToMarker, new MoveNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false, true));
+            _actionRenderes.Add(ActionType.TeleportNpcToNpc, new MoveNpcToNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false));
+            _actionRenderes.Add(ActionType.TeleportChooseNpcToNpc, new MoveNpcToNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, true));
+            _actionRenderes.Add(ActionType.WalkNpcToNpc, new MoveNpcToNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false));
+            _actionRenderes.Add(ActionType.WalkChooseNpcToNpc, new MoveNpcToNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, true));
         }
 
         /// <summary>

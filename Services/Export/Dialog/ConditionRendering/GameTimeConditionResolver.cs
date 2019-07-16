@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
+using GoNorth.Data.ProjectConfig;
 using GoNorth.Services.Export.Data;
-using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;
 using Microsoft.Extensions.Localization;
 
@@ -94,6 +94,11 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         protected readonly ICachedExportDefaultTemplateProvider _defaultTemplateProvider;
 
         /// <summary>
+        /// Cached Db Access
+        /// </summary>
+        private readonly IExportCachedDbAccess _cachedDbAccess;
+
+        /// <summary>
         /// String Localizer
         /// </summary>
         private readonly IStringLocalizer _localizer;
@@ -103,10 +108,12 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// Constructor
         /// </summary>
         /// <param name="defaultTemplateProvider">Default Template Provider</param>
+        /// <param name="cachedDbAccess">Cached Db Access</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public GameTimeConditionResolver(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IStringLocalizerFactory localizerFactory)
+        public GameTimeConditionResolver(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, IStringLocalizerFactory localizerFactory)
         {
             _defaultTemplateProvider = defaultTemplateProvider;
+            _cachedDbAccess = cachedDbAccess;
             _localizer = localizerFactory.Create(typeof(GameTimeConditionResolver));
         }
 
@@ -122,13 +129,15 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         public override string BuildConditionElementFromParsedData(GameTimeConditionResolver.GameTimeConditionData parsedData, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
         {
             ExportTemplate conditionTemplate = _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.TaleConditionGameTime).Result;
-            
+
+            MiscProjectConfig projectConfig = _cachedDbAccess.GetMiscProjectConfig().Result;
+
             string conditionCode = ExportUtil.RenderPlaceholderIfTrue(conditionTemplate.Code, Placeholder_Operator_Is_Before_Start, Placeholder_Operator_Is_Before_End, parsedData.Operator == Operator_Before);
             conditionCode = ExportUtil.RenderPlaceholderIfTrue(conditionCode, Placeholder_Operator_Is_After_Start, Placeholder_Operator_Is_After_End, parsedData.Operator == Operator_After);
             conditionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Operator).Replace(conditionCode, GetOperatorFromTemplate(project, parsedData.Operator, errorCollection));
             conditionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Hours).Replace(conditionCode, parsedData.Hour.ToString());
             conditionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Minutes).Replace(conditionCode, parsedData.Minutes.ToString());
-            conditionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_TotalMinutes).Replace(conditionCode, (parsedData.Hour * 60 + parsedData.Minutes).ToString());
+            conditionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_TotalMinutes).Replace(conditionCode, (parsedData.Hour * projectConfig.MinutesPerHour + parsedData.Minutes).ToString());
 
             return conditionCode;
         }

@@ -61,6 +61,19 @@
         </text>
     }
 
+    @if(User.IsInRole(RoleNames.Kortisto))
+    {
+        <text>
+        GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights = true;
+        </text>
+    }
+    else
+    {
+        <text>
+        GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights = false;
+        </text>
+    }
+
     @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
     {
         <text>

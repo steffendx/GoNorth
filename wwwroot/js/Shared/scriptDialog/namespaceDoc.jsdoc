@@ -1,0 +1,11 @@
+(function(GoNorth) {
+    "use strict";
+
+    /**
+     * Script Editing Dialogs Namespace
+     * @namespace ScriptDialog
+     */
+    (function(ScriptDialog) {
+    }(GoNorth.ScriptDialog = GoNorth.ScriptDialog || {}));
+
+}(window.GoNorth = window.GoNorth || {}));

@@ -1,0 +1,27 @@
+{
+  "name": "gonorth-uitests",
+  "version": "1.0.0",
+  "description": "UI Tests for GoNorth the story planning portal",
+  "scripts": {
+    "start": "npm run test",
+    "test": "./node_modules/.bin/mocha --recursive --reporter=mocha-multi-reporters --timeout 900000",
+    "testWithCred": "set TEST_BASE_URL=https://localhost:5001 && set TEST_LOGINNAME=YOUR_USERNAME_HERE && set TEST_PASSWORD=YOUR_PASSWORD_HERE && npm run test"
+  },
+  "keywords": [
+    "uitest",
+    "gonorth"
+  ],
+  "author": "Steffen Nörtershäuser",
+  "license": "MIT",
+  "dependencies": {
+    "mocha": "^6.1.4",
+    "mocha-junit-reporter": "^1.23.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "puppeteer": "^1.18.1"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-zip": "^5.0.0",
+    "minimist": "^1.2.0"
+  }
+}

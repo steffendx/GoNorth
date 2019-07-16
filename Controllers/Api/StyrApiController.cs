@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using GoNorth.Data.Project;
 using GoNorth.Services.Timeline;
-using GoNorth.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -17,7 +12,6 @@ using Microsoft.AspNetCore.Identity;
 using GoNorth.Data.User;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Tale;
-using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Aika;
@@ -276,6 +270,13 @@ namespace GoNorth.Controllers.Api
             {
                 string usedInInventories = string.Join(", ", inventoryNpcs.Select(n => n.Name));
                 return _localizer["CanNotDeleteItemUsedInInventory", usedInInventories].Value;
+            }
+
+            List<KortistoNpc> referencedInDailyRoutines = await _kortistoNpcDbAccess.GetNpcsObjectIsReferencedInDailyRoutine(id);
+            if(referencedInDailyRoutines.Count > 0)
+            {
+                string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
+                return _localizer["CanNotDeleteItemUsedInDailyRoutine", usedInDailyRoutines].Value;
             }
 
             return string.Empty;

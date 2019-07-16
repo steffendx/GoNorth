@@ -61,5 +61,19 @@
     "GeometryPolygon": "Polygon",
     "GeometryCircle": "Kreis",
     "GeometryLineString": "Linie",
-    "GeometryRectangle": "Rechteck"
+    "GeometryRectangle": "Rechteck",
+
+    "DailyRoutineChanged": "Tagesablauf geändert:",
+    "DailyRoutineEntryNameSingleTime": "{0}:{1}",
+    "DailyRoutineEntryNameTwoTimes": "{0}:{1} - {2}:{3}",
+    "PropertyNameEarliestTime": "Frühste Zeite",
+    "PropertyNameLatestTime": "Spätestes Zeite",
+    "PropertyNameHours": "Stunden",
+    "PropertyNameMinutes": "Minuten",
+    "PropertyNameTargetState": "Zielzustand",
+    "PropertyNameEnabledByDefault": "Standardmäßig aktiv",
+    "PropertyNameMovementTarget": "Bewegungsziel",
+    "PropertyNameScriptName": "Skriptname",
+    "PropertyNameScriptCode": "Skriptcode",
+    "ScriptCodeChanged": "Skriptcode geändert"
 }

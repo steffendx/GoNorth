@@ -78,6 +78,21 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// <summary>
         /// Npc not learned skill Condition
         /// </summary>
-        NpcNotLearnedSkillCondition = 18
+        NpcNotLearnedSkillCondition = 18,
+        
+        /// <summary>
+        /// Random value compare condition
+        /// </summary>
+        RandomValueCondition = 19,
+        
+        /// <summary>
+        /// Daily routine event is enabled condition
+        /// </summary>
+        DailyRoutineEventIsEnabledCondition = 20,
+        
+        /// <summary>
+        /// Daily routine event is disabled condition
+        /// </summary>
+        DailyRoutineEventIsDisabledCondition = 21
     }
 }

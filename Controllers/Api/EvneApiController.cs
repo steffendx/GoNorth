@@ -256,6 +256,13 @@ namespace GoNorth.Controllers.Api
                 return _localizer["CanNotDeleteSkillLearnedByNpc", learnedByNpcsString].Value;
             }
 
+            List<KortistoNpc> referencedInDailyRoutines = await _kortistoNpcDbAccess.GetNpcsObjectIsReferencedInDailyRoutine(id);
+            if(referencedInDailyRoutines.Count > 0)
+            {
+                string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
+                return _localizer["CanNotDeleteSkillUsedInDailyRoutine", usedInDailyRoutines].Value;
+            }
+
             return string.Empty;
         }
 

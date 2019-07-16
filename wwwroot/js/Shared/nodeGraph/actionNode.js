@@ -31,7 +31,7 @@
             function loadActionConfig(configKey) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax("/api/TaleApi/GetNodeConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
+                jQuery.ajax("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
                     if(!loadedConfigData)
                     {
                         def.resolve();
@@ -108,6 +108,7 @@
                             actionType: null,
                             actionRelatedToObjectType: null,
                             actionRelatedToObjectId: null,
+                            actionRelatedToAdditionalObjects: [],
                             actionData: null
                         },
                         joint.shapes.default.Base.prototype.defaults
@@ -180,7 +181,18 @@
                     resetActionData: function() {
                         this.model.set("actionRelatedToObjectType", null);
                         this.model.set("actionRelatedToObjectId", null);
+                        this.model.set("actionRelatedToAdditionalObjects", []);
                         this.model.set("actionData", null);
+
+                        if(this.model.get("actionCustomAttributes")) 
+                        {
+                            var customAttributes = this.model.get("actionCustomAttributes");
+                            for(var curAttribute = 0; curAttribute < customAttributes.length; ++curAttribute)
+                            {
+                                this.model.set(customAttributes[curAttribute], null);
+                            }
+                            this.model.set("actionCustomAttributes", null);
+                        }
                     },
 
                     /**
@@ -199,6 +211,11 @@
 
                         var actionContent = this.$box.find(".gn-actionNodeActionContent");
                         actionContent.html(currentAction.getContent());
+                        this.model.set("actionCustomAttributes", currentAction.getCustomActionAttributes());
+                        var self = this;
+                        currentAction.showErrorCallback = function() {
+                            self.showError();
+                        };
                         currentAction.onInitialized(actionContent, this);
                     },
 
@@ -284,6 +301,7 @@
                     actionType: node.actionType,
                     actionRelatedToObjectType: node.actionRelatedToObjectType,
                     actionRelatedToObjectId: node.actionRelatedToObjectId,
+                    actionRelatedToAdditionalObjects: node.actionRelatedToAdditionalObjects,
                     actionData: node.actionData
                 };
 
@@ -303,6 +321,7 @@
                     actionType: node.actionType,
                     actionRelatedToObjectType: node.actionRelatedToObjectType,
                     actionRelatedToObjectId: node.actionRelatedToObjectId,
+                    actionRelatedToAdditionalObjects: node.actionRelatedToAdditionalObjects,
                     actionData: node.actionData
                 };
 

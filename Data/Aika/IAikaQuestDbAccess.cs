@@ -71,7 +71,7 @@ namespace GoNorth.Data.Aika
         /// <param name="objectId">Object Id</param>
         /// <returns>All Quests object is referenced in without detail information</returns>
         Task<List<AikaQuest>> GetQuestsObjectIsReferenced(string objectId);
-
+        
         /// <summary>
         /// Resolves the names for a list of Quests
         /// </summary>

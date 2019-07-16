@@ -13,7 +13,7 @@
         <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
     </div>
 
-    <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreatePage"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreatePage"]</button>
+    <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreatePage" id="gn-kirjaAllPagesCreateNewPageButton"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreatePage"]</button>
 
     <div class="input-group gn-commandWidgetTopMargin">
         <input type="text" class="form-control" placeholder="@Localizer["Search"]" data-bind="value: searchPattern, enterPressed: startNewSearch, enable: !isLoading()"/>

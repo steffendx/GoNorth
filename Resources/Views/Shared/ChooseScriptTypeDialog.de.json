@@ -1,0 +1,13 @@
+{
+    "ChooseScriptType": "Skriptart auswählen",
+
+    "NodeGraphScriptTitle": "Knotensystem",
+    "NodeGraphScriptDescription": "Ein Knotensystem erlaubt es Logik zu definieren ohne tiefe Programmierkenntnis zu besitzen. Es stehen verschiedenste Aktionen wie Animation abspielen, Text anzeigen, den NPC Zustand zu ändern und vieles mehr zu Verfügung.",
+    "CreateNodeGraphScript": "Knotensystem erstellen",
+
+    "CodeScriptTitle": "Skript",
+    "CodeScriptDescription": "Ein Skript erlaubt es frei Programmcode zu definieren und erlaubt damit eine maximale Flexibilität. Es setzt jedoch Programmierkenntnis voraus.",
+    "CreateCodeScript": "Skript erstellen",
+
+    "Cancel": "Abbrechen"
+}

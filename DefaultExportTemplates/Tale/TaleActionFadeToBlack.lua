@@ -1,0 +1,1 @@
+FadeToBlack({{Tale_Action_FadeTime}})

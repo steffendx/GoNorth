@@ -24,6 +24,8 @@
 
                 this.objectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
 
+                this.codeScriptDialog = new GoNorth.ScriptDialog.CodeScriptDialog(this.errorOccured);
+
                 this.isImplemented = new ko.observable(false);
                 this.compareDialog = new GoNorth.ImplementationStatus.CompareDialog.ViewModel();
 
@@ -47,7 +49,7 @@
 
                 // Add access to object id for actions and conditions
                 var self = this;
-                Tale.getCurrentRelatedObjectId = function() {
+                GoNorth.DefaultNodeShapes.getCurrentRelatedObjectId = function() {
                     return self.id();
                 };
 
@@ -66,7 +68,7 @@
                 };
 
                 // Add access to object dialog
-                Tale.openItemSearchDialog = function() {
+                GoNorth.DefaultNodeShapes.openItemSearchDialog = function() {
                     if(self.isReadonly())
                     {
                         var readonlyDeferred = new jQuery.Deferred();
@@ -74,7 +76,7 @@
                         return readonlyDeferred.promise();
                     }
 
-                    return self.objectDialog.openItemSearch(Tale.Localization.ViewModel.ChooseItem);
+                    return self.objectDialog.openItemSearch(GoNorth.DefaultNodeShapes.Localization.Dialogs.ChooseItem);
                 };
 
                 // Opens the quest search dialog 
@@ -111,6 +113,42 @@
                     }
 
                     return self.objectDialog.openSkillSearch(Tale.Localization.ViewModel.ChooseSkill);                    
+                };
+
+                // Opens the daily routine event dialog
+                GoNorth.DefaultNodeShapes.openDailyRoutineEventSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.objectDialog.openDailyRoutineSearch(Tale.Localization.ViewModel.ChooseDailyRoutineEvent);                    
+                };
+
+                // Opens the marker search dialog
+                GoNorth.DefaultNodeShapes.openMarkerSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.objectDialog.openMarkerSearch(Tale.Localization.ViewModel.ChooseMarker);                    
+                };
+
+                // Opens the code editor
+                GoNorth.DefaultNodeShapes.openCodeEditor = function(name, scriptCode) {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.codeScriptDialog.openEditDialog(name, scriptCode);              
                 };
 
                 // Load config lists
@@ -229,13 +267,6 @@
                 this.compareDialog.openDialogCompare(this.dialogId(), this.headerName()).done(function() {
                     self.isImplemented(true);
                 });
-            };
-
-            /**
-             * Opens the config page
-             */
-            Dialog.ViewModel.prototype.openConfigPage = function() {
-                window.location = "/Tale/Config";
             };
 
             /**

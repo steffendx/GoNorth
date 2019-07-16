@@ -23,7 +23,7 @@
                     <p class="gn-exportManageTemplateWarningOnDelete">@Localizer["AllObjectsUsingThisTemplateWillUseParentTemplate"]</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-bind="click: deleteTemplate, disabled: isLoading">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: deleteTemplate, disable: isLoading">@Localizer["Yes"]</button>
                     <button type="button" class="btn btn-default" data-bind="click: closeDeleteTemplateDialog">@Localizer["No"]</button>
                 </div>
             </div>
@@ -64,7 +64,7 @@
     <div class="row gn-defaultContentTopMargin">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <!-- Placeholders -->
-            <h4 class="gn-clickable" data-bind="click: tooglePlaceholderVisibility">
+            <h4 class="gn-clickable" data-bind="click: tooglePlaceholderVisibility" id="gn-exportManageTemplatePlaceholderToggleButton">
                 <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !arePlaceholdersExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: arePlaceholdersExpanded" style="display: none"></i> 
                 @Localizer["Placeholders"]
             </h4>

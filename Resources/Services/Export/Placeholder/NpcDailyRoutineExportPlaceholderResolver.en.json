@@ -1,0 +1,12 @@
+{
+    "PlaceholderDesc_Npc_HasDailyRoutine_Start": "Start of the content that will only be rendered if the npc has daily routine events. Must be closed with Npc_HasDailyRoutine_End.",
+    "PlaceholderDesc_Npc_HasDailyRoutine_End": "End of the content that will only be rendered if the npc has daily routine events.",
+    "PlaceholderDesc_Npc_DailyRoutine_Events": "List of daily routine events of the npc. The daily routine event list template will be used for this.",
+    "PlaceholderDesc_DailyRoutine_Events_Start": "Start of the list of daily routine events of the npc. Must be closed using DailyRoutine_Events_End. Attributes of the event can be used with the CurEvent_ placeholders.",
+    "PlaceholderDesc_DailyRoutine_Events_End": "End of the list of daily routine events of the npc.",
+    "PlaceholderDesc_Npc_DailyRoutine_Functions": "List of daily routine functions of the npc. The daily routine function list template will be used for this.",
+    "PlaceholderDesc_DailyRoutine_Functions_Start": "Start of the list of daily routine functions of the npc. Must be closed using DailyRoutine_Functions_End. Attributes of the event can be used with the CurEvent_ placeholders.",
+    "PlaceholderDesc_DailyRoutine_Functions_End": "Ende of the list of daily routine functions of the npc.",
+    "PlaceholderDesc_DailyRoutine_Function": "A function of the daily routine. The daily routine function template will be used for this.",
+    "PlaceholderDesc_CurEvent_Index": "Zero based index of the current daily routine event in the daily routine list."
+}

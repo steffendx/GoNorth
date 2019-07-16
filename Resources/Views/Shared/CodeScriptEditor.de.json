@@ -1,0 +1,13 @@
+{
+    "CreateCodeScript": "Code Skript erzeugen",
+    "EditCodeScript": "Code Skript bearbeiten",
+    "Name": "Name",
+    "Code": "Code",
+    "Confirm": "Übernehmen",
+    "Cancel": "Abbrechen",
+    
+    "AreYouSure": "Bist du sicher?",
+    "ThereAreUnsavedChanges": "Bist du sicher das du den Dialog schließen willst? Nicht gespeicherte Änderungen gehen verloren.",
+    "Yes": "Ja",
+    "No": "Nein"
+}

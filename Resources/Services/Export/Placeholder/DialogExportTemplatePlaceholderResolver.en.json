@@ -1,5 +1,5 @@
 {
-    "PlaceholderDesc_Dialog_HasDialog_Start": "Start of the content that will only be rendered if the npc has a dialog. Must be closed with Dialog_HasDialog_End",
+    "PlaceholderDesc_Dialog_HasDialog_Start": "Start of the content that will only be rendered if the npc has a dialog. Must be closed with Dialog_HasDialog_End.",
     "PlaceholderDesc_Dialog_HasDialog_End": "End of the content that will only be rendered if the current npc has a dialog.",
     "PlaceholderDesc_Dialog_Start": "First dialog step and all next dialog steps that run in the same function.",
     "PlaceholderDesc_Dialog_Additional_Functions": "Will be replaced with additional dialog functions or removed if no additional function is required."

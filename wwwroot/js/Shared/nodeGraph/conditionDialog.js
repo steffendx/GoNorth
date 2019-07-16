@@ -4,11 +4,29 @@
         (function(Conditions) {
 
             /**
+             * Finds the condition dialog in a parents list
+             * @param {object[]} parents Knockout parents elements
+             * @returns {object} Condition Dialog context
+             */
+            Conditions.findConditionDialog = function(parents) {
+                for(var curParent = 0; curParent < parents.length; ++curParent)
+                {
+                    if(parents[curParent].isConditionDialogViewModel) {
+                        return parents[curParent];
+                    }
+                }
+
+                return parents[0];
+            }
+
+            /**
              * Condition Dialog Model
              * @class
              */
             Conditions.ConditionDialog = function()
             {
+                this.isConditionDialogViewModel = true;
+
                 this.isOpen = new ko.observable(false);
                 this.condition = null;
                 this.closingDeferred = null;

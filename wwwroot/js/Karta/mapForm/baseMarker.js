@@ -47,6 +47,9 @@
                 this.isTrackingImplementationStatus = false;
                 this.isImplemented = false;
 
+                this.disableCopyLink = false;
+                this.disableGeometryEditing = false;
+
                 this.markerType = "";
 
                 this.serializePropertyName = "";
@@ -56,6 +59,10 @@
                 this.popupContentObject = null;
 
                 this.markerGeometry = [];
+
+                this.disableExportNameSetting = false;
+                this.editExportNameCallback = null;
+                this.exportName = "";
             }
 
             Map.BaseMarker.prototype = {
@@ -78,6 +85,39 @@
                 },
 
                 /**
+                 * Returns the additional popup buttons for the marker
+                 * @returns {object[]} Additional popup buttons
+                 */
+                getAdditionalPopupButtons: function() {
+                    return [];
+                },
+
+                /**
+                 * Binds an additional popup button callback
+                 * @param {object} jQueryContent jQuery Content
+                 * @param {object} additionalButton Additional button
+                 */
+                bindAdditionalPopupButtonCallback: function(jQueryContent, additionalButton) {
+                    var self = this;
+                    jQueryContent.find("." + additionalButton.cssClass).click(function() {
+                        additionalButton.callback.apply(self);
+                    });
+                },
+
+                /**
+                 * Builds the export name button html
+                 */
+                buildExportNameButtonHtml: function() {
+                    var additionalClasses = "";
+                    var additionalTooltip = "";
+                    if(this.exportName) {
+                        additionalClasses = " gn-kartaMarkerHasExportName";
+                        additionalTooltip = Map.Localization.CurrentExportNameTooltip.replace("{0}", this.exportName);
+                    }
+                    return "<a class='gn-clickable gn-setExportNameButton" + additionalClasses + "' title='" + Map.Localization.SetExportNameTooltip + additionalTooltip + "'><i class='glyphicon glyphicon-log-in'></i></a>";
+                },
+
+                /**
                  * Initializes the marker
                  * 
                  * @param {object} latLng Coordinates of the marker
@@ -92,8 +132,27 @@
                             if(!self.isDisabled)
                             {
                                 content += "<div class='gn-kartaPopupButtons'>";
-                                content += "<a class='gn-clickable gn-kartaCopyMarkerLink' title='" + Map.Localization.CopyLinkToMarkerTooltip + "'><i class='glyphicon glyphicon-link'></i></a>";
-                                content += "<a class='gn-clickable gn-kartaEditMarkerGeometryButton' title='" + Map.Localization.EditMarkerGeometryTooltip + "'><i class='glyphicon glyphicon-record'></i></a>";
+
+                                var additionalButtons = self.getAdditionalPopupButtons();
+                                for(var curButton = 0; curButton < additionalButtons.length; ++curButton)
+                                {
+                                    content += "<a class='gn-clickable " + additionalButtons[curButton].cssClass + "' title='" + additionalButtons[curButton].title + "'><i class='glyphicon " + additionalButtons[curButton].icon + "'></i></a>";
+                                }
+
+                                
+                                if(!self.disableExportNameSetting)
+                                {
+                                   content += self.buildExportNameButtonHtml();
+                                }
+
+                                if(!self.disableCopyLink) 
+                                {
+                                    content += "<a class='gn-clickable gn-kartaCopyMarkerLink' title='" + Map.Localization.CopyLinkToMarkerTooltip + "'><i class='glyphicon glyphicon-link'></i></a>";
+                                }
+                                if(!self.disableGeometryEditing) 
+                                {
+                                    content += "<a class='gn-clickable gn-kartaEditMarkerGeometryButton' title='" + Map.Localization.EditMarkerGeometryTooltip + "'><i class='glyphicon glyphicon-record'></i></a>";
+                                }
                                 if(self.editCallback)
                                 {
                                     content += "<a class='gn-clickable gn-kartaEditMarkerButton' title='" + Map.Localization.EditMarkerTooltip + "'><i class='glyphicon glyphicon-pencil'></i></a>";
@@ -117,6 +176,10 @@
                             content = "<div>" + content + "</div>";
 
                             var jQueryContent = jQuery(content);
+                            jQueryContent.find(".gn-setExportNameButton").click(function() {
+                                self.callSetExportName();
+                            });
+
                             jQueryContent.find(".gn-kartaCopyMarkerLink").click(function() {
                                 self.copyMarkerLink(this);
                             });
@@ -136,6 +199,13 @@
                             jQueryContent.find(".gn-kartaMarkAsImplementedMarkerButton").click(function() {
                                 self.openCompareDialog(jQueryContent);
                             });
+
+                            if(additionalButtons) {
+                                for(var curButton = 0; curButton < additionalButtons.length; ++curButton)
+                                {
+                                    self.bindAdditionalPopupButtonCallback(jQueryContent, additionalButtons[curButton]);
+                                }
+                            }
                             
                             self.popupContentObject = jQueryContent;
                             self.setPopupContent(jQueryContent[0]);
@@ -552,6 +622,39 @@
 
 
                 /**
+                 * Calls the set export name callback
+                 */
+                callSetExportName: function() {
+                    if(this.editExportNameCallback)
+                    {
+                        this.editExportNameCallback();
+                    }
+                },
+
+                /**
+                 * Sets the export name callback
+                 */
+                setEditExportNameCallback: function(callback) {
+                    this.editExportNameCallback = callback;
+                },
+
+                /**
+                 * Sets the export name
+                 * @param {string} exportName Export name
+                 */
+                setExportName: function(exportName) {
+                    this.exportName = exportName;
+                    if(this.popupContentObject) {
+                        var self = this;
+                        this.popupContentObject.find(".gn-setExportNameButton").replaceWith(this.buildExportNameButtonHtml());
+                        this.popupContentObject.find(".gn-setExportNameButton").click(function() {
+                            self.callSetExportName();
+                        });
+                    }
+                },
+
+
+                /**
                  * Adds the marker to an object
                  * 
                  * @param {object} map Map object
@@ -769,7 +872,8 @@
                         chapterPixelCoords: this.chapterPixelCoords,
                         deletedInChapter: this.deletedInChapter,
                         isImplemented: this.isImplemented,                      
-                        geometry: this.serializeGeometry(map)
+                        geometry: this.serializeGeometry(map),
+                        exportName: this.exportName
                     };
 
                     return serializedData;
@@ -790,6 +894,7 @@
                     this.deletedInChapter = serializedData.deletedInChapter ? serializedData.deletedInChapter : -1;
                     this.isImplemented = serializedData.isImplemented;
                     this.deserializeGeometry(serializedData.geometry, map);
+                    this.exportName = serializedData.exportName ? serializedData.exportName : "";
                 },
 
                 /**

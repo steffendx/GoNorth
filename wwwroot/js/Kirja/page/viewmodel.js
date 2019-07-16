@@ -67,6 +67,12 @@
                     {
                         pageContent = this.pageContent();
                     }
+
+                    if(this.isEditMode())
+                    {
+                        return pageContent;
+                    }
+
                     var comparePageContent = this.compareVersionHtml();
                     pageContent = this.transformPageContent(pageContent);
                     if(comparePageContent)
@@ -674,6 +680,14 @@
                  */
                 buildAttachmentUrl: function(attachment) {
                     return "/api/KirjaApi/KirjaAttachment?pageId=" + this.id() + "&attachmentFile=" + encodeURIComponent(attachment.filename);
+                },
+
+                /**
+                 * Callback if an image upload is started
+                 */
+                uploadStart: function() {
+                    this.isLoading(true);
+                    this.resetErrorState();
                 },
 
                 /**

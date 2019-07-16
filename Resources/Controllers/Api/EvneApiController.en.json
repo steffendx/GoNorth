@@ -5,6 +5,7 @@
     "CanNotDeleteSkillReferencedInTaleDialog": "The skill is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteSkillMentionedInKirjaPage": "The skill is mentioned in the Kirja pages \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteSkillLearnedByNpc": "The Npcs \"{0}\" have learned the skill. To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteSkillUsedInDailyRoutine": "The skill is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",

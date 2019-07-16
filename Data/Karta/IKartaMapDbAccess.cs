@@ -36,6 +36,14 @@ namespace GoNorth.Data.Karta
         /// <param name="id">Id</param>
         /// <returns>Map</returns>
         Task<KartaMap> GetMapById(string id);
+        
+        /// <summary>
+        /// Returns a marker by id
+        /// </summary>
+        /// <param name="mapId">Map Id</param>
+        /// <param name="markerId">Marker Id</param>
+        /// <returns>Map marker</returns>
+        Task<KartaMapNamedMarkerQueryResult> GetMarkerById(string mapId, string markerId);
 
         /// <summary>
         /// Returns all markers that are not yet implemented
@@ -114,6 +122,14 @@ namespace GoNorth.Data.Karta
         /// <param name="questId">Quest Id for which to request the markers</param>
         /// <returns>All Markers for the given quest</returns>
         Task<List<MapMarkerQueryResult>> GetAllQuestMarkers(string questId);
+
+        /// <summary>
+        /// Searches all markers by export name
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="exportName">Export name</param>
+        /// <returns>Map markers</returns>
+        Task<List<KartaMapNamedMarkerQueryResult>> GetMarkersByExportName(string projectId, string exportName);
 
         /// <summary>
         /// Deletes a map

@@ -29,7 +29,7 @@
 </div>
 
 <!-- Create/Edit Folder Dialog -->
-<div class="modal fade" role="dialog" data-bind="modal: showFolderCreateEditDialog">
+<div class="modal fade" role="dialog" data-bind="modal: showFolderCreateEditDialog" id="gn-flexFieldFolderCreateEditDialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -64,7 +64,7 @@
                     <span data-bind="visible: !dialogLoading()">@Model.Localizer["Save"]</span>
                     <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
                 </button>
-                <button type="button" class="btn btn-default" data-bind="click: closeCreateEditFolderDialog, disable: dialogLoading">@Model.Localizer["Cancel"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: closeCreateEditFolderDialog, disable: dialogLoading" id="gn-flexFieldFolderCreateEditDialogCancel">@Model.Localizer["Cancel"]</button>
             </div>
         </div>
     </div>
@@ -75,11 +75,11 @@
     <strong>@Model.Localizer["Error"]</strong> @Model.Localizer["ErrorOccured"]
 </div>
 
-<div class="dropdown gn-inlineDropdown">
+<div class="dropdown gn-inlineDropdown" id="gn-flexFieldOverviewCreateObjectButton">
     <button class="btn btn-primary dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-createFlexFieldObjectButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         <i class="glyphicon glyphicon-plus"></i> @Model.Localizer["CreateFlexFieldObject"] <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" aria-labelledby="gn-createFlexFieldObjectButton">
+    <ul class="dropdown-menu" aria-labelledby="gn-createFlexFieldObjectButton" id="gn-flexFieldOverviewCreateObjectDropdown">
         <!-- ko foreach: availableTemplates -->
             <li><a class="gn-clickable" data-bind="click: function(template) { $root.openNewFlexFieldObjectForm(template); }, text: name"></a></li>
         <!-- /ko -->
@@ -91,7 +91,7 @@
     </ul>
 </div>
 
-<button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreateFolderDialog"><i class="glyphicon glyphicon-plus"></i> @Model.Localizer["CreateCategory"]</button>
+<button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreateFolderDialog" id="gn-flexFieldCreateFolderButton"><i class="glyphicon glyphicon-plus"></i> @Model.Localizer["CreateCategory"]</button>
 
 <button class="btn btn-default gn-commandWidgetTopMargin" type="button" style="display: none" data-bind="click: navigateLevelBack, visible: parentFolderId() || currentFolderId()"><i class="glyphicon glyphicon-level-up"></i> @Model.Localizer["LevelBack"]</button>
 
@@ -117,7 +117,7 @@
         <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
         <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
     </button>
-    <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Model.Localizer["NextPage"]">
+    <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Model.Localizer["NextPage"]" id="gn-flexFieldOverviewNextPageButton">
         <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
         <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
     </button>

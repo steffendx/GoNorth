@@ -212,12 +212,12 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Timeline Service
         /// </summary>
-        private readonly ITimelineService _timelineService;
+        protected readonly ITimelineService _timelineService;
 
         /// <summary>
         /// User Manager
         /// </summary>
-        private readonly UserManager<GoNorthUser> _userManager;
+        protected readonly UserManager<GoNorthUser> _userManager;
 
         /// <summary>
         /// Xss Checker
@@ -939,6 +939,14 @@ namespace GoNorth.Controllers.Api
         protected abstract Task<T> RunAdditionalUpdates(T flexFieldObject, T loadedFlexFieldObject);
 
         /// <summary>
+        /// Checks if an update is valid
+        /// </summary>
+        /// <param name="flexFieldObject">Flex Field Object</param>
+        /// <param name="loadedFlexFieldObject">Loaded Flex Field Object</param>
+        /// <returns>Empty string if update is valid, error string if update is not valid</returns>
+        protected virtual Task<string> CheckUpdateValid(T flexFieldObject, T loadedFlexFieldObject) { return Task.FromResult(string.Empty); }
+
+        /// <summary>
         /// Runs updates on markers
         /// </summary>
         /// <param name="flexFieldObject">Flex Field Object</param>
@@ -956,7 +964,7 @@ namespace GoNorth.Controllers.Api
         /// Sets the not implemented flag for an object on a relevant change
         /// </summary>
         /// <param name="newState">New State of the object</param>
-        private async Task SetNotImplementedFlagOnChange(T newState)
+        protected async Task SetNotImplementedFlagOnChange(T newState)
         {
             if(!newState.IsImplemented)
             {
@@ -984,6 +992,12 @@ namespace GoNorth.Controllers.Api
 
             T loadedFlexFieldObject = await _objectDbAccess.GetFlexFieldObjectById(id);
             
+            string updateErrorMessage = await CheckUpdateValid(flexFieldObject, loadedFlexFieldObject);
+            if(!string.IsNullOrEmpty(updateErrorMessage))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, updateErrorMessage);
+            }
+
             List<string> oldTags = loadedFlexFieldObject.Tags;
             if(oldTags == null)
             {
@@ -1144,8 +1158,15 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
 
-            Stream imageStream = _imageAccess.OpenFlexFieldObjectImage(imageFile);
-            return File(imageStream, mimeType);
+            try
+            {
+                Stream imageStream = _imageAccess.OpenFlexFieldObjectImage(imageFile);
+                return File(imageStream, mimeType);
+            }
+            catch(FileNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
 

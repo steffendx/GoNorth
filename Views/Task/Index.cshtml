@@ -37,7 +37,7 @@
                         <div class="form-group">
                             <label for="gn-taskDialogDescription">@Localizer["Description"] <span class="gn-taskDescriptionLinkHint">@Localizer["PressCtrlToOpenLinks"]</span></label>
                             <!-- ko if: !isReadonly() && !isTaskDialogReadonly() -->
-                            <div class="gn-taskDialogDescription" id="gn-taskDialogDescription" placeholder="@Localizer["Description"]" name="taskDialogDescription" data-bind="richText: taskDialogDescription, richTextAddditionalButtons: generateRichTextButtons, richTextImageUploadUrl: '/api/TaskApi/ImageUpload?imageFile={filename}', richTextImageUploadSuccess: imageUploaded, richTextAddditionalImageUploadError: uploadError, richTextAfterImageInserted: function() { $root.saveTaskDialog(false); }, click: checkDescriptionOpenLink"></div>
+                            <div class="gn-taskDialogDescription" id="gn-taskDialogDescription" placeholder="@Localizer["Description"]" name="taskDialogDescription" data-bind="richText: taskDialogDescription, richTextAddditionalButtons: generateRichTextButtons, richTextImageUploadUrl: '/api/TaskApi/ImageUpload?imageFile={filename}', richTextImageUploadSuccess: imageUploaded, richTextImageUploadStarted: uploadStart, richTextAddditionalImageUploadError: uploadError, richTextAfterImageInserted: function() { $root.saveTaskDialog(false); }, click: checkDescriptionOpenLink"></div>
                             <!-- /ko -->
                             <!-- ko if: isReadonly() || isTaskDialogReadonly() -->
                             <div class="gn-taskDialogDescription form-control" id="gn-taskDialogDescription" data-bind="html: taskDialogDescription" disabled></div>
@@ -210,8 +210,8 @@
                         <div class="gn-taskCardTitle gn-taskGroupTitle">
                             <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a>
                         </div>
-                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disabled: $root.isLoading"></select></div>
-                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: status, options: $root.taskStatus, optionsValue: 'value', optionsText: 'displayName', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disabled: $root.isLoading"></select></div>
+                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disable: $root.isLoading"></select></div>
+                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: status, options: $root.taskStatus, optionsValue: 'value', optionsText: 'displayName', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disable: $root.isLoading"></select></div>
                     </div>
                     <button class="gn-taskCreateTaskButton btn btn-primary" data-bind="visible: isExpanded() && !$root.isReadonly(), click: function(taskGroup) { $root.openCreateNewTaskDialog(taskGroup); }" title="@Localizer["CreateTaskToolTip"]"><i class="glyphicon glyphicon-plus"></i></button>
                     <div class="gn-taskGroupCard gn-taskGroupCardCollapsed" data-bind="visible: !isExpanded(), taskTypeColorBinding: taskTypeId, taskTypes: $root.taskGroupTypes">
@@ -228,7 +228,7 @@
                                     <div class="gn-taskCardTitle gn-taskTitle">
                                         <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(task) { $root.openEditTaskDialog($parents[1], task); }"></a>
                                     </div>
-                                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(task) { $root.saveTaskQuickEdit($parents[1], task, null, -1); } }, disabled: $root.isLoading"></select></div>
+                                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(task) { $root.saveTaskQuickEdit($parents[1], task, null, -1); } }, disable: $root.isLoading"></select></div>
                                 </div>
                             </div>
                         <!-- /ko -->

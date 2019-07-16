@@ -4,10 +4,11 @@
         (function(Localization) {
 
             Localization.ViewModel = {};
-            Localization.ViewModel.ChooseItem = "Item auswählen";
             Localization.ViewModel.ChooseQuest = "Quest auswählen";
             Localization.ViewModel.ChooseNpc = "Npc auswählen";
             Localization.ViewModel.ChooseSkill = "Fähigkeit auswählen";
+            Localization.ViewModel.ChooseDailyRoutineEvent = "Tagesablauf Ereignis auswählen";
+            Localization.ViewModel.ChooseMarker = "Markierung auswählen";
 
             // Text Lines
             GoNorth.DefaultNodeShapes.Localization.TypeNames["tale.PlayerText"] = "Spieler Zeile";
@@ -33,55 +34,14 @@
             // Action
             Localization.Actions = {};
 
-            Localization.Actions.ChangeNpcValueLabel = "Npc Wert ändern";
-
-            Localization.Actions.ChooseItem = "<Item auswählen>";
-            Localization.Actions.SpawnItemInPlayerInventoryLabel = "Item in Spieler inventar spawnen";
-            Localization.Actions.SpawnItemInNpcInventoryLabel = "Item in Npc inventar spawnen";
-            Localization.Actions.TransferItemToPlayerInventoryLabel = "Item an Spieler übergeben";
-            Localization.Actions.TransferItemToNpcInventoryLabel = "Item an Npc übergeben";
-            Localization.Actions.ItemQuantity = "Anzahl (leer = 1):"
-            
-            Localization.Actions.SetNpcStateLabel = "Npc Zustand festlegen";
-
-            Localization.Actions.NpcLearnsSkillLabel = "Npc lernt Fähigkeit";
-            Localization.Actions.NpcForgetSkillLabel = "Npc vergisst Fähigkeit";
-
-            Localization.Actions.ChangeNpcSkillValueLabel = "Npc Fähigkeit Wert ändern";
-
             Localization.Actions.PersistDialogStateLabel = "Dialogzustand speichern";
             Localization.Actions.PersistDialogStateWillContinueOnThisPointNextTalk = "Der Dialog wird an diesem Punkt forgesetzt wenn der Npc das nächste mal angesprochen wird.";
 
             Localization.Actions.OpenShopLabel = "Handel öffnen";
             Localization.Actions.WillOpenAShopForTheCurrentNpc = "Es wird ein Handel mit dem aktuellen Npc gestartet.";
 
-            Localization.Actions.AnimationPlaceholder = "Animationsname";
-            Localization.Actions.PlayNpcAnimationLabel = "Npc Animation abspielen";
-            Localization.Actions.PlayPlayerAnimationLabel = "Spieler Animation abspielen";
-
             // Condition
             Localization.Conditions = {};
-            Localization.Conditions.CheckNpcValueLabel = "Npc Wert prüfen";
-            Localization.Conditions.NpcLabel = "Npc";
-
-            Localization.Conditions.CheckPlayerInventoryLabel = "Spieler Inventar prüfen";
-            Localization.Conditions.PlayerInventoryLabel = "Inventar Spieler";
-            Localization.Conditions.CheckNpcInventoryLabel = "Npc Inventar prüfen";
-            Localization.Conditions.NpcInventoryLabel = "Inventar Npc";
-            Localization.Conditions.ChooseItem = "<Item auswählen>";
-            Localization.Conditions.OpenItemTooltip  = "Öffnet das ausgewählte Item";
-            Localization.Conditions.ItemOperatorHasAtLeast = "hat mindestens";
-            Localization.Conditions.ItemOperatorHasMaximum = "hat maximal";
-            Localization.Conditions.ItemCount = "Anz";
-
-            Localization.Conditions.CheckChooseNpcSkillValueLabel = "Npc Fähigkeits Wert prüfen";
-            Localization.Conditions.NpcSkillPrefix = "Npc ";
-
-            Localization.Conditions.CheckNpcLearnedSkillLabel = "Npc beherrscht Fähigkeit";
-            Localization.Conditions.CheckNpcLearnedSkillPrefixLabel = "Npc beherrscht ";
-
-            Localization.Conditions.CheckNpcNotLearnedSkillLabel = "Npc beherrscht Fähigkeit nicht";
-            Localization.Conditions.CheckNpcNotLearnedSkillPrefixLabel = "Npc beherrscht nicht ";
 
         }(Tale.Localization = Tale.Localization || {}));
     }(GoNorth.Tale = GoNorth.Tale || {}));

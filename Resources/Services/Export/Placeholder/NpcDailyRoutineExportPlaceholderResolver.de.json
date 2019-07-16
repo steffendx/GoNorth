@@ -1,0 +1,12 @@
+{
+    "PlaceholderDesc_Npc_HasDailyRoutine_Start": "Start des Inhaltes der nur gerendert wird wenn der Npc Tagesablauf Ereignisse hat. Muss mit Npc_HasDailyRoutine_End abgeschlossen werden.",
+    "PlaceholderDesc_Npc_HasDailyRoutine_End": "Ende des Inhaltes der nur gerendert wird wenn der Npc Tagesablauf Ereignisse hat.",
+    "PlaceholderDesc_Npc_DailyRoutine_Events": "Liste von Tagesablauf Ereignissen des Npcs. Wird auf Basis des Tagesablauf Ereignis Liste Template generiert.",
+    "PlaceholderDesc_DailyRoutine_Events_Start": "Start der Liste von Tagesablauf Ereignissen des Npcs. Muss mit DailyRoutine_Events_End abgeschlossen werden. Die Attribute der Ereignisse können über die CurEvent_ Platzhalter genutzt werden.",
+    "PlaceholderDesc_DailyRoutine_Events_End": "Ende der Liste von Tagesablauf Ereignissen des Npcs.",
+    "PlaceholderDesc_Npc_DailyRoutine_Functions": "Liste von Tagesablauf Ereignis Funktionen des Npcs. Wird auf Basis des Tagesablauf Funktion Liste Template generiert. Die Attribute der Ereignisse können über die CurEvent_ Platzhalter genutzt werden.",
+    "PlaceholderDesc_DailyRoutine_Functions_Start": "Start der Liste von Tagesablauf Funktionen des Npcs. Muss mit DailyRoutine_Functions_End abgeschlossen werden.",
+    "PlaceholderDesc_DailyRoutine_Functions_End": "Ende der Liste von Tagesablauf Funktionen des Npcs.",
+    "PlaceholderDesc_DailyRoutine_Function": "Eine Funktion des Tagesablauf. Wird auf Basis des Tagesablauf Funktion Template generiert.",
+    "PlaceholderDesc_CurEvent_Index": "Null-basierter Index des Ereignis innerhalb der Tagesablauf Ereignis Liste."
+}

@@ -75,16 +75,31 @@ namespace GoNorth.Services.Export.Placeholder
         /// A referenced skill was not found
         /// </summary>
         DialogSkillNotFoundError = 13,
+
+        /// <summary>
+        /// A referenced npc was not found
+        /// </summary>
+        DialogNpcNotFoundError = 14,
+
+        /// <summary>
+        /// A referenced dialog marker was not found
+        /// </summary>
+        DialogMarkerNotFoundError = 15,
         
         /// <summary>
         /// A dialog action type is unknown
         /// </summary>
-        DialogUnknownActionTypeError = 14,
+        DialogUnknownActionTypeError = 16,
         
         /// <summary>
         /// A dialog action operator is unknown
         /// </summary>
-        DialogUnknownActionOperator = 15,
+        DialogUnknownActionOperator = 17,
+        
+        /// <summary>
+        /// A referenced daily routine event was not found
+        /// </summary>
+        DialogDailyRoutineEventNotFoundError = 18,
 
 
         /// <summary>

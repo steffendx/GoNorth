@@ -1,0 +1,1 @@
+BaseNpc_EnableDailyRoutineEvent({{Tale_Action_Npc_Value_Id}}, {{DailyRoutine_EarliestTime_Hours}}, {{DailyRoutine_EarliestTime_Minutes}})

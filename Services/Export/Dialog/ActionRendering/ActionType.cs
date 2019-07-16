@@ -113,6 +113,106 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <summary>
         /// Play player animation
         /// </summary>
-        PlayPlayerAnimation = 27
+        PlayPlayerAnimation = 27,
+
+        /// <summary>
+        /// Code action
+        /// </summary>
+        CodeAction = 28,
+        
+        /// <summary>
+        /// Show floating text above npc
+        /// </summary>
+        ShowFloatingTextAboveNpc = 29,
+        
+        /// <summary>
+        /// Show floating text above player
+        /// </summary>
+        ShowFloatingTextAbovePlayer = 30,
+        
+        /// <summary>
+        /// Show floating text above choose npc
+        /// </summary>
+        ShowFloatingTextAboveChooseNpc = 31,
+
+        /// <summary>
+        /// Fade to black
+        /// </summary>
+        FadeToBlack = 32,
+
+        /// <summary>
+        /// Fade from black
+        /// </summary>
+        FadeFromBlack = 33,
+
+        /// <summary>
+        /// Remove an item from the npc inventory
+        /// </summary>
+        RemoveItemFromNpcInventory = 34,
+
+        /// <summary>
+        /// Remove an item from the player inventory
+        /// </summary>
+        RemoveItemFromPlayerInventory = 35,
+
+        /// <summary>
+        /// Sets the game time
+        /// </summary>
+        SetGameTime = 36,
+
+        /// <summary>
+        /// Disables a daily routine event
+        /// </summary>
+        DisableDailyRoutineEvent = 37,
+
+        /// <summary>
+        /// Enables a daily routine event
+        /// </summary>
+        EnableDailyRoutineEvent = 38,
+
+        /// <summary>
+        /// Teleport npc
+        /// </summary>
+        TeleportNpc = 39,
+
+        /// <summary>
+        /// Teleport player
+        /// </summary>
+        TeleportPlayer = 40,
+
+        /// <summary>
+        /// Teleport choose npc
+        /// </summary>
+        TeleportChooseNpc = 41,
+        
+        /// <summary>
+        /// Walk npc to marker
+        /// </summary>
+        WalkNpcToMarker = 42,
+
+        /// <summary>
+        /// Walk choose npc to marker
+        /// </summary>
+        WalkChooseNpcToMarker = 43,
+
+        /// <summary>
+        /// Teleport npc to npc
+        /// </summary>
+        TeleportNpcToNpc = 44,
+
+        /// <summary>
+        /// Teleport choose npc to npc
+        /// </summary>
+        TeleportChooseNpcToNpc = 45,
+
+        /// <summary>
+        /// Walk npc to npc
+        /// </summary>
+        WalkNpcToNpc = 46,
+
+        /// <summary>
+        /// Walk choose npc to npc
+        /// </summary>
+        WalkChooseNpcToNpc = 47,
     }
 }

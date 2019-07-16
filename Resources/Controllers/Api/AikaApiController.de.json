@@ -5,6 +5,7 @@
     "CanNotDeleteQuestUsedInChapterDetail": "Der Quest wird in den Detailansichten \"{0}\" genutzt. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
     "CanNotDeleteQuestMentionedInKirjaPage": "Der Quest wird in den Kirja Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
     "CanNotDeleteQuestReferencedInTaleDialog": "Der Quest ist in den Tale Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
-
+    "CanNotDeleteQuestUsedInDailyRoutine": "Der Quest ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
+    
     "DuplicateFieldNameExist": "Es existitieren mehrere Felder mit gleichem Namen."
 }

@@ -1,0 +1,1 @@
+BaseNpc_ShowFloatingTextAboveNpc(npcManager:find_npc_by_id({{Tale_Action_Npc_Value_Id}}), "{{Tale_Action_FloatingText_LangKey}}")

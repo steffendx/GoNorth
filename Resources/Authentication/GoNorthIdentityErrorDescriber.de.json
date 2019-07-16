@@ -1,7 +1,7 @@
 {
     "DefaultError": "Ein unbekannter Fehler ist aufgetreten.",
     "ConcurrencyFailure": "Optimistic concurrency Fehler, Objekt wurde modifiziert.",
-    "PasswordMismatch": "Ungültiges Password.",
+    "PasswordMismatch": "Ungültiges Passwort.",
     "InvalidToken": "Ungültiger Token.",
     "LoginAlreadyAssociated": "Es existiert bereits ein Benutzer mit diesem Benutzernamen.",
     "InvalidUserName": "Benutzername '{0}' ist ungültig. Er darf nur Zahlen und Buchstaben beinhalten.",

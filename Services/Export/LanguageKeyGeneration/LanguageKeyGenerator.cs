@@ -28,6 +28,11 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
         private readonly ILanguageKeyDbAccess _languageKeyDbAccess;
 
         /// <summary>
+        /// Language key reference collector
+        /// </summary>
+        private readonly ILanguageKeyReferenceCollector _languageKeyReferenceCollector;
+
+        /// <summary>
         /// Current Project
         /// </summary>
         private GoNorthProject _project;
@@ -37,10 +42,12 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
         /// </summary>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
-        public LanguageKeyGenerator(IProjectDbAccess projectDbAccess, ILanguageKeyDbAccess languageKeyDbAccess)
+        /// <param name="languageKeyReferenceCollector">Language key reference collector</param>
+        public LanguageKeyGenerator(IProjectDbAccess projectDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector)
         {
             _projectDbAccess = projectDbAccess;
             _languageKeyDbAccess = languageKeyDbAccess;
+            _languageKeyReferenceCollector = languageKeyReferenceCollector;
         }
 
         /// <summary>
@@ -114,6 +121,7 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
             }  
             else
             {
+                _languageKeyReferenceCollector.CheckUsedLanguageKey(languageKey);
                 await _languageKeyDbAccess.UpdateLanguageKeyValue(languageKey.Id, value);
             }
 
@@ -138,6 +146,7 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
             }
             else
             {
+                _languageKeyReferenceCollector.CheckUsedLanguageKey(languageKey);
                 await _languageKeyDbAccess.UpdateLanguageKeyValue(languageKey.Id, value);
             }
 
@@ -163,6 +172,7 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
             languageKey.LangKey = uniqueLangKey;
             languageKey.Value = value;
 
+            _languageKeyReferenceCollector.CheckUsedLanguageKey(languageKey);
             await _languageKeyDbAccess.SaveNewLanguageKey(languageKey);
 
             return languageKey;

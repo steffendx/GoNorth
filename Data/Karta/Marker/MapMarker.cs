@@ -51,6 +51,12 @@ namespace GoNorth.Data.Karta.Marker
         [ListCompareAttribute(LabelKey = "MarkerGeometryChanged")]
         public List<MarkerGeometry> Geometry { get; set; }
 
+        /// <summary>
+        /// Script export name
+        /// </summary>
+        [ValueCompareAttribute]
+        public string ExportName { get; set; }
+
 
         /// <summary>
         /// true if the object is implemented, else false

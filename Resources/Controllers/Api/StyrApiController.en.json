@@ -6,6 +6,7 @@
     "CanNotDeleteItemMarkedInKartaMap": "The item is marked in the Karta maps \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteItemReferencedInTaleDialog": "The item is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteItemUsedInInventory": "The item is used in the npc inventories \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteItemUsedInDailyRoutine": "The item is referenced in daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",

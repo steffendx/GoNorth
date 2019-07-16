@@ -8,15 +8,37 @@
              * Modal Binding Handler
              */
             ko.bindingHandlers.modal = {
-                init: function (element, valueAccessor) {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     jQuery(element).modal({
                         show: false
                     });
+
+                    var beforeCloseCallback = null;
+                    if(allBindings.get("modalBeforeClose"))
+                    {
+                        beforeCloseCallback = allBindings.get("modalBeforeClose");
+                    }
             
                     var value = valueAccessor();
                     if (ko.isObservable(value)) {
-                        jQuery(element).on("hide.bs.modal", function() {
-                            value(false);
+                        jQuery(element).on("hide.bs.modal", function(e) {
+                            var shouldClose = true;
+                            if(beforeCloseCallback)
+                            {
+                                shouldClose = beforeCloseCallback.apply(bindingContext.$data);
+                            }
+
+                            if(shouldClose)
+                            {
+                                value(false);
+                            }
+                            else
+                            {
+                                value(true);
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                return false;
+                            }
                         });
                     }
 
@@ -112,6 +134,12 @@
                         }
                     }
 
+                    if(allBindings.get("richTextImageUploadStarted"))
+                    {
+                        var uploadStartCallback = allBindings.get("richTextImageUploadStarted");
+                        options.fileUploadStarted = function() { uploadStartCallback.apply(bindingContext.$data); }
+                    }
+
                     if(allBindings.get("richTextAddditionalImageUploadError"))
                     {
                         var uploadErrorCallback = allBindings.get("richTextAddditionalImageUploadError");
@@ -159,6 +187,50 @@
                         if(jQuery(element).val())
                         {
                             parsedValue = parseFloat(jQuery(element).val());
+                        }
+                        if(!isNaN(parsedValue))
+                        {
+                            value(parsedValue);
+                        }
+                        else
+                        {
+                            value(0.0);
+                        }
+                    });
+                },
+                update: function (element, valueAccessor) {
+                    var value = valueAccessor();
+                    if(ko.isObservable(value))
+                    {
+                        jQuery(element).val(value());
+                    }
+                    else
+                    {
+                        jQuery(element).val(value);
+                    }
+                }
+            };
+
+            /**
+             * Integer Binding Handler
+             */
+            ko.bindingHandlers.integer = {
+                init: function (element, valueAccessor) {
+                    var value = valueAccessor();
+                    if (!ko.isObservable(value)) {
+                        jQuery(element).val(value);
+                        return;
+                    }
+
+                    jQuery(element).keydown(function(e) {
+                        GoNorth.Util.validatePositiveIntegerKeyPress(element, e);
+                    });
+
+                    jQuery(element).change(function() {
+                        var parsedValue = 0.0;
+                        if(jQuery(element).val())
+                        {
+                            parsedValue = parseInt(jQuery(element).val());
                         }
                         if(!isNaN(parsedValue))
                         {

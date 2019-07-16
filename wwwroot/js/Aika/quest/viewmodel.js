@@ -55,6 +55,10 @@
                 this.loadingHasMarkersInKartaMaps = new ko.observable(false);
                 this.errorLoadingHasMarkersInKartaMaps = new ko.observable(false);
 
+                this.referencedInDailyRoutines = new ko.observableArray();
+                this.loadingReferencedInDailyRoutines = new ko.observable(false);
+                this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
+
                 this.showDeleteDialog = new ko.observable(false);
 
                 this.isLoading = new ko.observable(false);
@@ -90,6 +94,11 @@
                     if(GoNorth.Aika.Quest.hasKartaRights)
                     {
                         this.loadKartaMaps();
+                    }
+
+                    if(GoNorth.Aika.Quest.hasKortistoRights)
+                    {
+                        this.loadUsedInDailyRoutines();
                     }
 
                     this.acquireLock();
@@ -163,6 +172,30 @@
                     }
 
                     return self.chooseObjectDialog.openSkillSearch(Aika.Localization.QuestViewModel.ChooseSkill);                    
+                };
+
+                // Opens the daily routine event dialog
+                GoNorth.DefaultNodeShapes.openDailyRoutineEventSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.chooseObjectDialog.openDailyRoutineSearch(Aika.Localization.QuestViewModel.ChooseDailyRoutineEvent);                    
+                };
+
+                // Opens the marker search dialog
+                GoNorth.DefaultNodeShapes.openMarkerSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.chooseObjectDialog.openMarkerSearch(Aika.Localization.QuestViewModel.ChooseMarker);                    
                 };
 
                 // Load config lists
@@ -395,6 +428,35 @@
                return "/Karta?id=" + map.id + "&preSelectType=Quest&preSelectId=" + this.id();
             };
 
+
+            /**
+             * Loads the npcs in which the daily routines are used
+             */
+            Quest.ViewModel.prototype.loadUsedInDailyRoutines = function() {
+                this.loadingReferencedInDailyRoutines(true);
+                this.errorLoadingReferencedInDailyRoutines(false);
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id(), 
+                    type: "GET"
+                }).done(function(data) {
+                    self.referencedInDailyRoutines(data);
+                    self.loadingReferencedInDailyRoutines(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInDailyRoutines(true);
+                    self.loadingReferencedInDailyRoutines(false);
+                });
+            };
+
+            /**
+             * Builds the url for a Npcs
+             * 
+             * @param {object} npc Npc to build the url for
+             * @returns {string} Url for the npc
+             */
+            Quest.ViewModel.prototype.buildDailyRoutineNpcUrl = function(npc) {
+                return "/Kortisto/Npc?id=" + npc.id;
+            };
 
 
             /**

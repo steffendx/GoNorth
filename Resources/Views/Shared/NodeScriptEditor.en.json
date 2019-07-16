@@ -1,0 +1,23 @@
+{
+    "CreateNodeScript": "Create node system",
+    "EditNodeScript": "Edit node system",
+    "Confirm": "Confirm",
+    "Cancel": "Cancel",
+    
+    "Name": "Name",
+    "Nodes": "Nodes",
+
+    "AreYouSure": "Are you sure?",
+    "ThereAreUnsavedChanges": "Are you sure you want to close the dialog? Unsaved changes will be lost.",
+    "Yes": "Yes",
+    "No": "No",
+
+    "ConditionNode": "Condition",
+    "ActionNode": "Action",
+
+    "ChooseQuest": "Choose quest",
+    "ChooseNpc": "Choose npc",
+    "ChooseSkill": "Choose skill",
+    "ChooseDailyRoutineEvent": "Choose daily routine event",
+    "ChooseMarker": "Choose marker"
+}

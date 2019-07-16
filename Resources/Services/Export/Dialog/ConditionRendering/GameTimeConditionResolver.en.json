@@ -6,5 +6,5 @@
     "PlaceholderDesc_Tale_Condition_Time_Operator_Is_After_End": "End of the content that will only be rendered if the operator is 'after'.",
     "PlaceholderDesc_Tale_Condition_Time_Hours": "Hours for the comparison",
     "PlaceholderDesc_Tale_Condition_Time_Minutes": "Minutes for the comparison",
-    "PlaceholderDesc_Tale_Condition_Time_TotalMinutes": "Total minutes for the comparison. Will be calculated as Hours * 60 + Minutes."
+    "PlaceholderDesc_Tale_Condition_Time_TotalMinutes": "Total minutes for the comparison. Will be calculated as Hours * MinutesPerHour + Minutes."
 }

@@ -172,7 +172,7 @@ namespace GoNorth.Data.TaskManagement
         /// <returns>List of Task Boards</returns>
         public async Task<List<TaskBoard>> GetTaskBoardsByModifiedUser(string userId)
         {
-            return await _TaskBoardCollection.AsQueryable().Where(b => b.ModifiedBy == userId || b.TaskGroups.Any(t => t.ModifiedBy == userId || t.Tasks.Any(ta => t.ModifiedBy == userId))).ToListAsync();
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.ModifiedBy == userId || b.TaskGroups.Any(t => t.ModifiedBy == userId || t.Tasks.Any(ta => ta.ModifiedBy == userId))).ToListAsync();
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace GoNorth.Data.TaskManagement
         /// <returns>List of Taskboards</returns>
         public async Task<List<TaskBoard>> GetAllTaskBoardsByAssignedUser(string userId)
         {
-            return await _TaskBoardCollection.AsQueryable().Where(b => b.TaskGroups.Any(t => t.AssignedTo == userId || t.Tasks.Any(ta => t.AssignedTo == userId))).ToListAsync();
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.TaskGroups.Any(t => t.AssignedTo == userId || t.Tasks.Any(ta => ta.AssignedTo == userId))).ToListAsync();
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace GoNorth.Data.TaskManagement
         /// <returns>true if any task board has a task group or task without a task type</returns>
         public async Task<bool> AnyTaskBoardHasTasksWithoutType(string projectId)
         {
-            return await _TaskBoardCollection.AsQueryable().Where(b => b.ProjectId == projectId && b.TaskGroups.Any(t => t.Tasks.Any(ta => string.IsNullOrEmpty(t.TaskTypeId)))).AnyAsync();
+            return await _TaskBoardCollection.AsQueryable().Where(b => b.ProjectId == projectId && b.TaskGroups.Any(t => t.Tasks.Any(ta => string.IsNullOrEmpty(ta.TaskTypeId)))).AnyAsync();
         }
 
         /// <summary>

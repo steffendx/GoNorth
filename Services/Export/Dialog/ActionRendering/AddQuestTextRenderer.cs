@@ -117,7 +117,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
             string actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_QuestText).Replace(actionTemplate.Code, ExportUtil.EscapeCharacters(parsedData.QuestText, exportSettings.EscapeCharacter, exportSettings.CharactersNeedingEscaping, exportSettings.NewlineCharacter));
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_QuestText_Preview).Replace(actionCode, ExportUtil.BuildTextPreview(parsedData.QuestText));
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_QuestText_LangKey).Replace(actionCode, m => {
-                return _languageKeyGenerator.GetDialogTextLineKey(npc.Id, valueObject.Name, "quest", data.Id, parsedData.QuestText).Result;
+                return _languageKeyGenerator.GetDialogTextLineKey(npc.Id, valueObject.Name, ExportConstants.LanguageKeyTypeQuest, data.Id, parsedData.QuestText).Result;
             });
 
             ExportObjectData flexFieldExportData = new ExportObjectData();

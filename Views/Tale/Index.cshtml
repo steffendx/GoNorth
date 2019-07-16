@@ -9,14 +9,6 @@
 <div id="gn-taleDialogContainer">
     <h2 data-bind="text: headerName">@Localizer["Tale"]</h2>
 
-    <script type="text/html" id="gn-taleConditionInventoryCheck">
-    <!-- ko with: conditionData -->
-        <td colspan="2"><select data-bind="value: operator, options: availableOperators, optionsText: 'title', optionsValue: 'value'" class="form-control"></td>
-        <td><input type="text" data-bind="numeric: quantity" class="form-control" /></td>
-        <td><a data-bind="text: selectedItemName, click: chooseItem" class="gn-clickable"></a></td>
-    <!-- /ko -->
-    </script>
-
     <!-- ko with: conditionDialog -->
         @await Html.PartialAsync("~/Views/Shared/NodeConditionBase.cshtml")
     <!-- /ko -->
@@ -28,6 +20,11 @@
 
     <!-- Node Dialog -->
     @await Html.PartialAsync("~/Views/Shared/NodeGraphDialogs.cshtml")
+
+    <!-- Code Dialog -->
+    <!-- ko with: codeScriptDialog -->
+        @await Html.PartialAsync("~/Views/Shared/CodeScriptEditor.cshtml")
+    <!-- /ko -->
 
     @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
     {
@@ -46,13 +43,6 @@
         <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openCompareDialog, disable: isLoading() || isReadonly() || isImplemented(), visible: dialogId">
             <span data-bind="visible: isImplemented()" style="display: none"><i class="glyphicon glyphicon-ok text-success"></i> @Localizer["IsImplemented"]</span>
             <span data-bind="visible: !isImplemented()" title="@Localizer["IsNotImplementedTooltip"]"><i class="glyphicon glyphicon-remove text-danger"></i> @Localizer["MarkAsImplemented"]</span>
-        </button>
-    }
-
-    @if(User.IsInRole(RoleNames.TaleConfigManager))
-    {
-        <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openConfigPage">
-            <i class="glyphicon glyphicon-cog"></i> @Localizer["Configuration"]
         </button>
     }
 
@@ -109,6 +99,8 @@
 </div>
 
 @section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js" integrity="sha384-0BrUT26SU4JPtbvE/hI6oj4mbEXE32qhRoD51rUTB+QFrg6ViIceJR8op6FmEIA1" crossorigin="anonymous" asp-fallback-test="typeof _ != 'undefined'" asp-fallback-src="~/lib/jointjs/lodash.min.js"></script>
@@ -120,12 +112,18 @@
         <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"].Value).js" asp-append-version="true"></script>
         <script src="~/js/Tale/taleLang.@(Localizer["NodeLang"].Value).js" asp-append-version="true"></script>
 
+        <script src="~/lib/ace-builds/src-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-noconflict/ext-language_tools.js"></script>
+
         <script src="~/js/Shared/nodeGraph/nodeGraph.knockout.binding.js" asp-append-version="true"></script>
         <script src="~/js/Tale/dialog.viewmodel.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
         <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"].Value).min.js" asp-append-version="true"></script>
         <script src="~/js/Tale/taleLang.@(Localizer["NodeLang"].Value).min.js" asp-append-version="true"></script>
+
+        <script src="~/lib/ace-builds/src-min-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
 
         <script src="~/js/Shared/nodeGraph/nodeGraph.knockout.binding.min.js" asp-append-version="true"></script>
         <script src="~/js/Tale/dialog.viewmodel.min.js" asp-append-version="true"></script>

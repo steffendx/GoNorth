@@ -23,7 +23,7 @@
                 <a asp-area="" asp-controller="Manage" asp-action="Index" title="@Localizer["ManageUserProfile"]">@Localizer["HelloUser", @User.DisplayName()]</a>
             </li>
             <li>
-                <button type="submit" class="btn btn-link navbar-btn navbar-link">@Localizer["Logout"]</button>
+                <button type="submit" class="btn btn-link navbar-btn navbar-link" id="gn-logoutButton">@Localizer["Logout"]</button>
             </li>
         </ul>
     </form>

@@ -28,6 +28,10 @@
             Localization.QuestStates.Success = "Abgeschlossen";
             Localization.QuestStates.Failed = "Fehlgeschlagen";
 
+            // Dialog Title
+            Localization.Dialogs = {};
+            Localization.Dialogs.ChooseItem = "Item auswählen";
+
             // Actions
             GoNorth.DefaultNodeShapes.Localization.TypeNames["default.Action"] = "Aktion";
 
@@ -58,6 +62,8 @@
             Localization.Conditions.TextField = "Textfeld";
             Localization.Conditions.FieldWasDeleted = "Feld wurde gelöscht.";
 
+            Localization.Conditions.CheckNpcValueLabel = "Npc Wert prüfen";
+            Localization.Conditions.NpcLabel = "Npc";
             Localization.Conditions.CheckPlayerValueLabel = "Spieler Wert prüfen";
             Localization.Conditions.PlayerLabel = "Spieler";
 
@@ -90,7 +96,35 @@
 
             Localization.Conditions.CheckPlayerNotLearnedSkillLabel = "Spieler beherrscht Fähigkeit nicht";
             Localization.Conditions.CheckPlayerNotLearnedSkillPrefixLabel = "Spieler beherrscht nicht ";
-            
+
+            Localization.Conditions.CheckPlayerInventoryLabel = "Spieler Inventar prüfen";
+            Localization.Conditions.PlayerInventoryLabel = "Inventar Spieler";
+            Localization.Conditions.CheckNpcInventoryLabel = "Npc Inventar prüfen";
+            Localization.Conditions.NpcInventoryLabel = "Inventar Npc";
+            Localization.Conditions.ChooseItem = "<Item auswählen>";
+            Localization.Conditions.ItemOperatorHasAtLeast = "hat mindestens";
+            Localization.Conditions.ItemOperatorHasMaximum = "hat maximal";
+            Localization.Conditions.ItemCount = "Anz";
+
+            Localization.Conditions.CheckChooseNpcSkillValueLabel = "Npc Fähigkeits Wert prüfen";
+            Localization.Conditions.NpcSkillPrefix = "Npc ";
+
+            Localization.Conditions.CheckNpcLearnedSkillLabel = "Npc beherrscht Fähigkeit";
+            Localization.Conditions.CheckNpcLearnedSkillPrefixLabel = "Npc beherrscht ";
+
+            Localization.Conditions.CheckNpcNotLearnedSkillLabel = "Npc beherrscht Fähigkeit nicht";
+            Localization.Conditions.CheckNpcNotLearnedSkillPrefixLabel = "Npc beherrscht nicht ";
+
+            Localization.Conditions.CheckRandomValueLabel = "Zufallswert prüfen";
+            Localization.Conditions.Rand = "Zufallswert";
+
+            Localization.Conditions.ChooseDailyRoutineEvent = "<Tagesablauf Ereignis auswählen>";
+            Localization.Conditions.TimeFormat = "hh:mm";
+            Localization.Conditions.CheckDailyRoutineIsActive = "Tagesablauf ist aktiv prüfen";
+            Localization.Conditions.CheckDailyRoutineIsDisabled = "Tagesablauf ist deaktiviert prüfen";
+            Localization.Conditions.DailyRoutineEventIsActive = "Tagesablauf {0} aktiv";
+            Localization.Conditions.DailyRoutineEventIsDisabled = "Tagesablauf {0} deaktiviert";
+
             // Actions
             Localization.Actions = {};
 
@@ -98,6 +132,7 @@
             Localization.Actions.TextField = "Textfeld";
 
             Localization.Actions.ChangePlayerValueLabel = "Spieler Wert ändern";
+            Localization.Actions.ChangeNpcValueLabel = "Npc Wert ändern";
             Localization.Actions.ChangeQuestValueLabel = "Beliebigen Quest Wert ändern";
             Localization.Actions.ChooseQuestLabel = "&lt;Quest auswählen&gt;";
             
@@ -120,7 +155,8 @@
 
             Localization.Actions.StatePlaceholder = "Zustand";
 
-            Localization.Actions.SetPlayerStateLabel = "Spielerzustand ändern";
+            Localization.Actions.SetPlayerStateLabel = "Spieler Zustand festlegen";
+            Localization.Actions.SetNpcStateLabel = "Npc Zustand festlegen";
 
             Localization.Actions.ChooseSkillLabel = "&lt;Fähigkeit auswählen&gt;";
             Localization.Actions.OpenSkillTooltip = "Öffnet die ausgewählte Fähigkeit";
@@ -128,7 +164,64 @@
             Localization.Actions.PlayerLearnSkillLabel = "Spieler lernt Fähigkeit";
             Localization.Actions.PlayerForgetSkillLabel = "Spieler vergisst Fähigkeit";
 
+            Localization.Actions.NpcLearnsSkillLabel = "Npc lernt Fähigkeit";
+            Localization.Actions.NpcForgetSkillLabel = "Npc vergisst Fähigkeit";
+
             Localization.Actions.ChangePlayerSkillValueLabel = "Spieler Fähigkeit Wert ändern";
+            Localization.Actions.ChangeNpcSkillValueLabel = "Npc Fähigkeit Wert ändern";
+
+            Localization.Actions.AnimationPlaceholder = "Animationsname";
+            Localization.Actions.PlayNpcAnimationLabel = "Npc Animation abspielen";
+            Localization.Actions.PlayPlayerAnimationLabel = "Spieler Animation abspielen";
+
+            Localization.Actions.ChooseItem = "<Item auswählen>";
+            Localization.Actions.OpenItemTooltip  = "Öffnet das ausgewählte Item";
+            Localization.Actions.SpawnItemInPlayerInventoryLabel = "Item in Spieler inventar spawnen";
+            Localization.Actions.SpawnItemInNpcInventoryLabel = "Item in Npc inventar spawnen";
+            Localization.Actions.TransferItemToPlayerInventoryLabel = "Item an Spieler übergeben";
+            Localization.Actions.TransferItemToNpcInventoryLabel = "Item an Npc übergeben";
+            Localization.Actions.ItemQuantity = "Anzahl (leer = 1):";
+
+            Localization.Actions.CodeActionLabel = "Scriptcode";
+            Localization.Actions.ClickHereToEditCode = "&lt;Hier klicken um den Code zu editieren&gt;";
+            
+            Localization.Actions.FloatingText = "Text";
+            Localization.Actions.ShowFloatingTextAboveNpcLabel = "Text über Npc anzeigen";
+            Localization.Actions.ShowFloatingTextAbovePlayerLabel = "Text über Spieler anzeigen";
+            Localization.Actions.ShowFloatingTextAboveChooseNpcLabel = "Text über beliebigen Npc anzeigen";
+            Localization.Actions.ChooseNpcLabel = "&lt;Npc auswählen&gt;";
+            Localization.Actions.OpenNpcTooltip = "Öffnet den ausgewählten Npc";
+
+            Localization.Actions.FadeTimePlaceholder = "Übergangszeit";
+            Localization.Actions.FadeToBlackLabel = "Zu Schwarz überblenden";
+            Localization.Actions.FadeFromBlackLabel = "Zurück von Schwarz überblenden";
+
+            Localization.Actions.RemoveItemFromNpcInventoryLabel = "Item aus Npc inventar entfernen";
+            Localization.Actions.RemoveItemFromPlayerInventoryLabel = "Item aus Spieler inventar entfernen";
+
+            Localization.Actions.SetGameTimeActionLabel = "Spielzeit festlegen";
+            Localization.Actions.TimeFormat = "hh:mm";
+            
+            Localization.Actions.ChooseDailyRoutineEvent = "&lt;Tagesablauf Ereignis auswählen&gt;";
+            Localization.Actions.OpenDailyRoutineEventNpcTooltip = "Öffnet den Npc zu dem das ausgewählte Ereignis gehört";
+            Localization.Actions.DisableDailyRoutineEventLabel = "Tagesablauf Ereignis deaktivieren";
+            Localization.Actions.EnableDailyRoutineEventLabel = "Tagesablauf Ereignis aktivieren";
+
+            Localization.Actions.ChooseMarkerLabel = "&lt;Markierung auswählen&gt;";
+            Localization.Actions.OpenMarkerTooltip = "Öffnet die Karte und zoomt auf den Marker";
+            Localization.Actions.TeleportNpcLabel = "Npc teleportieren";
+            Localization.Actions.TeleportPlayerLabel = "Spieler teleportieren";
+            Localization.Actions.TeleportChooseNpcLabel = "Beliebigen Npc teleportieren";
+            Localization.Actions.TeleportTo = "teleportieren nach";
+            Localization.Actions.WalkNpcLabel = "Npc zu Markierung bewegen";
+            Localization.Actions.WalkChooseNpcLabel = "Beliebigen Npc zu Markierung bewegen";
+            Localization.Actions.WalkTo = "bewegen nach";
+            Localization.Actions.TeleportNpcToNpcLabel = "Npc zu Npc teleportieren";
+            Localization.Actions.TeleportChooseNpcToNpcLabel = "Beliebigen Npc zu Npc teleportieren";
+            Localization.Actions.TeleportToNpc = "teleportieren zu";
+            Localization.Actions.WalkNpcToNpcLabel = "Npc zu Npc bewegen";
+            Localization.Actions.WalkChooseNpcToNpcLabel = "Beliebigen Npc zu Npc bewegen";
+            Localization.Actions.WalkToNpc = "bewegen zu";
 
         }(DefaultNodeShapes.Localization = DefaultNodeShapes.Localization || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));

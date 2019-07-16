@@ -53,6 +53,34 @@
     "RemoveSkill": "Fähigkeit entfernen", 
     "AreYouSureYouWantToRemoveTheSkill": "Bist du sicher das die Fähigkeit entfernt werden soll?",
 
+    "DailyRoutine": "Tagesablauf",
+    "PleaseSaveToEditDailyRoutine": "Bitte speichere den Npc um den Tagesablauf zu bearbeiten.",
+    "AddMovementEvent": "Neues Bewegungsziel",
+    "AddScriptEvent": "Neues Skriptereigniss",
+    "HideDisabledEvents": "Deaktivierte Ereignisse verstecken",
+    "ShowAllEvents": "Alle Ereignisse anzeigen",
+    "AddEvent": "Ereignis einfügen",
+    "EditEvent": "Ereignis bearbeiten",
+    "RandomTimeFrame": "Zeitpunkt (Zufallswert im Zeitraum)",
+    "EarliestTime": "Frühestens",
+    "LatestTime": "Spätestens",
+    "EnabledByDefault": "Standardmäßig aktiv",
+    "Next": "Weiter",
+    "Time": "Uhrzeit",
+    "EventType": "Eventtyp",
+    "MovementTarget": "Bewegungsziel",
+    "TargetState": "Zielzustand",
+    "MovementEvent": "Bewegungsziel",
+    "ScriptEvent": "Skriptereigniss",
+    "AreYouSureYouWantToRemoveTheEvent": "Bist du sicher das das Ereignis entfernt werden soll?",
+    "EditEventToolTip": "Ereignis bearbeiten",
+    "DeleteEventToolTip": "Ereignis löschen",
+    "TimeEventsOverlap": "Es gibt aktive Ereignisse die sich überlappen. Der Tagesablauf könnte nicht vorhersehbar sein.",
+    "Confirm": "Übernehmen",
+    "WarningNoMapMarker": "Warnung",
+    "TheNpcHasNoMarkerInAnyMap": "Der Npc ist in keiner Karte markiert. Es empfiehlt sich eine Npc Markierung einzufügen bevor Bewegungsziele für den Tagesablauf eingefügt werden.",
+    "Continue": "Fortsetzen",
+
     "ExportResult": "Export Ergebnis",
     "Warning": "Warnung:",
     "ExportErrorsOccured": "Es sind Fehler beim Export aufgetreten.",
@@ -70,6 +98,8 @@
     "MarkedInMapNTimes": "Npc ist in Karte {{0}} mal markiert. Kein Zoom auf Markierung möglich.",
 
     "ReferencedInTaleDialogs": "Referenziert in Tale Dialogen:",
+
+    "ReferencedInDailyRoutines": "Referenziert in Tagesabläufen:",
 
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteTheObject": "Bist du sicher das der Npc gelöscht werden soll?",
@@ -92,5 +122,6 @@
     "LockedPostfix": " bearbeitet.",
 
     "RichTextLocale": "de",
-    "DropzoneLocale": "de"
+    "DropzoneLocale": "de",
+    "TimeFormat": "hh:mm"
 }

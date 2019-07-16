@@ -21,6 +21,11 @@ namespace GoNorth.Data.Exporting
         public string ObjectId { get; set; }
 
         /// <summary>
+        /// Sub category for the counter
+        /// </summary>
+        public string SubCategory { get; set; }
+
+        /// <summary>
         /// Current Function Id
         /// </summary>
         public int CurExportFunctionId { get; set; }

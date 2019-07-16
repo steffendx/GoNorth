@@ -50,6 +50,15 @@ Using the dialog planning module a user can create the branching dialogs for the
 GoNorth provides different dialog nodes for player or npc lines, player choices, conditions or actions.  
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Tale).
 
+### Daily routine planning
+To help you build a living world, GoNorth allows you to easily define a daily routine for any Npc:  
+
+![Daily Routines](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/DailyRoutines.png?raw=true)  
+
+You can define movement targets for npcs as well as scripts that are run at a certain time of day. This way you can really let your world come to live.  
+More details can be found in the [wiki](https://github.com/steffendx/GoNorth/wiki/Kortisto)
+
+
 ### Exporting
 GoNorth supports exporting Npcs, Dialogs, Skills and Items to JSON and scripts.
 
@@ -108,7 +117,7 @@ The next steps which I will implement in the future are:
 ## License
 GoNorth is open source and released under the [MIT LICENSE](LICENSE).
 
-Copyright (c) 2018 Steffen Noertershaeuser.
+Copyright (c) 2018, 2019 Steffen Noertershaeuser.
 
 ## Acknowledgement
 GoNorth uses the following libraries:
@@ -118,6 +127,7 @@ GoNorth uses the following libraries:
  * [Knockout](http://knockoutjs.com/) licensed under MIT
  * [Leaflet](http://leafletjs.com/) licensed under BSD-License
  * [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) licensed under MIT
+ * [Leaflet.TextPath](https://github.com/makinacorpus/Leaflet.TextPath) licensed under MIT
  * [JointJS](https://www.jointjs.com) licensed under Mozilla Public License Version 2.0
  * [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) licensed under Apache License 2.0
  * [Moment](https://github.com/moment/moment) licensed under MIT
@@ -128,7 +138,10 @@ GoNorth uses the following libraries:
  * [bootstrap-wysiwyg](https://github.com/mindmup/bootstrap-wysiwyg) licensed under MIT
  * [bootstrap-tagsinput](https://github.com/bootstrap-tagsinput/bootstrap-tagsinput) licensed under MIT
  * [eonasdan-bootstrap-datetimepicker](https://github.com/Eonasdan/bootstrap-datetimepicker) licensed under MIT
+ * [bootstrap-colorpicker](https://github.com/itsjavi/bootstrap-colorpicker) licensed under Apache License 2.0
  * [Fantasy Name Generator](https://github.com/skeeto/fantasyname) licensed under The Unlicense
  * [Ace Editor](https://ace.c9.io/) licensed under BSD-License
  * [knockout-sortable](https://github.com/rniemeyer/knockout-sortable/) licensed under MIT
  * [htmldiff.js](https://github.com/tnwinc/htmldiff.js) licensed under MIT
+ * [mocha](https://github.com/mochajs/mocha) licensed under MIT
+ * [Puppeteer](https://github.com/GoogleChrome/puppeteer) licensed under Apache License 2.0

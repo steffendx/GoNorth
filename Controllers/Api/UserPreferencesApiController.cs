@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GoNorth.Data.Exporting;
+using GoNorth.Data.Project;
 using GoNorth.Data.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,9 +19,35 @@ namespace GoNorth.Controllers.Api
     public class UserPreferencesApiController : Controller
     {
         /// <summary>
+        /// User Code Editor preferences
+        /// </summary>
+        public class UserCodeEditorPreferences
+        {
+            /// <summary>
+            /// Code Editor Theme
+            /// </summary>
+            public string CodeEditorTheme { get; set; }
+
+            /// <summary>
+            /// Script Language
+            /// </summary>
+            public string ScriptLanguage { get; set; }
+        };
+
+        /// <summary>
         /// User Preferences Db Service
         /// </summary>
         private readonly IUserPreferencesDbAccess _userPreferencesDbAccess;
+
+        /// <summary>
+        /// Export Settings Db Access
+        /// </summary>
+        private readonly IExportSettingsDbAccess _exportSettingsDbAccess;
+        
+        /// <summary>
+        /// Project Db Access
+        /// </summary>
+        private readonly IProjectDbAccess _projectDbAccess;
 
         /// <summary>
         /// User Manager
@@ -35,11 +63,16 @@ namespace GoNorth.Controllers.Api
         /// Constructor
         /// </summary>
         /// <param name="userPreferencesDbAccess">User Preferences Db Access</param>
+        /// <param name="exportSettingsDbAccess">Export settings Db Access</param>
+        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="logger">Logger</param>
-        public UserPreferencesApiController(IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, ILogger<UtilApiController> logger)
+        public UserPreferencesApiController(IUserPreferencesDbAccess userPreferencesDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager, 
+                                            ILogger<UtilApiController> logger)
         {
             _userPreferencesDbAccess = userPreferencesDbAccess;
+            _exportSettingsDbAccess = exportSettingsDbAccess;
+            _projectDbAccess = projectDbAccess;
             _userManager = userManager;
             _logger = logger;
         }
@@ -71,6 +104,28 @@ namespace GoNorth.Controllers.Api
             await _userPreferencesDbAccess.SetUserCodeEditorTheme(currentUser.Id, preferences.CodeEditorTheme);
 
             return Ok();
+        }
+
+
+        /// <summary>
+        /// Returns the code editor preferences
+        /// </summary>
+        /// <returns>Code editor Preferences</returns>
+        [Produces(typeof(UserCodeEditorPreferences))]
+        [HttpGet]
+        public async Task<IActionResult> GetCodeEditorPreferences()
+        {
+            GoNorthUser currentUser = await _userManager.GetUserAsync(this.User);
+            UserPreferences userPreferences = await _userPreferencesDbAccess.GetUserPreferences(currentUser.Id);
+
+            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            ExportSettings settings = await _exportSettingsDbAccess.GetExportSettings(defaultProject.Id);
+
+            UserCodeEditorPreferences codeEditorPreferences = new UserCodeEditorPreferences();
+            codeEditorPreferences.CodeEditorTheme = userPreferences.CodeEditorTheme;
+            codeEditorPreferences.ScriptLanguage = settings.ScriptLanguage;
+
+            return Ok(codeEditorPreferences);
         }
 
     }

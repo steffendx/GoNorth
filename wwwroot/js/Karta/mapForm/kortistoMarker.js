@@ -18,6 +18,8 @@
                 this.npcId = npcId;
                 this.npcName = npcName;
 
+                this.disableExportNameSetting = true;
+
                 this.isTrackingImplementationStatus = true;
 
                 this.serializePropertyName = "NpcMarker";
@@ -55,6 +57,19 @@
             }
 
             /**
+             * Returns the additional popup buttons for the marker
+             * @returns {object[]} Additional popup buttons
+             */
+            Map.KortistoMarker.prototype.getAdditionalPopupButtons = function() {
+                return [{
+                    cssClass: "gn-kartaManageDailyRoutine",
+                    icon: "glyphicon glyphicon-hourglass",
+                    title: Map.Localization.KortistoEditDailyRoutineTooltip,
+                    callback: this.editDailyRoutine
+                }];
+            }
+
+            /**
              * Loads the content
              * 
              * @returns {jQuery.Deferred} Deferred
@@ -63,9 +78,7 @@
                 var def = new jQuery.Deferred();
 
                 var self = this;
-                jQuery.ajax({
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + this.npcId
-                }).done(function(npc) {
+                Map.loadNpcCached(this.npcId).done(function(npc) {
                     var npcHtml = "<h4><a href='/Kortisto/Npc?id=" + self.npcId + "' target='_blank'>" + npc.name + "</a></h4>";
                     if(npc.imageFile)
                     {
@@ -91,6 +104,14 @@
                 serializedObject.npcId = this.npcId;
                 serializedObject.npcName = this.npcName;
                 return serializedObject;
+            }
+
+
+            /**
+             * Edits the daily routines of the npc
+             */
+            Map.KortistoMarker.prototype.editDailyRoutine = function() {
+                Map.editDailyRoutineOfMarker(this);
             }
 
         }(Karta.Map = Karta.Map || {}));

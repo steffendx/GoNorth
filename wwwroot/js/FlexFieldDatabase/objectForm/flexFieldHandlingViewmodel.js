@@ -171,7 +171,6 @@
                         return;
                     }
 
-                    // TODO: Check for field edit to ignore current ifeld
                     if(this.fieldManager.isFieldNameInUse(this.createEditFieldName(), this.fieldToEdit))
                     {
                         this.showDuplicateFieldNameError(true);

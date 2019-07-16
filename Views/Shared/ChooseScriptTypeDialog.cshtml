@@ -1,0 +1,29 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<div class="modal fade" role="dialog" data-bind="modal: isVisible">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Localizer["ChooseScriptType"]</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <h5 class="gn-scriptTypeDialogHeader">@Localizer["NodeGraphScriptTitle"]</h5>
+                    <p>@Localizer["NodeGraphScriptDescription"]</p>
+                    <button type="button" class="btn btn-primary" data-bind="click: createNodeGraph">@Localizer["CreateNodeGraphScript"]</button>
+                </div>
+                <div class="gn-defaultContentTopMargin">
+                    <h5 class="gn-scriptTypeDialogHeader">@Localizer["CodeScriptTitle"]</h5>
+                    <p>@Localizer["CodeScriptDescription"]</p>
+                    <button type="button" class="btn btn-primary" data-bind="click: createCodeScript">@Localizer["CreateCodeScript"]</button>
+                </div>
+            </div>
+            <div class="modal-footer">   
+                <button type="button" class="btn btn-default" data-bind="click: cancelDialog">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

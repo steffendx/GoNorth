@@ -94,7 +94,7 @@
     <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Model.Localizer["Save"]
 </button>
 
-<button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: saveAndDistributeFields, disable: isLoading() || isReadonly(), visible: isTemplateMode" style="display: none">
+<button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: saveAndDistributeFields, disable: isLoading() || isReadonly(), visible: isTemplateMode" style="display: none" id="gn-flexFieldDetailFormDistributeFieldsButton">
     <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Model.Localizer["SaveAndDistributeFields"]
 </button>
 

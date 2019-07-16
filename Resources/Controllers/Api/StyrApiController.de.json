@@ -6,6 +6,7 @@
     "CanNotDeleteItemMarkedInKartaMap": "Das Item ist in den Karta Karten \"{0}\" markiert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemReferencedInTaleDialog": "Das Item ist in den Tale Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemUsedInInventory": "Das Item wird in den Inventaren der Npcs \"{0}\" benutzt. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteItemUsedInDailyRoutine": "Das Item ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
 
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",

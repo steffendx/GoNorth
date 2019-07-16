@@ -1365,7 +1365,6 @@
                         return;
                     }
 
-                    // TODO: Check for field edit to ignore current ifeld
                     if(this.fieldManager.isFieldNameInUse(this.createEditFieldName(), this.fieldToEdit))
                     {
                         this.showDuplicateFieldNameError(true);
@@ -1678,6 +1677,10 @@
                 this.referencedInTaleDialogs = new ko.observableArray();
                 this.loadingReferencedInTaleDialogs = new ko.observable(false);
                 this.errorLoadingReferencedInTaleDialogs = new ko.observable(false);
+                
+                this.referencedInDailyRoutines = new ko.observableArray();
+                this.loadingReferencedInDailyRoutines = new ko.observable(false);
+                this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
 
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
@@ -1748,6 +1751,11 @@
                     if(GoNorth.FlexFieldDatabase.ObjectForm.hasTaleRights && !this.isTemplateMode())
                     {
                         this.loadTaleDialogs();
+                    } 
+
+                    if(GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights && !this.isTemplateMode())
+                    {
+                        this.loadUsedInDailyRoutines();
                     } 
 
                     this.loadAdditionalDependencies();
@@ -1986,6 +1994,12 @@
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
+
+                    // If object is related to anything that prevents deleting a bad request (400) will be returned
+                    if(xhr.status == 400 && xhr.responseText)
+                    {
+                        self.additionalErrorDetails(xhr.responseText);
+                    }
                 });
             };
 
@@ -2401,6 +2415,36 @@
              */
             ObjectForm.BaseViewModel.prototype.buildTaleDialogUrl = function(dialogNpc) {
                 return "/Tale?npcId=" + dialogNpc.id;
+            };
+
+
+            /**
+             * Loads the npcs in which the daily routines are used
+             */
+            ObjectForm.BaseViewModel.prototype.loadUsedInDailyRoutines = function() {
+                this.loadingReferencedInDailyRoutines(true);
+                this.errorLoadingReferencedInDailyRoutines(false);
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id(), 
+                    type: "GET"
+                }).done(function(data) {
+                    self.referencedInDailyRoutines(data);
+                    self.loadingReferencedInDailyRoutines(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInDailyRoutines(true);
+                    self.loadingReferencedInDailyRoutines(false);
+                });
+            };
+
+            /**
+             * Builds the url for a Npcs
+             * 
+             * @param {object} npc Npc to build the url for
+             * @returns {string} Url for the npc
+             */
+            ObjectForm.BaseViewModel.prototype.buildDailyRoutineNpcUrl = function(npc) {
+                return "/Kortisto/Npc?id=" + npc.id;
             };
 
 

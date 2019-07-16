@@ -24,9 +24,11 @@
             Conditions.CheckGameTimeCondition = function()
             {
                 GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
             };
 
             Conditions.CheckGameTimeCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+            Conditions.CheckGameTimeCondition.prototype = jQuery.extend(Conditions.CheckGameTimeCondition.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
 
             /**
              * Returns the template name for the condition
@@ -75,6 +77,44 @@
             };
 
             /**
+             * Returns the object resource
+             * 
+             * @returns {string} Object Id
+             */
+            Conditions.CheckGameTimeCondition.prototype.getObjectId = function() {
+                return "ProjectMiscConfig";
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckGameTimeCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceProjectMiscConfig;
+            };
+            
+            /**
+             * Loads the project config
+             * 
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckGameTimeCondition.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+                
+                jQuery.ajax({ 
+                    url: "/api/ProjectConfigApi/GetMiscConfig", 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
              * Creates a time operator object
              * 
              * @param {number} timeOperator Time operator
@@ -96,12 +136,6 @@
              * @returns {object} Condition data
              */
             Conditions.CheckGameTimeCondition.prototype.buildConditionData = function(existingData, element) {
-                var gameTimeHours = [];
-                for(var curHour = 0; curHour < 24; ++curHour)
-                {
-                    gameTimeHours.push(curHour);
-                }
-
                 var gameTimeMinutes = [];
                 for(var curMinute = 0; curMinute < 60; curMinute += 5)
                 {
@@ -111,22 +145,28 @@
 
                 var conditionData = {
                     selectedGameTimeOperator: new ko.observable(),
-                    selectedGameTimeHour: new ko.observable(),
-                    selectedGameTimeMinutes: new ko.observable(),
+                    selectedGameTime: new ko.observable(GoNorth.BindingHandlers.buildTimeObject(0, 0)),
                     gameTimeOperators: [
                         this.createTimeOperator(gameTimeOperatorBefore),
                         this.createTimeOperator(gameTimeOperatorAfter)
                     ],
-                    gameTimeHours: gameTimeHours,
-                    gameTimeMinutes: gameTimeMinutes
+                    hoursPerDay: new ko.observable(24),
+                    minutesPerHour: new ko.observable(60)
                 };
+
+                // Load config
+                this.loadObjectShared({}).done(function(miscConfig) {
+                    conditionData.hoursPerDay(miscConfig.hoursPerDay);
+                    conditionData.minutesPerHour(miscConfig.minutesPerHour);
+                }).fail(function() {
+                    element.errorOccured(true);
+                })
 
                 // Load existing data
                 if(existingData)
                 {
                     conditionData.selectedGameTimeOperator(existingData.operator);
-                    conditionData.selectedGameTimeHour(existingData.hour);
-                    conditionData.selectedGameTimeMinutes(existingData.minutes)
+                    conditionData.selectedGameTime(GoNorth.BindingHandlers.buildTimeObject(existingData.hour, existingData.minutes));
                 }
 
                 return conditionData;
@@ -141,8 +181,8 @@
             Conditions.CheckGameTimeCondition.prototype.serializeConditionData = function(conditionData) {
                 return {
                     operator: conditionData.selectedGameTimeOperator(),
-                    hour: conditionData.selectedGameTimeHour(),
-                    minutes: conditionData.selectedGameTimeMinutes()
+                    hour: conditionData.selectedGameTime().hours,
+                    minutes: conditionData.selectedGameTime().minutes
                 };
             };
 

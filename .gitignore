@@ -311,3 +311,5 @@ MapImages/*/**
 TaskImages/**
 SkillImages/**
 dbdata/**
+
+xunit.xml

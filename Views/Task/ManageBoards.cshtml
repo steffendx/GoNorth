@@ -105,7 +105,7 @@
     </div>
 
     <!-- Create / Edit Dialog -->
-    <div class="modal fade" role="dialog" data-bind="modal: showBoardCreateEditDialog">
+    <div class="modal fade" role="dialog" data-bind="modal: showBoardCreateEditDialog" id="gn-taskManageBoardsNewBoardDialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -262,7 +262,7 @@
     </script>
 
     <!-- Command Buttons -->
-    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openNewBoardDialog, disable: isLoading()">
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: openNewBoardDialog, disable: isLoading()" id="gn-taskManageBoardsNewBoardButton">
         <i class="glyphicon glyphicon-plus" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["CreateNewBoard"]
     </button>
 

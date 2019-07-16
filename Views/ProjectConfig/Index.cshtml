@@ -1,0 +1,135 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = @Localizer["ProjectConfig"];
+}
+
+<div id="gn-projectConfigContainer">
+    <h2>@ViewData["Title"]</h2>
+
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <div data-bind="template: { name: 'gn-projectConfigTextareaSection', data: animationConfigSection }"></div>
+    <div data-bind="template: { name: 'gn-projectConfigTextareaSection', data: stateConfigSection }"></div>
+    <div data-bind="template: { name: 'gn-projectConfigDayHourMinuteSection', data: dayHourMinuteConfigSection }"></div>
+</div>
+
+<!-- Textarea section -->
+<script type="text/html" id="gn-projectConfigTextareaSection">
+    <h3 class="gn-clickable gn-projectConfigTextareaSectionButton" data-bind="click: toggleVisibility">
+        <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i>
+        <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i>
+        <span data-bind="text: title"></span>
+        <i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorOccured"></i>
+    </h3>
+
+    <div data-bind="visible: isExpanded" style="display: none" class="gn-projectConfigTextareaSectionContainer">
+        <div data-bind="text: description"></div>
+
+        <button type="button" class="btn btn-primary gn-defaultContentTopMargin" data-bind="click: saveConfig, disable: $root.isReadonly">
+            <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+            @Localizer["Save"]
+        </button>
+
+        <textarea type="text" class="form-control gn-nonResizeable gn-projectConfigTextArea" data-bind="value: configData, disable: $root.isReadonly"></textarea>
+    </div>
+</script>
+
+<!-- Day/Hour section -->
+<script type="text/html" id="gn-projectConfigDayHourMinuteSection">
+    <h3 class="gn-clickable gn-projectConfigDayHourMinuteSectionToggleButton" data-bind="click: toggleVisibility">
+        <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i>
+        <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i>
+        @Localizer["DayHourMinutesConfig"]
+        <i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorOccured"></i>
+    </h3>
+
+    <div data-bind="visible: isExpanded" style="display: none" class="gn-projectConfigDayHourMinuteSectionContainer">
+        <div class="alert alert-warning" role="alert" data-bind="visible: npcsOutsideTimeRange().length > 0">
+            <strong>@Localizer["Warning"]</strong> @Localizer["ThereAreNpcsWithEventsOutsideTheSpecifiedTimeSpan"] <a class="gn-clickable" data-bind="click: openNpcsOutsideSpecifiedTimeSpanDialog">@Localizer["ClickHereToShowTheseNpcs"]</a>
+        </div>
+
+        <button type="button" class="btn btn-primary gn-defaultContentTopMargin" data-bind="click: saveConfig, disable: $root.isReadonly">
+            <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+            @Localizer["Save"]
+        </button>
+        
+        <form id="gn-projectConfigDayHourForm" class="gn-defaultContentTopMargin">
+            <div class="form-group">
+                <label for="gn-hoursPerDay">@Localizer["HoursPerDay"]</label>
+                <input type="text" class="form-control" id="gn-hoursPerDay" placeholder="@Localizer["HoursPerDay"]" name="hoursPerDay" data-bind="integer: hoursPerDay, disable: $root.isReadonly" required/>
+            </div>
+            <div class="form-group">
+                <label for="gn-minutesPerHour">@Localizer["MinutesPerHour"]</label>
+                <input type="text" class="form-control" id="gn-minutesPerHour" placeholder="@Localizer["MinutesPerHour"]" name="minutesPerHour" data-bind="integer: minutesPerHour, disable: $root.isReadonly" required/>
+            </div>
+        </form>
+
+        <!-- Warning that npc has no markers in any map -->
+        <div class="modal fade" role="dialog" data-bind="modal: showNpcsOutsideSpecifiedTimeSpanDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">@Localizer["NpcsOutsideTimeSpan"]</h4>
+                    </div>
+                    <div class="modal-body gn-projectConfigNpcOutsideTimespanList">
+                        <ul data-bind="foreach: npcsOutsideTimeRange">
+                            <li><a target="_blank" data-bind="text: name, href: $parent.buildNpcLink"></a></li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bind="click: closeNpcsOutsideSpecifiedTimeSpanDialog">@Localizer["Ok"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</script>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/ProjectConfig/config.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/ProjectConfig/config.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+
+    <script type="text/javascript">
+        GoNorth.ProjectConfig.Config.Localization = {
+            "AnimationConfigSectionHeader": "@Localizer["AnimationConfigSectionHeader"]",
+            "AnimationConfigSectionDescription": "@Localizer["AnimationConfigSectionDescription"]",
+
+            "StateConfigSectionHeader": "@Localizer["StateConfigSectionHeader"]",
+            "StateConfigSectionDescription": "@Localizer["StateConfigSectionDescription"]"
+        };
+
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <text>
+            GoNorth.ProjectConfig.Config.hasKortistoRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.ProjectConfig.Config.hasKortistoRights = false;
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.ProjectConfig.Config.ViewModel(), jQuery("#gn-projectConfigContainer")[0]);
+        });
+    </script>
+}

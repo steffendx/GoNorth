@@ -14,7 +14,7 @@
 </script>
 
 <!-- Compare Dialog -->
-<div class="modal fade" role="dialog" data-bind="modal: isOpen">
+<div class="modal fade gn-implementationCompareDialogContainer" role="dialog" data-bind="modal: isOpen">
     <div class="modal-dialog gn-implementationCompareDialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -32,7 +32,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bind="click: markAsImplemented">@Localizer["MarkAsImplemented"]</button>
-                <button type="button" class="btn btn-default" data-bind="click: closeDialog">@Localizer["Cancel"]</button>
+                <button type="button" class="btn btn-default gn-implementationCompareDialogCancelButton" data-bind="click: closeDialog">@Localizer["Cancel"]</button>
             </div>
         </div>
     </div>

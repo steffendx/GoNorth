@@ -121,7 +121,7 @@ namespace GoNorth.Services.Export.Dialog
             renderResult.StepCode = ExportUtil.BuildPlaceholderRegex(Placeholder_TextLine).Replace(renderResult.StepCode, ExportUtil.EscapeCharacters(textNode.Text, _exportSettings.EscapeCharacter, _exportSettings.CharactersNeedingEscaping, _exportSettings.NewlineCharacter));
             renderResult.StepCode = ExportUtil.BuildPlaceholderRegex(Placeholder_TextLine_Preview).Replace(renderResult.StepCode, ExportUtil.BuildTextPreview(textNode.Text));
             renderResult.StepCode = ExportUtil.BuildPlaceholderRegex(Placeholder_TextLine_LangKey).Replace(renderResult.StepCode, m => {
-                return _languageKeyGenerator.GetDialogTextLineKey(npc.Id, npc.Name, _isPlayerLine ? "player" : "npc", textNode.Id, textNode.Text).Result;
+                return _languageKeyGenerator.GetDialogTextLineKey(npc.Id, npc.Name, _isPlayerLine ? ExportConstants.LanguageKeyTypePlayer : ExportConstants.LanguageKeyTypeNpc, textNode.Id, textNode.Text).Result;
             });
 
             return renderResult;

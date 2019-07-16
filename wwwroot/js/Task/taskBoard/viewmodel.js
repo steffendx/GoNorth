@@ -1032,6 +1032,14 @@
                 },
 
                 /**
+                 * Callback if an image upload is started 
+                 */
+                uploadStart: function() {
+                    this.isLoading(true);
+                    this.resetErrorState();
+                },
+
+                /**
                  * Callback if an error occured during upload
                  * 
                  * @param {string} errorMessage Error Message

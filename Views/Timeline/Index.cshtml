@@ -40,7 +40,7 @@
             <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !prevLoading()"></i>
             <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: prevLoading"></i>
         </button>
-        <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]">
+        <button class="btn btn-default" data-bind="enable: hasMore() && !isLoading(), click: nextPage" title="@Localizer["NextPage"]" id="gn-timeLineNext">
             <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !nextLoading()"></i>
             <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: nextLoading"></i>
         </button>

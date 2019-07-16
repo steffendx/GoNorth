@@ -12,6 +12,7 @@ using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.LockService;
 using GoNorth.Data.Project;
+using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using GoNorth.Data.TaskManagement;
@@ -262,9 +263,9 @@ namespace GoNorth.Controllers.Api
         private readonly ITaleDbAccess _taleDbAccess;
 
         /// <summary>
-        /// Tale Config Db Access
+        /// Project Config Db Access
         /// </summary>
-        private readonly ITaleConfigDbAccess _taleConfigDbAccess;
+        private readonly IProjectConfigDbAccess _projectConfigDbAccess;
 
         /// <summary>
         /// Task Board Db Access
@@ -329,7 +330,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
-        /// <param name="taleConfigDbAccess">Tale Config Db Access</param>
+        /// <param name="projectConfigDbAccess">Project Config Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="taskBoardDbAccess">Task Bord Db Access</param>
         /// <param name="taskGroupTypeDbAccess">Task Group Type Db Access</param>
@@ -343,7 +344,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="userDeleter">User Deleter</param>
         public PersonalDataApiController(IAikaQuestDbAccess questDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, IKortistoNpcDbAccess npcDbAccess, 
                                          IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
-                                         ITaleConfigDbAccess taleConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
+                                         IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
                                          IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
         {
             _questDbAccess = questDbAccess;
@@ -357,7 +358,7 @@ namespace GoNorth.Controllers.Api
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
             _taleDbAccess = taleDbAccess;
-            _taleConfigDbAccess = taleConfigDbAccess;
+            _projectConfigDbAccess = projectConfigDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
             _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
             _taskTypeDbAccess = taskTypeDbAccess;
@@ -513,10 +514,17 @@ namespace GoNorth.Controllers.Api
                 });
             }
 
-            List<TaleConfigEntry> taleConfigEntries = await _taleConfigDbAccess.GetConfigEntriesByModifiedUser(currentUser.Id);
-            response.ModifiedData.AddRange(taleConfigEntries.Select(p => new TrimmedModifiedData {
-                ObjectType = "TaleConfig",
+            List<JsonConfigEntry> jsonConfigEntries = await _projectConfigDbAccess.GetJsonConfigEntriesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(jsonConfigEntries.Select(p => new TrimmedModifiedData {
+                ObjectType = "JsonConfig",
                 Name = p.Key,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<MiscProjectConfig> miscConfigEntries = await _projectConfigDbAccess.GetMiscConfigEntriesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(miscConfigEntries.Select(p => new TrimmedModifiedData {
+                ObjectType = "MiscConfig",
+                Name = "Miscellaneous Config",
                 ModifiedDate = p.ModifiedOn
             }));
 

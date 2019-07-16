@@ -20,7 +20,7 @@
              * @returns {string} HTML Content of the action
              */
             Actions.SetObjectStateAction.prototype.getContent = function() {
-                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "' list='gn-SetNpcStateAction'/>";
+                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
             };
 
             /**
@@ -103,7 +103,7 @@
              * @returns {string} Config key
              */
             Actions.SetObjectStateAction.prototype.getConfigKey = function() {
-                return "SetNpcStateAction";
+                return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
             }
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));

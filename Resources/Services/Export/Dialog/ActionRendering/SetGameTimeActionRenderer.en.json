@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Tale_Action_Time_Hours": "Hours to which the time must be set.",
+    "PlaceholderDesc_Tale_Action_Time_Minutes": "Minutes to which the time must be set.",
+    "PlaceholderDesc_Tale_Action_Time_TotalMinutes": "Total minutes to which the time must be set. Will be calculated as Hours * MinutesPerHour + Minutes."
+}

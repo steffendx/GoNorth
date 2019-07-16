@@ -7,8 +7,8 @@
 }
 
 <div id="gn-exportTemplateOverviewContainer">
-    <!-- Delete Page Dialog -->
-    <div class="modal fade" role="dialog" data-bind="modal: isSettingsDialogOpen">
+    <!-- Settings Dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: isSettingsDialogOpen" id="gn-exportTemplateOverviewSettingsDialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -87,7 +87,7 @@
         <i class="glyphicon glyphicon-question-sign"></i> @Localizer["FunctionGenerationConditions"]
     </button>
 
-    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openSettingsDialog">
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" id="gn-exportTemplateOverviewSettingsButton" data-bind="click: openSettingsDialog">
         <i class="glyphicon glyphicon-cog"></i> @Localizer["Settings"]
     </button>
 

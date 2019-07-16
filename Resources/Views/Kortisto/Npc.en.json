@@ -52,6 +52,34 @@
     "AddSkill": "Add skill",
     "RemoveSkill": "Remove skill",
     "AreYouSureYouWantToRemoveTheSkill": "Are you sure you want to remove the skill?",
+    
+    "DailyRoutine": "Daily routine",
+    "PleaseSaveToEditDailyRoutine": "Please save the npc to edit the daily routine.",
+    "AddMovementEvent": "New movement target",
+    "AddScriptEvent": "New script event",
+    "HideDisabledEvents": "Hide disabled events",
+    "ShowAllEvents": "Show all events",
+    "AddEvent": "Add event",
+    "EditEvent": "Edit event",
+    "RandomTimeFrame": "Time (Random in timeframe)",
+    "EarliestTime": "Earliest",
+    "LatestTime": "Latest",
+    "EnabledByDefault": "Enabled by default",
+    "Next": "Next",
+    "Time": "Time",
+    "EventType": "Event type",
+    "MovementTarget": "Movement target",
+    "TargetState": "Target state",
+    "MovementEvent": "Movement target",
+    "ScriptEvent": "Script event",
+    "AreYouSureYouWantToRemoveTheEvent": "Are you sure you want to remove the event?",
+    "EditEventToolTip": "Edit event",
+    "DeleteEventToolTip": "Delete event",
+    "TimeEventsOverlap": "There are active events that overlap. The daily routine might not be predictable.",
+    "Confirm": "Confirm",
+    "WarningNoMapMarker": "Warning",
+    "TheNpcHasNoMarkerInAnyMap": "The npc is not marked in any map. It is recommended to mark the npc in a map before adding movement targets.",
+    "Continue": "Continue",
 
     "ExportResult": "Export result",
     "Warning": "Warning:",
@@ -71,6 +99,8 @@
 
     "ReferencedInTaleDialogs": "Referenced in Tale dialogs:",
 
+    "ReferencedInDailyRoutines": "Referenced in daily routines:",
+    
     "AreYouSure": "Are you sure?",
     "AreYouSureYouWantToDeleteTheObject": "Are you sure you want to delete the npc?",
     "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the template?",
@@ -92,5 +122,6 @@
     "LockedPostfix": ".",
 
     "RichTextLocale": "en",
-    "DropzoneLocale": "en"
+    "DropzoneLocale": "en",
+    "TimeFormat": "hh:mm"
 }

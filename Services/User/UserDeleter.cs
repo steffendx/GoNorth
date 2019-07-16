@@ -9,6 +9,7 @@ using GoNorth.Data.Karta;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.LockService;
+using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using GoNorth.Data.TaskManagement;
@@ -80,9 +81,9 @@ namespace GoNorth.Services.User
         private readonly ITaleDbAccess _taleDbAccess;
 
         /// <summary>
-        /// Tale Config Db Access
+        /// Project Config Db Access
         /// </summary>
-        private readonly ITaleConfigDbAccess _taleConfigDbAccess;
+        private readonly IProjectConfigDbAccess _projectConfigDbAccess;
 
         /// <summary>
         /// Task Board Db Access
@@ -133,7 +134,7 @@ namespace GoNorth.Services.User
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
-        /// <param name="taleConfigDbAccess">Tale Config Db Access</param>
+        /// <param name="projectConfigDbAccess">Project Config Db Access</param>
         /// <param name="taskBoardDbAccess">Task Bord Db Access</param>
         /// <param name="taskGroupTypeDbAccess">Task Group Type Db Access</param>
         /// <param name="taskTypeDbAccess">Task Type Db Access</param>
@@ -143,7 +144,7 @@ namespace GoNorth.Services.User
         /// <param name="userManager">User manager</param>
         public UserDeleter(IAikaQuestDbAccess questDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, IKortistoNpcDbAccess npcDbAccess, 
                            IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
-                           ITaleConfigDbAccess taleConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
+                           IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
                            ILockServiceDbAccess lockDbService, ITimelineDbAccess timelineDbAccess, UserManager<GoNorthUser> userManager)
         {
             _questDbAccess = questDbAccess;
@@ -157,7 +158,7 @@ namespace GoNorth.Services.User
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
             _taleDbAccess = taleDbAccess;
-            _taleConfigDbAccess = taleConfigDbAccess;
+            _projectConfigDbAccess = projectConfigDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
             _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
             _taskTypeDbAccess = taskTypeDbAccess;
@@ -279,12 +280,20 @@ namespace GoNorth.Services.User
                 await _taleDbAccess.UpdateDialog(curDialog);
             }
 
-            List<TaleConfigEntry> taleConfigEntries = await _taleConfigDbAccess.GetConfigEntriesByModifiedUser(user.Id);
-            foreach(TaleConfigEntry curConfig in taleConfigEntries)
+            List<JsonConfigEntry> jsonConfigEntries = await _projectConfigDbAccess.GetJsonConfigEntriesByModifiedUser(user.Id);
+            foreach(JsonConfigEntry curConfig in jsonConfigEntries)
             {
                 curConfig.ModifiedBy = Guid.Empty.ToString();
                 curConfig.ModifiedOn = DateTimeOffset.UtcNow;
-                await _taleConfigDbAccess.UpdateConfig(curConfig);
+                await _projectConfigDbAccess.UpdateJsonConfig(curConfig);
+            }
+
+            List<MiscProjectConfig> miscConfigEntries = await _projectConfigDbAccess.GetMiscConfigEntriesByModifiedUser(user.Id);
+            foreach(MiscProjectConfig curMiscConfig in miscConfigEntries)
+            {
+                curMiscConfig.ModifiedBy = Guid.Empty.ToString();
+                curMiscConfig.ModifiedOn = DateTimeOffset.UtcNow;
+                await _projectConfigDbAccess.UpdateMiscConfig(curMiscConfig);
             }
 
             List<TaskBoard> taskBoards = await _taskBoardDbAccess.GetTaskBoardsByModifiedUser(user.Id);

@@ -15,6 +15,15 @@ namespace GoNorth.Data.Exporting
         /// <param name="objectId">Object Id</param>
         /// <returns>New export function id</returns>
         Task<int> GetNewExportFuntionIdForObject(string projectId, string objectId);
+        
+        /// <summary>
+        /// Returns a new export function id for an object
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="objectId">Object Id</param>
+        /// <param name="subCategory">Sub Category for the object</param>
+        /// <returns>New export function id</returns>
+        Task<int> GetNewExportFuntionIdForObjectAndSubCategory(string projectId, string objectId, string subCategory);
 
 
         /// <summary>

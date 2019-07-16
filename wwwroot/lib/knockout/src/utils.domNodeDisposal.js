@@ -33,16 +33,20 @@ ko.utils.domNodeDisposal = new (function () {
 
         // Clear any immediate-child comment nodes, as these wouldn't have been found by
         // node.getElementsByTagName("*") in cleanNode() (comment nodes aren't elements)
-        if (cleanableNodeTypesWithDescendants[node.nodeType])
-            cleanImmediateCommentTypeChildren(node);
+        if (cleanableNodeTypesWithDescendants[node.nodeType]) {
+            cleanNodesInList(node.childNodes, true/*onlyComments*/);
+        }
     }
 
-    function cleanImmediateCommentTypeChildren(nodeWithChildren) {
-        var child, nextChild = nodeWithChildren.firstChild;
-        while (child = nextChild) {
-            nextChild = child.nextSibling;
-            if (child.nodeType === 8)
-                cleanSingleNode(child);
+    function cleanNodesInList(nodeList, onlyComments) {
+        var cleanedNodes = [], lastCleanedNode;
+        for (var i = 0; i < nodeList.length; i++) {
+            if (!onlyComments || nodeList[i].nodeType === 8) {
+                cleanSingleNode(cleanedNodes[cleanedNodes.length] = lastCleanedNode = nodeList[i]);
+                if (nodeList[i] !== lastCleanedNode) {
+                    while (i-- && ko.utils.arrayIndexOf(cleanedNodes, nodeList[i]) == -1) {}
+                }
+            }
         }
     }
 
@@ -69,11 +73,7 @@ ko.utils.domNodeDisposal = new (function () {
 
                 // ... then its descendants, where applicable
                 if (cleanableNodeTypesWithDescendants[node.nodeType]) {
-                    // Clone the descendants list in case it changes during iteration
-                    var descendants = [];
-                    ko.utils.arrayPushAll(descendants, node.getElementsByTagName("*"));
-                    for (var i = 0, j = descendants.length; i < j; i++)
-                        cleanSingleNode(descendants[i]);
+                    cleanNodesInList(node.getElementsByTagName("*"));
                 }
             }
             return node;

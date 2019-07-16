@@ -19,16 +19,5 @@ namespace GoNorth.Controllers
         {
             return View();
         }
-
-        /// <summary>
-        /// Config view
-        /// </summary>
-        /// <returns>View</returns>
-        [Authorize(Roles = RoleNames.TaleConfigManager)]
-        [HttpGet]
-        public IActionResult Config()
-        {
-            return View();
-        }
     }
 }

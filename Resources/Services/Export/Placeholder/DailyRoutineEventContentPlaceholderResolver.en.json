@@ -1,0 +1,9 @@
+{
+    "PlaceholderDesc_DailyRoutine_ScriptContent": "Content of the script",
+    "PlaceholderDesc_DailyRoutine_Function_ParentPreview": "Text preview of the parent nodes that lead to this function. This placeholder is intended to be used in a comment to increase readability.",
+    "PlaceholderDesc_DailyRoutine_HasAdditionalScriptFunctions_Start": "Start of the content that will only be rendered if there are additional daily routine functions. Must be closed using DailyRoutine_HasAdditionalScriptFunctions_End.",
+    "PlaceholderDesc_DailyRoutine_HasAdditionalScriptFunctions_End": "End of the content that will only be rendered if there are additional daily routine functions.",
+    "PlaceholderDesc_DailyRoutine_HasNoAdditionalScriptFunctions_Start": "Start of the content that will only be rendered if there are no additional daily routine functions. Must be closed using DailyRoutine_HasNoAdditionalScriptFunctions_End.",
+    "PlaceholderDesc_DailyRoutine_HasNoAdditionalScriptFunctions_End": "End of the content that will only be rendered if there are no additional daily routine functions.",
+    "PlaceholderDesc_DailyRoutine_AdditionalScriptFunctions": "Will be replaced with additional daily routine functions or removed if no additional function is required."
+}

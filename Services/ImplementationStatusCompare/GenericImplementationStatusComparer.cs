@@ -329,6 +329,7 @@ namespace GoNorth.Services.ImplementationStatusCompare
                 {
                     // Compare complex subobject
                     List<CompareDifference> differences = CompareValues((IImplementationComparable)newValue, (IImplementationComparable)oldValue);
+                    differences.AddRange(CompareLists((IImplementationComparable)newValue, (IImplementationComparable)oldValue));
                     if(differences.Any())
                     {
                         CompareDifference compareDifference = BuildCompareDifference(curProperty.Name, null, null, compareAttribute.LabelKey, compareAttribute.TextKey);
@@ -667,7 +668,7 @@ namespace GoNorth.Services.ImplementationStatusCompare
                 return;
             }
 
-            value.Value = _localizer[value.Value].Value;
+            value.Value = _localizer[value.Value, value.AdditionalValuesForLanguageKey.ToArray()].Value;
         }
 
         /// <summary>

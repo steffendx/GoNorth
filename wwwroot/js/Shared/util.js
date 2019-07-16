@@ -131,7 +131,7 @@
          */
         Util.setupValidation = function(selector) {
             jQuery(selector).validate({
-                errorElement: "span",
+                errorElement: "div",
                 errorClass: "text-danger"
             }).resetForm();
         }
@@ -187,6 +187,21 @@
         }
 
         /**
+         * Validates a positive integer key press
+         * @param {object} element Input Element
+         * @param {object} e Event Data
+         * @returns {bool} true if the value is valid, else false
+         */
+        Util.validatePositiveIntegerKeyPress = function(element, e) {
+            if(e.keyCode == 189 || e.keyCode == 190) {
+                e.preventDefault();
+                return false;
+            }
+
+            return Util.validateNumberKeyPress(element, e);
+        }
+
+        /**
          * Throttles the function execution
          * @param {function} fn Function to throttle
          * @param {number} threshold Throttle time in milliseconds
@@ -233,6 +248,28 @@
                 timeout = setTimeout(later, wait);
             };
         };
+
+
+        /**
+         * Formats a time value
+         * @param {number} hours Hours
+         * @param {minutes} minutes Minutes
+         * @param {string} timeFormat Timeformat string
+         * @returns {string} Formatted time
+         */
+        Util.formatTime = function(hours, minutes, timeFormat) {
+            var hoursStr = hours.toString();
+            if(hoursStr.length < 2) {
+                hoursStr = "0" + hoursStr;
+            }
+
+            var minutesStr = minutes.toString();
+            if(minutesStr.length < 2) {
+                minutesStr = "0" + minutesStr;
+            }
+
+            return timeFormat.replace(/hh/gi, hoursStr).replace(/mm/gi, minutesStr);
+        }
 
 
         /**

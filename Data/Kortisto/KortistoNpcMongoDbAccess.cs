@@ -82,5 +82,48 @@ namespace GoNorth.Data.Kortisto
             }).ToListAsync();
         }
 
+
+        /// <summary>
+        /// Returns all npcs an object is referenced in the daily routine (not including the relatedobjectid itself)
+        /// </summary>
+        /// <param name="objectId">Object Id</param>
+        /// <returns>All npcs the object is referenced in without detail information and the entrie with relatedobjectid = itself</returns>
+        public async Task<List<KortistoNpc>> GetNpcsObjectIsReferencedInDailyRoutine(string objectId)
+        {
+            // Required to use non Linq syntax here as Linq does not seem to support deep enough queries for this
+            List<KortistoNpc> npcs = await _ObjectCollection.Find(Builders<KortistoNpc>.Filter.Ne(n => n.Id, objectId) & Builders<KortistoNpc>.Filter.ElemMatch(n => n.DailyRoutine, 
+                                                d => d.ScriptNodeGraph.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || d.ScriptNodeGraph.Condition.Any(c => c.Conditions.Any(co => co.DependsOnObjects.Any(doo => doo.ObjectId == objectId))))).Project(n => new KortistoNpc {
+                                                    Id = n.Id,
+                                                    Name = n.Name
+                                                }).ToListAsync();
+
+            return npcs;
+        }
+
+        /// <summary>
+        /// Returns all npcs that have a movement target in a map with full informations
+        /// </summary>
+        /// <param name="mapId">Map Id</param>
+        /// <returns>All npcs that have a movement target in a map with full informations</returns>
+        public async Task<List<KortistoNpc>> GetNpcsWithMovementTargetInMap(string mapId)
+        {
+            return await _ObjectCollection.AsQueryable().Where(n => n.DailyRoutine != null && n.DailyRoutine.Any(dr => dr.MovementTarget != null && dr.MovementTarget.MapId == mapId)).ToListAsync();
+        }
+                
+
+        /// <summary>
+        /// Returns the npcs which have a daily routine event that is later than a given time
+        /// </summary>
+        /// <param name="hours">Hours</param>
+        /// <param name="minutes">Minutes</param>
+        /// <returns>Npcs</returns>
+        public async Task<List<KortistoNpc>> GetNpcsWithDailyRoutineAfterTime(int hours, int minutes)
+        {
+            return await _ObjectCollection.AsQueryable().Where(n => n.DailyRoutine != null && n.DailyRoutine.Any(d => d.EarliestTime.Hours > hours || d.EarliestTime.Minutes > minutes)).OrderBy(n => n.Name).Select(n => new KortistoNpc {
+                Id = n.Id,
+                Name = n.Name
+            }).ToListAsync();
+        }
+
     }
 }

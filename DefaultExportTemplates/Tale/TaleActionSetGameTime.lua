@@ -1,0 +1,1 @@
+BaseDialog_SetGameTime({{Tale_Action_Time_Hours}}, {{Tale_Action_Time_Minutes}})

@@ -9,13 +9,13 @@
 <div id="gn-kartaMapContainer">
     <!-- Marker Manager Template -->
     <script type="text/html" id="gn-kartaMarkerManager">
-        <h4 class="gn-clickable" data-bind="click: toogleVisibility">
+        <h4 class="gn-clickable gn-kartaMarkerManagerLabelToggleButton" data-bind="click: toogleVisibility">
             <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i> 
             <span data-bind="text: title"></span>
             <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorOccured"></i>
         </h4>
 
-        <div data-bind="visible: isExpanded" style="display: none">
+        <div class="gn-kartaMarkerManagerEntryContainer" data-bind="visible: isExpanded" style="display: none">
             <div class="gn-kartaTreeViewSearchContainer" data-bind="visible: !hideSearchBar">
                 <div class="input-group gn-commandWidgetTopMargin">
                     <input type="text" class="form-control" placeholder="@Localizer["Search"]" data-bind="value: searchTerm, enterPressed: startNewSearch, enable: !isLoading()"/>
@@ -33,7 +33,7 @@
                 
                 <!-- ko foreach: loadedEntries -->
                 <li class="gn-kartaTreeViewEntry" data-bind="css: { 'gn-kartaTreeViewEntrySelected': $root.selectedMarkerObjectId() == id }">
-                    <a class="gn-clickable" data-bind="text: name, click: function(entry) { $parent.selectEntry(entry); }"></a>
+                    <a class="gn-clickable" data-bind="text: name, click: function(entry) { $parent.selectEntry(entry); }, attr: { title: name }, css: { 'gn-kartaTreeViewEntrySmall': $parent.markerChildShowId() == id }"></a>
                     <!-- ko if: $parent.markerChildShowId() == id -->
                         <i class="glyphicon glyphicon-eye-open gn-kartaTreeViewEntryMarkerEye" title="@Localizer["ShowingMarkersOfObjectTooltip"]"></i>
                     <!-- /ko -->
@@ -52,7 +52,7 @@
         </div>
     </script>
 
-    <!-- Delete Page Dialog -->
+    <!-- Delete Marker Dialog -->
     <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteDialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -160,6 +160,31 @@
         </div>
     </div>
 
+    <!-- Set marker export name dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showMarkerExportNameDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["SetExportName"]</h4>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="gn-markerExportName">@Localizer["ExportName"]</label>
+                        <input type="text" class="form-control" id="gn-markerExportName" placeholder="@Localizer["ExportName"]" name="markerExportName" data-bind="value: markerExportName, enterPressed: saveMarkerExportName"/>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: saveMarkerExportName">@Localizer["Save"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: closeMarkerExportNameDialog">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
     {
         <!-- ko with: compareDialog -->
@@ -167,14 +192,201 @@
         <!-- /ko -->
     }
 
+    
+    <!-- ko with: dailyRoutineEditor -->
+        <datalist id="gn-kartaNpcStates" data-bind="foreach: suggestedNpcStates">
+            <option data-bind="text: $data"></option>
+        </datalist>
+
+        <!-- Add/Edit Event -->
+        <div class="modal fade" role="dialog" data-bind="modal: showAddEditEventDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><span data-bind="visible: !eventToEdit()">@Localizer["AddEvent"]</span><span data-bind="visible: eventToEdit">@Localizer["EditEvent"]</span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: addEditEventDialogErrorOccured">
+                            <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+                        </div>
+
+                        <form id="gn-addEditEventForm">
+                            <div class="form-group">
+                                <label for="gn-eventTargetName">@Localizer["Name"]</label>
+                                <input type="text" class="form-control" id="gn-eventTargetName" placeholder="@Localizer["Name"]" name="eventTargetName" data-bind="value: addEditEventName" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="gn-addEditEventFormTimeFrameEarliest">@Localizer["RandomTimeFrame"]</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="gn-addEditEventFormTimeFrameEarliest" placeholder="@Localizer["EarliestTime"]" name="earliestTime" data-bind="timepicker: addEditEventEarliestTime, timepickerFormat: '@Localizer["TimeFormat"]', timepickerHoursPerDay: hoursPerDay, timepickerMinutesPerHour: minutesPerHour"/>
+                                    <span class="input-group-addon">-</span>
+                                    <input type="text" class="form-control gn-addEditEventLatestTimePicker" id="gn-addEditEventFormTimeFrameLatest" placeholder="@Localizer["LatestTime"]" name="latestTime" data-bind="timepicker: addEditEventLatestTime, timepickerFormat: '@Localizer["TimeFormat"]', timepickerHoursPerDay: hoursPerDay, timepickerMinutesPerHour: minutesPerHour"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="gn-eventTargetState">@Localizer["TargetState"]</label>
+                                <input type="text" class="form-control" id="gn-eventTargetState" placeholder="@Localizer["TargetState"]" list="gn-kartaNpcStates" name="eventTargetState" data-bind="value: addEditEventTargetState"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="gn-eventTargetReachedScript">@Localizer["ScriptOnTargetReached"]</label><br/>
+                                <a class="gn-clickable gn-kartaAddEditEventEditScript" data-bind="click: addEditTargetReachedScript, text: addEditEventTargetReachedScript() ? addEditEventTargetReachedScript() : '@Localizer["ClickHereToAddScript"]'"></a>
+                                <a class="gn-clickable gn-kartaAddEditEventDeleteScript" data-bind="click: openConfirmDeleteScriptDialog, visible: addEditEventTargetReachedScript" title="@Localizer["DeleteScriptTooltip"]"><i class="glyphicon glyphicon-trash"></i></a>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" data-bind="checked: addEditEventEnabledByDefault"/>@Localizer["EnabledByDefault"]</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bind="click: confirmAddEditEvent, disable: addEditEventDialogLoading">
+                            <span data-bind="visible: !addEditEventDialogLoading()">@Localizer["Save"]</span>
+                            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: addEditEventDialogLoading"></i>
+                        </button>
+                        <button type="button" class="btn btn-default" data-bind="click: closeAddEditEventDialog, disable: addEditEventDialogLoading">@Localizer["Cancel"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ko with: objectDialog -->
+            @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+        <!-- /ko -->
+
+        <!-- ko with: chooseScriptTypeDialog -->
+            @await Html.PartialAsync("~/Views/Shared/ChooseScriptTypeDialog.cshtml")
+        <!-- /ko -->
+        
+        <!-- ko with: nodeScriptDialog -->
+            @await Html.PartialAsync("~/Views/Shared/NodeScriptEditor.cshtml")
+        <!-- /ko -->
+
+        <!-- ko with: codeScriptDialog -->
+            @await Html.PartialAsync("~/Views/Shared/CodeScriptEditor.cshtml")
+        <!-- /ko -->
+
+        <!-- Delete Script Dialog -->
+        <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteEventDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>@Localizer["AreYouSureYouWantToDeleteTheEvent"]</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bind="click: deleteDailyRoutineEvent">@Localizer["Yes"]</button>
+                        <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteEventDialog">@Localizer["No"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Script Dialog -->
+        <div class="modal fade" role="dialog" data-bind="modal: showConfirmDeleteScriptDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">@Localizer["AreYouSure"]</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>@Localizer["AreYouSureYouWantToRemoveTheScript"]</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-bind="click: removeTargetReachedScript">@Localizer["Yes"]</button>
+                        <button type="button" class="btn btn-default" data-bind="click: closeConfirmDeleteScriptDialog">@Localizer["No"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Npc is locked dialog -->
+        <div class="modal fade" role="dialog" data-bind="modal: showNpcLockedByDialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">@Localizer["NpcIsLocked"]</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>@Localizer["NpcIsLockedByPrefix"]<span data-bind="text: npcLockedBy"></span>@Localizer["NpcIsLockedByPostfix"]</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bind="click: closeNpcLockedByDialog">@Localizer["Ok"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- /ko -->
+
     <div class="row">
-        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
             <h2><span data-bind="text: currentMapName">@Localizer["Karta"]</span> <i class="glyphicon glyphicon-refresh spinning gn-kartaMapLoading" style="display: none" data-bind="visible: isLoading"></i></h2>
         </div>
-        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5 gn-kartaSwitchMapContainer">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 gn-kartaSwitchMapContainer">
+            <!-- ko with: dailyRoutineEditor -->
+            <div class="gn-kartaTopBarHintIcon text-info gn-clickable" style="display: none" data-bind="visible: isEditingDailyRoutine, click: toggleDailyRoutineCallout, attr: { title: '@Localizer["EditingDailyRoutinePrefix"]' + editingDailyRoutineNpcName() + '@Localizer["EditingDailyRoutinePostfix"]' }">
+                <i class="glyphicon glyphicon-triangle-right gn-kartaDailyRoutineCalloutIndiciatorIcon" data-bind="visible: !showEventCallout()"></i>
+                <i class="glyphicon glyphicon-triangle-bottom gn-kartaDailyRoutineCalloutIndiciatorIcon" data-bind="visible: showEventCallout"></i>
+                <i class="glyphicon glyphicon-warning-sign text-warning" title="@Localizer["TimeEventsOverlap"]" style="display: none" data-bind="visible: timeEventsOverlap"></i>
+                <i class="glyphicon glyphicon-hourglass"></i>
+            </div>
+
+            <div class="panel panel-default gn-kartaDailyRoutineCallout" data-bind="visible: showEventCallout" style="display: none">
+                <div class="panel-heading">@Localizer["DailyRoutineOf"]<a data-bind="href: buildNpcLink, text: editingDailyRoutineNpcName"></a></div>
+                <div class="panel-body">
+                    <div class="alert alert-warning gn-defaultContentTopMargin" style="display: none" data-bind="visible: timeEventsOverlap">
+                        <strong>@Localizer["Warning"]</strong> @Localizer["TimeEventsOverlap"]
+                    </div>
+
+                    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: $root.isNonDefaultChapterSelected">
+                        <strong>@Localizer["PleaseNote"]</strong> @Localizer["ChapterAreNotSupportedForDailyRoutines"]
+                    </div>
+
+                    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: toogleShowDisabledEvents">
+                        <span data-bind="visible: showDisabledEvents"><i class="glyphicon glyphicon-eye-close"></i> @Localizer["HideDisabledEvents"]</span>
+                        <span data-bind="visible: !showDisabledEvents()"><i class="glyphicon glyphicon-eye-open"></i> @Localizer["ShowAllEvents"]</span>
+                    </button>
+                </div>
+                <div class="gn-kartaDailyRoutineCalloutTableContainer">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["Time"]</th>
+                                <th>@Localizer["EventType"]</th>
+                                <th>@Localizer["MovementTarget"]</th>
+                                <th>@Localizer["TargetState"]</th>
+                                <th>@Localizer["Script"]</th>
+                                <th>@Localizer["EnabledByDefault"]</th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: dailyRoutineEvents().sort(compareTimeEvents)">
+                            <tr data-bind="visible: enabledByDefault() || $parent.showDisabledEvents()">
+                                <td data-bind="timeSpan: { earliestTime: earliestTime, latestTime: latestTime }, timeSpanTimeFormat: '@Localizer["TimeFormat"]'"></td>
+                                <td>
+                                    <span data-bind="visible: eventType == GoNorth.DailyRoutines.EventTypes.movement">@Localizer["MovementEvent"]</span>
+                                    <span data-bind="visible: eventType == GoNorth.DailyRoutines.EventTypes.script">@Localizer["ScriptEvent"]</span>
+                                </td>
+                                <td data-bind="text: movementTarget ? movementTarget.name : ''"></td>
+                                <td data-bind="text: targetState"></td>
+                                <td data-bind="text: scriptName() ? scriptName() : ''"></td>
+                                <td>
+                                    <span data-bind="visible: enabledByDefault">@Localizer["Yes"]</span>
+                                    <span data-bind="visible: !enabledByDefault()">@Localizer["No"]</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- /ko -->
+
             @if(User.IsInRole(RoleNames.Aika))
             {
-                <div class="gn-kartaNotEditingDefaultChapterHint text-info" title="@Localizer["YouAreEditingANonDefaultChapter"]" style="display: none" data-bind="visible: isNonDefaultChapterSelected">
+                <div class="gn-kartaTopBarHintIcon text-info" title="@Localizer["YouAreEditingANonDefaultChapter"]" style="display: none" data-bind="visible: isNonDefaultChapterSelected">
                     <i class="glyphicon glyphicon-time"></i>
                 </div>
 
@@ -209,7 +421,7 @@
     </div>
 
     <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
-        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="visible: additionalError, text: additionalError"></span>
     </div>
 
     <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
@@ -243,7 +455,11 @@
             <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: kartaMarkerManager.isLayerVisible">@Localizer["ShowKartaMarker"]</label>
         
             <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: noteMarkerManager.isLayerVisible">@Localizer["ShowNoteMarker"]</label>
-            
+
+            <!-- ko with: dailyRoutineEditor -->
+                <label class="checkbox-inline gn-kartaVisibleCheckbox" data-bind="css: { 'gn-kartaVisibleCheckboxDisabled': !isEditingDailyRoutine() }"><input type="checkbox" data-bind="checked: isLayerVisible, disable: !isEditingDailyRoutine()">@Localizer["ShowDailyRoutineMarker"]</label>
+            <!-- /ko -->
+
             <label class="checkbox-inline gn-kartaVisibleCheckbox"><input type="checkbox" data-bind="checked: showMarkerLabels">@Localizer["ShowMarkerLabels"]</label>
         </div>
     </div>
@@ -285,13 +501,24 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+
+    @await Html.PartialAsync("~/Views/Shared/NodeScriptEditorScripts.cshtml")
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js" integrity="sha384-jV/9OyZzm1ZMHG4pfYVMmnnCtVUlZdWgZ8mNSX3CPFM4HSK2KUSP8xzLljzMDkWd" crossorigin="anonymous" asp-fallback-test="typeof L != 'undefined'" asp-fallback-src="~/lib/leaflet/dist/leaflet.js"></script>
     <script src="~/lib/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="~/lib/Leaflet.TextPath/leaflet.textpath.min.js"></script>
 
     <environment include="Development">
+        <script src="~/lib/ace-builds/src-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-noconflict/ext-language_tools.js"></script>
+
         <script src="~/js/Karta/map.viewmodel.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
+        <script src="~/lib/ace-builds/src-min-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+
         <script src="~/js/Karta/map.viewmodel.min.js" asp-append-version="true"></script>
     </environment>
 
@@ -303,6 +530,13 @@
             KirjaMarkerNewPage: "@Localizer["NewKirjaPage"]",
 
             KortistoMarkerTitle: "@Localizer["Kortisto"]",
+            KortistoEditDailyRoutineTooltip: "@Localizer["KortistoEditDailyRoutineTooltip"]",
+            RandomTimeFrame: "@Localizer["RandomTimeFrame"]",
+            TargetState: "@Localizer["TargetState"]",
+            ScriptOnTargetReached: "@Localizer["ScriptOnTargetReached"]",
+            EnabledByDefault: "@Localizer["EnabledByDefault"]",
+            Yes: "@Localizer["Yes"]",
+            No: "@Localizer["No"]",
 
             StyrMarkerTitle: "@Localizer["Styr"]",
     
@@ -317,6 +551,8 @@
 
             SuccessfullyCopiedToClipboard: "@Localizer["SuccessfullyCopiedToClipboard"]",
 
+            SetExportNameTooltip: "@Localizer["SetExportNameTooltip"]",
+            CurrentExportNameTooltip: "@Localizer["CurrentExportNameTooltip"]",
             CopyLinkToMarkerTooltip: "@Localizer["CopyLinkToMarkerTooltip"]",
             EditMarkerGeometryTooltip: "@Localizer["EditMarkerGeometryTooltip"]",
             EditMarkerTooltip: "@Localizer["EditMarkerTooltip"]",
@@ -331,7 +567,9 @@
             GeometryColorWhite: "@Localizer["GeometryColorWhite"]",
             GeometryColorYellow: "@Localizer["GeometryColorYellow"]",
 
-            ErrorOccured: "@Localizer["ErrorOccured"]"
+            ErrorOccured: "@Localizer["ErrorOccured"]",
+
+            TimeFormat: "@Localizer["TimeFormat"]"
         };
 
         L.drawLocal.draw.toolbar.actions.title = "@Localizer["DrawCancelDrawing"]";
@@ -391,4 +629,5 @@
 @section Styles {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha256-LcmP8hlMTofQrGU6W2q3tUnDnDZ1QVraxfMkP060ekM=" crossorigin="anonymous" asp-fallback-test-call="leaflet-layer" asp-fallback-test-property="position" asp-fallback-test-value="relative" asp-fallback-href="~/lib/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="~/lib/leaflet-draw/dist/leaflet.draw.css" />
+    @await Html.PartialAsync("~/Views/Shared/NodeScriptEditorStyles.cshtml")
 }

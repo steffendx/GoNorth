@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Tale_Condition_RandomValue_Operator": "Operator used for the compare. This is generated based on the different operator templates.",
+    "PlaceholderDesc_Tale_Condition_RandomValue_MinValue": "Smallest value that will be used to generate the random value.",
+    "PlaceholderDesc_Tale_Condition_RandomValue_MaxValue": "Biggest value that will be used to generate the random value.",
+    "PlaceholderDesc_Tale_Condition_RandomValue_CompareValue": "Value that will be used for the comparison with the random generate value"
+}

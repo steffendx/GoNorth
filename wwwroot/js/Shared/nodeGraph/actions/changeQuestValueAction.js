@@ -54,6 +54,23 @@
             };
 
             /**
+             * Returns the open object tool label
+             * 
+             * @returns {string} Open object label
+             */
+            Actions.ChangeQuestValueAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenQuestTooltip;
+            };
+
+            /**
+             * Opens the object
+             * @param {string} id Id of the object
+             */
+            Actions.ChangeQuestValueAction.prototype.openObject = function(id) {
+                window.open("/Aika/Quest?id=" + encodeURIComponent(id));
+            };
+
+            /**
              * Returns the object type name. Used for dependency objects
              * 
              * @returns {string} Object Type name used for depends on objects 

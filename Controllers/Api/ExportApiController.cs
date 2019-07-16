@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using GoNorth.Services.Export.LanguageExport;
+using GoNorth.Services.Export.LanguageKeyGeneration;
 
 namespace GoNorth.Controllers.Api
 {
@@ -250,6 +251,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="dialogFunctionDbAccess">Dialog Function Db Access</param>
         /// <param name="dialogFunctionGenerationConditionProvider">Dialog Function Generation Condition Provider</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
+        /// <param name="languageKeyReferenceCollector">Language key reference collector</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="logger">Logger</param>
@@ -257,8 +259,8 @@ namespace GoNorth.Controllers.Api
         public ExportApiController(IExportDefaultTemplateProvider defaultTemplateProvider, IExportTemplateDbAccess exportTemplateDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IProjectDbAccess projectDbAccess, 
                                    IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, ITaleDbAccess dialogDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, 
                                    IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess skillTemplateDbAccess, IExportTemplatePlaceholderResolver templatePlaceholderResolver, IDialogFunctionGenerationConditionDbAccess dialogFunctionDbAccess,
-                                   IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, ILanguageKeyDbAccess languageKeyDbAccess, ITimelineService timelineService, UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, 
-                                   IStringLocalizerFactory localizerFactory) 
+                                   IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector, ITimelineService timelineService, 
+                                   UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, IStringLocalizerFactory localizerFactory) 
         {
             _defaultTemplateProvider = defaultTemplateProvider;
             _exportTemplateDbAccess = exportTemplateDbAccess;
@@ -283,7 +285,7 @@ namespace GoNorth.Controllers.Api
             _exporters = new Dictionary<string, IObjectExporter>();
             _exporters.Add("script", new ScriptExporter(templatePlaceholderResolver, projectDbAccess, exportSettingsDbAccess));
             _exporters.Add("json", new JsonExporter());
-            _exporters.Add("languagefile", new LanguageExporter(templatePlaceholderResolver, defaultTemplateProvider, projectDbAccess, exportSettingsDbAccess));
+            _exporters.Add("languagefile", new LanguageExporter(templatePlaceholderResolver, defaultTemplateProvider, projectDbAccess, exportSettingsDbAccess, languageKeyReferenceCollector));
         }
 
         /// <summary>

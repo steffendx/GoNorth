@@ -196,7 +196,6 @@
             Actions.AddQuestTextAction.prototype.loadObject = function(questId) {
                 var def = new jQuery.Deferred();
 
-                var self = this;
                 jQuery.ajax({ 
                     url: "/api/AikaApi/GetQuest?id=" + questId, 
                     type: "GET"

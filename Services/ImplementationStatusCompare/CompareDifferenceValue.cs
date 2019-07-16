@@ -43,16 +43,28 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// </summary>
         public ValueResolveType ResolveType { get; set; }
 
+        /// <summary>
+        /// Additional values that will be used when formating the language keys
+        /// </summary>
+        public List<string> AdditionalValuesForLanguageKey { get; set; }
+
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="value">Value</param>
         /// <param name="resolveType">Resolve Type</param>
-        public CompareDifferenceValue(string value, ValueResolveType resolveType)
+        /// <param name="additionalValuesForLanguageKey">Additional values that will be used when formating the language keys</param>
+        public CompareDifferenceValue(string value, ValueResolveType resolveType, List<string> additionalValuesForLanguageKey = null)
         {
+            if(additionalValuesForLanguageKey == null)
+            {
+                additionalValuesForLanguageKey = new List<string>();
+            }
+
             Value = value;
             ResolveType = resolveType;
+            AdditionalValuesForLanguageKey = additionalValuesForLanguageKey;
         }
     };
 }

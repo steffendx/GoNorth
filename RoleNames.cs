@@ -97,11 +97,6 @@ namespace GoNorth
         /// </summary>
         public const string Tale = "Tale";
 
-        /// <summary>
-        /// Tale config manager role
-        /// </summary>
-        public const string TaleConfigManager = "TaleConfigManager";
-
 
         /// <summary>
         /// Aika role
@@ -124,6 +119,12 @@ namespace GoNorth
         /// Manage Export Templates
         /// </summary>
         public const string ManageExportTemplates = "ManageExportTemplates";
+
+
+        /// <summary>
+        /// Project config manager role
+        /// </summary>
+        public const string ProjectConfigManager = "ProjectConfigManager";
 
 
         /// <summary>

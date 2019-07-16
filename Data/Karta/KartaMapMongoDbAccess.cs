@@ -129,6 +129,85 @@ namespace GoNorth.Data.Karta
         }
 
         /// <summary>
+        /// Finds a marker by its id
+        /// </summary>
+        /// <param name="map">Map</param>
+        /// <param name="markerList">Marker list to search</param>
+        /// <param name="markerType">Marker type</param>
+        /// <param name="markerId">Marker id</param>
+        /// <typeparam name="T">Type of the markers</typeparam>
+        /// <returns>Found marker result</returns>
+        private KartaMapNamedMarkerQueryResult FindMarkerById<T>(KartaMap map, List<T> markerList, MarkerType markerType, string markerId) where T : MapMarker
+        {
+            MapMarker marker = markerList.FirstOrDefault(m => m.Id == markerId) as MapMarker;
+            if(marker == null)
+            {
+                return null;
+            }
+
+            KartaMapNamedMarkerQueryResult result = new KartaMapNamedMarkerQueryResult();
+            result.MapId = map.Id;
+            result.MapName = map.Name;
+            result.MarkerId = marker.Id;
+            result.MarkerName = marker.ExportName;
+            result.MarkerType = markerType.ToString();
+            return result;
+        }
+
+        /// <summary>
+        /// Returns a marker by id
+        /// </summary>
+        /// <param name="mapId">Map Id</param>
+        /// <param name="markerId">Marker Id</param>
+        /// <returns>Map marker</returns>
+        public async Task<KartaMapNamedMarkerQueryResult> GetMarkerById(string mapId, string markerId)
+        {
+            KartaMap map = await GetMapById(mapId);
+            if(map == null)
+            {
+                return null;
+            }
+
+            KartaMapNamedMarkerQueryResult marker = FindMarkerById(map, map.ItemMarker, MarkerType.Item, markerId);
+            if(marker != null)
+            {
+                return marker;
+            }
+            
+            marker = FindMarkerById(map, map.QuestMarker, MarkerType.Quest, markerId);
+            if(marker != null)
+            {
+                return marker;
+            }
+
+            marker = FindMarkerById(map, map.KirjaPageMarker, MarkerType.KirjaPage, markerId);
+            if(marker != null)
+            {
+                return marker;
+            }
+
+            marker = FindMarkerById(map, map.MapChangeMarker, MarkerType.MapChange, markerId);
+            if(marker != null)
+            {
+                return marker;
+            }
+
+            marker = FindMarkerById(map, map.NoteMarker, MarkerType.Note, markerId);
+            if(marker != null)
+            {
+                return marker;
+            }
+            
+            marker = FindMarkerById(map, map.NpcMarker, MarkerType.Npc, markerId);
+            if(marker != null)
+            {
+                return marker;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Returns all markers that are not yet implemented
         /// </summary>
         /// <param name="projectId">Project Id</param>
@@ -363,6 +442,50 @@ namespace GoNorth.Data.Karta
             result = result.OrderBy(r => r.Name).ToList();
 
             return result;
+        }
+
+        /// <summary>
+        /// Extracts the markers with a extract name that is searched
+        /// </summary>
+        /// <param name="exportName">Export name that is searched</param>
+        /// <param name="maps">Maps to search</param>
+        /// <param name="selectFunction">Function to select the values</param>
+        /// <param name="markerType">Marker type</param>
+        /// <returns>Markers with export name</returns>
+        private IEnumerable<KartaMapNamedMarkerQueryResult> ExtractMarkersWithExportName(string exportName, List<KartaMap> maps, Func<KartaMap, IEnumerable<MapMarker>> selectFunction, MarkerType markerType)
+        {
+            return maps.SelectMany(m => selectFunction(m).Where(i => !string.IsNullOrEmpty(i.ExportName) && i.ExportName.Contains(exportName)).Select(ma => new KartaMapNamedMarkerQueryResult {
+                MapId = m.Id,
+                MapName = m.Name,
+                MarkerType = markerType.ToString(),
+                MarkerId = ma.Id,
+                MarkerName = ma.ExportName
+            }));
+        }
+
+        /// <summary>
+        /// Searches all markers by export name
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="exportName">Export name</param>
+        /// <returns>Map markers</returns>
+        public async Task<List<KartaMapNamedMarkerQueryResult>> GetMarkersByExportName(string projectId, string exportName)
+        {
+            if(exportName == null)
+            {
+                exportName = string.Empty;
+            }
+
+            List<KartaMap> maps = await _MapCollection.AsQueryable().Where(m => m.ProjectId == projectId).ToListAsync();
+            List<KartaMapNamedMarkerQueryResult> markers = new List<KartaMapNamedMarkerQueryResult>();
+
+            markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.ItemMarker, MarkerType.Item));
+            markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.KirjaPageMarker, MarkerType.KirjaPage));
+            markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.MapChangeMarker, MarkerType.MapChange));
+            markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.NoteMarker, MarkerType.Note));
+            markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.QuestMarker, MarkerType.Quest));
+
+            return markers;
         }
 
         /// <summary>

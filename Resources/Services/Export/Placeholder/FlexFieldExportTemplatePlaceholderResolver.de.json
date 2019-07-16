@@ -18,6 +18,8 @@
     "PlaceholderDesc_FlexField_Field_List_Start": "Start der Attributs Liste. Wird durch Unused Field oder All Fields Platzhalter ersetzt beim integrieren in ein Objekt.",
     "PlaceholderDesc_FlexField_Field_List_End": "Ende der Attributs Liste. Wird durch Unused Field oder All Fields Platzhalter ersetzt beim integrieren in ein Objekt.",
     "PlaceholderDesc_FlexField_UnusedFields": "Liste von nicht genutzten Werten. Hierbei wird das Attribute Listen Template genutzt und die Start und End Platzhalter durch die Unused Fields Start und End Platzhalter ersetzt.",
+    "PlaceholderDesc_FlexField_HasUnusedFields_Start": "Start des Inhalts der nur gerendert wird wenn nicht genutzte Werte vorliegen. Nicht genutzte Werte sind dabei alle Werte die nicht per Namen direkt referenziert sind.",
+    "PlaceholderDesc_FlexField_HasUnusedFields_End": "Ende des Inhalts der nur gerendert wird wenn nicht genutzte Werte vorliegen.",
     "PlaceholderDesc_FlexField_UnusedFields_Start": "Start der Liste von nicht genutzten Werten. Nicht genutzte Werte sind dabei alle Werte die nicht per Namen direkt referenziert sind.",
     "PlaceholderDesc_FlexField_UnusedFields_End": "Ende der Liste von nicht genutzten Werten",
     "PlaceholderDesc_FlexField_AllFields": "Liste von allen Werten. Hierbei wird das Attribute Listen Template genutzt und die Start und End Platzhalter durch die All Fields Start und End Platzhalter ersetzt.",

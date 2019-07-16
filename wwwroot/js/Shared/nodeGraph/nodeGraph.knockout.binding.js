@@ -655,6 +655,12 @@
                         allowMultipleOutboundForNodes = allBindings.get("nodeGraphAllowMultpleOutbound");
                     }
 
+                    var enableNodeGraphPositionZoomUrl = true;
+                    if(allBindings.get("nodeGraphDisablePositionZoomUrl"))
+                    {
+                        enableNodeGraphPositionZoomUrl = !allBindings.get("nodeGraphDisablePositionZoomUrl");
+                    }
+
                     var graph = new joint.dia.Graph();
                     var paper = new joint.dia.Paper(
                     {
@@ -699,7 +705,9 @@
                     });
 
                     GoNorth.BindingHandlers.nodeGraphRefreshPositionZoomUrl = function() {
-                        debouncedUpdatePositionZoomUrl(paper);
+                        if(enableNodeGraphPositionZoomUrl) {
+                            debouncedUpdatePositionZoomUrl(paper);
+                        }
                     };
 
                     // Add mini Map update events
@@ -744,7 +752,9 @@
                         {
                             paper.scale(newScale, newScale);
                             updatePositionZoomDisplay(element, paper);
-                            debouncedUpdatePositionZoomUrl(paper);
+                            if(enableNodeGraphPositionZoomUrl) {
+                                debouncedUpdatePositionZoomUrl(paper);
+                            }
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
 
@@ -772,7 +782,9 @@
                         {
                             paper.translate(event.offsetX - dragStartPosition.x, event.offsetY - dragStartPosition.y);
                             updatePositionZoomDisplay(element, paper);
-                            debouncedUpdatePositionZoomUrl(paper);
+                            if(enableNodeGraphPositionZoomUrl) {
+                                debouncedUpdatePositionZoomUrl(paper);
+                            }
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
                     });
@@ -808,7 +820,9 @@
                         {
                             paper.translate(event.originalEvent.touches[0].screenX - dragStartPosition.x + dragStartTransform.x, event.originalEvent.touches[0].screenY - dragStartPosition.y + dragStartTransform.y);
                             updatePositionZoomDisplay(element, paper);
-                            debouncedUpdatePositionZoomUrl(paper);
+                            if(enableNodeGraphPositionZoomUrl) {
+                                debouncedUpdatePositionZoomUrl(paper);
+                            }
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
                         else if(dragStartDistance && event.originalEvent.touches && event.originalEvent.touches.length == 2)
@@ -819,7 +833,9 @@
                             {
                                 paper.scale(newScale, newScale);
                                 updatePositionZoomDisplay(element, paper);
-                                debouncedUpdatePositionZoomUrl(paper);
+                                if(enableNodeGraphPositionZoomUrl) {
+                                    debouncedUpdatePositionZoomUrl(paper);
+                                }
                                 throttledUpdatedMiniMap(element, paper, showMiniMap);
                             }
                         }
@@ -869,7 +885,9 @@
                     });
 
                     updatePositionZoomDisplay(element, paper);
-                    debouncedUpdatePositionZoomUrl(paper);
+                    if(enableNodeGraphPositionZoomUrl) {
+                        debouncedUpdatePositionZoomUrl(paper);
+                    }
                 },
                 update: function (element, valueAccessor) {
                 }

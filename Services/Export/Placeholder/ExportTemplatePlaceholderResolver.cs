@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Project;
-using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Dialog;
@@ -39,9 +36,12 @@ namespace GoNorth.Services.Export.Placeholder
         /// <param name="dialogParser">Dialog Parser</param>
         /// <param name="dialogFunctionGenerator">Dialog Function Generator</param>
         /// <param name="dialogRenderer">Dialog Renderer</param>
+        /// <param name="dailyRoutineEventPlaceholderResolver">Daily routine event placeholder resolver</param>
+        /// <param name="dailyRoutineEventContentPlaceholderResolver">Daily routine event content placeholder resolver</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ExportTemplatePlaceholderResolver(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator, ILanguageKeyDbAccess languageKeyDbAccess, 
-                                                 ITaleDbAccess taleDbAccess, IExportDialogParser dialogParser, IExportDialogFunctionGenerator dialogFunctionGenerator, IExportDialogRenderer dialogRenderer, IStringLocalizerFactory localizerFactory)
+                                                 ITaleDbAccess taleDbAccess, IExportDialogParser dialogParser, IExportDialogFunctionGenerator dialogFunctionGenerator, IExportDialogRenderer dialogRenderer, 
+                                                 IDailyRoutineEventPlaceholderResolver dailyRoutineEventPlaceholderResolver, IDailyRoutineEventContentPlaceholderResolver dailyRoutineEventContentPlaceholderResolver, IStringLocalizerFactory localizerFactory)
         {
             _localizerFactory = localizerFactory;
 
@@ -51,6 +51,7 @@ namespace GoNorth.Services.Export.Placeholder
             // Order of exporting is determined by the order in which these are  added, thats why the order is important
             _exportTemplatePlaceholderResolvers.Add(new NpcInventoryExportTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _exportTemplatePlaceholderResolvers.Add(new NpcSkillExportTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
+            _exportTemplatePlaceholderResolvers.Add(new NpcDailyRoutineExportPlaceholderResolver(defaultTemplateProvider, cachedDbAccess, dailyRoutineEventPlaceholderResolver, dailyRoutineEventContentPlaceholderResolver, languageKeyGenerator, localizerFactory));
             _exportTemplatePlaceholderResolvers.Add(new FlexFieldExportTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _exportTemplatePlaceholderResolvers.Add(new DialogExportTemplatePlaceholderResolver(cachedDbAccess, languageKeyGenerator, taleDbAccess, dialogParser, dialogFunctionGenerator, dialogRenderer, localizerFactory));
             _exportTemplatePlaceholderResolvers.Add(new LanguageKeyTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyDbAccess, localizerFactory));

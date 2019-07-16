@@ -158,6 +158,16 @@ namespace GoNorth.Services.Export.Placeholder
         private const string Placeholder_UnusedFields = "UnusedFields";
 
         /// <summary>
+        /// Start of the content that will only be rendered if the object has unused flex fields
+        /// </summary>
+        private const string Placeholder_HasUnusedFields_Start = "HasUnusedFields_Start";
+
+        /// <summary>
+        /// End of the content that will only be rendered if the object has unused flex fields
+        /// </summary>
+        private const string Placeholder_HasUnusedFields_End = "HasUnusedFields_End";
+
+        /// <summary>
         /// Flex Field Unused Fields Start
         /// </summary>
         private const string Placeholder_UnusedFields_Start = "UnusedFields_Start";
@@ -489,6 +499,9 @@ namespace GoNorth.Services.Export.Placeholder
             code = ExportUtil.BuildPlaceholderRegex(BuildFinalPlaceholder(Placeholder_AllFields), ExportConstants.ListIndentPrefix).Replace(code, m => {
                 return BuildFlexFieldListTemplate(attributeListTemplate.Code, Placeholder_AllFields_Start, Placeholder_AllFields_End, m.Groups[1].Value);
             });
+            code = ExportUtil.RenderPlaceholderIfFuncTrue(code, BuildFinalPlaceholder(Placeholder_HasUnusedFields_Start), BuildFinalPlaceholder(Placeholder_HasUnusedFields_End), m => {
+                return flexFieldObject.Fields.Where(f => !usedFields.Contains(f.Id)).Any();
+            });
             code = ExportUtil.BuildRangePlaceholderRegex(BuildFinalPlaceholder(Placeholder_UnusedFields_Start), BuildFinalPlaceholder(Placeholder_UnusedFields_End)).Replace(code, m => {
                 List<FlexField> fieldsToUse = flexFieldObject.Fields.Where(f => !usedFields.Contains(f.Id)).ToList();
                 return BuildFlexFieldList(m.Groups[1].Value, fieldsToUse, flexFieldObject, exportSettings, objectType); 
@@ -684,6 +697,8 @@ namespace GoNorth.Services.Export.Placeholder
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_FieldIsNotBlank_Start_FriendlyName),
                     CreateFlexFieldPlaceHolder(Placeholder_FlexField_FieldIsNotBlank_End),
                     CreateFlexFieldPlaceHolder(Placeholder_UnusedFields),
+                    CreateFlexFieldPlaceHolder(Placeholder_HasUnusedFields_Start),
+                    CreateFlexFieldPlaceHolder(Placeholder_HasUnusedFields_End),
                     CreateFlexFieldPlaceHolder(Placeholder_UnusedFields_Start),
                     CreateFlexFieldPlaceHolder(Placeholder_UnusedFields_End),
                     CreateFlexFieldPlaceHolder(Placeholder_AllFields),

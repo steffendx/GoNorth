@@ -77,6 +77,8 @@
             Localization.QuestViewModel.ChooseQuest = "Choose quest";
             Localization.QuestViewModel.ChooseNpc = "Choose npc";
             Localization.QuestViewModel.ChooseSkill = "Choose skill";
+            Localization.QuestViewModel.ChooseDailyRoutineEvent = "Choose daily routine event";
+            Localization.QuestViewModel.ChooseMarker = "Choose marker";
 
             // Quest Text Node
             GoNorth.DefaultNodeShapes.Localization.TypeNames["aika.Text"] = "Text";

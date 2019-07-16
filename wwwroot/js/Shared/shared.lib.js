@@ -207,7 +207,7 @@
          */
         Util.setupValidation = function(selector) {
             jQuery(selector).validate({
-                errorElement: "span",
+                errorElement: "div",
                 errorClass: "text-danger"
             }).resetForm();
         }
@@ -263,6 +263,21 @@
         }
 
         /**
+         * Validates a positive integer key press
+         * @param {object} element Input Element
+         * @param {object} e Event Data
+         * @returns {bool} true if the value is valid, else false
+         */
+        Util.validatePositiveIntegerKeyPress = function(element, e) {
+            if(e.keyCode == 189 || e.keyCode == 190) {
+                e.preventDefault();
+                return false;
+            }
+
+            return Util.validateNumberKeyPress(element, e);
+        }
+
+        /**
          * Throttles the function execution
          * @param {function} fn Function to throttle
          * @param {number} threshold Throttle time in milliseconds
@@ -312,6 +327,28 @@
 
 
         /**
+         * Formats a time value
+         * @param {number} hours Hours
+         * @param {minutes} minutes Minutes
+         * @param {string} timeFormat Timeformat string
+         * @returns {string} Formatted time
+         */
+        Util.formatTime = function(hours, minutes, timeFormat) {
+            var hoursStr = hours.toString();
+            if(hoursStr.length < 2) {
+                hoursStr = "0" + hoursStr;
+            }
+
+            var minutesStr = minutes.toString();
+            if(minutesStr.length < 2) {
+                minutesStr = "0" + minutesStr;
+            }
+
+            return timeFormat.replace(/hh/gi, hoursStr).replace(/mm/gi, minutesStr);
+        }
+
+
+        /**
          * Returns true if the current screen size is a bootstrap xs size, else false
          * @returns {bool} true if the current screen size is a bootstrap xs size, else false
          */
@@ -336,15 +373,37 @@
              * Modal Binding Handler
              */
             ko.bindingHandlers.modal = {
-                init: function (element, valueAccessor) {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     jQuery(element).modal({
                         show: false
                     });
+
+                    var beforeCloseCallback = null;
+                    if(allBindings.get("modalBeforeClose"))
+                    {
+                        beforeCloseCallback = allBindings.get("modalBeforeClose");
+                    }
             
                     var value = valueAccessor();
                     if (ko.isObservable(value)) {
-                        jQuery(element).on("hide.bs.modal", function() {
-                            value(false);
+                        jQuery(element).on("hide.bs.modal", function(e) {
+                            var shouldClose = true;
+                            if(beforeCloseCallback)
+                            {
+                                shouldClose = beforeCloseCallback.apply(bindingContext.$data);
+                            }
+
+                            if(shouldClose)
+                            {
+                                value(false);
+                            }
+                            else
+                            {
+                                value(true);
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                return false;
+                            }
                         });
                     }
 
@@ -440,6 +499,12 @@
                         }
                     }
 
+                    if(allBindings.get("richTextImageUploadStarted"))
+                    {
+                        var uploadStartCallback = allBindings.get("richTextImageUploadStarted");
+                        options.fileUploadStarted = function() { uploadStartCallback.apply(bindingContext.$data); }
+                    }
+
                     if(allBindings.get("richTextAddditionalImageUploadError"))
                     {
                         var uploadErrorCallback = allBindings.get("richTextAddditionalImageUploadError");
@@ -487,6 +552,50 @@
                         if(jQuery(element).val())
                         {
                             parsedValue = parseFloat(jQuery(element).val());
+                        }
+                        if(!isNaN(parsedValue))
+                        {
+                            value(parsedValue);
+                        }
+                        else
+                        {
+                            value(0.0);
+                        }
+                    });
+                },
+                update: function (element, valueAccessor) {
+                    var value = valueAccessor();
+                    if(ko.isObservable(value))
+                    {
+                        jQuery(element).val(value());
+                    }
+                    else
+                    {
+                        jQuery(element).val(value);
+                    }
+                }
+            };
+
+            /**
+             * Integer Binding Handler
+             */
+            ko.bindingHandlers.integer = {
+                init: function (element, valueAccessor) {
+                    var value = valueAccessor();
+                    if (!ko.isObservable(value)) {
+                        jQuery(element).val(value);
+                        return;
+                    }
+
+                    jQuery(element).keydown(function(e) {
+                        GoNorth.Util.validatePositiveIntegerKeyPress(element, e);
+                    });
+
+                    jQuery(element).change(function() {
+                        var parsedValue = 0.0;
+                        if(jQuery(element).val())
+                        {
+                            parsedValue = parseInt(jQuery(element).val());
                         }
                         if(!isNaN(parsedValue))
                         {

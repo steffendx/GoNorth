@@ -5,6 +5,11 @@
     "CanNotDeleteNpcMentionedInKirjaPage": "The npc is mentioned in the Kirja pages \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteNpcMarkedInKartaMap": "The npc is marked in the Karta maps \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteNpcReferencedInTaleDialog": "The npc is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteNpcUsedInDailyRoutine": "The npc is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
+
+    "CanNotDeleteDailyRoutineEventReferencedInNpc": "A deleted daily routine event is referenced in the daily routines of the Npcs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventReferencedInTaleDialog": "A deleted daily routine event is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventReferencedInAikaQuest": "A deleted daily routine event is referenced in the Aika quests \"{0}\". To prevent errors in the story it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",

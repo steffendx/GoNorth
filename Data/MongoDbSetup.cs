@@ -10,6 +10,7 @@ using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.LockService;
 using GoNorth.Data.Project;
+using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Role;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
@@ -27,6 +28,12 @@ namespace GoNorth.Data
     /// </summary>
     public class MongoDbSetup : BaseMongoDbAccess, IDbSetup
     {
+        /// <summary>
+        /// Name of the legacy collection for tale config
+        /// </summary>
+        private const string LegacyCollection_TaleConfig = "TaleConfig";
+
+
         /// <summary>
         /// Timeline Db Access
         /// </summary>
@@ -64,6 +71,9 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(RoleMongoDbAccess.RoleCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(ProjectMongoDbAccess.ProjectCollectionName, collectionNames);
+            
+            await CreateCollectionIfNotExists(ProjectConfigMongoDbAccess.JsonConfigCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(ProjectConfigMongoDbAccess.MiscConfigCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(KortistoFolderMongoDbAccess.KortistoFolderCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KortistoNpcTemplateMongoDbAccess.KortistoNpcTemplateCollectionName, collectionNames);
@@ -103,7 +113,6 @@ namespace GoNorth.Data
 
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogRecyclingBinCollectionName, collectionNames);
-            await CreateCollectionIfNotExists(TaleConfigMongoDbAccess.TaleConfigCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleDialogImplementationSnapshotMongoDbAccess.TaleDialogImplementationSnapshotCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(AikaChapterOverviewMongoDbAccess.AikaChapterOverviewCollectionName, collectionNames);
@@ -165,7 +174,18 @@ namespace GoNorth.Data
             await _Database.CreateCollectionAsync(collectionName);
         }
 
-        
+
+        /// <summary>
+        /// Checks if there needs to be some migrations in the database (table/collection renames,...)
+        /// </summary>
+        /// <returns>Task</returns>
+        public async Task CheckForNeededMigrations()
+        {
+            await CreateIndices();
+            List<string> collectionNames = await GetExistingCollections();
+            await RenameLegacyCollections(collectionNames);
+        }
+
         /// <summary>
         /// Creates the database indices
         /// </summary>
@@ -174,6 +194,19 @@ namespace GoNorth.Data
         {
             await _timelineDbAccess.CreateTimelineIndices();
             await _lockServiceDbAccess.CreateLockIndices();
+        }
+
+        /// <summary>
+        /// Renames legacy collections
+        /// </summary>
+        /// <param name="collectionNames">Existing collection names</param>
+        /// <returns>Task</returns>
+        private async Task RenameLegacyCollections(List<string> collectionNames)
+        {
+            if(collectionNames.Contains(LegacyCollection_TaleConfig) && !collectionNames.Contains(ProjectConfigMongoDbAccess.JsonConfigCollectionName))
+            {
+                await _Database.RenameCollectionAsync(LegacyCollection_TaleConfig, ProjectConfigMongoDbAccess.JsonConfigCollectionName);
+            }
         }
     }
 }

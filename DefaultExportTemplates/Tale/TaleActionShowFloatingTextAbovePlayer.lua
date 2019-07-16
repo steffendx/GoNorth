@@ -1,0 +1,1 @@
+BaseNpc_ShowFloatingTextAboveNpc(playerNpc, "{{Tale_Action_FloatingText_LangKey}}")

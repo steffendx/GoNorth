@@ -35,7 +35,7 @@
     </div>
 
     <!-- Create / Edit Map Dialog -->
-    <div class="modal fade" role="dialog" data-bind="modal: showMapCreateEditDialog, attr: { 'data-backdrop': dialogLoading() ? 'static' : null, 'data-keyboard': dialogLoading() ? 'false' : null }">
+    <div class="modal fade" role="dialog" data-bind="modal: showMapCreateEditDialog, attr: { 'data-backdrop': dialogLoading() ? 'static' : null, 'data-keyboard': dialogLoading() ? 'false' : null }" id="gn-kartaManageMapsCreateMapDialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -80,7 +80,7 @@
 
 
     <!-- Map List -->
-    <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreateMapDialog"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreateMap"]</button>
+    <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" id="gn-kartaManageMapsCreateMap" data-bind="click: openCreateMapDialog"><i class="glyphicon glyphicon-plus"></i> @Localizer["CreateMap"]</button>
 
     <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
         <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]

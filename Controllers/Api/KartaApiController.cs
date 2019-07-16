@@ -15,6 +15,9 @@ using GoNorth.Data.Project;
 using System.Collections.Generic;
 using GoNorth.Data.Karta.Marker;
 using System.Linq;
+using GoNorth.Data.Kortisto;
+using GoNorth.Data.Tale;
+using GoNorth.Data.Aika;
 
 namespace GoNorth.Controllers.Api
 {
@@ -76,6 +79,22 @@ namespace GoNorth.Controllers.Api
             /// </summary>
             public IList<MarkerImplementationQueryResultObject> Markers { get; set; }
         }
+        
+        /// <summary>
+        /// Marker Name Query Result
+        /// </summary>
+        public class NamedMarkerQueryResult
+        {
+            /// <summary>
+            /// true if there are more objects to query, else false
+            /// </summary>
+            public bool HasMore { get; set; }
+
+            /// <summary>
+            /// Markers
+            /// </summary>
+            public IList<KartaMapNamedMarkerQueryResult> Markers { get; set; }
+        }
 
 
         /// <summary>
@@ -93,6 +112,21 @@ namespace GoNorth.Controllers.Api
         /// Map Marker Implementation Snapshot Db Access
         /// </summary>
         private readonly IKartaMarkerImplementationSnapshotDbAccess _markerImplementationSnapshotDbAccess;
+
+        /// <summary>
+        /// Kortisto Npc Db Access
+        /// </summary>
+        private readonly IKortistoNpcDbAccess _kortistoNpcDbAccess;
+
+        /// <summary>
+        /// Tale Db Access
+        /// </summary>
+        private readonly ITaleDbAccess _taleDbAccess;
+
+        /// <summary>
+        /// Quest Db Access
+        /// </summary>
+        private readonly IAikaQuestDbAccess _questDbAccess;
 
         /// <summary>
         /// Project Db Access
@@ -134,6 +168,9 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="markerImplementationSnapshotDbAccess">Marker Implementation Snapshot Db Access</param>
+        /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
+        /// <param name="taleDbAccess">Tale Db Access</param>
+        /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="mapImageAccess">Map Image Access</param>
         /// <param name="imageProcessor">Map Image Processor</param>
@@ -141,11 +178,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="userManager">User Manager</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public KartaApiController(IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerImplementationSnapshotDbAccess, IProjectDbAccess projectDbAccess, IKartaImageAccess mapImageAccess, IKartaImageProcessor imageProcessor, 
-                                  ITimelineService timelineService, UserManager<GoNorthUser> userManager, ILogger<KartaApiController> logger, IStringLocalizerFactory localizerFactory)
+        public KartaApiController(IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerImplementationSnapshotDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, ITaleDbAccess taleDbAccess, 
+                                  IAikaQuestDbAccess questDbAccess, IProjectDbAccess projectDbAccess, IKartaImageAccess mapImageAccess, IKartaImageProcessor imageProcessor, ITimelineService timelineService, 
+                                  UserManager<GoNorthUser> userManager, ILogger<KartaApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _mapDbAccess = mapDbAccess;
             _markerImplementationSnapshotDbAccess = markerImplementationSnapshotDbAccess;
+            _kortistoNpcDbAccess = kortistoNpcDbAccess;
+            _taleDbAccess = taleDbAccess;
+            _questDbAccess = questDbAccess;
             _projectDbAccess = projectDbAccess;
             _mapImageAccess = mapImageAccess;
             _imageProcessor = imageProcessor;
@@ -566,12 +607,13 @@ namespace GoNorth.Controllers.Api
         [Authorize(Roles = RoleNames.KartaMapManager)]
         public async Task<IActionResult> DeleteMap(string id) 
         {
-            List<KartaMap> kartaMaps = await _mapDbAccess.GetAllMapsMapIsMarkedIn(id);
-            if(kartaMaps.Count > 0)
+            string error = await CheckMapReferencesForDeletion(id);
+            if(!string.IsNullOrEmpty(error))
             {
-                string markedInMaps = string.Join(", ", kartaMaps.Select(p => p.Name));
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteMapMarkedInKartaMap", markedInMaps].Value);
+                return BadRequest(error);
             }
+
+            await DeleteAdditionalMapReferences(id);
 
             KartaMap map = await _mapDbAccess.GetMapById(id);
             await _mapDbAccess.DeleteMap(map);
@@ -582,6 +624,60 @@ namespace GoNorth.Controllers.Api
 
             await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapDeleted, map.Name);
             return Ok(id);
+        }
+
+        /// <summary>
+        /// Checks the references of a map if it can be deleted
+        /// </summary>
+        /// <param name="id">Id of the map</param>
+        /// <returns>Error message if it can not be deleted, else null</returns>
+        private async Task<string> CheckMapReferencesForDeletion(string id) 
+        {
+            List<KartaMap> kartaMaps = await _mapDbAccess.GetAllMapsMapIsMarkedIn(id);
+            if(kartaMaps.Count > 0)
+            {
+                string markedInMaps = string.Join(", ", kartaMaps.Select(p => p.Name));
+                return _localizer["CanNotDeleteMapMarkedInKartaMap", markedInMaps].Value;
+            }
+
+            List<TaleDialog> taleDialogs = await _taleDbAccess.GetDialogsObjectIsReferenced(id);
+            if(taleDialogs.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _kortistoNpcDbAccess.ResolveFlexFieldObjectNames(taleDialogs.Select(t => t.RelatedObjectId).ToList());
+                string referencedInDialogs = string.Join(", ", npcs.Select(n => n.Name));
+                return _localizer["CanNotDeleteMapReferencedInTaleDialog", referencedInDialogs].Value;
+            }
+
+            List<KortistoNpc> usedNpcs = await _kortistoNpcDbAccess.GetNpcsObjectIsReferencedInDailyRoutine(id);
+            if(usedNpcs.Count > 0)
+            {
+                string referencedInNpcs = string.Join(", ", usedNpcs.Select(p => p.Name));
+                return _localizer["CanNotDeleteMapReferencedInNpc", referencedInNpcs].Value;
+            }
+
+            List<AikaQuest> aikaQuests = await _questDbAccess.GetQuestsObjectIsReferenced(id);
+            if(aikaQuests.Count > 0)
+            {
+                string referencedInQuests = string.Join(", ", aikaQuests.Select(p => p.Name));
+                return _localizer["CanNotDeleteMapReferencedInAikaQuest", referencedInQuests].Value;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Deletes additional map references
+        /// </summary>
+        /// <param name="id">Id of the map</param>
+        /// <returns>Task</returns>
+        private async Task DeleteAdditionalMapReferences(string id)
+        {
+            List<KortistoNpc> npcs = await _kortistoNpcDbAccess.GetNpcsWithMovementTargetInMap(id);
+            foreach(KortistoNpc curNpc in npcs)
+            {
+                curNpc.DailyRoutine.RemoveAll(dr => dr.MovementTarget != null && dr.MovementTarget.MapId == id);
+                await _kortistoNpcDbAccess.UpdateFlexFieldObject(curNpc);
+            }
         }
 
 
@@ -776,6 +872,12 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.Unauthorized);
             }
 
+            string deleteError = await CheckMarkerReferencesForDelete(markerId);
+            if(!string.IsNullOrEmpty(deleteError))
+            {
+                return BadRequest(deleteError);
+            }
+
             KartaMap map = await _mapDbAccess.GetMapById(id);
             if(markerType == MarkerType.KirjaPage)
             {
@@ -815,6 +917,38 @@ namespace GoNorth.Controllers.Api
         } 
 
         /// <summary>
+        /// Checks if a marker has references or if it can be deleted
+        /// </summary>
+        /// <param name="markerId">Marker id</param>
+        /// <returns>Error message</returns>
+        private async Task<string> CheckMarkerReferencesForDelete(string markerId) 
+        {
+            List<TaleDialog> taleDialogs = await _taleDbAccess.GetDialogsObjectIsReferenced(markerId);
+            if(taleDialogs.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _kortistoNpcDbAccess.ResolveFlexFieldObjectNames(taleDialogs.Select(t => t.RelatedObjectId).ToList());
+                string referencedInDialogs = string.Join(", ", npcs.Select(n => n.Name));
+                return _localizer["CanNotDeleteMarkerReferencedInTaleDialog", referencedInDialogs].Value;
+            }
+
+            List<KortistoNpc> usedNpcs = await _kortistoNpcDbAccess.GetNpcsObjectIsReferencedInDailyRoutine(markerId);
+            if(usedNpcs.Count > 0)
+            {
+                string referencedInNpcs = string.Join(", ", usedNpcs.Select(p => p.Name));
+                return _localizer["CanNotDeleteMarkerReferencedInNpc", referencedInNpcs].Value;
+            }
+
+            List<AikaQuest> aikaQuests = await _questDbAccess.GetQuestsObjectIsReferenced(markerId);
+            if(aikaQuests.Count > 0)
+            {
+                string referencedInQuests = string.Join(", ", aikaQuests.Select(p => p.Name));
+                return _localizer["CanNotDeleteMarkerReferencedInAikaQuest", referencedInQuests].Value;
+            }
+            
+            return null;
+        }
+
+        /// <summary>
         /// Deletes a marker from a marker list
         /// </summary>
         /// <param name="markerList">Marker list to update</param>
@@ -841,6 +975,7 @@ namespace GoNorth.Controllers.Api
             targetMarker.ChapterPixelCoords = sourceMarker.ChapterPixelCoords;
             targetMarker.DeletedInChapter = sourceMarker.DeletedInChapter;
             targetMarker.Geometry = sourceMarker.Geometry;
+            targetMarker.ExportName = sourceMarker.ExportName;
         }
 
 
@@ -867,6 +1002,49 @@ namespace GoNorth.Controllers.Api
             queryResult.Markers = queryTask.Result;
             queryResult.HasMore = start + queryResult.Markers.Count < countTask.Result;
             return Ok(queryResult);
+        }
+
+
+        /// <summary>
+        /// Searches map markers
+        /// </summary>
+        /// <param name="searchPattern">Search term</param>
+        /// <param name="start">Start of the page</param>
+        /// <param name="pageSize">Page Size</param>
+        /// <returns>Markers</returns>
+        [Produces(typeof(NamedMarkerQueryResult))]
+        [Authorize(Roles = RoleNames.Karta)]
+        [Authorize(Roles = RoleNames.Tale)]
+        [Authorize(Roles = RoleNames.Kortisto)]
+        [Authorize(Roles = RoleNames.Aika)]
+        [HttpGet]
+        public async Task<IActionResult> SearchMarkersByExportName(string searchPattern, int start, int pageSize)
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            List<KartaMapNamedMarkerQueryResult> markers = await _mapDbAccess.GetMarkersByExportName(project.Id, searchPattern);
+
+            NamedMarkerQueryResult queryResult = new NamedMarkerQueryResult();
+            queryResult.Markers = markers.Skip(start).Take(pageSize).ToList();
+            queryResult.HasMore = start + queryResult.Markers.Count < markers.Count;
+            return Ok(queryResult);
+        }
+
+        /// <summary>
+        /// Returns a marker by id
+        /// </summary>
+        /// <param name="mapId">Map Id</param>
+        /// <param name="markerId">Marker Id</param>
+        /// <returns>Marker</returns>
+        [Produces(typeof(KartaMapNamedMarkerQueryResult))]
+        [Authorize(Roles = RoleNames.Karta)]
+        [Authorize(Roles = RoleNames.Tale)]
+        [Authorize(Roles = RoleNames.Kortisto)]
+        [Authorize(Roles = RoleNames.Aika)]
+        [HttpGet]
+        public async Task<IActionResult> GetMarker(string mapId, string markerId)
+        {
+            KartaMapNamedMarkerQueryResult marker = await _mapDbAccess.GetMarkerById(mapId, markerId);
+            return Ok(marker);
         }
 
     }

@@ -17,6 +17,17 @@ namespace GoNorth.Services.Export.Placeholder
     public class NpcInventoryExportTemplatePlaceholderResolver : BaseExportPlaceholderResolver, IExportTemplateTopicPlaceholderResolver
     {
         /// <summary>
+        /// Start of the content that will only be rendered if the Npc has items
+        /// </summary>
+        private const string Placeholder_HasItems_Start = "Npc_HasItems_Start";
+        
+        /// <summary>
+        /// End of the content that will only be rendered if the Npc has items
+        /// </summary>
+        private const string Placeholder_HasItems_End = "Npc_HasItems_End";
+
+
+        /// <summary>
         /// Inventory
         /// </summary>
         private const string Placeholder_Inventory = "Npc_Inventory";
@@ -144,6 +155,8 @@ namespace GoNorth.Services.Export.Placeholder
                 return ExportUtil.IndentListTemplate(inventoryTemplate.Code, m.Groups[1].Value);
             });
 
+            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_HasItems_Start, Placeholder_HasItems_End, npc.Inventory != null && npc.Inventory.Count > 0);
+
             code = ExportUtil.BuildRangePlaceholderRegex(Placeholder_Inventory_Start, Placeholder_Inventory_End).Replace(code, m => {
                 return ExportUtil.TrimEmptyLines(BuildInventory(m.Groups[1].Value, npc));
             });
@@ -213,6 +226,8 @@ namespace GoNorth.Services.Export.Placeholder
             }
 
             exportPlaceholders.AddRange(new List<ExportTemplatePlaceholder>() {
+                CreatePlaceHolder(Placeholder_HasItems_Start),
+                CreatePlaceHolder(Placeholder_HasItems_End),
                 CreatePlaceHolder(Placeholder_Inventory_Start),
                 CreatePlaceHolder(Placeholder_Inventory_End),
                 CreatePlaceHolder(Placeholder_CurItem_Index),

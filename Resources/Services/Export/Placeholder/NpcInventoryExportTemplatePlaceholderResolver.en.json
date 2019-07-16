@@ -1,4 +1,6 @@
 {
+    "PlaceholderDesc_Npc_HasItems_Start": "Start of the content that will only be rendered if the npc has items in the inventory. Must be closed with Npc_HasItems_End.",
+    "PlaceholderDesc_Npc_HasItems_End": "End of the content that will only be rendered if the npc has items in the inventory.",
     "PlaceholderDesc_Npc_Inventory": "Inventory of the npc. The inventory template will be used for this.",
     "PlaceholderDesc_Inventory_Start": "Start of the inventory item list. The list must be closed with Inventory_End. Attributes of the item can be used with the FlexField placeholders but using CurItem_ instead of FlexField_.",
     "PlaceholderDesc_Inventory_End": "End of the inventory list.",

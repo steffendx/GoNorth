@@ -1,0 +1,1 @@
+BaseNpc_WalkNpcToNpc(this, BaseNpc_GetNpcById({{Tale_Action_TargetNpc_Value_Id}}), "{{Tale_ChildNode_HasFunction_Start}}{{Tale_ChildNode_Function}}{{Tale_ChildNode_HasFunction_End}}")

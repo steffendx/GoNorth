@@ -44,7 +44,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNavBar">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainNavBar" id="gn-navbarCollapseExpand">
                     <span class="sr-only">@Localizer["ToogleNavigation"]</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -93,6 +93,10 @@
                     {
                         <li><a asp-area="" asp-controller="Export" asp-action="Index">@Localizer["ExportSettings"]</a></li>
                     }
+                    @if(User.IsInRole(RoleNames.ProjectConfigManager))
+                    {
+                        <li><a asp-area="" asp-controller="ProjectConfig" asp-action="Index">@Localizer["ProjectConfig"]</a></li>
+                    }
                 </ul>
                 }
                 @await Html.PartialAsync("_LoginPartial")
@@ -130,11 +134,11 @@
         <script src="~/js/Shared/shared.lib.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery"
                 crossorigin="anonymous"
-                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+                integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh">
         </script>
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
@@ -142,11 +146,11 @@
                 crossorigin="anonymous"
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
         </script>
-        <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js"
+        <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.5.0.js"
                 asp-fallback-src="~/lib/knockout/dist/knockout.js"
                 asp-fallback-test="window.ko && ko.version"
                 crossorigin="anonymous"
-                integrity="sha384-/EjRuG6YTb6zCFou+DBnYCi5u9E1RjUMJanyGOL7DUYLp6wSCUuHNhd58uoGj7jh">
+                integrity="sha384-cd17CJ+/vjGWK4Gipm1JaKFFdNvWJhaJZ80qgEJvqqMbZAitKqV22KYncJZxvrmW">
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
                 asp-fallback-src="~/lib/moment/min/moment.min.js"
