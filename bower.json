@@ -4,7 +4,7 @@
   "dependencies": {
     "bootstrap": "3.3.7",
     "jquery": "3.4.1",
-    "jquery-validation": "1.19.0",
+    "jquery-validation": "1.19.1",
     "jquery-validation-unobtrusive": "3.2.10",
     "knockout": "^3.5.0",
     "moment": "^2.24.0",
@@ -16,8 +16,8 @@
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "leaflet": "1.4.0",
     "leaflet-draw": "^1.0.4",
-    "ace-builds": "^1.4.2",
-    "knockout-sortable": "^1.1.0",
+    "ace-builds": "1.4.5",
+    "knockout-sortable": "1.1.1",
     "bootstrap-colorpicker": "2.5.3"
   }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Dialog;
@@ -50,9 +51,9 @@ namespace GoNorth.Services.Export.Placeholder
         /// Renders a node graph
         /// </summary>
         /// <param name="exportNodeGraph">Node graph snippet to parse</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Npc to which the dialog belongs</param>
         /// <returns>Result of parsing the node graph</returns>
-        public async Task<ExportNodeGraphRenderResult> RenderNodeGraph(ExportDialogData exportNodeGraph, KortistoNpc npc)
+        public async Task<ExportNodeGraphRenderResult> RenderNodeGraph(ExportDialogData exportNodeGraph, FlexFieldObject flexFieldObject)
         {
             _curProject = await _cachedDbAccess.GetDefaultProject();
             _exportSettings = await _cachedDbAccess.GetExportSettings(_curProject.Id);
@@ -69,11 +70,11 @@ namespace GoNorth.Services.Export.Placeholder
             List<ExportDialogFunction> additionalFunctions = ExtractAdditionalFunctions(exportNodeGraph);
 
             // Render functions
-            string startStepCode = await RenderDialogStepList(rootFunction.FunctionSteps, npc);
+            string startStepCode = await RenderDialogStepList(rootFunction.FunctionSteps, flexFieldObject);
             string additionalFunctionsCode = string.Empty;
             foreach(ExportDialogFunction curAdditionalFunction in additionalFunctions)
             {
-                additionalFunctionsCode += await RenderDialogFunction(curAdditionalFunction, npc);
+                additionalFunctionsCode += await RenderDialogFunction(curAdditionalFunction, flexFieldObject);
             }
 
             renderResult.StartStepCode = startStepCode;
@@ -87,14 +88,14 @@ namespace GoNorth.Services.Export.Placeholder
         /// </summary>
         /// <param name="additionalFunction">Function</param>
         /// <param name="additionalFunctionsCode">Additional Function Code to wrap</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex Field object to which the dialog belongs</param>
         /// <returns>Function Code</returns>
-        protected override async Task<string> BuildDialogFunctionCode(ExportDialogFunction additionalFunction, string additionalFunctionsCode, KortistoNpc npc)
+        protected override async Task<string> BuildDialogFunctionCode(ExportDialogFunction additionalFunction, string additionalFunctionsCode, FlexFieldObject flexFieldObject)
         {
             string functionContentCode = (await _defaultTemplateProvider.GetDefaultTemplateByType(_curProject.Id, TemplateType.ObjectDailyRoutineFunction)).Code;
 
             functionContentCode = ExportUtil.BuildPlaceholderRegex(Placeholder_FunctionName).Replace(functionContentCode, additionalFunction.RootNode.DialogStepFunctionName);
-            functionContentCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Function_ParentPreview).Replace(functionContentCode, await BuildFunctionParentPreview(additionalFunction, npc));
+            functionContentCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Function_ParentPreview).Replace(functionContentCode, await BuildFunctionParentPreview(additionalFunction, flexFieldObject));
             functionContentCode = ExportUtil.BuildPlaceholderRegex(Placeholder_FunctionContent, ExportConstants.ListIndentPrefix).Replace(functionContentCode, m =>
             {
                 return ExportUtil.TrimEmptyLines(ExportUtil.IndentListTemplate(additionalFunctionsCode, m.Groups[1].Value));

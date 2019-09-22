@@ -75,5 +75,7 @@
     "PropertyNameMovementTarget": "Movement target",
     "PropertyNameScriptName": "Script name",
     "PropertyNameScriptCode": "Script code",
-    "ScriptCodeChanged": "Changed script code"
+    "ScriptCodeChanged": "Changed script code",
+
+    "ExportSnippetsChanged": "Export Snippets geändert"
 }

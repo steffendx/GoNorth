@@ -154,7 +154,7 @@ namespace GoNorth.Services.Export.NodeGraphExport
                 {
                     if(childNode.SourceNodePort.ToLowerInvariant() != "else")
                     {
-                        string childIdStr = childNode.SourceNodePort.Replace("choice", string.Empty).Replace("condition", string.Empty);
+                        string childIdStr = childNode.SourceNodePort.Replace("choice", string.Empty).Replace("condition", string.Empty).Replace("additionalActionOutput", string.Empty);
                         int.TryParse(childIdStr, out childId);
                     }
                     else

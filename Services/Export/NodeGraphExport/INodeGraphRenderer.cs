@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Services.Export.Dialog;
 using GoNorth.Services.Export.Placeholder;
@@ -20,8 +21,8 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// Renders a node graph
         /// </summary>
         /// <param name="exportNodeGraph">Node graph snippet to parse</param>
-        /// <param name="npc">Npc to which the node graph belongs</param>
+        /// <param name="flexFieldObject">FlexField Object to which the node graph belongs</param>
         /// <returns>Result of parsing the node graph</returns>
-        Task<ExportNodeGraphRenderResult> RenderNodeGraph(ExportDialogData exportNodeGraph, KortistoNpc npc);
+        Task<ExportNodeGraphRenderResult> RenderNodeGraph(ExportDialogData exportNodeGraph, FlexFieldObject flexFieldObject);
     }
 }

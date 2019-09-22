@@ -394,9 +394,22 @@ button.delete:hover
 	padding-left: 5px;
 }
 
+.gn-actionNodeObjectSpawnRotation {
+	display: inline-block !important;
+	width: 30% !important;
+	margin-right: 5px;
+	margin-top: 0px !important;
+}
+
 .gn-nodeActionText {
     margin-top: 8px;
     padding-left: 5px;
+}
+
+.gn-nodeActionOutputLabel {
+	display: inline-block;
+	fill: #FFFFFF;
+	font-size: 10px;
 }
 
 .gn-nodeSelectItemAction:hover {
@@ -405,4 +418,20 @@ button.delete:hover
 
 .gn-nodeItemQuantity {
     margin-top: 0px !important;
+}
+
+.gn-spawnObjectMarkerActionContainer {
+    line-height: 15px;
+}
+
+.gn-spawnObjectMarkerAction {
+    display: inline-block;
+    overflow-x: hidden;
+    max-width: 90%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gn-spawnObjectMarkerActionOpenIcon {
+	top: -1px;
 }

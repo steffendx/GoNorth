@@ -2,5 +2,7 @@
     "PlaceholderDesc_Dialog_HasDialog_Start": "Start des Inhaltes der nur gerendert wird wenn der aktuelle Npc einen Dialog hat. Muss mit Dialog_HasDialog_End abgeschlossen werden.",
     "PlaceholderDesc_Dialog_HasDialog_End": "Ende des Inhaltes der nur gerendert wird wenn der aktuelle Npc einen Dialog hat.",
     "PlaceholderDesc_Dialog_Start": "Erster Dialog Schritt und alle weiteren Dialogschritte die in der selben Funktion ausgeführt werden.",
-    "PlaceholderDesc_Dialog_Additional_Functions": "Wird durch zusätzliche Dialog Funktionen ersetzt oder entfernt wenn keine weiteren Funktionen nötig sind."
+    "PlaceholderDesc_Dialog_Additional_Functions": "Wird durch zusätzliche Dialog Funktionen ersetzt oder entfernt wenn keine weiteren Funktionen nötig sind.",
+
+    "DialogErrorContext": "Dialog"
 }

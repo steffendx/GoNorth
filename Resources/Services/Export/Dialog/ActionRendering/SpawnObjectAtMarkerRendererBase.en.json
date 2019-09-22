@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Tale_Action_TargetMarker_Name": "Export name of the target marker",
+    "PlaceholderDesc_Tale_Action_Rotation_Pitch": "Rotation around the X-Axis of the object",
+    "PlaceholderDesc_Tale_Action_Rotation_Yaw": "Rotation around the Y-Axis of the object",
+    "PlaceholderDesc_Tale_Action_Rotation_Roll": "Rotation around the Z-Axis of the object"
+}

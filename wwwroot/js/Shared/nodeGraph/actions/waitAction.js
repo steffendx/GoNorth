@@ -197,6 +197,24 @@
             };
 
             /**
+             * Returns the label for the main output
+             * 
+             * @returns {string} Label for the main output
+             */
+            Actions.WaitAction.prototype.getMainOutputLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WaitLaterContinueLabel;
+            };
+
+            /**
+             * Returns the additional outports of the action
+             * 
+             * @returns {string[]} Additional outports
+             */
+            Actions.WaitAction.prototype.getAdditionalOutports = function() {
+                return [ DefaultNodeShapes.Localization.Actions.WaitDirectContinueLabel ];
+            };
+
+            /**
              * Builds the action
              * 
              * @returns {object} Action

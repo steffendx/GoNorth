@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_ExportSnippet_ScriptFunctionName": "Name der Skript Funktion",
+    "PlaceholderDesc_ExportSnippet_Function_ParentPreview": "Text Vorschau der übergeordneten Knoten die zu dieser neuen Funktion führen. Dieser Platzhalter ist gedacht um in einem Kommentar gerendert zu werden um die Lesbarkeit zu erhöhen.",
+    "PlaceholderDesc_ExportSnippet_ScriptContent": "Inhalt der Skript Funktion"
+}

@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
-using GoNorth.Data.Tale;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Dialog.ActionRendering;
 using GoNorth.Services.Export.LanguageKeyGeneration;
@@ -89,9 +87,11 @@ namespace GoNorth.Services.Export.Dialog
             _actionRenderes.Add(ActionType.ChangeQuestValue, new QuestValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _actionRenderes.Add(ActionType.ChangeQuestState, new SetQuestStateActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _actionRenderes.Add(ActionType.AddQuestText, new AddQuestTextRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
+            _actionRenderes.Add(ActionType.ChangeCurrentSkillValue, new CurrentSkillValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _actionRenderes.Add(ActionType.Wait, new WaitActionRenderer(defaultTemplateProvider, localizerFactory));
             _actionRenderes.Add(ActionType.ChangePlayerState, new ChangeNpcStateActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
             _actionRenderes.Add(ActionType.ChangeNpcState, new ChangeNpcStateActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
+            _actionRenderes.Add(ActionType.ChangeTargetNpcState, new ChangeTargetNpcStateActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _actionRenderes.Add(ActionType.PlayerLearnSkill, new LearnForgetSkillActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, true));
             _actionRenderes.Add(ActionType.PlayerForgetSkill, new LearnForgetSkillActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false));
             _actionRenderes.Add(ActionType.NpcLearnSkill, new LearnForgetSkillActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, true));
@@ -120,15 +120,20 @@ namespace GoNorth.Services.Export.Dialog
             _actionRenderes.Add(ActionType.TeleportChooseNpcToNpc, new MoveNpcToNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, true));
             _actionRenderes.Add(ActionType.WalkNpcToNpc, new MoveNpcToNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false));
             _actionRenderes.Add(ActionType.WalkChooseNpcToNpc, new MoveNpcToNpcActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, true));
+            _actionRenderes.Add(ActionType.SpawnNpcAtMarker, new SpawnNpcAtMarkerRender(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
+            _actionRenderes.Add(ActionType.SpawnItemAtMarker, new SpawnItemAtMarkerRender(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
+            _actionRenderes.Add(ActionType.ChangeItemValue, new ItemValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
+            _actionRenderes.Add(ActionType.SpawnItemInChooseNpcInventory, new InventoryActionChooseNpcRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
+            _actionRenderes.Add(ActionType.RemoveItemFromChooseNpcInventory, new InventoryActionChooseNpcRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
         }
 
         /// <summary>
         /// Renders a dialog step
         /// </summary>
         /// <param name="data">Dialog Step Data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex Field to which the dialog belongs</param>
         /// <returns>Dialog Step Render Result</returns>
-        public async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, KortistoNpc npc)
+        public async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, FlexFieldObject flexFieldObject)
         {
             ActionNode actionNode = data.Action;
             if(actionNode == null)
@@ -136,13 +141,28 @@ namespace GoNorth.Services.Export.Dialog
                 return null;
             }
             
-            string actionContent = await BuildActionContent(actionNode, data, npc);
+            IActionRenderer actionRenderer = GetActionRenderForNode(actionNode);
+
+            ExportDialogDataChild nextStep = null;
+            if(data.Children != null)
+            {
+                if(actionRenderer != null)
+                {
+                    nextStep = actionRenderer.GetNextStep(data.Children);
+                }
+                else
+                {
+                    nextStep = data.Children.FirstOrDefault();
+                }
+            }
+
+            string actionContent = await BuildActionContent(actionRenderer, actionNode, data, flexFieldObject);
 
             ExportTemplate template = await _defaultTemplateProvider.GetDefaultTemplateByType(_project.Id, TemplateType.TaleAction);
 
             ExportDialogStepRenderResult renderResult = new ExportDialogStepRenderResult();
             renderResult.StepCode = ExportUtil.BuildPlaceholderRegex(Placeholder_ActionContent).Replace(template.Code, actionContent);
-            renderResult.StepCode = ReplaceBaseStepPlaceholders(renderResult.StepCode, data, data.Children.FirstOrDefault() != null ? data.Children.FirstOrDefault().Child : null);
+            renderResult.StepCode = ReplaceBaseStepPlaceholders(renderResult.StepCode, data, nextStep != null ? nextStep.Child : null);
 
             return renderResult;
         }
@@ -174,19 +194,19 @@ namespace GoNorth.Services.Export.Dialog
         /// <summary>
         /// Builds the action content
         /// </summary>
+        /// <param name="actionRenderer">Action Renderer</param>
         /// <param name="actionNode">Action Node</param>
         /// <param name="data">Dialog data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Action content</returns>
-        private async Task<string> BuildActionContent(ActionNode actionNode, ExportDialogData data, KortistoNpc npc)
+        private async Task<string> BuildActionContent(IActionRenderer actionRenderer, ActionNode actionNode, ExportDialogData data, FlexFieldObject flexFieldObject)
         {
-            IActionRenderer actionRenderer = GetActionRenderForNode(actionNode);
             if(actionRenderer == null)
             {
                 return string.Empty;
             }
 
-            return await actionRenderer.BuildActionElement(actionNode, data, _project, _errorCollection, npc, _exportSettings);
+            return await actionRenderer.BuildActionElement(actionNode, data, _project, _errorCollection, flexFieldObject, _exportSettings);
         }
     
         /// <summary>
@@ -194,10 +214,10 @@ namespace GoNorth.Services.Export.Dialog
         /// </summary>
         /// <param name="child">Child node</param>
         /// <param name="parent">Parent</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex Field to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Parent text preview for the dialog step</returns>
-        public async Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public async Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
             ActionNode actionNode = parent.Action;
             if(actionNode == null)
@@ -211,7 +231,7 @@ namespace GoNorth.Services.Export.Dialog
                 return string.Empty;
             }
 
-            return await actionRenderer.BuildPreviewText(actionNode, npc, errorCollection);
+            return await actionRenderer.BuildPreviewText(actionNode, flexFieldObject, errorCollection, child, parent);
         }
 
         /// <summary>

@@ -19,15 +19,15 @@
     "package.json",
     ".gitignore"
   ],
-  "version": "1.1.0",
-  "_release": "1.1.0",
+  "version": "1.1.1",
+  "_release": "1.1.1",
   "_resolution": {
     "type": "version",
-    "tag": "v1.1.0",
-    "commit": "7a9bb828ac89084bfb184d4e1ad138062720cd46"
+    "tag": "v1.1.1",
+    "commit": "3ee627f9f0d45a912a1290cea27ee96e3c2ec0b5"
   },
   "_source": "https://github.com/rniemeyer/knockout-sortable.git",
-  "_target": "^1.1.0",
+  "_target": "1.1.1",
   "_originalSource": "knockout-sortable",
   "_direct": true
 }

@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Placeholder;
@@ -36,13 +37,13 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Action Build Result</returns>
-        public async Task<string> BuildActionElement(ActionNode action, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
+        public async Task<string> BuildActionElement(ActionNode action, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
             T parsedData = ParseActionData(action.ActionData);
-            return await BuildActionFromParsedData(parsedData, data, project, errorCollection, npc, exportSettings);
+            return await BuildActionFromParsedData(parsedData, data, project, errorCollection, flexFieldObject, exportSettings);
         }
 
         /// <summary>
@@ -52,32 +53,36 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Action string</returns>
-        public abstract Task<string> BuildActionFromParsedData(T parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings);
+        public abstract Task<string> BuildActionFromParsedData(T parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings);
 
         /// <summary>
         /// Builds the preview text for an action
         /// </summary>
         /// <param name="action">Action</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
+        /// <param name="child">Child node</param>
+        /// <param name="parent">Parent</param>
         /// <returns>Preview Text</returns>
-        public async Task<string> BuildPreviewText(ActionNode action, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public async Task<string> BuildPreviewText(ActionNode action, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
         {
             T parsedData = ParseActionData(action.ActionData);
-            return await BuildPreviewTextFromParsedData(parsedData, npc, errorCollection);
+            return await BuildPreviewTextFromParsedData(parsedData, flexFieldObject, errorCollection, child, parent);
         }
 
         /// <summary>
         /// Builds a preview text from parsed data
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
+        /// <param name="child">Child node</param>
+        /// <param name="parent">Parent</param>
         /// <returns>Preview text</returns>
-        public abstract Task<string> BuildPreviewTextFromParsedData(T parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection);
+        public abstract Task<string> BuildPreviewTextFromParsedData(T parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent);
 
         /// <summary>
         /// Returns true if the action renderer has placeholders for a template type
@@ -92,5 +97,16 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="templateType">Template Type</param>
         /// <returns>Export Template Placeholder</returns>
         public abstract List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType);
+
+
+        /// <summary>
+        /// Returns the next step from a list of children
+        /// </summary>
+        /// <param name="children">Children to read</param>
+        /// <returns>Next Step</returns>
+        public virtual ExportDialogDataChild GetNextStep(List<ExportDialogDataChild> children)
+        {
+            return children.FirstOrDefault();
+        }
     }
 }

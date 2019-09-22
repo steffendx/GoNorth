@@ -96,6 +96,20 @@ namespace GoNorth.Data.FlexFieldDatabase
         Task<List<T>> GetFlexFieldObjectsByTemplate(string templateId);
 
         /// <summary>
+        /// Returns all flex field objects that are not part of an id list. This means that they are not part of the list themselfs and or their template
+        /// </summary>
+        /// <param name="idList">List of ids</param>
+        /// <returns>Flex field objects</returns>
+        Task<List<T>> GetFlexFieldObjectsNotPartOfIdList(IEnumerable<string> idList);
+        
+        /// <summary>
+        /// Returns all flex field objects that are part of an id list. This means that they are not part of the list themselfs and or their template
+        /// </summary>
+        /// <param name="idList">List of ids</param>
+        /// <returns>Flex field objects</returns>
+        Task<List<T>> GetFlexFieldObjectsPartOfIdList(IEnumerable<string> idList);
+
+        /// <summary>
         /// Resolves the names for a list of Flex Field Objects
         /// </summary>
         /// <param name="flexFieldObjectIds">Flex Field Object Ids</param>
@@ -108,6 +122,14 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="flexFieldObject">Flex Field Object to update</param>
         /// <returns>Task</returns>
         Task UpdateFlexFieldObject(T flexFieldObject);
+
+        /// <summary>
+        /// Moves an object to a folder
+        /// </summary>
+        /// <param name="objectId">Object to move</param>
+        /// <param name="targetFolderId">Id of the folder to move the object to</param>
+        /// <returns>Task</returns>
+        Task MoveToFolder(string objectId, string targetFolderId);
 
         /// <summary>
         /// Deletes an Flex Field Object

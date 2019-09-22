@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
+using GoNorth.Data.Exporting;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Kortisto;
@@ -81,6 +82,16 @@ namespace GoNorth.Services.ImplementationStatusCompare
         private readonly IKartaMarkerImplementationSnapshotDbAccess _markerSnapshotDbAccess;
 
         /// <summary>
+        /// Object Export Snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+        
+        /// <summary>
+        /// Object Export Snippet Snapshot Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetSnapshotDbAccess _objectExportSnippetSnapshotDbAccess;
+        
+        /// <summary>
         /// Localizer
         /// </summary>
         private readonly IStringLocalizer _localizer;
@@ -100,10 +111,13 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="questSnapshotDbAccess">Quest Implementation Snapshot Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="markerSnapshotDbAccess">Marker Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public GenericImplementationStatusComparer(IKortistoNpcDbAccess npcDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcSnapshotDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemImplementationSnapshotDbAccess itemSnapshotDbAccess, 
                                                    IEvneSkillDbAccess skillDbAccess, IEvneSkillImplementationSnapshotDbAccess skillSnapshotDbAccess, ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, 
-                                                   IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
+                                                   IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, 
+                                                   IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
         {
             _npcDbAccess = npcDbAccess;
             _npcSnapshotDbAccess = npcSnapshotDbAccess;
@@ -117,6 +131,8 @@ namespace GoNorth.Services.ImplementationStatusCompare
             _questSnapshotDbAccess = questSnapshotDbAccess;
             _mapDbAccess = mapDbAccess;
             _markerSnapshotDbAccess = markerSnapshotDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _objectExportSnippetSnapshotDbAccess = objectExportSnippetSnapshotDbAccess;
             _localizer = localizerFactory.Create(typeof(GenericImplementationStatusComparer));
         }
 
@@ -135,7 +151,9 @@ namespace GoNorth.Services.ImplementationStatusCompare
 
             KortistoNpc oldNpc = await _npcSnapshotDbAccess.GetSnapshotById(npcId);
             
-            return CompareObjects(currentNpc, oldNpc);
+            CompareResult result = CompareObjects(currentNpc, oldNpc);
+            await CompareExportSnippets(npcId, result);
+            return result;
         }
 
         /// <summary>
@@ -153,7 +171,9 @@ namespace GoNorth.Services.ImplementationStatusCompare
 
             StyrItem oldItem = await _itemSnapshotDbAccess.GetSnapshotById(itemId);
             
-            return CompareObjects(currentItem, oldItem);
+            CompareResult result = CompareObjects(currentItem, oldItem);
+            await CompareExportSnippets(itemId, result);
+            return result;
         }
         
         /// <summary>
@@ -171,7 +191,9 @@ namespace GoNorth.Services.ImplementationStatusCompare
 
             EvneSkill oldSkill = await _skillSnapshotDbAccess.GetSnapshotById(skillId);
             
-            return CompareObjects(currentSkill, oldSkill);
+            CompareResult result = CompareObjects(currentSkill, oldSkill);
+            await CompareExportSnippets(skillId, result);
+            return result;
         }
 
         /// <summary>
@@ -391,6 +413,27 @@ namespace GoNorth.Services.ImplementationStatusCompare
 
             return compareResults;
         }
+
+
+        /// <summary>
+        /// Compares the export snippets of an object
+        /// </summary>
+        /// <param name="objectId">Id of the object</param>
+        /// <param name="result">Result to fill</param>
+        /// <returns>Task</returns>
+        private async Task CompareExportSnippets(string objectId, CompareResult result)
+        {
+            List<ObjectExportSnippet> newSnippets = await _objectExportSnippetDbAccess.GetExportSnippets(objectId);
+            List<ObjectExportSnippet> oldSnippets = await _objectExportSnippetSnapshotDbAccess.GetExportSnippetSnapshots(objectId);
+
+            CompareDifference difference = BuildCompareDifference("ExportSnippetsChanged", null, null, "ExportSnippetsChanged", string.Empty);
+            difference.SubDifferences = CompareImplementationComparableList(newSnippets, oldSnippets);
+            if(difference.SubDifferences.Count > 0)
+            {
+                result.CompareDifference.Add(difference);
+            }
+        }
+
 
         /// <summary>
         /// Compares two lists of Implementation comparables

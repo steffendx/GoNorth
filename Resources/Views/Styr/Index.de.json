@@ -5,6 +5,7 @@
     "CreateFlexFieldObject": "Item erstellen",
     "CreateCategory": "Kategorie erstellen",
     "EditCategory": "Kategorie editieren",
+    "MoveToCategory": "Zu Kategorie verschieben",
     "DeleteCategory": "Kategorie löschen",
     "Name": "Name",    
     "Description": "Beschreibung",
@@ -18,6 +19,12 @@
 
     "ManageTemplates": "Templates verwalten",
 
+    "DropHereToMoveToParent": "Objekt hier ablegen um es nach oben zu bewegen",
+    "SelectTargetCategory": "Kategorie auswählen",
+    "RootLevel": "Oberste Ebene",
+    "ThisIsFolderBeingMoved": "(Ordner der verschoben wird)",
+    "Move": "Verschieben",
+    
     "Search": "Suchen",
     
     "PreviousPage": "Vorherige Seite",

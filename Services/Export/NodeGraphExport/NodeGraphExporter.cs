@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Services.Export.Dialog;
@@ -73,9 +74,9 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// Renders a node graph
         /// </summary>
         /// <param name="exportNodeGraph">Node graph snippet to render</param>
-        /// <param name="npc">Npc to which the snippet belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the snippet belongs</param>
         /// <returns>Result of rendering the node graph</returns>
-        public async Task<ExportNodeGraphRenderResult> RenderNodeGraph(NodeGraphSnippet exportNodeGraph, KortistoNpc npc)
+        public async Task<ExportNodeGraphRenderResult> RenderNodeGraph(NodeGraphSnippet exportNodeGraph, FlexFieldObject flexFieldObject)
         {
             _nodeGraphParser.SetErrorCollection(_errorCollection);
             ExportDialogData exportData = _nodeGraphParser.ParseNodeGraph(exportNodeGraph);
@@ -83,10 +84,10 @@ namespace GoNorth.Services.Export.NodeGraphExport
             ExportNodeGraphRenderResult renderResult;
             if(exportData != null)
             {
-                exportData = await _nodeGraphFunctionGenerator.GenerateFunctions(npc.ProjectId, npc.Id, exportData, _errorCollection);
+                exportData = await _nodeGraphFunctionGenerator.GenerateFunctions(flexFieldObject.ProjectId, flexFieldObject.Id, exportData, _errorCollection);
 
                 _nodeGraphRenderer.SetErrorCollection(_errorCollection);
-                renderResult = await _nodeGraphRenderer.RenderNodeGraph(exportData, npc);
+                renderResult = await _nodeGraphRenderer.RenderNodeGraph(exportData, flexFieldObject);
             }
             else
             {

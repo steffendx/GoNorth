@@ -1,3 +1,13 @@
 {
-    "PlaceholderDesc_Tale_Action_TargetMarker_Name": "Export Name der Zielmarkierung"
+    "PlaceholderDesc_Tale_Action_TargetMarker_Name": "Export Name der Zielmarkierung",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_Start": "Start des Inhalts der nur gerendert wird wenn der Knoten eine Funktion hat die das Skript sofort fortsetzt. Muss mit Tale_Action_HasDirectContinueFunction_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_End": "Ende des Inhalts der nur gerendert wird wenn der Knoten eine Funktion hat die das Skript sofort fortsetzt.",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_Start": "Start des Inhalts der nur gerendert wird wenn der Knoten keine Funktion hat die das Skript sofort fortsetzt. Muss mit Tale_Action_HasNoDirectContinueFunction_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_End": "Ende des Inhalts der nur gerendert wird wenn der Knoten keine Funktion hat die das Skript sofort fortsetzt.",
+    "PlaceholderDesc_Tale_Action_DirectContinueFunction": "Name der Funktion die das Skript sofort fortsetzt.",
+    "PlaceholderDesc_Tale_Action_HasMovementState_Start": "Start des Inhalts der nur gerendert wird wenn der Knoten einen Bewegungszustand hat. Muss mit Tale_Action_HasMovementState_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_HasMovementState_End": "Ende des Inhalts der nur gerendert wird wenn der Knoten einen Bewegungszustand hat.",
+    "PlaceholderDesc_Tale_Action_HasNoMovementState_Start": "Start des Inhalts der nur gerendert wird wenn der Knoten keinen Bewegungszustand hat. Muss mit Tale_Action_HasNoMovementState_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_HasNoMovementState_End": "Ende des Inhalts der nur gerendert wird wenn der Knoten keinen Bewegungszustand hat.",
+    "PlaceholderDesc_Tale_Action_MovementState": "Bewegungszustand des Knoten."
 }

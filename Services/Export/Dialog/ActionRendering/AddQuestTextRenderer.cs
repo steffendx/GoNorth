@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
@@ -102,10 +103,10 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Action string</returns>
-        public override async Task<string> BuildActionFromParsedData(AddQuestTextRenderer.AddQuestTextData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
+        public override async Task<string> BuildActionFromParsedData(AddQuestTextRenderer.AddQuestTextData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
             ExportTemplate actionTemplate = await GetExportTemplate(project);
             IFlexFieldExportable valueObject = await GetQuest(parsedData, errorCollection);
@@ -117,7 +118,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
             string actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_QuestText).Replace(actionTemplate.Code, ExportUtil.EscapeCharacters(parsedData.QuestText, exportSettings.EscapeCharacter, exportSettings.CharactersNeedingEscaping, exportSettings.NewlineCharacter));
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_QuestText_Preview).Replace(actionCode, ExportUtil.BuildTextPreview(parsedData.QuestText));
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_QuestText_LangKey).Replace(actionCode, m => {
-                return _languageKeyGenerator.GetDialogTextLineKey(npc.Id, valueObject.Name, ExportConstants.LanguageKeyTypeQuest, data.Id, parsedData.QuestText).Result;
+                return _languageKeyGenerator.GetDialogTextLineKey(flexFieldObject.Id, valueObject.Name, ExportConstants.LanguageKeyTypeQuest, data.Id, parsedData.QuestText).Result;
             });
 
             ExportObjectData flexFieldExportData = new ExportObjectData();
@@ -134,10 +135,12 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Builds a preview text from parsed data
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
+        /// <param name="child">Child node</param>
+        /// <param name="parent">Parent</param>
         /// <returns>Preview text</returns>
-        public override async Task<string> BuildPreviewTextFromParsedData(AddQuestTextRenderer.AddQuestTextData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public override async Task<string> BuildPreviewTextFromParsedData(AddQuestTextRenderer.AddQuestTextData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
         {
             IFlexFieldExportable valueObject = await GetQuest(parsedData, errorCollection);
             if(valueObject == null)

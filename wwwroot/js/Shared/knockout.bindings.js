@@ -570,7 +570,7 @@
              * Draggable Binding Handler
              */
             ko.bindingHandlers.draggableElement = {
-                init: function (element, valueAccessor, allBindings) {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                     var helper = valueAccessor();
                     if(ko.isObservable(helper))
                     {
@@ -590,19 +590,27 @@
                     var draggableRevertDuration  = allBindings.get("draggableRevertDuration");
                     if(typeof draggableRevertDuration != "undefined")
                     {
-                        draggableOptions.revertDuration  = draggableRevertDuration;
+                        draggableOptions.revertDuration = draggableRevertDuration;
                     }
 
                     var draggableZIndex  = allBindings.get("draggableZIndex");
                     if(typeof draggableZIndex != "undefined")
                     {
-                        draggableOptions.zIndex   = draggableZIndex;
+                        draggableOptions.zIndex = draggableZIndex;
+                    }
+
+                    var draggableDistance  = allBindings.get("draggableDistance");
+                    if(typeof draggableDistance != "undefined")
+                    {
+                        draggableOptions.distance = draggableDistance;
                     }
 
                     var draggableObject = allBindings.get("draggableObject");
                     var dropableIndiciators = allBindings.get("draggableDropIndicators");
-                    if(draggableObject || dropableIndiciators) {
-                        draggableOptions.start = function() {
+                    var draggableOnStart = allBindings.get("draggableOnStart");
+                    var draggableOnStop = allBindings.get("draggableOnStop");
+                    if(draggableObject || dropableIndiciators || draggableOnStart) {
+                        draggableOptions.start = function(event, ui) {
                             currentDraggableObject = draggableObject ? draggableObject : null;
 
                             if(dropableIndiciators)
@@ -611,8 +619,16 @@
                                     jQuery(searchSelector).addClass(addClass);
                                 });
                             }
+
+                            if(draggableOnStart)
+                            {                            
+                                draggableOnStart.apply(bindingContext.$data, [ bindingContext.$data, event, ui ]);
+                            }
                         };
-                        draggableOptions.stop = function() {
+                    }
+                    
+                    if(draggableObject || dropableIndiciators || draggableOnStop) {
+                        draggableOptions.stop = function(event, ui) {
                             currentDraggableObject = null;
 
                             if(dropableIndiciators)
@@ -620,6 +636,11 @@
                                 jQuery.each(dropableIndiciators, function(searchSelector, addClass) {
                                     jQuery(searchSelector).removeClass(addClass);
                                 });
+                            }
+
+                            if(draggableOnStop)
+                            {                            
+                                draggableOnStop.apply(bindingContext.$data, [ bindingContext.$data, event, ui ]);
                             }
                         };
                     }

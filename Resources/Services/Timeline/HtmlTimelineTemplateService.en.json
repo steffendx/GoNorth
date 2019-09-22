@@ -10,6 +10,8 @@
     "KortistoFolderCreated": "A new category <a href='/Kortisto?folderId={1}'>{0}</a> was created in Kortisto.",
     "KortistoFolderDeleted": "The category {0} was deleted in Kortisto.",
     "KortistoFolderUpdated": "The category <a href='/Kortisto?folderId={1}'>{0}</a> was updated in Kortisto.",
+    "KortistoFolderMovedToFolder": "The category {0} was moved to the category <a href='/Kortisto?folderId={3}'>{2}</a> in Kortisto.",
+    "KortistoFolderMovedToRootFolder": "The category {0} was moved to <a href='/Kortisto'>root level</a> in Kortisto.",
 
     "KortistoNpcTemplateCreated": "A new npc template <a href='/Kortisto/Npc?template=1&id={1}'>{0}</a> was created.",
     "KortistoNpcTemplateDeleted": "The npc template {0} was deleted.",
@@ -21,10 +23,16 @@
     "KortistoNpcDeleted": "The npc {0} was deleted.",
     "KortistoNpcUpdated": "The npc <a href='/Kortisto/Npc?id={1}'>{0}</a> was updated.",
     "KortistoNpcImageUpload": "The image of the npc <a href='/Kortisto/Npc?id={1}'>{0}</a> was updated.",
+    "KortistoNpcMovedToFolder": "The npc {0} was moved to the category <a href='/Kortisto?folderId={3}'>{2}</a> in Kortisto.",
+    "KortistoNpcMovedToRoot": "The npc {0} was moved to <a href='/Kortisto'>root level</a> in Kortisto.",
+    "KortistoNpcExportSnippetChanged": "The export snippet {0} of the npc <a href='/Kortisto/Npc?id={2}'>{1}</a> was updated.",
+    "KortistoNpcExportSnippetDeleted": "The export snippet {0} of the npc <a href='/Kortisto/Npc?id={2}'>{1}</a> was deleted.",
 
     "StyrFolderCreated": "A new category <a href='/Styr?folderId={1}'>{0}</a> was created in Styr.",
     "StyrFolderDeleted": "The category {0} was deleted in Styr.",
     "StyrFolderUpdated": "The category <a href='/Styr?folderId={1}'>{0}</a> was updated in Styr.",
+    "StyrFolderMovedToFolder": "The category {0} was moved to the category <a href='/Styr?folderId={3}'>{2}</a> in Styr.",
+    "StyrFolderMovedToRootFolder": "The category {0} was moved to <a href='/Styr'>root level</a> in Styr.",
 
     "StyrItemTemplateCreated": "A new item template <a href='/Styr/Item?template=1&id={1}'>{0}</a> was created.",
     "StyrItemTemplateDeleted": "The item template {0} was deleted.",
@@ -36,10 +44,16 @@
     "StyrItemDeleted": "The item {0} was deleted.",
     "StyrItemUpdated": "The item <a href='/Styr/Item?id={1}'>{0}</a> was updated.",
     "StyrItemImageUpload": "The image of the item <a href='/Styr/Item?id={1}'>{0}</a> was updated.",
+    "StyrItemMovedToFolder": "The item {0} was moved to the category <a href='/Styr?folderId={3}'>{2}</a> in Styr.",
+    "StyrItemMovedToRoot": "The item {0} was moved to <a href='/Styr'>root level</a> in Styr.",
+    "StyrItemExportSnippetChanged": "The export snippet {0} of the item <a href='/Styr/Item?id={2}'>{1}</a> was updated.",
+    "StyrItemExportSnippetDeleted": "The export snippet {0} of the item <a href='/Styr/Item?id={2}'>{1}</a> was deleted.",
 
     "EvneFolderCreated": "A new category <a href='/Evne?folderId={1}'>{0}</a> was created in Evne.",
     "EvneFolderDeleted": "The category {0} was deleted in Evne.",
     "EvneFolderUpdated": "The category <a href='/Evne?folderId={1}'>{0}</a> was updated in Evne.",
+    "EvneFolderMovedToFolder": "The category {0} was moved to the category <a href='/Evne?folderId={3}'>{2}</a> in Evne.",
+    "EvneFolderMovedToRootFolder": "The category {0} was moved to <a href='/Evne'>root level</a> in Evne.",
 
     "EvneSkillTemplateCreated": "A new skill template <a href='/Evne/Skill?template=1&id={1}'>{0}</a> was created.",
     "EvneSkillTemplateDeleted": "The skill template {0} was deleted.",
@@ -51,6 +65,10 @@
     "EvneSkillDeleted": "The skill {0} was deleted.",
     "EvneSkillUpdated": "The skill <a href='/Evne/Skill?id={1}'>{0}</a> was updated.",
     "EvneSkillImageUpload": "The image of the skill <a href='/Evne/Skill?id={1}'>{0}</a> was updated.",
+    "EvneSkillMovedToFolder": "The skill {0} was moved to the category <a href='/Evne?folderId={3}'>{2}</a> in Evne.",
+    "EvneSkillMovedToRoot": "The skill {0} was moved to <a href='/Evne'>root level</a> in Evne.",
+    "EvneSkillExportSnippetChanged": "The export snippet {0} of the skill <a href='/Evne/Skill?id={2}'>{1}</a> was updated.",
+    "EvneSkillExportSnippetDeleted": "The export snippet {0} of the skill <a href='/Evne/Skill?id={2}'>{1}</a> was deleted.",
 
     "KirjaPageCreated": "A new page <a href='/Kirja?id={1}'>{0}</a> was created in Kirja.",
     "KirjaPageDeleted": "The page {0} was deleted in Kirja.",

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Dialog;
@@ -162,26 +162,26 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// Renders a dialog function
         /// </summary>
         /// <param name="additionalFunction">additionalFunction</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Dialog function code</returns>
-        protected async Task<string> RenderDialogFunction(ExportDialogFunction additionalFunction, KortistoNpc npc)
+        protected async Task<string> RenderDialogFunction(ExportDialogFunction additionalFunction, FlexFieldObject flexFieldObject)
         {
-            string functionCode = await RenderDialogStepList(additionalFunction.FunctionSteps, npc);
-            return await BuildDialogFunctionCode(additionalFunction, functionCode, npc);
+            string functionCode = await RenderDialogStepList(additionalFunction.FunctionSteps, flexFieldObject);
+            return await BuildDialogFunctionCode(additionalFunction, functionCode, flexFieldObject);
         }
 
         /// <summary>
         /// Renders a list of dialog steps
         /// </summary>
         /// <param name="functionSteps">Steps to render</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Renderd code for list of dialog steps</returns>
-        protected async Task<string> RenderDialogStepList(List<ExportDialogData> functionSteps, KortistoNpc npc)
+        protected async Task<string> RenderDialogStepList(List<ExportDialogData> functionSteps, FlexFieldObject flexFieldObject)
         {
             string stepListCode = string.Empty;
             foreach (ExportDialogData curData in functionSteps)
             {
-                ExportDialogStepRenderResult renderResult = await RenderDialogStep(curData, npc);
+                ExportDialogStepRenderResult renderResult = await RenderDialogStep(curData, flexFieldObject);
                 stepListCode += renderResult.StepCode;
             }
             return stepListCode;
@@ -191,13 +191,13 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// Renders a dialog step
         /// </summary>
         /// <param name="exportDialog">Cur Data to render</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Result of the rendering of the step</returns>
-        protected async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData exportDialog, KortistoNpc npc)
+        protected async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData exportDialog, FlexFieldObject flexFieldObject)
         {
             foreach (IExportDialogStepRenderer curRenderer in _stepRenderers)
             {
-                ExportDialogStepRenderResult result = await curRenderer.RenderDialogStep(exportDialog, npc);
+                ExportDialogStepRenderResult result = await curRenderer.RenderDialogStep(exportDialog, flexFieldObject);
                 if (result != null)
                 {
                     return result;
@@ -213,17 +213,17 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// </summary>
         /// <param name="additionalFunction">Function</param>
         /// <param name="additionalFunctionsCode">Additional Function Code to wrap</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Function Code</returns>
-        protected abstract Task<string> BuildDialogFunctionCode(ExportDialogFunction additionalFunction, string additionalFunctionsCode, KortistoNpc npc);
+        protected abstract Task<string> BuildDialogFunctionCode(ExportDialogFunction additionalFunction, string additionalFunctionsCode, FlexFieldObject flexFieldObject);
 
         /// <summary>
         /// Builds a preview for the parents of a function
         /// </summary>
         /// <param name="additionalFunction">Function</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Preview of the parents of the function</returns>
-        protected async Task<string> BuildFunctionParentPreview(ExportDialogFunction additionalFunction, KortistoNpc npc)
+        protected async Task<string> BuildFunctionParentPreview(ExportDialogFunction additionalFunction, FlexFieldObject flexFieldObject)
         {
             if (additionalFunction.RootNode.Parents == null)
             {
@@ -235,7 +235,7 @@ namespace GoNorth.Services.Export.NodeGraphExport
             {
                 foreach (IExportDialogStepRenderer curRenderer in _stepRenderers)
                 {
-                    string stepPreview = await curRenderer.BuildParentTextPreview(additionalFunction.RootNode, curParent, npc, _errorCollection);
+                    string stepPreview = await curRenderer.BuildParentTextPreview(additionalFunction.RootNode, curParent, flexFieldObject, _errorCollection);
                     if (stepPreview != null)
                     {
                         previewLines.Add(stepPreview);

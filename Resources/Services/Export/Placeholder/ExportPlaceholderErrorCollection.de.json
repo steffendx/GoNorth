@@ -1,12 +1,12 @@
 {
     "FlexFieldMissing": "Das Feld '{0}' konnte nicht in '{1}' gefunden werden.",
 
-    "DialogRootNodeCountNotOne": "Es gibt {0} Rootknoten im Dialog. Es muss exakt einen Rootknoten als Start für den Dialog vorhanden sein.",
-    "DialogUnknownNodeType": "Es wurde ein unbekannter Dialog Knoten verwendet.",
-    "DialogUnknownFunctionGenerationCondition": "Es wurde eine unbekannte Dialog Funktions Generierungs Regel gefunden.",
-    "DialogNodeHasNoChildForFunction": "Es muss eine Dialog Schritt Funktion für einen neuen Dialog Schritt generiert werden ohne das ein Kindknoten vorliegt. Im Template sollte eine Prüfung ob ein Kindknoten vorliegen eingeführt werden.",
-    "DialogInfinityLoop": "Im Dialog existiert ein Knoten der zu einer Endloss Schleife führt ohne Möglichkeit den Dialog abzubrechen. Der Dialog muss überprüft werden.",
-    "DialogConditionMissing": "Es muss eine Dialog Schritt Bedingung generiert werden ohne das eine Bedingung im Dialog vorliegt. Im Template sollte eine Prüfung ob eine Bedingung vorliegt eingeführt werden.",
+    "DialogRootNodeCountNotOne": "Es gibt {0} Rootknoten im Knotensystem. Es muss exakt einen Rootknoten als Start für das Knotensystem vorhanden sein.",
+    "DialogUnknownNodeType": "Es wurde ein unbekannter Knotentyp im Knotensystem verwendet.",
+    "DialogUnknownFunctionGenerationCondition": "Es wurde eine unbekannte Knotensystem Funktions Generierungs Regel gefunden.",
+    "DialogNodeHasNoChildForFunction": "Es muss eine Knotensystem Schritt Funktion für einen neuen Knotensystem Schritt generiert werden ohne das ein Kindknoten vorliegt. Im Template sollte eine Prüfung ob ein Kindknoten vorliegen eingeführt werden.",
+    "DialogInfinityLoop": "Im Knotensystem existiert ein Knoten der zu einer Endloss Schleife führt ohne Möglichkeit das Skript abzubrechen. Das Knotensystem muss überprüft werden.",
+    "DialogConditionMissing": "Es muss ein Knotensystem Schritt Bedingung generiert werden ohne das eine Bedingung im Knotensystem vorliegt. Im Template sollte eine Prüfung ob eine Bedingung vorliegt eingeführt werden.",
     "DialogUnknownConditionTypeError": "Ein unbekannter Bedingungstyp '{0}' wurde gefunden. Die Bedingung kann nicht generiert werden.",
     "DialogUnknownGroupOperator": "Ein unbekannter Gruppierungs-Operator '{0}' wurde gefunden. Die Bedingung kann nicht korrekt generiert werden.",
     "DialogUnknownConditionOperator": "Ein unbekannter Operator '{0}' wurde gefunden. Die Bedingung kann nicht korrekt generiert werden.",
@@ -19,6 +19,9 @@
     "DialogUnknownActionTypeError": "Ein unbekannter Aktionstyp '{0}' wurde gefunden. Die Aktion kann nicht generiert werden.",
     "DialogUnknownActionOperator": "Ein unbekannter Operator '{0}' wurde gefunden. Die Aktion kann nicht korrekt generiert werden.",
     "DialogDailyRoutineEventNotFoundError": "Ein referenziertes Tagesablauf Ereignis konnte im Npc {0} nicht gefunden werden. Das  Tagesablauf Ereignis wurde wahrscheinlich gelöscht.",
+    "WaitActionHasOnlyDirectContinueFunction": "Eine Warte Aktion hat nur einen Direkt Fortsetzen Kindknoten. Es Sollte geprüft werden ob der Warteknoten überflüssig ist.",
 
-    "NoPlayerNpcExistsError": "Es existiert kein Spieler Npc."
+    "NoPlayerNpcExistsError": "Es existiert kein Spieler Npc.",
+
+    "ExportSnippetMissing": "Das Export Snippet hat keinen Platzhalter im verwendeten Template. Der Inhalt des Export Snippets konnte nicht gerendert werden."
 }

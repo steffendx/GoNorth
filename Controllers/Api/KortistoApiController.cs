@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Services.Timeline;
 using GoNorth.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -18,7 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using GoNorth.Data.User;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Tale;
-using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Aika;
 using GoNorth.Services.ImplementationStatusCompare;
 using GoNorth.Services.FlexFieldThumbnail;
@@ -51,6 +47,16 @@ namespace GoNorth.Controllers.Api
         /// Event used for the folder updated event
         /// </summary>
         protected override TimelineEvent FolderUpdatedEvent { get { return TimelineEvent.KortistoFolderUpdated; } }
+                
+        /// <summary>
+        /// Event used for the folder moved to folder event
+        /// </summary>
+        protected override TimelineEvent FolderMovedToFolderEvent { get { return TimelineEvent.KortistoFolderMovedToFolder; } }
+
+        /// <summary>
+        /// Event used for the folder moved to root level event
+        /// </summary>
+        protected override TimelineEvent FolderMovedToRootEvent { get { return TimelineEvent.KortistoFolderMovedToRootFolder; } }
 
 
         /// <summary>
@@ -98,6 +104,16 @@ namespace GoNorth.Controllers.Api
         /// Event used for the flex field object image updated event
         /// </summary>
         protected override TimelineEvent ObjectImageUploadEvent { get { return TimelineEvent.KortistoNpcImageUpload; } }
+                        
+        /// <summary>
+        /// Event used for the object moved to folder event
+        /// </summary>
+        protected override TimelineEvent ObjectMovedToFolderEvent { get { return TimelineEvent.KortistoNpcMovedToFolder; } }
+
+        /// <summary>
+        /// Event used for the object moved to root level event
+        /// </summary>
+        protected override TimelineEvent ObjectMovedToRootEvent { get { return TimelineEvent.KortistoNpcMovedToRoot; } }
 
 
         /// <summary>
@@ -136,6 +152,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="imageAccess">Npc Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db Access</param>
@@ -150,10 +168,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public KortistoApiController(IKortistoFolderDbAccess folderDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
-                                     ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IKortistoNpcImageAccess imageAccess, IKortistoThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, 
-                                     IKartaMapDbAccess kartaMapDbAccess, IProjectConfigProvider projectConfigProvider, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<KortistoApiController> logger, 
-                                     IStringLocalizerFactory localizerFactory) 
-                                     : base(folderDbAccess, templateDbAccess, npcDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, imageAccess, thumbnailService, userManager, 
+                                     ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IKortistoNpcImageAccess imageAccess, 
+                                     IKortistoThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, IProjectConfigProvider projectConfigProvider, UserManager<GoNorthUser> userManager, 
+                                     IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<KortistoApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                     : base(folderDbAccess, templateDbAccess, npcDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, imageAccess, thumbnailService, userManager, 
                                             implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;

@@ -5,6 +5,7 @@
     "CreateFlexFieldObject": "Create skill",
     "CreateCategory": "Create category",
     "EditCategory": "Edit category",
+    "MoveToCategory": "Move to category",
     "DeleteCategory": "Delete category",
     "Name": "Name",    
     "Description": "Description",
@@ -17,6 +18,12 @@
     "Cancel": "Cancel",
 
     "ManageTemplates": "Manage templates",
+    
+    "DropHereToMoveToParent": "Drop object here to move to parent folder",
+    "SelectTargetCategory": "Select target category",
+    "RootLevel": "Root level",
+    "ThisIsFolderBeingMoved": "(Folder that is being moved)",
+    "Move": "Move",
 
     "Search": "Search",
 

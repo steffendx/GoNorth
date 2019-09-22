@@ -93,6 +93,8 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.KortistoFolderCreated, new List<string>() { RoleNames.Kortisto });
             _entryRoleFilter.Add(TimelineEvent.KortistoFolderDeleted, new List<string>() { RoleNames.Kortisto });
             _entryRoleFilter.Add(TimelineEvent.KortistoFolderUpdated, new List<string>() { RoleNames.Kortisto });
+            _entryRoleFilter.Add(TimelineEvent.KortistoFolderMovedToFolder, new List<string>() { RoleNames.Kortisto });
+            _entryRoleFilter.Add(TimelineEvent.KortistoFolderMovedToRootFolder, new List<string>() { RoleNames.Kortisto });
 
             _entryRoleFilter.Add(TimelineEvent.KortistoNpcTemplateCreated, new List<string>() { RoleNames.Kortisto });
             _entryRoleFilter.Add(TimelineEvent.KortistoNpcTemplateDeleted, new List<string>() { RoleNames.Kortisto });
@@ -104,11 +106,17 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.KortistoNpcDeleted, new List<string>() { RoleNames.Kortisto });
             _entryRoleFilter.Add(TimelineEvent.KortistoNpcUpdated, new List<string>() { RoleNames.Kortisto });
             _entryRoleFilter.Add(TimelineEvent.KortistoNpcImageUpload, new List<string>() { RoleNames.Kortisto });
+            _entryRoleFilter.Add(TimelineEvent.KortistoNpcMovedToFolder, new List<string>() { RoleNames.Kortisto }); 
+            _entryRoleFilter.Add(TimelineEvent.KortistoNpcMovedToRoot, new List<string>() { RoleNames.Kortisto }); 
+            _entryRoleFilter.Add(TimelineEvent.KortistoNpcExportSnippetChanged, new List<string>() { RoleNames.Kortisto, RoleNames.ExportObjects }); 
+            _entryRoleFilter.Add(TimelineEvent.KortistoNpcExportSnippetDeleted, new List<string>() { RoleNames.Kortisto, RoleNames.ExportObjects }); 
 
             // Styr
             _entryRoleFilter.Add(TimelineEvent.StyrFolderCreated, new List<string>() { RoleNames.Styr });
             _entryRoleFilter.Add(TimelineEvent.StyrFolderDeleted, new List<string>() { RoleNames.Styr });
             _entryRoleFilter.Add(TimelineEvent.StyrFolderUpdated, new List<string>() { RoleNames.Styr });
+            _entryRoleFilter.Add(TimelineEvent.StyrFolderMovedToFolder, new List<string>() { RoleNames.Styr });
+            _entryRoleFilter.Add(TimelineEvent.StyrFolderMovedToRootFolder, new List<string>() { RoleNames.Styr });
 
             _entryRoleFilter.Add(TimelineEvent.StyrItemTemplateCreated, new List<string>() { RoleNames.Styr });
             _entryRoleFilter.Add(TimelineEvent.StyrItemTemplateDeleted, new List<string>() { RoleNames.Styr });
@@ -120,11 +128,17 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.StyrItemDeleted, new List<string>() { RoleNames.Styr });
             _entryRoleFilter.Add(TimelineEvent.StyrItemUpdated, new List<string>() { RoleNames.Styr });
             _entryRoleFilter.Add(TimelineEvent.StyrItemImageUpload, new List<string>() { RoleNames.Styr }); 
+            _entryRoleFilter.Add(TimelineEvent.StyrItemMovedToFolder, new List<string>() { RoleNames.Styr }); 
+            _entryRoleFilter.Add(TimelineEvent.StyrItemMovedToRoot, new List<string>() { RoleNames.Styr }); 
+            _entryRoleFilter.Add(TimelineEvent.StyrItemExportSnippetChanged, new List<string>() { RoleNames.Styr, RoleNames.ExportObjects }); 
+            _entryRoleFilter.Add(TimelineEvent.StyrItemExportSnippetDeleted, new List<string>() { RoleNames.Styr, RoleNames.ExportObjects }); 
             
             // Evne
             _entryRoleFilter.Add(TimelineEvent.EvneFolderCreated, new List<string>() { RoleNames.Evne });
             _entryRoleFilter.Add(TimelineEvent.EvneFolderDeleted, new List<string>() { RoleNames.Evne });
             _entryRoleFilter.Add(TimelineEvent.EvneFolderUpdated, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneFolderMovedToFolder, new List<string>() { RoleNames.Evne });
+            _entryRoleFilter.Add(TimelineEvent.EvneFolderMovedToRootFolder, new List<string>() { RoleNames.Evne });
 
             _entryRoleFilter.Add(TimelineEvent.EvneSkillTemplateCreated, new List<string>() { RoleNames.Evne });
             _entryRoleFilter.Add(TimelineEvent.EvneSkillTemplateDeleted, new List<string>() { RoleNames.Evne });
@@ -136,6 +150,10 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.EvneSkillDeleted, new List<string>() { RoleNames.Evne });
             _entryRoleFilter.Add(TimelineEvent.EvneSkillUpdated, new List<string>() { RoleNames.Evne });
             _entryRoleFilter.Add(TimelineEvent.EvneSkillImageUpload, new List<string>() { RoleNames.Evne }); 
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillMovedToFolder, new List<string>() { RoleNames.Evne }); 
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillMovedToRoot, new List<string>() { RoleNames.Evne }); 
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillExportSnippetChanged, new List<string>() { RoleNames.Evne, RoleNames.ExportObjects }); 
+            _entryRoleFilter.Add(TimelineEvent.EvneSkillExportSnippetDeleted, new List<string>() { RoleNames.Evne, RoleNames.ExportObjects }); 
             
             // Kirja
             _entryRoleFilter.Add(TimelineEvent.KirjaPageCreated, new List<string>() { RoleNames.Kirja });

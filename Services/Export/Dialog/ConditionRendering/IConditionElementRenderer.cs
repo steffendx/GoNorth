@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Placeholder;
 
@@ -17,10 +17,10 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// <param name="condition">Current Condition</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Condition Build Result</returns>
-        string BuildSingleConditionElement(ParsedConditionData condition, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings);
+        string BuildSingleConditionElement(ParsedConditionData condition, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings);
 
         /// <summary>
         /// Returns true if the condition element renderer has placeholders for a template type

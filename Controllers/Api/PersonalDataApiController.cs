@@ -20,7 +20,6 @@ using GoNorth.Data.Timeline;
 using GoNorth.Data.User;
 using GoNorth.Services.Timeline;
 using GoNorth.Services.User;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -243,6 +242,11 @@ namespace GoNorth.Controllers.Api
         private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
 
         /// <summary>
+        /// Object Export snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+
+        /// <summary>
         /// Map Db Access
         /// </summary>
         private readonly IKartaMapDbAccess _mapDbAccess;
@@ -327,6 +331,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="exportTemplateDbAccess">Export template Db access</param>
+        /// <param name="objectExportSnippetDbAccess">Object Export snippet Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
@@ -343,7 +348,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="signInManager">Signin Manager</param>
         /// <param name="userDeleter">User Deleter</param>
         public PersonalDataApiController(IAikaQuestDbAccess questDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, IKortistoNpcDbAccess npcDbAccess, 
-                                         IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
+                                         IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
                                          IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
                                          IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
         {
@@ -354,6 +359,7 @@ namespace GoNorth.Controllers.Api
             _npcDbAccess = npcDbAccess;
             _itemDbAccess = itemDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _mapDbAccess = mapDbAccess;
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
@@ -474,6 +480,13 @@ namespace GoNorth.Controllers.Api
             response.ModifiedData.AddRange(exportTemplates.Select(p => new TrimmedModifiedData {
                 ObjectType = "ExportTemplate",
                 Name = "Template " + p.TemplateType.ToString() + " " + p.Category.ToString(),
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<ObjectExportSnippet> objectExportSnippets = await _objectExportSnippetDbAccess.GetExportSnippetByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(objectExportSnippets.Select(p => new TrimmedModifiedData {
+                ObjectType = "ObjectExportSnippet",
+                Name = p.SnippetName,
                 ModifiedDate = p.ModifiedOn
             }));
 

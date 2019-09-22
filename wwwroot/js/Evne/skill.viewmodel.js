@@ -612,6 +612,85 @@
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
+    (function(Shared) {
+        (function(ChooseScriptTypeDialog) {
+
+            /**
+             * Value that will be returned in the openDialog promise if a node graph was selected. If changed, please make sure that the script types in the daily routines event object or code snippets are matching.
+             */
+            ChooseScriptTypeDialog.nodeGraph = 0;
+            
+            /**
+             * Value that will be returned in the openDialog promise if a code script was selected. If changed, please make sure that the script types in the daily routines event object or code snippets are matching.
+             */
+            ChooseScriptTypeDialog.codeScript = 1;
+
+            /**
+             * Viewmodel for a dialog to choose the script type
+             * @class
+             */
+            ChooseScriptTypeDialog.ViewModel = function()
+            {
+                this.isVisible = new ko.observable(false);
+
+                this.creationDeferred = null;
+            };
+
+            ChooseScriptTypeDialog.ViewModel.prototype = {
+                /**
+                 * Opens the script type choosing dialog
+                 * @returns {jQuery.Deferred} Deferred that will be resolved with the result of the selection
+                 */
+                openDialog: function() {
+                    if(this.creationDeferred != null)
+                    {
+                        this.creationDeferred.reject();
+                    }
+
+                    this.isVisible(true);
+                    this.creationDeferred = new jQuery.Deferred();
+                    return this.creationDeferred.promise();
+                },
+
+                /**
+                 * Creates a node graph
+                 */
+                createNodeGraph: function() {
+                    this.isVisible(false);
+                    if(this.creationDeferred != null)
+                    {
+                        this.creationDeferred.resolve(ChooseScriptTypeDialog.nodeGraph);
+                    }
+                },
+                
+                /**
+                 * Creates a code script
+                 */
+                createCodeScript: function() {
+                    this.isVisible(false);
+                    if(this.creationDeferred != null)
+                    {
+                        this.creationDeferred.resolve(ChooseScriptTypeDialog.codeScript);
+                    }
+                },
+
+                /**
+                 * Cancels the dialog
+                 */
+                cancelDialog: function() {
+                    this.isVisible(false);
+                    if(this.creationDeferred != null)
+                    {
+                        this.creationDeferred.reject();
+                    }
+                }
+            };
+
+        }(Shared.ChooseScriptTypeDialog = Shared.ChooseScriptTypeDialog || {}));
+    }(GoNorth.Shared = GoNorth.Shared || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
     (function(Util) {
         
         /**
@@ -629,6 +708,7 @@
             for(var curField = 0; curField < fields.length; ++curField)
             {
                 if(fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldTypeMultiLine ||
+                   fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldGroup ||
                    (fields[curField].scriptSettings && fields[curField].scriptSettings.dontExportToScript))
                 {
                     continue;
@@ -2142,6 +2222,342 @@
     (function(FlexFieldDatabase) {
         (function(ObjectForm) {
 
+            /// Script Type value for a non existing script
+            var scriptTypeNone = -1;
+
+            /**
+             * Class that allows the user to manage export snippets
+             * @param {string} objectType Object Type Name
+             * @param {ko.observable} isImplementedObs Observable to show if the object is implemented
+             * @class
+             */
+            ObjectForm.ExportSnippetManager = function(objectType, isImplementedObs) {
+                this.objectType = objectType;
+                this.isImplementedObs = isImplementedObs;
+
+                this.chooseObjectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
+
+                this.showSnippetManagerDialog = new ko.observable(false);
+
+                this.objectId = new ko.observable("");
+
+                this.validSnippets = new ko.observableArray();
+                this.invalidSnippets = new ko.observableArray();
+
+                this.snippetManagerDialogLoading = new ko.observable(false);
+                this.snippetManagerDialogErrorOccured = new ko.observable(false);
+                               
+                this.chooseScriptTypeDialog = new GoNorth.Shared.ChooseScriptTypeDialog.ViewModel();
+                this.codeScriptDialog = new GoNorth.ScriptDialog.CodeScriptDialog(this.errorOccured);
+                this.nodeScriptDialog = new GoNorth.ScriptDialog.NodeScriptDialog(this.objectId, this.chooseObjectDialog, this.codeScriptDialog, this.snippetManagerDialogErrorOccured);
+
+                this.showConfirmDeleteDialog = new ko.observable(false);
+                this.snippetToDelete = null;
+            }
+
+            ObjectForm.ExportSnippetManager.prototype = {
+                /**
+                 * Opens the snippet manager dialog
+                 * 
+                 * @param {string} id Id of the object
+                 * @param {number} templateType Template type
+                 */
+                openSnippetManagerDialog: function(id, templateType) {
+                    this.objectId(id);
+
+                    this.validSnippets.removeAll();
+                    this.invalidSnippets.removeAll();
+
+                    this.showSnippetManagerDialog(true);
+
+                    this.loadSnippets(id, templateType);
+                },
+
+                /**
+                 * Closes the snippet manager dialog
+                 */
+                closeSnippetManagerDialog: function(id, templateType) {
+                    this.showSnippetManagerDialog(false);
+                },
+
+                /**
+                 * Loads the snippets for the object
+                 * 
+                 * @param {string} id Id of the object
+                 * @param {number} templateType Template type
+                 */
+                loadSnippets: function(id, templateType) {
+                    this.snippetManagerDialogLoading(true);
+                    this.snippetManagerDialogErrorOccured(false);
+                    var availableSnippets = null;
+                    var existingSnippets = null;
+
+                    var templateSnippetsDef = jQuery.ajax({ 
+                        url: "/api/ExportApi/GetExportTemplateSnippetsByObjectId?id=" + id + "&templateType=" + templateType, 
+                        type: "GET"
+                    });
+                    templateSnippetsDef.done(function(data) {
+                        availableSnippets = data;
+                    })
+
+                    var existingSnippetsDef = jQuery.ajax({ 
+                        url: "/api/ExportApi/GetFilledExportTemplateSnippetsByObjectId?id=" + id, 
+                        type: "GET"
+                    });
+                    existingSnippetsDef.done(function(data) {
+                        existingSnippets = data;
+                    })
+
+                    var self = this;
+                    jQuery.when(templateSnippetsDef, existingSnippetsDef).done(function() {
+                        self.mergeSnippets(availableSnippets, existingSnippets);
+
+                        self.snippetManagerDialogLoading(false);
+                    }).fail(function(xhr) {
+                        self.snippetManagerDialogLoading(false);
+                        self.snippetManagerDialogErrorOccured(true);
+                    });
+                },
+
+
+                /**
+                 * Merges the available snippets and the existing snippets
+                 * @param {object[]} availableSnippets Available snippets
+                 * @param {object[]} existingSnippets Existing Snippets
+                 */
+                mergeSnippets: function(availableSnippets, existingSnippets) {
+                    var availableSnippetsLookup = {};
+                    for(var curSnippet = 0; curSnippet < availableSnippets.length; ++curSnippet)
+                    {
+                        availableSnippetsLookup[availableSnippets[curSnippet].name.toLowerCase()] = availableSnippets[curSnippet];
+                    }
+
+                    for(var curSnippet = 0; curSnippet < existingSnippets.length; ++curSnippet)
+                    {
+                        var snippetObject = this.createSnippetObject(existingSnippets[curSnippet].snippetName);
+                        snippetObject.id = existingSnippets[curSnippet].id;
+                        snippetObject.scriptName(existingSnippets[curSnippet].scriptName);
+                        snippetObject.scriptType = existingSnippets[curSnippet].scriptType;
+                        snippetObject.scriptNodeGraph = existingSnippets[curSnippet].scriptNodeGraph;
+                        snippetObject.scriptCode = existingSnippets[curSnippet].scriptCode;
+
+                        if(availableSnippetsLookup[snippetObject.snippetName.toLowerCase()])
+                        {
+                            availableSnippetsLookup[snippetObject.snippetName.toLowerCase()].wasUsed = true;
+                            this.validSnippets.push(snippetObject);
+                        }
+                        else
+                        {
+                            this.invalidSnippets.push(snippetObject);
+                        }
+                    }
+
+                    for(var curSnippet = 0; curSnippet < availableSnippets.length; ++curSnippet)
+                    {
+                        if(!availableSnippetsLookup[availableSnippets[curSnippet].name.toLowerCase()].wasUsed)
+                        {
+                            this.validSnippets.push(this.createSnippetObject(availableSnippets[curSnippet].name));
+                        }
+                    }
+                },
+
+                /**
+                 * Creates a snippet object
+                 * @param {string} snippetName Name of the snippet
+                 * @returns {object} Snippet Object
+                 */
+                createSnippetObject: function(snippetName) {
+                    return {
+                        id: "",
+                        objectId: this.objectId(),
+                        snippetName: snippetName,
+                        scriptName: new ko.observable(""),
+                        scriptType: scriptTypeNone,
+                        scriptNodeGraph: null,
+                        scriptCode: null,
+                    }
+                },
+
+
+                /**
+                 * Creates or updates a snippet
+                 * @param {object} snippet Snippet to create or update
+                 */
+                createUpdateSnippet: function(snippet) {
+                    var self = this;
+                    if(snippet.scriptType == scriptTypeNone)
+                    {
+                        this.chooseScriptTypeDialog.openDialog().done(function(selectedType) {
+                            if(selectedType == GoNorth.Shared.ChooseScriptTypeDialog.nodeGraph)
+                            {
+                                self.nodeScriptDialog.openCreateDialog().done(function(result) {
+                                    snippet.scriptName(result.name);
+                                    snippet.scriptType = GoNorth.Shared.ChooseScriptTypeDialog.nodeGraph;
+                                    snippet.scriptNodeGraph = result.graph;
+                                    snippet.scriptCode = null;
+
+                                    self.saveSnippet(snippet);
+                                });
+                            }
+                            else if(selectedType == GoNorth.Shared.ChooseScriptTypeDialog.codeScript)
+                            {
+                                self.codeScriptDialog.openCreateDialog().done(function(result) {
+                                    snippet.scriptName(result.name);
+                                    snippet.scriptType = GoNorth.Shared.ChooseScriptTypeDialog.codeScript;
+                                    snippet.scriptNodeGraph = null;
+                                    snippet.scriptCode = result.code;
+
+                                    self.saveSnippet(snippet);
+                                });
+                            }
+                        });
+                    }
+                    else if(snippet.scriptType == GoNorth.Shared.ChooseScriptTypeDialog.nodeGraph)
+                    {
+                        this.nodeScriptDialog.openEditDialog(snippet.scriptName(), snippet.scriptNodeGraph).done(function(result) {
+                            snippet.scriptName(result.name);
+                            snippet.scriptNodeGraph = result.graph;
+
+                            self.saveSnippet(snippet);
+                        });
+                    }
+                    else if(snippet.scriptType == GoNorth.Shared.ChooseScriptTypeDialog.codeScript)
+                    {
+                        this.codeScriptDialog.openEditDialog(snippet.scriptName(), snippet.scriptCode).done(function(result) {
+                            snippet.scriptName(result.name);
+                            snippet.scriptCode = result.code;
+                            
+                            self.saveSnippet(snippet);
+                        });
+                    }
+                },
+
+                /**
+                 * Saves a snippet
+                 * @param {object} snippet Snippet to save
+                 */
+                saveSnippet: function(snippet) {
+                    var url = "/api/ExportApi/CreateObjectExportSnippet?objectType=" + this.objectType;
+                    if(snippet.id) 
+                    {
+                        url = "/api/ExportApi/UpdateObjectExportSnippet?id=" + snippet.id + "&objectType=" + this.objectType;
+                    }
+
+                    var requestData = {
+                        id: snippet.id,
+                        objectId: snippet.objectId,
+                        snippetName: snippet.snippetName,
+                        scriptName: snippet.scriptName(),
+                        scriptType: snippet.scriptType,
+                        scriptNodeGraph: snippet.scriptNodeGraph,
+                        scriptCode: snippet.scriptCode
+                    }
+
+                    this.snippetManagerDialogLoading(false);
+                    this.snippetManagerDialogErrorOccured(false);
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: url, 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify(requestData), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(result) {
+                        self.snippetManagerDialogLoading(false);
+                        
+                        if(!snippet.id) 
+                        {
+                            snippet.id = result.id;
+                        }
+
+                        if(!result.isImplemented)
+                        {
+                            self.isImplementedObs(false);
+                        }
+                    }).fail(function() {
+                        self.snippetManagerDialogLoading(false);
+                        self.snippetManagerDialogErrorOccured(true);
+                    });
+                },
+
+
+                /**
+                 * Opens the confirm dialog to delete a snippet
+                 * @param {object} snippet Snippet to delete
+                 */
+                openDeleteSnippetDialog: function(snippet) {
+                    this.showConfirmDeleteDialog(true);
+                    this.snippetToDelete = snippet;
+                },
+
+                /**
+                 * Opens the confirm dialog to delete a snippet
+                 * @param {object} snippet Snippet to delete
+                 */
+                deleteSnippet: function() {
+                    if(!this.snippetToDelete)
+                    {
+                        return;
+                    }
+
+                    this.showConfirmDeleteDialog(false);
+
+                    this.snippetManagerDialogLoading(false);
+                    this.snippetManagerDialogErrorOccured(false);
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/ExportApi/DeleteObjectExportSnippet?id=" + this.snippetToDelete.id + "&objectType=" + this.objectType, 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        type: "DELETE",
+                        contentType: "application/json"
+                    }).done(function(result) {
+                        self.snippetManagerDialogLoading(false);
+
+                        self.resetSnippet(self.snippetToDelete);
+                        self.invalidSnippets.remove(self.snippetToDelete);
+                        self.snippetToDelete = null;
+                        
+                        if(!result.isImplemented)
+                        {
+                            self.isImplementedObs(false);
+                        }
+                    }).fail(function() {
+                        self.snippetManagerDialogLoading(false);
+                        self.snippetManagerDialogErrorOccured(true);
+                        self.snippetToDelete = null;
+                    });
+                },
+
+                /**
+                 * Resets a snippet to its initial state
+                 * @param {object} snippet Snippet to reset
+                 */
+                resetSnippet: function(snippet) {
+                    snippet.id = "";
+                    snippet.objectId = this.objectId();
+                    snippet.scriptName("");
+                    snippet.scriptType = scriptTypeNone;
+                    snippet.scriptNodeGraph = null;
+                    snippet.scriptCode = null;
+                },
+
+                /**
+                 * Cancels the confirm delete snippet dialog
+                 */
+                cancelDeleteSnippetDialog: function() {
+                    this.showConfirmDeleteDialog(false);
+                    this.snippetToDelete = null;
+                }
+            }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
             /**
              * Flex Field Handling Viewmodel with pure field handling
              * @class
@@ -2525,13 +2941,14 @@
              * Object Form Base View Model
              * @param {string} rootPage Root Page
              * @param {string} apiControllerName Api Controller name
+             * @param {string} objectType Object Type Name
              * @param {string} lockName Name of the resource used for the lock for an object of this type
              * @param {string} templateLockName Name of the resource used for the lock for a template of this type
              * @param {string} kirjaApiMentionedMethod Method of the kirja api which is used to load the pages in which the object is mentioned
              * @param {string} kartaApiMentionedMethod Method of the karta api which is used to load the maps in which the object is mentioned
              * @class
              */
-            ObjectForm.BaseViewModel = function(rootPage, apiControllerName, lockName, templateLockName, kirjaApiMentionedMethod, kartaApiMarkedMethod)
+            ObjectForm.BaseViewModel = function(rootPage, apiControllerName, objectType, lockName, templateLockName, kirjaApiMentionedMethod, kartaApiMarkedMethod)
             {
                 GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldHandlingViewModel.apply(this);
 
@@ -2601,6 +3018,8 @@
 
                 this.showConfirmRegenerateLanguageKeysDialog = new ko.observable(false);
 
+                this.showConfirmExportDirtyStateDialog = new ko.observable(false);
+                this.showConfirmExportDirtyStatePromise = null;
                 this.showExportResultDialog = new ko.observable(false);
                 this.exportResultContent = new ko.observable("");
                 this.exportResultErrors = new ko.observableArray();
@@ -2626,10 +3045,14 @@
                 this.referencedInDailyRoutines = new ko.observableArray();
                 this.loadingReferencedInDailyRoutines = new ko.observable(false);
                 this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
+                
+                this.exportSnippetManager = new ObjectForm.ExportSnippetManager(objectType, this.isImplemented);
 
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
                 this.objectNotFound = new ko.observable(false);
+
+                this.lastSavedObjectState = null;
 
                 GoNorth.Util.setupValidation("#gn-objectFields");
 
@@ -2813,11 +3236,20 @@
                     }
 
                     self.objectTags(data.tags);
+
+                    self.saveLastObjectState();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
                 });
             };
+
+            /**
+             * Saves the last saved object state from the current state
+             */
+            ObjectForm.BaseViewModel.prototype.saveLastObjectState = function() {
+                this.lastSavedObjectState = this.buildSaveRequestObject();
+            };   
 
             /**
              * Saves the form
@@ -2832,19 +3264,13 @@
             ObjectForm.BaseViewModel.prototype.saveAndDistributeFields = function() {
                 this.sendSaveRequest(true);
             };
-
+            
             /**
-             * Saves the form
+             * Builds the save request object
              * 
-             * @param {bool} distributeFields true if the fields should be distributed, else false
+             * @returns {object} Save request object
              */
-            ObjectForm.BaseViewModel.prototype.sendSaveRequest = function(distributeFields) {
-                if(!jQuery("#gn-objectFields").valid())
-                {
-                    return;
-                }
-
-                // Send Data
+            ObjectForm.BaseViewModel.prototype.buildSaveRequestObject = function() {
                 var serializedFields = this.fieldManager.serializeFields();
                 var requestObject = {
                     templateId: !this.isTemplateMode() ? this.templateId : "",
@@ -2868,6 +3294,23 @@
                         requestObject.thumbnailImageFile = this.thumbnailImageFilename();
                     }
                 }
+
+                return requestObject;
+            };
+
+            /**
+             * Saves the form
+             * 
+             * @param {bool} distributeFields true if the fields should be distributed, else false
+             */
+            ObjectForm.BaseViewModel.prototype.sendSaveRequest = function(distributeFields) {
+                if(!jQuery("#gn-objectFields").valid())
+                {
+                    return;
+                }
+
+                // Send Data
+                var requestObject = this.buildSaveRequestObject();
 
                 var url = "";
                 if(this.isTemplateMode())
@@ -2936,6 +3379,8 @@
                     self.runAfterSave(data);
 
                     self.callObjectGridRefresh();
+
+                    self.lastSavedObjectState = requestObject;
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
@@ -2956,6 +3401,18 @@
             ObjectForm.BaseViewModel.prototype.runAfterSave = function(data) {
 
             };
+
+
+            /**
+             * Returns true if the form is dirty, else false
+             * 
+             * @returns {boolean} true if the form is dirty, else false
+             */
+            ObjectForm.BaseViewModel.prototype.isDirty = function() {
+                var objectState = this.buildSaveRequestObject();
+                return !GoNorth.Util.isEqual(objectState, this.lastSavedObjectState)
+            };
+
 
             /**
              * Distributes the fields
@@ -3102,6 +3559,62 @@
              * @param {string} exportFormat Format to export to (Script, JSON, Language)
              */
             ObjectForm.BaseViewModel.prototype.exportObject = function(templateType, exportFormat) {
+                if(this.isDirty())
+                {
+                    var self = this;
+                    this.openConfirmExportDirtyStateDialog().done(function() {
+                        self.openExportObjectDialog(templateType, exportFormat);
+                    });
+                    return;
+                }
+
+                this.openExportObjectDialog(templateType, exportFormat);
+            };
+
+            /**
+             * Opens the confirm export dirty state dialog
+             * 
+             * @param {number} templateType Type of the template
+             * @param {string} exportFormat Format to export to (Script, JSON, Language)
+             */
+            ObjectForm.BaseViewModel.prototype.openConfirmExportDirtyStateDialog = function() {
+                this.showConfirmExportDirtyStateDialog(true);
+                this.showConfirmExportDirtyStatePromise = new jQuery.Deferred();
+
+                return this.showConfirmExportDirtyStatePromise.promise();
+            };
+
+            /**
+             * Confirms the export dirty state dialog
+             */
+            ObjectForm.BaseViewModel.prototype.confirmExportDirtyStateDialog = function() {
+                this.showConfirmExportDirtyStateDialog(false);
+                if(this.showConfirmExportDirtyStatePromise)
+                {
+                    this.showConfirmExportDirtyStatePromise.resolve();
+                    this.showConfirmExportDirtyStatePromise = null;
+                }
+            };
+
+            /**
+             * Closes the export dirty state dialog
+             */
+            ObjectForm.BaseViewModel.prototype.closeConfirmExportDirtyStateDialog = function() {
+                this.showConfirmExportDirtyStateDialog(false);
+                if(this.showConfirmExportDirtyStatePromise)
+                {
+                    this.showConfirmExportDirtyStatePromise.reject();
+                    this.showConfirmExportDirtyStatePromise = null;
+                }
+            };
+
+            /**
+             * Opens the export object dialog
+             * 
+             * @param {number} templateType Type of the template
+             * @param {string} exportFormat Format to export to (Script, JSON, Language)
+             */
+            ObjectForm.BaseViewModel.prototype.openExportObjectDialog = function(templateType, exportFormat) {
                 this.exportResultFormat = exportFormat;
                 this.isLoading(true);
                 this.errorOccured(false);
@@ -3113,12 +3626,58 @@
                     self.isLoading(false);
                     self.showExportResultDialog(true);
                     self.exportResultContent(data.code);
-                    self.exportResultErrors(data.errors);
+                    self.exportResultErrors(self.groupExportErrors(data.errors));
                 }).fail(function(xhr) {
                     self.closeExportResultDialog();
                     self.errorOccured(true);
                     self.isLoading(false);
                 });
+            };
+
+            /**
+             * Groups the export errors by export context
+             * 
+             * @param {object[]} errors Errors to group
+             * @returns {object[]} Grouped errors
+             */
+            ObjectForm.BaseViewModel.prototype.groupExportErrors = function(errors) {
+                if(!errors) 
+                {
+                    return [];
+                }
+
+                var errorGroups = {};
+                var groupedErrors = [];
+                for(var curError = 0; curError < errors.length; ++curError)
+                {
+                    if(!errorGroups[errors[curError].errorContext])
+                    {
+                        var errorGroup = {
+                            contextName: errors[curError].errorContext,
+                            errors: []
+                        };
+                        errorGroups[errorGroup.contextName] = errorGroup;
+                        groupedErrors.push(errorGroup);
+                    }
+
+                    errorGroups[errors[curError].errorContext].errors.push(errors[curError]);
+                }
+
+                // Make sure errors with no contextname are shown first
+                groupedErrors = groupedErrors.sort(function(g1, g2) {
+                    if(!g1.contextName)
+                    {
+                        return -1;
+                    }
+                    else if(!g2.contextName)
+                    {
+                        return 1;
+                    }
+
+                    return 0;
+                });
+
+                return groupedErrors;
             };
 
             /**
@@ -3153,6 +3712,16 @@
                     self.exportShowSuccessfullyCopiedTooltip(false);
                 }, 1000);
             };
+
+
+            /**
+             * Opens the code snippet dialog
+             * 
+             * @param {number} templateType Type of the template
+             */
+            ObjectForm.BaseViewModel.prototype.openCodeSnippetDialog = function(templateType) {
+                this.exportSnippetManager.openSnippetManagerDialog(this.id(), templateType);
+            }
 
 
             /**
@@ -3879,6 +4448,524 @@
         };
 
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(BindingHandlers) {
+
+        if(typeof ko !== "undefined")
+        {
+
+            /**
+             * Code Editor Binding Handler
+             */
+            ko.bindingHandlers.codeEditor = {
+                init: function (element, valueAccessor, allBindings) {
+                    ace.require("ace/ext/language_tools");
+
+                    var obs = valueAccessor();
+
+                    // Read Config Values
+                    var theme = null;
+                    if(allBindings.get("codeEditorTheme"))
+                    {
+                        theme = ko.unwrap(allBindings.get("codeEditorTheme"));
+                    }
+
+                    if(!theme)
+                    {
+                        theme = "ace/theme/monokai";
+                    }
+
+                    var mode = null;
+                    if(allBindings.get("codeEditorMode"))
+                    {
+                        mode = ko.unwrap(allBindings.get("codeEditorMode"));
+                    }
+
+                    if(!mode)
+                    {
+                        mode = "ace/mode/lua";
+                    }
+
+                    obs._editor = ace.edit(element);
+                    obs._editor.setTheme(theme);
+                    obs._editor.session.setMode(mode);
+                    obs._editor.setOptions({
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true
+                    });
+
+                    if(ko.isObservable(obs))
+                    {
+                        obs._editor.session.on('change', function(delta) {
+                            obs._blockUpdate = true;
+                            try
+                            {
+                                obs(obs._editor.getValue());
+                                obs._blockUpdate = false;
+                            }
+                            catch(e)
+                            {
+                                obs._blockUpdate = false;
+                            }
+                        });
+                    }
+                },
+                update: function (element, valueAccessor, allBindings) {
+                    var obs = valueAccessor();
+                    var blockUpdate = obs._blockUpdate;
+                    var value = obs;
+                    if(ko.isObservable(value))
+                    {
+                        value = value();
+                    }
+
+                    var isReadonly = allBindings.get("codeEditorReadonly");
+                    if(isReadonly)
+                    {
+                        isReadonly = ko.unwrap(isReadonly);
+                        obs._editor.setReadOnly(isReadonly);
+                    }
+
+                    if(!blockUpdate)
+                    {
+                        obs._editor.session.setValue(value);
+                    }
+                }
+            }
+
+        }
+
+    }(GoNorth.BindingHandlers = GoNorth.BindingHandlers || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(ScriptDialog) {
+
+            /**
+             * Viewmodel for a dialog to enter a code script
+             * @param {ko.observable} errorOccured Error occured observable
+             * @class
+             */
+            ScriptDialog.CodeScriptDialog = function(errorOccured)
+            {
+                this.errorOccured = errorOccured;
+
+                this.isVisible = new ko.observable(false);
+                this.isEditing = new ko.observable(false);
+
+                this.originalScriptName = "";
+                this.originalScriptCode = "";
+                this.scriptName = new ko.observable("");
+                this.scriptCode = new ko.observable("");
+
+                this.editDeferred = null;
+                
+                this.codeEditorTheme = new ko.observable("");
+                this.codeEditorScriptLanguage = new ko.observable("");
+
+                this.showConfirmCloseDialog = new ko.observable(false);
+                this.confirmedClose = false;
+
+                this.loadConfig();
+            };
+
+            ScriptDialog.CodeScriptDialog.prototype = {
+                /**
+                 * Loads the config
+                 */
+                loadConfig: function() {
+                    var self = this;
+                    jQuery.ajax("/api/UserPreferencesApi/GetCodeEditorPreferences").done(function(config) {
+                        self.codeEditorTheme(config.codeEditorTheme);
+                        self.codeEditorScriptLanguage(config.scriptLanguage);
+                    }).fail(function() {
+                        self.errorOccured(true);
+                    });;
+                },
+
+                /**
+                 * Opens the create code script dialog
+                 * @returns {jQuery.Deferred} Deferred that will be resolved with the result of the dialog
+                 */
+                openCreateDialog: function() {
+                    return this.openDialogInternally("", "");
+                },
+                
+                /**
+                 * Opens the edit code script dialog
+                 * 
+                 * @param {string} name Name to edit
+                 * @param {string} code Code to edit
+                 * @returns {jQuery.Deferred} Deferred that will be resolved with the result of the dialog
+                 */
+                openEditDialog: function(name, code) {
+                    return this.openDialogInternally(name, code);
+                },
+
+                /**
+                 * Opens the code script dialog
+                 * @param {string} name Name to edit
+                 * @param {string} code Code to edit
+                 * @returns {jQuery.Deferred} Deferred that will be resolved with the result of the dialog
+                 */
+                openDialogInternally: function(name, code) {
+                    if(this.editDeferred != null)
+                    {
+                        this.editDeferred.reject();
+                    }
+
+                    this.isVisible(true);
+                    this.isEditing(!!name);
+
+                    this.originalScriptName = name;
+                    this.originalScriptCode = code;
+                    this.scriptName(name);
+                    this.scriptCode(code);
+
+                    this.showConfirmCloseDialog(false);
+                    this.confirmedClose = false;
+
+                    GoNorth.Util.setupValidation("#gn-codeScriptEditorForm");
+
+                    this.editDeferred = new jQuery.Deferred();
+                    return this.editDeferred.promise();
+                },
+
+                /**
+                 * Saves the code
+                 */
+                saveCode: function() {
+                    if(!jQuery("#gn-codeScriptEditorForm").valid())
+                    {
+                        return;
+                    }
+
+                    this.confirmedClose = true;
+                    this.isVisible(false);
+                    if(this.editDeferred != null)
+                    {
+                        this.editDeferred.resolve({
+                            name: this.scriptName(),
+                            code: this.scriptCode()
+                        });
+                    }
+                },
+
+                /**
+                 * Cancels the dialog
+                 */
+                cancelDialog: function() {
+                    this.isVisible(false);
+                    if(this.editDeferred != null)
+                    {
+                        this.editDeferred.reject();
+                    }
+                },
+
+                /**
+                 * Callback gets called before the dialog gets closed
+                 * @returns {boolean} true if the dialog should be closed, else false
+                 */
+                onClosingDialog: function() {
+                    if(this.confirmedClose)
+                    {
+                        return true;
+                    }
+
+                    if(this.originalScriptCode != this.scriptCode() || this.originalScriptName != this.scriptName())
+                    {
+                        this.showConfirmCloseDialog(true);
+                        return false;
+                    }
+                    else
+                    {
+                        this.showConfirmCloseDialog(false);
+                        return true;
+                    }
+                },
+
+                /**
+                 * Confirms the close dialog
+                 */
+                confirmCloseDialog: function() {
+                    this.confirmedClose = true;
+
+                    this.showConfirmCloseDialog(false);
+                    this.isVisible(false);
+                },
+
+                
+                /**
+                 * Cancels the close dialog
+                 */
+                cancelCloseDialog: function() {
+                    this.showConfirmCloseDialog(false);
+                }
+            };
+
+    }(GoNorth.ScriptDialog = GoNorth.ScriptDialog || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(ScriptDialog) {
+
+            /**
+             * Viewmodel for a dialog to enter a script using a node system
+             * @param {ko.observable} npcId Npc id to which the node system is related
+             * @param {GoNorth.ChooseObjectDialog.ViewModel} objectDialog Object choose dialog
+             * @param {GoNorth.ScriptDialog.CodeEditor} codeEditor Code editor dialog
+             * @param {ko.observable} errorOccured Error occured observable
+             * @class
+             */
+            ScriptDialog.NodeScriptDialog = function(npcId, objectDialog, codeEditor, errorOccured)
+            {
+                GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
+
+                this.npcId = npcId;
+
+                this.chooseObjectDialog = objectDialog;
+                this.errorOccured = errorOccured;
+
+                this.isVisible = new ko.observable(false);
+                this.isEditing = new ko.observable(false);
+
+                this.originalScriptName = "";
+                this.originalScriptNodes = {};
+                this.scriptName = new ko.observable("");
+
+                this.conditionDialog = new GoNorth.DefaultNodeShapes.Conditions.ConditionDialog();
+
+                this.codeEditor = codeEditor;
+
+                this.editDeferred = null;
+
+                this.showConfirmCloseDialog = new ko.observable(false);
+                this.confirmedClose = false;
+
+                // Add access to object id for actions and conditions
+                var self = this;
+                GoNorth.DefaultNodeShapes.getCurrentRelatedObjectId = function() {
+                    return self.npcId();
+                };
+
+                // Add access to condition dialog
+                GoNorth.DefaultNodeShapes.openConditionDialog = function(condition) {
+                    var conditionDialogDeferred = new jQuery.Deferred();
+                    self.conditionDialog.openDialog(condition, conditionDialogDeferred);
+                    return conditionDialogDeferred;
+                };
+
+                // Opens the item search dialog
+                GoNorth.DefaultNodeShapes.openItemSearchDialog = function() {
+                    return self.chooseObjectDialog.openItemSearch(GoNorth.DefaultNodeShapes.Localization.Dialogs.ChooseItem);
+                };
+
+                // Opens the quest search dialog 
+                GoNorth.DefaultNodeShapes.openQuestSearchDialog = function() {
+                    return self.chooseObjectDialog.openQuestSearch(ScriptDialog.Localization.NodeScripts.ChooseQuest);                    
+                };
+                
+                // Opens the npc search dialog 
+                GoNorth.DefaultNodeShapes.openNpcSearchDialog = function() {
+                    return self.chooseObjectDialog.openNpcSearch(ScriptDialog.Localization.NodeScripts.ChooseNpc);                    
+                };
+
+                // Opens the skill search dialog 
+                GoNorth.DefaultNodeShapes.openSkillSearchDialog = function() {
+                    return self.chooseObjectDialog.openSkillSearch(ScriptDialog.Localization.NodeScripts.ChooseSkill);                    
+                };
+
+                // Opens the daily routine event dialog
+                GoNorth.DefaultNodeShapes.openDailyRoutineEventSearchDialog = function() {
+                    return self.chooseObjectDialog.openDailyRoutineSearch(ScriptDialog.Localization.NodeScripts.ChooseDailyRoutineEvent);                    
+                };
+
+                // Opens the daily routine event dialog
+                GoNorth.DefaultNodeShapes.openMarkerSearchDialog = function() {
+                    return self.chooseObjectDialog.openMarkerSearch(ScriptDialog.Localization.NodeScripts.ChooseMarker);                    
+                };
+                
+                // Opens the code editor
+                GoNorth.DefaultNodeShapes.openCodeEditor = function(name, scriptCode) {
+                    return self.codeEditor.openEditDialog(name, scriptCode);              
+                };
+
+                // Load config lists
+                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
+                    self.errorOccured(true);
+                });
+            };
+
+            
+            ScriptDialog.NodeScriptDialog.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
+
+            ScriptDialog.NodeScriptDialog.prototype = jQuery.extend(ScriptDialog.NodeScriptDialog.prototype, {
+                /**
+                 * Opens the create node script dialog
+                 * @returns {jQuery.Deferred} Deferred that will be resolved with the result of the dialog
+                 */
+                openCreateDialog: function() {
+                    return this.openDialogInternally("", {});
+                },
+                
+                /**
+                 * Opens the edit node script dialog
+                 * 
+                 * @param {string} name Name to edit
+                 * @param {string} nodes Nodes to edit
+                 * @returns {jQuery.Deferred} Deferred that will be resolved with the result of the dialog
+                 */
+                openEditDialog: function(name, nodes) {
+                    return this.openDialogInternally(name, nodes);
+                },
+
+                /**
+                 * Opens the node script dialog
+                 * @param {string} name Name to edit
+                 * @param {string} nodes Nodes to edit
+                 * @returns {jQuery.Deferred} Deferred that will be resolved with the result of the dialog
+                 */
+                openDialogInternally: function(name, nodes) {
+                    if(this.editDeferred != null)
+                    {
+                        this.editDeferred.reject();
+                    }
+
+                    this.isVisible(true);
+                    this.isEditing(!!name);
+                    
+                    var nodeSerializer = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance();
+                    var self = this;
+                    this.scriptName(name);
+                    setTimeout(function() { // Timeout needed to prevent errors with styles because dialog is still opening
+                        nodeSerializer.deserializeGraph(self.nodeGraph(), nodes, function(newNode) { self.setupNewNode(newNode); });
+                        self.originalScriptNodes = nodeSerializer.serializeGraph(self.nodeGraph());
+                        self.resetDependsOnObject(self.originalScriptNodes);
+                    }, 150);
+
+                    this.originalScriptName = name;
+
+                    this.showConfirmCloseDialog(false);
+                    this.confirmedClose = false;
+                    
+                    GoNorth.Util.setupValidation("#gn-nodeScriptEditorForm");
+
+                    this.editDeferred = new jQuery.Deferred();
+                    return this.editDeferred.promise();
+                },
+
+                /**
+                 * Saves the nodes
+                 */
+                saveNodes: function() {
+                    if(!jQuery("#gn-nodeScriptEditorForm").valid())
+                    {
+                        return;
+                    }
+
+                    this.confirmedClose = true;
+                    this.isVisible(false);
+                    if(this.editDeferred != null)
+                    {
+                        var nodeSerializer = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance();
+                        var serializedGraph = nodeSerializer.serializeGraph(this.nodeGraph());
+                        this.editDeferred.resolve({
+                            name: this.scriptName(),
+                            graph: serializedGraph
+                        });
+                    }
+                },
+
+                /**
+                 * Cancels the dialog
+                 */
+                cancelDialog: function() {
+                    this.isVisible(false);
+                    if(this.editDeferred != null)
+                    {
+                        this.editDeferred.reject();
+                    }
+                },
+
+                /**
+                 * Callback gets called before the dialog gets closed
+                 * @returns {boolean} true if the dialog should be closed, else false
+                 */
+                onClosingDialog: function() {
+                    if(this.confirmedClose)
+                    {
+                        return true;
+                    }
+
+                    if(!this.nodeGraph())
+                    {
+                        return true;
+                    }
+                    
+                    var nodeSerializer = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance();
+                    var serializedGraph = nodeSerializer.serializeGraph(this.nodeGraph());
+                    this.resetDependsOnObject(serializedGraph);
+                    if(JSON.stringify(this.originalScriptNodes) != JSON.stringify(serializedGraph) || this.originalScriptName != this.scriptName())
+                    {
+                        this.showConfirmCloseDialog(true);
+                        return false;
+                    }
+                    else
+                    {
+                        this.showConfirmCloseDialog(false);
+                        return true;
+                    }
+                },
+
+                /**
+                 * Confirms the close dialog
+                 */
+                confirmCloseDialog: function() {
+                    this.confirmedClose = true;
+
+                    this.showConfirmCloseDialog(false);
+                    this.isVisible(false);
+                },
+
+                
+                /**
+                 * Cancels the close dialog
+                 */
+                cancelCloseDialog: function() {
+                    this.showConfirmCloseDialog(false);
+                },
+
+                
+                /**
+                 * Resets the depends objects
+                 * @param {object} serializedNodeGraph Serialized node graph
+                 */
+                resetDependsOnObject: function(serializedNodeGraph) {
+                    if(serializedNodeGraph.action) {
+                        for(var curAction = 0; curAction < serializedNodeGraph.action.length; ++curAction) {
+                            serializedNodeGraph.action[curAction].actionRelatedToObjectId = "";
+                            serializedNodeGraph.action[curAction].actionRelatedToObjectType = "";
+                        }
+                    }
+
+                    if(serializedNodeGraph.condition) {
+                        for(var curCondition = 0; curCondition < serializedNodeGraph.condition.length; ++curCondition) {
+                            if(!serializedNodeGraph.condition[curCondition].conditions) {
+                                continue;
+                            }
+
+                            for(var curConditionPart = 0; curConditionPart < serializedNodeGraph.condition[curCondition].conditions.length; ++curConditionPart)
+                            {
+                                serializedNodeGraph.condition[curCondition].conditions[curConditionPart].dependsOnObjects = [];
+                            }
+                        }
+                    }
+                }
+            });
+
+    }(GoNorth.ScriptDialog = GoNorth.ScriptDialog || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
@@ -4809,6 +5896,348 @@
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
+    (function(Evne) {
+        (function(Conditions) {
+
+            /// Condition Type for checking the skill value
+            var conditionTypeCheckSkillValue = 11;
+
+            /**
+             * Check skill value condition
+             * @class
+             */
+            Conditions.CheckSkillValueCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.CheckValueCondition.apply(this);
+            };
+
+            Conditions.CheckSkillValueCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.CheckValueCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckSkillValueCondition.prototype.getType = function() {
+                return conditionTypeCheckSkillValue;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckSkillValueCondition.prototype.getLabel = function() {
+                return Evne.Localization.Conditions.CheckSkillValueLabel;
+            };
+
+            /**
+             * Returns the title of the field object used in the string representation
+             * 
+             * @param {object} loadedFieldObject Loaded Field object for returning name if necessary
+             * @returns {string} Title of the field object
+             */
+            Conditions.CheckSkillValueCondition.prototype.getObjectTitle = function(loadedFieldObject) {
+                return Evne.Localization.Conditions.SkillLabel;
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Conditions.CheckSkillValueCondition.prototype.getObjectTypeName = function() {
+                return "Skill";
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckSkillValueCondition.prototype.getObjectId = function() {
+                return Evne.getCurrentSkillId();
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckSkillValueCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Loads the skill
+             * 
+             * @returns {jQuery.Deferred} Deferred for the async process
+             */
+            Conditions.CheckSkillValueCondition.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+                
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + Evne.getCurrentSkillId(), 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckSkillValueCondition());
+
+        }(Evne.Conditions = Evne.Conditions || {}));
+    }(GoNorth.Evne = GoNorth.Evne || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Operator for the has at least operation
+            var inventoryOperatorHasAtLeast = 0;
+
+            /// Operator for the has at maximum operation
+            var inventoryOperatorHasAtMaximum = 1;
+
+            /**
+             * Check inventory condition
+             * @class
+             */
+            Conditions.CheckInventoryCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+            };
+
+            Conditions.CheckInventoryCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+
+            /**
+             * Returns the template name for the condition
+             * 
+             * @returns {string} Template name
+             */
+            Conditions.CheckInventoryCondition.prototype.getTemplateName = function() {
+                return "gn-nodeConditionInventoryCheck";
+            };
+            
+            /**
+             * Returns true if the condition can be selected in the dropdown list, else false
+             * 
+             * @returns {bool} true if the condition can be selected, else false
+             */
+            Conditions.CheckInventoryCondition.prototype.canBeSelected = function() {
+                return true;
+            };
+
+            /**
+             * Returns the name of an item
+             * 
+             * @param {string} itemId Id of the item
+             * @returns {jQuery.Deferred} Deferred for the loading proccess
+             */
+            Conditions.CheckInventoryCondition.prototype.getItemName = function(itemId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
+                    headers: GoNorth.Util.generateAntiForgeryHeader(),
+                    data: JSON.stringify([ itemId ]), 
+                    type: "POST",
+                    contentType: "application/json"
+                }).done(function(itemNames) {
+                    if(itemNames.length == 0)
+                    {
+                        def.reject();
+                        return;
+                    }
+
+                    def.resolve(itemNames[0].name);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Returns the data for the condition
+             * 
+             * @param {object} existingData Existing condition data
+             * @param {object} element Element to which the data belongs
+             * @returns {object} Condition data
+             */
+            Conditions.CheckInventoryCondition.prototype.buildConditionData = function(existingData, element) {
+                var conditionData = {
+                    selectedItemId: new ko.observable(),
+                    selectedItemName: new ko.observable(DefaultNodeShapes.Localization.Conditions.ChooseItem),
+                    operator: new ko.observable(),
+                    availableOperators: [ { value: inventoryOperatorHasAtLeast, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasAtLeast }, { value: inventoryOperatorHasAtMaximum, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasMaximum }],
+                    quantity: new ko.observable(0)
+                };
+
+                if(existingData)
+                {
+                    conditionData.selectedItemId(existingData.itemId);
+                    conditionData.operator(existingData.operator);
+                    conditionData.quantity(existingData.quantity);
+
+                    this.getItemName(existingData.itemId).then(function(name) {
+                        conditionData.selectedItemName(name);
+                    }, function() {
+                        element.errorOccured(true);
+                    });
+                }
+
+                conditionData.chooseItem = function() {
+                    GoNorth.DefaultNodeShapes.openItemSearchDialog().then(function(item) {
+                        conditionData.selectedItemId(item.id);
+                        conditionData.selectedItemName(item.name);
+                    });
+                };
+                
+                return conditionData;
+            };
+            
+            /**
+             * Serializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @returns {object} Serialized data
+             */
+            Conditions.CheckInventoryCondition.prototype.serializeConditionData = function(conditionData) {
+                var quantity = parseInt(conditionData.quantity());
+                if(isNaN(quantity))
+                {
+                    quantity = 0;
+                }
+
+                return {
+                    itemId: conditionData.selectedItemId(),
+                    operator: conditionData.operator(),
+                    quantity: quantity
+                };
+            };
+
+            /**
+             * Returns the objects on which an object depends
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {object[]} Objects on which the condition depends
+             */
+            Conditions.CheckInventoryCondition.prototype.getConditionDependsOnObject = function(existingData) {
+                return [{
+                    objectType: Conditions.RelatedToObjectItem,
+                    objectId: existingData.itemId
+                }];
+            }
+
+            /**
+             * Returns the title of the inventory
+             * 
+             * @returns {string} Title of the inventory
+             */
+            Conditions.CheckInventoryCondition.prototype.getInventoryTitle = function() {
+                
+            };
+
+            /**
+             * Returns the condition data as a display string
+             * 
+             * @param {object} existingData Serialzied condition data
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckInventoryCondition.prototype.getConditionString = function(existingData) {
+                var def = new jQuery.Deferred();
+                if(!existingData.itemId)
+                {
+                    def.resolve(DefaultNodeShapes.Localization.Conditions.ChooseItem);
+                    return def.promise();
+                }
+
+                var self = this;
+                this.getItemName(existingData.itemId).then(function(name) {
+                    var conditionString = self.getInventoryTitle() + " " + DefaultNodeShapes.Localization.Conditions.ItemCount + "(\"" + name + "\") ";
+                    if(existingData.operator == inventoryOperatorHasAtLeast)
+                    {
+                        conditionString += ">=";
+                    }
+                    else if(existingData.operator == inventoryOperatorHasAtMaximum)
+                    {
+                        conditionString += "<=";
+                    }
+                    conditionString += " " + existingData.quantity;
+
+                    def.resolve(conditionString);
+                }, function() {
+                    def.reject();
+                });
+
+                return def.promise();
+            }
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking the player inventory
+            var conditionTypeCheckPlayerInventory = 4;
+
+            /**
+             * Check player inventory condition
+             * @class
+             */
+            Conditions.CheckPlayerInventoryCondition = function()
+            {
+                Conditions.CheckInventoryCondition.apply(this);
+            };
+
+            Conditions.CheckPlayerInventoryCondition.prototype = jQuery.extend({ }, Conditions.CheckInventoryCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckPlayerInventoryCondition.prototype.getType = function() {
+                return conditionTypeCheckPlayerInventory;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckPlayerInventoryCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerInventoryLabel;
+            };
+
+            /**
+             * Returns the title of the inventory
+             * 
+             * @returns {string} Title of the inventory
+             */
+            Conditions.CheckPlayerInventoryCondition.prototype.getInventoryTitle = function() {
+                return DefaultNodeShapes.Localization.Conditions.PlayerInventoryLabel;
+            };
+
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckPlayerInventoryCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
     (function(DefaultNodeShapes) {
         (function(Conditions) {
 
@@ -4944,107 +6373,6 @@
 
         }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
-}(window.GoNorth = window.GoNorth || {}));
-(function(GoNorth) {
-    "use strict";
-    (function(Evne) {
-        (function(Conditions) {
-
-            /// Condition Type for checking the skill value
-            var conditionTypeCheckSkillValue = 11;
-
-            /**
-             * Check skill value condition
-             * @class
-             */
-            Conditions.CheckSkillValueCondition = function()
-            {
-                GoNorth.DefaultNodeShapes.Conditions.CheckValueCondition.apply(this);
-            };
-
-            Conditions.CheckSkillValueCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.CheckValueCondition.prototype);
-
-            /**
-             * Returns the type of the condition
-             * 
-             * @returns {number} Type of the condition
-             */
-            Conditions.CheckSkillValueCondition.prototype.getType = function() {
-                return conditionTypeCheckSkillValue;
-            };
-
-            /**
-             * Returns the label of the condition
-             * 
-             * @returns {string} Label of the condition
-             */
-            Conditions.CheckSkillValueCondition.prototype.getLabel = function() {
-                return Evne.Localization.Conditions.CheckSkillValueLabel;
-            };
-
-            /**
-             * Returns the title of the field object used in the string representation
-             * 
-             * @param {object} loadedFieldObject Loaded Field object for returning name if necessary
-             * @returns {string} Title of the field object
-             */
-            Conditions.CheckSkillValueCondition.prototype.getObjectTitle = function(loadedFieldObject) {
-                return Evne.Localization.Conditions.SkillLabel;
-            };
-
-            /**
-             * Returns the object type name. Used for dependency objects
-             * 
-             * @returns {string} Object Type name used for depends on objects 
-             */
-            Conditions.CheckSkillValueCondition.prototype.getObjectTypeName = function() {
-                return "Skill";
-            };
-
-            /**
-             * Returns the object resource
-             * 
-             * @returns {int} Object Resource
-             */
-            Conditions.CheckSkillValueCondition.prototype.getObjectId = function() {
-                return Evne.getCurrentSkillId();
-            };
-
-            /**
-             * Returns the object resource
-             * 
-             * @returns {int} Object Resource
-             */
-            Conditions.CheckSkillValueCondition.prototype.getObjectResource = function() {
-                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
-            };
-
-            /**
-             * Loads the skill
-             * 
-             * @returns {jQuery.Deferred} Deferred for the async process
-             */
-            Conditions.CheckSkillValueCondition.prototype.loadObject = function() {
-                var def = new jQuery.Deferred();
-                
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + Evne.getCurrentSkillId(), 
-                    type: "GET"
-                }).done(function(data) {
-                    def.resolve(data);
-                }).fail(function(xhr) {
-                    def.reject();
-                });
-
-                return def.promise();
-            };
-
-
-            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckSkillValueCondition());
-
-        }(Evne.Conditions = Evne.Conditions || {}));
-    }(GoNorth.Evne = GoNorth.Evne || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
@@ -5928,6 +7256,503 @@
     (function(DefaultNodeShapes) {
         (function(Conditions) {
 
+            /**
+             * Check skill value condition where skill is chosen
+             * @class
+             */
+            Conditions.CheckChooseSkillValueCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckChooseObjectValueCondition.apply(this);
+            };
+
+            Conditions.CheckChooseSkillValueCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckChooseObjectValueCondition.prototype);
+
+            /**
+             * Returns the skill prefix
+             * 
+             * @returns {string} Skill Prefix
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getSkillPrefix = function() {
+                return "";
+            };
+
+            /**
+             * Returns the title of the field object used in the string representation
+             * 
+             * @param {object} loadedFieldObject Loaded Field object for returning name if necessary
+             * @returns {string} Title of the field object
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getObjectTitle = function(loadedFieldObject) {
+                return this.getSkillPrefix() + loadedFieldObject.name;
+            };
+
+            /**
+             * Opens the object search dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred for the choosing process
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.openObjectSearchDialog = function() {
+                return GoNorth.DefaultNodeShapes.openSkillSearchDialog();
+            };
+
+            
+            /**
+             * Returns the label used if no object name is selected to prompt the user to choose an object
+             * 
+             * @returns {string} Label used if no object name is selected to prompt the user to choose an object
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.ChooseSkillLabel;
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getObjectTypeName = function() {
+                return Conditions.RelatedToObjectSkill;
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Loads the skill
+             * 
+             * @param {object} objectId Optional object id
+             * @returns {jQuery.Deferred} Deferred for the async process
+             */
+            Conditions.CheckChooseSkillValueCondition.prototype.loadObject = function(objectId) {
+                var def = new jQuery.Deferred();
+                
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + objectId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking value of a skill to choose
+            var conditionTypeCheckChoosePlayerSkillValue = 13;
+
+            /**
+             * Check player skill value condition where skill is chosen
+             * @class
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckChooseSkillValueCondition.apply(this);
+            };
+
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckChooseSkillValueCondition.prototype);
+
+            /**
+             * Returns the skill prefix
+             * 
+             * @returns {string} Skill Prefix
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype.getSkillPrefix = function() {
+                return DefaultNodeShapes.Localization.Conditions.PlayerSkillPrefix;
+            };
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype.getType = function() {
+                return conditionTypeCheckChoosePlayerSkillValue;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckChoosePlayerSkillValueCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckChoosePlayerSkillValueLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckChoosePlayerSkillValueCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking value of a skill to choose
+            var conditionTypeCheckChooseNpcSkillValue = 14;
+
+            /**
+             * Check npc skill value condition where skill is chosen
+             * @class
+             */
+            Conditions.CheckChooseNpcSkillValueCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.CheckChooseSkillValueCondition.apply(this);
+            };
+
+            Conditions.CheckChooseNpcSkillValueCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.CheckChooseSkillValueCondition.prototype);
+
+            /**
+             * Returns the skill prefix
+             * 
+             * @returns {string} Skill Prefix
+             */
+            Conditions.CheckChooseNpcSkillValueCondition.prototype.getSkillPrefix = function() {
+                return DefaultNodeShapes.Localization.Conditions.NpcSkillPrefix;
+            };
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckChooseNpcSkillValueCondition.prototype.getType = function() {
+                return conditionTypeCheckChooseNpcSkillValue;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckChooseNpcSkillValueCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckChooseNpcSkillValueLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckChooseNpcSkillValueCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /**
+             * Checks if a skill is learned or not
+             * @class
+             */
+            Conditions.CheckLearnedSkillCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Conditions.CheckLearnedSkillCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+            Conditions.CheckLearnedSkillCondition.prototype = jQuery.extend(Conditions.CheckLearnedSkillCondition.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the template name for the condition
+             * 
+             * @returns {string} Template name
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getTemplateName = function() {
+                return "gn-nodeConditionChooseSkillCheck";
+            };
+
+            /**
+             * Returns true if the condition can be selected in the dropdown list, else false
+             * 
+             * @returns {bool} true if the condition can be selected, else false
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.canBeSelected = function() {
+                return true;
+            };
+
+            /**
+             * Returns the object id for dependency checks
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {string} Object Id on which the condition depends
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getDependsOnObjectId = function(existingData) {
+                return this.getObjectId(existingData);
+            };
+
+            /**
+             * Returns the object id from existing condition data for request caching
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {string} Object Id for caching
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getObjectId = function(existingData) {
+                return existingData.selectedSkillId;
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Returns the data for the condition
+             * 
+             * @param {object} existingData Existing condition data
+             * @param {object} element Element to which the data belongs
+             * @returns {object} Condition data
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.buildConditionData = function(existingData, element) {
+                var conditionData = {
+                    selectedSkillId: new ko.observable(""),
+                    selectedSkillName: new ko.observable(DefaultNodeShapes.Localization.Conditions.ChooseSkillLabel)
+                }
+
+                if(existingData)
+                {
+                    conditionData.selectedSkillId(existingData.selectedSkillId);
+                }
+
+                var self = this;
+                conditionData.chooseSkill = function() {
+                    GoNorth.DefaultNodeShapes.openSkillSearchDialog().then(function(chosenSkill) {
+                        conditionData.selectedSkillId(chosenSkill.id);
+                        conditionData.selectedSkillName(chosenSkill.name);
+                    });
+                };
+
+                // Load field data
+                if(existingData && existingData.selectedSkillId)
+                {
+                    this.loadObjectShared(existingData).then(function(skill) {
+                        conditionData.selectedSkillName(skill.name);
+                    }).fail(function(xhr) {
+                        element.errorOccured(true);
+                    });
+                }
+
+                return conditionData;
+            };
+
+            /**
+             * Serializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @returns {object} Serialized data
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.serializeConditionData = function(conditionData) {
+                var serializedData = {
+                    selectedSkillId: conditionData.selectedSkillId()
+                };
+
+                return serializedData;
+            };
+
+            /**
+             * Returns the objects on which an object depends
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {object[]} Objects on which the condition depends
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getConditionDependsOnObject = function(existingData) {
+                if(!existingData || !existingData.selectedSkillId)
+                {
+                    return [];
+                }
+
+                return [{
+                    objectType: Conditions.RelatedToObjectSkill,
+                    objectId: existingData.selectedSkillId
+                }];
+            }
+
+            /**
+             * Loads the skill
+             * 
+             * @param {object} objectId Optional object id
+             * @returns {jQuery.Deferred} Deferred for the async process
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.loadObject = function(objectId) {
+                var def = new jQuery.Deferred();
+                
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + objectId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Returns the condition string prefix infront of the skill name
+             * 
+             * @returns {string} Condition String prefix
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getConditionStringPrefix = function() {
+                return "";
+            }
+
+            /**
+             * Returns the condition data as a display string
+             * 
+             * @param {object} existingData Serialized condition data
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckLearnedSkillCondition.prototype.getConditionString = function(existingData) {
+                var def = new jQuery.Deferred();
+                
+                // Check if data is valid
+                if(!existingData || !existingData.selectedSkillId)
+                {
+                    def.resolve(DefaultNodeShapes.Localization.Conditions.MissingInformations);
+                    return def.promise();
+                }
+
+                // Load data and build string
+                var self = this;
+                this.loadObjectShared(existingData).then(function(skill) {
+                    var conditionText = self.getConditionStringPrefix() + skill.name;                    
+                    def.resolve(conditionText);
+                }, function() {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking if the player has learned a skill
+            var conditionTypeCheckSkillPlayerLearned = 15;
+
+            /**
+             * Check if player has learned a skill
+             * @class
+             */
+            Conditions.CheckPlayerLearnedSkillCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.apply(this);
+            };
+
+            Conditions.CheckPlayerLearnedSkillCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckPlayerLearnedSkillCondition.prototype.getType = function() {
+                return conditionTypeCheckSkillPlayerLearned;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckPlayerLearnedSkillCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerLearnedSkillLabel;
+            };
+
+            /**
+             * Returns the condition string prefix infront of the skill name
+             * 
+             * @returns {string} Condition String prefix
+             */
+            Conditions.CheckPlayerLearnedSkillCondition.prototype.getConditionStringPrefix = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerLearnedSkillPrefixLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckPlayerLearnedSkillCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking if the player has not learned a skill
+            var conditionTypeCheckSkillPlayerNotLearned = 16;
+
+            /**
+             * Check if player has not learned a skill
+             * @class
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition = function()
+            {
+                DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.apply(this);
+            };
+
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype = jQuery.extend({ }, DefaultNodeShapes.Conditions.CheckLearnedSkillCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype.getType = function() {
+                return conditionTypeCheckSkillPlayerNotLearned;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerNotLearnedSkillLabel;
+            };
+
+            /**
+             * Returns the condition string prefix infront of the skill name
+             * 
+             * @returns {string} Condition String prefix
+             */
+            Conditions.CheckPlayerNotLearnedSkillCondition.prototype.getConditionStringPrefix = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckPlayerNotLearnedSkillPrefixLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckPlayerNotLearnedSkillCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
             /// Condition Type for checking a random game value
             var conditionTypeCheckRandomValue = 19;
 
@@ -6049,6 +7874,495 @@
             };
 
             GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckRandomValueCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /**
+             * Check value condition
+             * @class
+             */
+            Conditions.CheckDailyRoutineEventStateCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Conditions.CheckDailyRoutineEventStateCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+            Conditions.CheckDailyRoutineEventStateCondition.prototype = jQuery.extend(Conditions.CheckDailyRoutineEventStateCondition.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the template name for the condition
+             * 
+             * @returns {string} Template name
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.getTemplateName = function() {
+                return "gn-nodeConditionCheckDailyRoutineEventState";
+            };
+            
+            /**
+             * Returns true if the condition can be selected in the dropdown list, else false
+             * 
+             * @returns {bool} true if the condition can be selected, else false
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.canBeSelected = function() {
+                return true;
+            };
+
+            /**
+             * Returns the data for the condition
+             * 
+             * @param {object} existingData Existing condition data
+             * @param {object} element Element to which the data belongs
+             * @returns {object} Condition data
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.buildConditionData = function(existingData, element) {
+                var conditionData = {
+                    selectedDailyRoutineNpcId: new ko.observable(null),
+                    selectedDailyRoutineEventId: new ko.observable(null),
+                    selectedDailyRoutineNpcName: new ko.observable(null),
+                    selectedDailyRoutineEvent: new ko.observable(null),
+                };
+
+                conditionData.selectedDailyRoutineEventDisplay = new ko.pureComputed(function() {
+                    var npcName = this.selectedDailyRoutineNpcName();
+                    var event = this.selectedDailyRoutineEvent();
+                    if(!event) {
+                        return DefaultNodeShapes.Localization.Conditions.ChooseDailyRoutineEvent;
+                    }
+
+                    var eventName = GoNorth.DailyRoutines.Util.formatTimeSpan(DefaultNodeShapes.Localization.Conditions.TimeFormat, event.earliestTime, event.latestTime);
+                    return npcName + ": " + eventName;
+                }, conditionData);
+
+                // Handler
+                conditionData.chooseDailyRoutineEvent = function() {
+                    GoNorth.DefaultNodeShapes.openDailyRoutineEventSearchDialog().then(function(dailyRoutine) {
+                        conditionData.selectedDailyRoutineNpcId(dailyRoutine.parentObject.id);
+                        conditionData.selectedDailyRoutineEventId(dailyRoutine.eventId);
+                        conditionData.selectedDailyRoutineNpcName(dailyRoutine.parentObject.name);
+                        conditionData.selectedDailyRoutineEvent(dailyRoutine);
+                    });
+                };
+
+                // Deserialize
+                if(existingData)
+                {
+                    this.deserializeConditionData(conditionData, existingData);
+                }
+
+                return conditionData;
+            };
+            
+            /**
+             * Serializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @returns {object} Serialized data
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.serializeConditionData = function(conditionData) {
+                return {
+                    npcId: conditionData.selectedDailyRoutineNpcId(),
+                    eventId: conditionData.selectedDailyRoutineEventId()
+                };
+            };
+
+            /**
+             * Deserializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @param {object} existingData Existing condition data
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.deserializeConditionData = function(conditionData, existingData) {
+                if(!existingData || !existingData.npcId || !existingData.eventId)
+                {
+                    return;
+                }
+
+                
+                this.loadObjectShared(existingData).then(function(npc) {
+                    if(!npc.dailyRoutine) 
+                    {
+                        return;
+                    }
+
+                    for(var curEvent = 0; curEvent < npc.dailyRoutine.length; ++curEvent)
+                    {
+                        if(npc.dailyRoutine[curEvent].eventId == existingData.eventId)
+                        {
+                            conditionData.selectedDailyRoutineNpcName(npc.name);
+                            conditionData.selectedDailyRoutineEvent(npc.dailyRoutine[curEvent]);
+                            return;
+                        }
+                    }
+                });
+            };
+
+            /**
+             * Returns the object id for dependency checks
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {string} Object Id on which the condition depends
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.getDependsOnObjectId = function(existingData) {
+                return existingData && existingData.npcId ? existingData.npcId : null;
+            };
+
+            /**
+             * Returns the objects on which an object depends
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {object[]} Objects on which the condition depends
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.getConditionDependsOnObject = function(existingData) {
+                var objectId = this.getDependsOnObjectId(existingData);
+
+                return [{
+                    objectType: "Npc",
+                    objectId: objectId
+                },{
+                    objectType: "NpcDailyRoutineEvent",
+                    objectId: existingData && existingData.eventId
+                }];
+            }
+
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Returns the object id from existing condition data for request caching
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {string} Object Id for caching
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.getObjectId = function(existingData) {
+                return existingData.npcId;
+            };
+
+            /**
+             * Loads an npc
+             * 
+             * @param {string} npcId Npc Id
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.loadObject = function(npcId) {
+                var loadingDef = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
+                    type: "GET"
+                }).done(function(npc) {
+                    loadingDef.resolve(npc);
+                }).fail(function(xhr) {
+                    loadingDef.reject();
+                });
+
+                return loadingDef;
+            };
+
+            /**
+             * Returns the condition string text template
+             * 
+             * @returns {string} Condition string text template
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.getConditionStringText = function() {
+                return "";
+            };
+
+            /**
+             * Returns the condition data as a display string
+             * 
+             * @param {object} existingData Serialized condition data
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckDailyRoutineEventStateCondition.prototype.getConditionString = function(existingData) {
+                var def = new jQuery.Deferred();
+                
+                // Check if data is valid
+                if(!existingData || !existingData.npcId || !existingData.eventId)
+                {
+                    def.resolve(DefaultNodeShapes.Localization.Conditions.MissingInformations);
+                    return def.promise();
+                }
+
+                // Load data and build string
+                var self = this;
+                this.loadObjectShared(existingData).then(function(npc) {
+                    if(!npc.dailyRoutine) 
+                    {
+                        def.resolve(DefaultNodeShapes.Localization.Conditions.MissingInformations);
+                        return;
+                    }
+
+                    for(var curEvent = 0; curEvent < npc.dailyRoutine.length; ++curEvent)
+                    {
+                        if(npc.dailyRoutine[curEvent].eventId == existingData.eventId)
+                        {
+                            var eventName = GoNorth.DailyRoutines.Util.formatTimeSpan(DefaultNodeShapes.Localization.Conditions.TimeFormat, npc.dailyRoutine[curEvent].earliestTime, npc.dailyRoutine[curEvent].latestTime);
+                            var displayString = self.getConditionStringText().replace("{0}", npc.name + ": " + eventName)
+                            def.resolve(displayString);
+                            return;
+                        }
+                    }
+
+                    def.resolve(DefaultNodeShapes.Localization.Conditions.MissingInformations);
+                }, function() {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking if a daily routine event is disabled
+            var conditionTypeCheckDailyRoutineEventIsDisabled = 21;
+
+            /**
+             * Check if a daily routine event is disabled condition
+             * @class
+             */
+            Conditions.CheckDailyRoutineEventIsDisabledCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.CheckDailyRoutineEventStateCondition.apply(this);
+            };
+
+            Conditions.CheckDailyRoutineEventIsDisabledCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.CheckDailyRoutineEventStateCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckDailyRoutineEventIsDisabledCondition.prototype.getType = function() {
+                return conditionTypeCheckDailyRoutineEventIsDisabled;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckDailyRoutineEventIsDisabledCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckDailyRoutineIsDisabled;
+            };
+            
+            /**
+             * Returns the condition string text template
+             * 
+             * @returns {string} Condition string text template
+             */
+            Conditions.CheckDailyRoutineEventIsDisabledCondition.prototype.getConditionStringText = function() {
+                return DefaultNodeShapes.Localization.Conditions.DailyRoutineEventIsDisabled;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckDailyRoutineEventIsDisabledCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for checking if a daily routine event is active
+            var conditionTypeCheckDailyRoutineEventIsActive = 20;
+
+            /**
+             * Check if a daily routine event is active condition
+             * @class
+             */
+            Conditions.CheckDailyRoutineEventIsActiveCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.CheckDailyRoutineEventStateCondition.apply(this);
+            };
+
+            Conditions.CheckDailyRoutineEventIsActiveCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.CheckDailyRoutineEventStateCondition.prototype);
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckDailyRoutineEventIsActiveCondition.prototype.getType = function() {
+                return conditionTypeCheckDailyRoutineEventIsActive;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckDailyRoutineEventIsActiveCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckDailyRoutineIsActive;
+            };
+            
+            /**
+             * Returns the condition string text template
+             * 
+             * @returns {string} Condition string text template
+             */
+            Conditions.CheckDailyRoutineEventIsActiveCondition.prototype.getConditionStringText = function() {
+                return DefaultNodeShapes.Localization.Conditions.DailyRoutineEventIsActive;
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckDailyRoutineEventIsActiveCondition());
+
+        }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Conditions) {
+
+            /// Condition Type for running a condition
+            var conditionTypeCheckCodeCondition = 22;
+
+            /**
+             * Check code condition
+             * @class
+             */
+            Conditions.CheckCodeCondition = function()
+            {
+                GoNorth.DefaultNodeShapes.Conditions.BaseCondition.apply(this);
+            };
+
+            Conditions.CheckCodeCondition.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Conditions.BaseCondition.prototype);
+
+            /**
+             * Returns the template name for the condition
+             * 
+             * @returns {string} Template name
+             */
+            Conditions.CheckCodeCondition.prototype.getTemplateName = function() {
+                return "gn-nodeCheckCode";
+            };
+            
+            /**
+             * Returns true if the condition can be selected in the dropdown list, else false
+             * 
+             * @returns {bool} true if the condition can be selected, else false
+             */
+            Conditions.CheckCodeCondition.prototype.canBeSelected = function() {
+                return true;
+            };
+
+            /**
+             * Returns the type of the condition
+             * 
+             * @returns {number} Type of the condition
+             */
+            Conditions.CheckCodeCondition.prototype.getType = function() {
+                return conditionTypeCheckCodeCondition;
+            };
+
+            /**
+             * Returns the label of the condition
+             * 
+             * @returns {string} Label of the condition
+             */
+            Conditions.CheckCodeCondition.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Conditions.CheckCodeLabel;
+            };
+
+            /**
+             * Returns the objects on which an object depends
+             * 
+             * @param {object} existingData Existing condition data
+             * @returns {object[]} Objects on which the condition depends
+             */
+            Conditions.CheckCodeCondition.prototype.getConditionDependsOnObject = function(existingData) {
+                return [];
+            };
+
+            /**
+             * Returns the data for the condition
+             * 
+             * @param {object} existingData Existing condition data
+             * @param {object} element Element to which the data belongs
+             * @returns {object} Condition data
+             */
+            Conditions.CheckCodeCondition.prototype.buildConditionData = function(existingData, element) {
+                var conditionData = {
+                    scriptName: new ko.observable(""),
+                    scriptCode: new ko.observable("")                
+                };
+
+                var self = this;
+                conditionData.editScript = function() {
+                    self.editScript(conditionData);
+                };
+
+                // Load existing data
+                if(existingData)
+                {
+                    conditionData.scriptName(existingData.scriptName);
+                    conditionData.scriptCode(existingData.scriptCode);
+                }
+
+                return conditionData;
+            };
+
+            /**
+             * Edits the condition script
+             * 
+             * @param {object} conditionData Condition data
+             */
+            Conditions.CheckCodeCondition.prototype.editScript = function(conditionData) {
+                GoNorth.DefaultNodeShapes.openCodeEditor(conditionData.scriptName(), conditionData.scriptCode()).then(function(result) {
+                    conditionData.scriptName(result.name);
+                    conditionData.scriptCode(result.code);
+                });
+            };
+
+            /**
+             * Serializes condition data
+             * 
+             * @param {object} conditionData Condition data
+             * @returns {object} Serialized data
+             */
+            Conditions.CheckCodeCondition.prototype.serializeConditionData = function(conditionData) {
+                return {
+                    scriptName: conditionData.scriptName(),
+                    scriptCode: conditionData.scriptCode()
+                };
+            };
+
+            /**
+             * Returns the condition data as a display string
+             * 
+             * @param {object} existingData Serialzied condition data
+             * @returns {jQuery.Deferred} Deferred for the loading process
+             */
+            Conditions.CheckCodeCondition.prototype.getConditionString = function(existingData) {
+                var def = new jQuery.Deferred();
+                
+                def.resolve(existingData.scriptName ? existingData.scriptName : DefaultNodeShapes.Localization.Conditions.CheckCodeConditionPlaceholderString);
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Conditions.getConditionManager().addConditionType(new Conditions.CheckCodeCondition());
 
         }(DefaultNodeShapes.Conditions = DefaultNodeShapes.Conditions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -6945,6 +9259,9 @@
             /// All available actions
             var availableActions = [];
 
+            /// Height of action node
+            var actionNodeHeight = 200;
+
             /**
              * Adds a new available action
              * 
@@ -7148,7 +9465,74 @@
                         currentAction.showErrorCallback = function() {
                             self.showError();
                         };
+                        this.syncOutputPorts(currentAction);
                         currentAction.onInitialized(actionContent, this);
+                    },
+
+                    /**
+                     * Syncs the output ports
+                     * @param {object} currentAction Action to load the output ports from
+                     */
+                    syncOutputPorts: function(currentAction) {
+                        var currentPortDisplayNames = [];
+                        this.$el.find(".gn-nodeActionOutputLabel").each(function() {
+                            currentPortDisplayNames.push(jQuery(this).find("tspan").text());
+                        });
+                        if(currentPortDisplayNames.length == 0)
+                        {
+                            currentPortDisplayNames.push("");
+                        }
+
+                        var outPorts = ["output"];
+                        var outPortDisplayNames = [currentAction.getMainOutputLabel()];
+
+                        var additionalOutPorts = currentAction.getAdditionalOutports();
+                        if(additionalOutPorts)
+                        {
+                            for(var curPort = 0; curPort < additionalOutPorts.length; ++curPort)
+                            {
+                                outPorts.push("additionalActionOutput" + (curPort + 1));
+                                outPortDisplayNames.push(additionalOutPorts[curPort])
+                            }
+                        }
+
+                        if(!GoNorth.Util.isEqual(currentPortDisplayNames, outPortDisplayNames))
+                        {
+                            this.model.set("outPorts", outPorts);
+
+                            // Update Port Positions
+                            if(outPorts.length > 1)
+                            {
+                                var heightsPerPort = actionNodeHeight / (outPorts.length + 1);
+                                for(var curPort = 0; curPort < outPorts.length; ++curPort)
+                                {
+                                    var label = "";
+                                    if(curPort == 0)
+                                    {
+                                        label = currentAction.getMainOutputLabel();
+                                    }
+                                    else
+                                    {
+                                        label = additionalOutPorts[curPort - 1];
+                                    }
+
+                                    this.model.attr(".outPorts>.port" + curPort, { "ref-y": (heightsPerPort * (curPort + 1)) + "px", "ref": ".body" });
+                                    this.model.attr(".outPorts>.port" + curPort + " .port-label", { "title": label, "class": "gn-nodeActionOutputLabel", "dx": 15, "dy": 0 });
+                                }
+                            }
+                            else
+                            {
+                                this.model.attr(".outPorts>.port0" + " .port-label", { "title": "", "class": "", "dx": 15, "dy": 0 });
+                            }
+
+                            // setTimeout is required to have the element ready on load
+                            var self = this;
+                            setTimeout(function() {
+                                self.$el.find(".gn-nodeActionOutputLabel").each(function() {
+                                    jQuery(this).find("tspan").text(jQuery(this).attr("title"));
+                                });
+                            }, 1);
+                        }
                     },
 
                     /**
@@ -7364,6 +9748,24 @@
                  * @returns {string[]} Name of the custom action attributes
                  */
                 getCustomActionAttributes: function() {
+                    return [];
+                },
+
+                /**
+                 * Returns the label for the main output
+                 * 
+                 * @returns {string} Label for the main output
+                 */
+                getMainOutputLabel: function() {
+                    return "";
+                },
+
+                /**
+                 * Returns the additional outports of the action
+                 * 
+                 * @returns {string[]} Additional outports
+                 */
+                getAdditionalOutports: function() {
                     return [];
                 },
 
@@ -8084,6 +10486,636 @@
         (function(Actions) {
 
             /**
+             * Change Inventory Action
+             * @class
+             */
+            Actions.ChangeInventoryAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.ChangeInventoryAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.ChangeInventoryAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeSelectItemAction gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenItem' title='" + DefaultNodeShapes.Localization.Actions.OpenItemTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
+                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.ItemQuantity + "</div>" +
+                        "<input type='text' class='gn-nodeItemQuantity'/>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.ChangeInventoryAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeSelectItemAction").text(DefaultNodeShapes.Localization.Actions.ChooseItem);
+
+                var itemOpenLink = contentElement.find(".gn-nodeActionOpenItem");
+
+                // Deserialize
+                var existingItemId = this.deserializeData();
+                if(existingItemId)
+                {
+                    itemOpenLink.show();
+
+                    actionNode.showLoading();
+                    actionNode.hideError();
+                    jQuery.ajax({ 
+                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify([ existingItemId ]), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(itemNames) {
+                        if(itemNames.length == 0)
+                        {
+                            actionNode.hideLoading();
+                            actionNode.showError();
+                            return;
+                        }
+
+                        contentElement.find(".gn-nodeSelectItemAction").text(itemNames[0].name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var selectItemAction = contentElement.find(".gn-nodeSelectItemAction");
+                contentElement.find(".gn-nodeSelectItemAction").on("click", function() {
+                    DefaultNodeShapes.openItemSearchDialog().then(function(item) {
+                        selectItemAction.data("itemid", item.id);
+                        selectItemAction.text(item.name);
+                        self.saveData();
+
+                        itemOpenLink.show();
+                    });
+                });
+
+                var itemQuantity = contentElement.find(".gn-nodeItemQuantity");
+                itemQuantity.keydown(function(e) {
+                    GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
+                });
+
+                itemQuantity.change(function(e) {
+                    self.ensureNumberValue();
+                    self.saveData();
+                });
+
+                itemOpenLink.on("click", function() {
+                    if(selectItemAction.data("itemid"))
+                    {
+                        window.open("/Styr/Item?id=" + selectItemAction.data("itemid"));
+                    }
+                });
+            };
+
+            /**
+             * Ensures a number value was entered for the item quantity
+             */
+            Actions.ChangeInventoryAction.prototype.ensureNumberValue = function() {
+                var parsedValue = parseFloat(this.contentElement.find(".gn-nodeItemQuantity").val());
+                if(isNaN(parsedValue))
+                {
+                    this.contentElement.find(".gn-nodeItemQuantity").val("");
+                }
+            };
+
+            /**
+             * Deserializes the data
+             * @returns {string} Deserialized item id
+             */
+            Actions.ChangeInventoryAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var itemId = "";
+                if(data.itemId)
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", data.itemId);
+                    itemId = data.itemId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", "");
+                }
+
+                var quantity = data.quantity;
+                if(isNaN(parseInt(data.quantity)))
+                {
+                    quantity = "";
+                }
+                this.contentElement.find(".gn-nodeItemQuantity").val(quantity);
+
+                return itemId;
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.ChangeInventoryAction.prototype.saveData = function() {
+                var itemId = this.contentElement.find(".gn-nodeSelectItemAction").data("itemid");
+                var quantity = parseInt(this.contentElement.find(".gn-nodeItemQuantity").val());
+                if(isNaN(quantity))
+                {
+                    quantity = null;
+                }
+
+                var serializeData = {
+                    itemId: itemId,
+                    quantity: quantity
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem);
+                this.nodeModel.set("actionRelatedToObjectId", itemId);
+            }
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Change Inventory choose npc Action
+             * @class
+             */
+            Actions.ChangeInventoryChooseNpcAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.ChangeInventoryChooseNpcAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.ChangeInventoryChooseNpcAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeSelectItemAction gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenItem' title='" + DefaultNodeShapes.Localization.Actions.OpenItemTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
+                        "<div class='gn-actionNodeObjectSelectionSeperator'>" + DefaultNodeShapes.Localization.Actions.InInventoryOf + "</div>" +
+                        "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeSelectNpcAction gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenNpc' title='" + DefaultNodeShapes.Localization.Actions.OpenNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
+                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.ItemQuantity + "</div>" +
+                        "<input type='text' class='gn-nodeItemQuantity'/>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.ChangeInventoryChooseNpcAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeSelectItemAction").text(DefaultNodeShapes.Localization.Actions.ChooseItem);
+                this.contentElement.find(".gn-nodeSelectNpcAction").text(DefaultNodeShapes.Localization.Actions.ChooseNpc);
+
+                var itemOpenLink = contentElement.find(".gn-nodeActionOpenItem");
+                var npcOpenLink = contentElement.find(".gn-nodeActionOpenNpc");
+
+                // Deserialize
+                var existingIds = this.deserializeData();
+                var loadingDefs = [];
+                if(existingIds.itemId)
+                {
+                    itemOpenLink.show();
+
+                    var itemDef = new jQuery.Deferred();
+                    loadingDefs.push(itemDef);
+                    jQuery.ajax({ 
+                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify([ existingIds.itemId ]), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(itemNames) {
+                        if(itemNames.length == 0)
+                        {
+                            itemDef.reject();
+                            return;
+                        }
+
+                        contentElement.find(".gn-nodeSelectItemAction").text(itemNames[0].name);
+                        itemDef.resolve();
+                    }).fail(function(xhr) {
+                        itemDef.reject();
+                    });
+                }
+
+                if(existingIds.npcId)
+                {
+                    npcOpenLink.show();
+
+                    var npcDef = new jQuery.Deferred();
+                    loadingDefs.push(npcDef);
+                    jQuery.ajax({ 
+                        url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify([ existingIds.npcId ]), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(npcNames) {
+                        if(npcNames.length == 0)
+                        {
+                            npcDef.reject();
+                            return;
+                        }
+
+                        contentElement.find(".gn-nodeSelectNpcAction").text(npcNames[0].name);
+                        npcDef.resolve();
+                    }).fail(function(xhr) {
+                        npcDef.reject();
+                    });
+                }
+
+                if(loadingDefs.length > 0)
+                {
+                    actionNode.showLoading();
+                    actionNode.hideError();
+                    jQuery.when.apply(jQuery, loadingDefs).done(function() {
+                        actionNode.hideLoading();
+                    }).fail(function() {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    })
+                }
+
+                // Handlers
+                var self = this;
+                var selectItemAction = contentElement.find(".gn-nodeSelectItemAction");
+                selectItemAction.on("click", function() {
+                    DefaultNodeShapes.openItemSearchDialog().then(function(item) {
+                        selectItemAction.data("itemid", item.id);
+                        selectItemAction.text(item.name);
+                        self.saveData();
+
+                        itemOpenLink.show();
+                    });
+                });
+
+                var selectNpcAction = contentElement.find(".gn-nodeSelectNpcAction");
+                selectNpcAction.on("click", function() {
+                    DefaultNodeShapes.openNpcSearchDialog().then(function(npc) {
+                        selectNpcAction.data("npcid", npc.id);
+                        selectNpcAction.text(npc.name);
+                        self.saveData();
+
+                        npcOpenLink.show();
+                    });
+                });  
+
+                var itemQuantity = contentElement.find(".gn-nodeItemQuantity");
+                itemQuantity.keydown(function(e) {
+                    GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
+                });
+
+                itemQuantity.change(function(e) {
+                    self.ensureNumberValue();
+                    self.saveData();
+                });
+
+                itemOpenLink.on("click", function() {
+                    if(selectItemAction.data("itemid"))
+                    {
+                        window.open("/Styr/Item?id=" + selectItemAction.data("itemid"));
+                    }
+                });
+                
+                npcOpenLink.on("click", function() {
+                    if(selectNpcAction.data("npcid"))
+                    {
+                        window.open("/Kortisto/Npc?id=" + selectNpcAction.data("npcid"));
+                    }
+                });
+            };
+
+            /**
+             * Ensures a number value was entered for the item quantity
+             */
+            Actions.ChangeInventoryChooseNpcAction.prototype.ensureNumberValue = function() {
+                var parsedValue = parseFloat(this.contentElement.find(".gn-nodeItemQuantity").val());
+                if(isNaN(parsedValue))
+                {
+                    this.contentElement.find(".gn-nodeItemQuantity").val("");
+                }
+            };
+
+            /**
+             * Deserializes the data
+             * @returns {object} Deserialized ids
+             */
+            Actions.ChangeInventoryChooseNpcAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var itemId = "";
+                if(data.itemId)
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", data.itemId);
+                    itemId = data.itemId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", "");
+                }
+
+                var npcId = "";
+                if(data.npcId)
+                {
+                    this.contentElement.find(".gn-nodeSelectNpcAction").data("npcid", data.npcId);
+                    npcId = data.npcId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeSelectNpcAction").data("npcid", "");
+                }
+
+                var quantity = data.quantity;
+                if(isNaN(parseInt(data.quantity)))
+                {
+                    quantity = "";
+                }
+                this.contentElement.find(".gn-nodeItemQuantity").val(quantity);
+
+                return {
+                    itemId: itemId,
+                    npcId: npcId
+                };
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.ChangeInventoryChooseNpcAction.prototype.saveData = function() {
+                var itemId = this.contentElement.find(".gn-nodeSelectItemAction").data("itemid");
+                var npcId = this.contentElement.find(".gn-nodeSelectNpcAction").data("npcid");
+                var quantity = parseInt(this.contentElement.find(".gn-nodeItemQuantity").val());
+                if(isNaN(quantity))
+                {
+                    quantity = null;
+                }
+
+                var serializeData = {
+                    itemId: itemId,
+                    npcId: npcId,
+                    quantity: quantity
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem);
+                this.nodeModel.set("actionRelatedToObjectId", itemId);
+            }
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for spawning an item in the player inventory
+            var actionTypeSpawnItemInPlayerInventory = 3;
+
+            /**
+             * Spawn item in player inventory Action
+             * @class
+             */
+            Actions.SpawnItemInPlayerInventoryAction = function()
+            {
+                Actions.ChangeInventoryAction.apply(this);
+            };
+
+            Actions.SpawnItemInPlayerInventoryAction.prototype = jQuery.extend({ }, Actions.ChangeInventoryAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SpawnItemInPlayerInventoryAction.prototype.buildAction = function() {
+                return new Actions.SpawnItemInPlayerInventoryAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SpawnItemInPlayerInventoryAction.prototype.getType = function() {
+                return actionTypeSpawnItemInPlayerInventory;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SpawnItemInPlayerInventoryAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SpawnItemInPlayerInventoryLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SpawnItemInPlayerInventoryAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for remove an item from the player inventory
+            var actionTypeRemoveItemFromPlayerInventory = 35;
+
+            /**
+             * Remove item from player inventory Action
+             * @class
+             */
+            Actions.RemoveItemFromPlayerInventoryAction = function()
+            {
+                Actions.ChangeInventoryAction.apply(this);
+            };
+
+            Actions.RemoveItemFromPlayerInventoryAction.prototype = jQuery.extend({ }, Actions.ChangeInventoryAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.RemoveItemFromPlayerInventoryAction.prototype.buildAction = function() {
+                return new Actions.RemoveItemFromPlayerInventoryAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.RemoveItemFromPlayerInventoryAction.prototype.getType = function() {
+                return actionTypeRemoveItemFromPlayerInventory;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.RemoveItemFromPlayerInventoryAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.RemoveItemFromPlayerInventoryLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.RemoveItemFromPlayerInventoryAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for spawning an item in the npc inventory of an npc that can be chosen
+            var actionTypeSpawnItemInChooseNpcInventory = 51;
+
+            /**
+             * Spawn item in choose npc inventory Action
+             * @class
+             */
+            Actions.SpawnItemInChooseNpcInventoryAction = function()
+            {
+                Actions.ChangeInventoryChooseNpcAction.apply(this);
+            };
+
+            Actions.SpawnItemInChooseNpcInventoryAction.prototype = jQuery.extend({ }, Actions.ChangeInventoryChooseNpcAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SpawnItemInChooseNpcInventoryAction.prototype.buildAction = function() {
+                return new Actions.SpawnItemInChooseNpcInventoryAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SpawnItemInChooseNpcInventoryAction.prototype.getType = function() {
+                return actionTypeSpawnItemInChooseNpcInventory;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SpawnItemInChooseNpcInventoryAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SpawnItemInChooseNpcInventoryLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SpawnItemInChooseNpcInventoryAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for removing an item in the npc inventory of an npc that can be chosen
+            var actionTypeRemoveItemFromChooseNpcInventory = 52;
+
+            /**
+             * Remove item from choose npc inventory Action
+             * @class
+             */
+            Actions.RemoveItemFromChooseNpcInventoryAction = function()
+            {
+                Actions.ChangeInventoryChooseNpcAction.apply(this);
+            };
+
+            Actions.RemoveItemFromChooseNpcInventoryAction.prototype = jQuery.extend({ }, Actions.ChangeInventoryChooseNpcAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.RemoveItemFromChooseNpcInventoryAction.prototype.buildAction = function() {
+                return new Actions.RemoveItemFromChooseNpcInventoryAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.RemoveItemFromChooseNpcInventoryAction.prototype.getType = function() {
+                return actionTypeRemoveItemFromChooseNpcInventory;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.RemoveItemFromChooseNpcInventoryAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.RemoveItemFromChooseNpcInventoryLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.RemoveItemFromChooseNpcInventoryAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
              * Set Object State Action
              * @class
              */
@@ -8296,6 +11328,568 @@
     (function(DefaultNodeShapes) {
         (function(Actions) {
 
+            /// Action Type for changing a quest value
+            var actionTypeChangeQuestValue = 8;
+
+            /**
+             * Change quest value Action
+             * @class
+             */
+            Actions.ChangeQuestValueAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.ChangeValueChooseObjectAction.apply(this);
+            };
+
+            Actions.ChangeQuestValueAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.ChangeValueChooseObjectAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.ChangeQuestValueAction.prototype.buildAction = function() {
+                return new Actions.ChangeQuestValueAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.ChangeQuestValueAction.prototype.getType = function() {
+                return actionTypeChangeQuestValue;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.ChangeQuestValueAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChangeQuestValueLabel;
+            };
+
+            /**
+             * Returns the choose object label
+             * 
+             * @returns {string} Choose object label
+             */
+            Actions.ChangeQuestValueAction.prototype.getChooseLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseQuestLabel;
+            };
+
+            /**
+             * Returns the open object tool label
+             * 
+             * @returns {string} Open object label
+             */
+            Actions.ChangeQuestValueAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenQuestTooltip;
+            };
+
+            /**
+             * Opens the object
+             * @param {string} id Id of the object
+             */
+            Actions.ChangeQuestValueAction.prototype.openObject = function(id) {
+                window.open("/Aika/Quest?id=" + encodeURIComponent(id));
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Actions.ChangeQuestValueAction.prototype.getObjectTypeName = function() {
+                return Actions.RelatedToObjectQuest;
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.ChangeQuestValueAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceQuest;
+            };
+
+            /**
+             * Opens the search dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred for the picking
+             */
+            Actions.ChangeQuestValueAction.prototype.openSearchDialog = function() {
+                return GoNorth.DefaultNodeShapes.openQuestSearchDialog();
+            };
+
+            /**
+             * Loads the quest
+             * 
+             * @returns {jQuery.Deferred} Deferred for the quest loading
+             */
+            Actions.ChangeQuestValueAction.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/AikaApi/GetQuest?id=" + this.nodeModel.get("objectId"), 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ChangeQuestValueAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for changing a quest state
+            Actions.actionTypeChangeQuestState = 9;
+
+            /**
+             * Set Quest State Action
+             * @class
+             */
+            Actions.SetQuestStateAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.SetQuestStateAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.SetQuestStateAction.prototype = jQuery.extend(Actions.SetQuestStateAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.SetQuestStateAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeActionSelectQuest gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenQuest' title='" + DefaultNodeShapes.Localization.Actions.OpenQuestTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
+                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.QuestState + "</div>" +
+                        "<select class='gn-nodeActionQuestState'></select>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.SetQuestStateAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeActionSelectQuest").html(DefaultNodeShapes.Localization.Actions.ChooseQuestLabel);
+                GoNorth.Util.fillSelectFromArray(this.contentElement.find(".gn-nodeActionQuestState"), DefaultNodeShapes.Shapes.getQuestStates(), function(questState) { return questState.questState; }, function(questState) { return questState.label; });
+
+                var questOpenLink = contentElement.find(".gn-nodeActionOpenQuest");
+
+                // Deserialize
+                var existingQuestId = this.deserializeData();
+                if(existingQuestId)
+                {
+                    questOpenLink.show();
+
+                    actionNode.showLoading();
+                    actionNode.hideError();
+
+                    this.loadObjectShared(existingQuestId).then(function(quest) {
+                        contentElement.find(".gn-nodeActionSelectQuest").text(quest.name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var selectQuestAction = contentElement.find(".gn-nodeActionSelectQuest");
+                contentElement.find(".gn-nodeActionSelectQuest").on("click", function() {
+                    DefaultNodeShapes.openQuestSearchDialog().then(function(quest) {
+                        selectQuestAction.data("questid", quest.id);
+                        selectQuestAction.text(quest.name);
+                        self.saveData();
+
+                        questOpenLink.show();
+                    });
+                });
+
+                var questState = contentElement.find(".gn-nodeActionQuestState");
+                questState.change(function(e) {
+                    self.saveData();
+                });
+
+                questOpenLink.on("click", function() {
+                    if(selectQuestAction.data("questid"))
+                    {
+                        window.open("/Aika/Quest?id=" + selectQuestAction.data("questid"));
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             * 
+             * @returns {string} Id of the selected quest
+             */
+            Actions.SetQuestStateAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var questId = "";
+                if(data.questId)
+                {
+                    this.contentElement.find(".gn-nodeActionSelectQuest").data("questid", data.questId);
+                    questId = data.questId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeActionSelectQuest").data("questid", "");
+                }
+
+                this.contentElement.find(".gn-nodeActionQuestState").find("option[value='" + data.questState + "']").prop("selected", true);
+
+                return questId;
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.SetQuestStateAction.prototype.saveData = function() {
+                // The serialized data is also used in the Aika changeQuestStateInNpcDialogAction. If anything changes this must be taken into consideration.
+                
+                var questId = this.getObjectId();
+                var questState = this.contentElement.find(".gn-nodeActionQuestState").val();
+                var serializeData = {
+                    questId: questId,
+                    questState: questState
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", this.getObjectTypeName());
+                this.nodeModel.set("actionRelatedToObjectId", questId);
+            }
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SetQuestStateAction.prototype.buildAction = function() {
+                return new Actions.SetQuestStateAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SetQuestStateAction.prototype.getType = function() {
+                return Actions.actionTypeChangeQuestState;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SetQuestStateAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SetQuestStateLabel;
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Actions.SetQuestStateAction.prototype.getObjectTypeName = function() {
+                return Actions.RelatedToObjectQuest;
+            };
+
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.SetQuestStateAction.prototype.getObjectId = function() {
+                return this.contentElement.find(".gn-nodeActionSelectQuest").data("questid");
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.SetQuestStateAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceQuest;
+            };
+
+            /**
+             * Loads the quest
+             * 
+             * @param {string} questId Quest Id
+             * @returns {jQuery.Deferred} Deferred for the quest loading
+             */
+            Actions.SetQuestStateAction.prototype.loadObject = function(questId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/AikaApi/GetQuest?id=" + questId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SetQuestStateAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for adding text to a quest
+            Actions.actionTypeAddQuestToText = 10;
+
+            /**
+             * Add Text to Quest Action
+             * @class
+             */
+            Actions.AddQuestTextAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.AddQuestTextAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.AddQuestTextAction.prototype = jQuery.extend(Actions.AddQuestTextAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.AddQuestTextAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeActionSelectQuest gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenQuest' title='" + DefaultNodeShapes.Localization.Actions.OpenQuestTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
+                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.QuestText + "</div>" +
+                        "<textarea class='gn-nodeActionQuestText'></textarea>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.AddQuestTextAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeActionSelectQuest").html(DefaultNodeShapes.Localization.Actions.ChooseQuestLabel);
+
+                var questOpenLink = contentElement.find(".gn-nodeActionOpenQuest");
+
+                // Deserialize
+                var existingQuestId = this.deserializeData();
+                if(existingQuestId)
+                {
+                    questOpenLink.show();
+
+                    actionNode.showLoading();
+                    actionNode.hideError();
+
+                    this.loadObjectShared(existingQuestId).then(function(quest) {
+                        contentElement.find(".gn-nodeActionSelectQuest").text(quest.name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var selectQuestAction = contentElement.find(".gn-nodeActionSelectQuest");
+                contentElement.find(".gn-nodeActionSelectQuest").on("click", function() {
+                    DefaultNodeShapes.openQuestSearchDialog().then(function(quest) {
+                        selectQuestAction.data("questid", quest.id);
+                        selectQuestAction.text(quest.name);
+                        self.saveData();
+                        
+                        questOpenLink.show();
+                    });
+                });
+
+                var questText = contentElement.find(".gn-nodeActionQuestText");
+                questText.change(function(e) {
+                    self.saveData();
+                });
+
+                questOpenLink.on("click", function() {
+                    if(selectQuestAction.data("questid"))
+                    {
+                        window.open("/Aika/Quest?id=" + selectQuestAction.data("questid"));
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.AddQuestTextAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var questId = "";
+                if(data.questId)
+                {
+                    this.contentElement.find(".gn-nodeActionSelectQuest").data("questid", data.questId);
+                    questId = data.questId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeActionSelectQuest").data("questid", "");
+                }
+
+                this.contentElement.find(".gn-nodeActionQuestText").val(data.questText);
+
+                return questId;
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.AddQuestTextAction.prototype.saveData = function() {
+                // The serialized data is also used in the Aika changeQuestTextInNpcDialogAction. If anything changes this must be taken into consideration.
+                
+                var questId = this.getObjectId();
+                var questText = this.contentElement.find(".gn-nodeActionQuestText").val();
+                var serializeData = {
+                    questId: questId,
+                    questText: questText
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            }
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.AddQuestTextAction.prototype.buildAction = function() {
+                return new Actions.AddQuestTextAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.AddQuestTextAction.prototype.getType = function() {
+                return Actions.actionTypeAddQuestToText;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.AddQuestTextAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.AddQuestTextLabel;
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Actions.AddQuestTextAction.prototype.getObjectTypeName = function() {
+                return Actions.RelatedToObjectQuest;
+            };
+
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.AddQuestTextAction.prototype.getObjectId = function() {
+                return this.contentElement.find(".gn-nodeActionSelectQuest").data("questid");
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.AddQuestTextAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceQuest;
+            };
+
+            /**
+             * Loads the quest
+             * 
+             * @param {string} questId Quest Id
+             * @returns {jQuery.Deferred} Deferred for the quest loading
+             */
+            Actions.AddQuestTextAction.prototype.loadObject = function(questId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/AikaApi/GetQuest?id=" + questId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.AddQuestTextAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
             /// Action Type for waiting
             var actionTypeWait = 14;
 
@@ -8490,6 +12084,24 @@
             };
 
             /**
+             * Returns the label for the main output
+             * 
+             * @returns {string} Label for the main output
+             */
+            Actions.WaitAction.prototype.getMainOutputLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WaitLaterContinueLabel;
+            };
+
+            /**
+             * Returns the additional outports of the action
+             * 
+             * @returns {string[]} Additional outports
+             */
+            Actions.WaitAction.prototype.getAdditionalOutports = function() {
+                return [ DefaultNodeShapes.Localization.Actions.WaitDirectContinueLabel ];
+            };
+
+            /**
              * Builds the action
              * 
              * @returns {object} Action
@@ -8517,6 +12129,1218 @@
             };
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.WaitAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Set Object State Action
+             * @class
+             */
+            Actions.SetObjectStateAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.SetObjectStateAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.SetObjectStateAction.prototype.getContent = function() {
+                return  "<input type='text' class='gn-nodeActionObjectState' placeholder='" + DefaultNodeShapes.Localization.Actions.StatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.SetObjectStateAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                // Deserialize
+                this.deserializeData();
+
+                // Handlers
+                var self = this;
+                var objectState = contentElement.find(".gn-nodeActionObjectState");
+                objectState.change(function(e) {
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.SetObjectStateAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-nodeActionObjectState").val(data.objectState);
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.SetObjectStateAction.prototype.saveData = function() {
+                var objectState = this.contentElement.find(".gn-nodeActionObjectState").val();
+                var serializeData = {
+                    objectState: objectState
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            }
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SetObjectStateAction.prototype.buildAction = function() {
+                return new Actions.SetObjectStateAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SetObjectStateAction.prototype.getType = function() {
+                return -1;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SetObjectStateAction.prototype.getLabel = function() {
+                return "";
+            };
+
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.SetObjectStateAction.prototype.getConfigKey = function() {
+                return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
+            }
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for changing the player state
+            var actionTypeChangePlayerState = 15;
+
+            /**
+             * Change player state Action
+             * @class
+             */
+            Actions.SetPlayerStateAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.SetObjectStateAction.apply(this);
+            };
+
+            Actions.SetPlayerStateAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.SetObjectStateAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SetPlayerStateAction.prototype.buildAction = function() {
+                return new Actions.SetPlayerStateAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SetPlayerStateAction.prototype.getType = function() {
+                return actionTypeChangePlayerState;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SetPlayerStateAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SetPlayerStateLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SetPlayerStateAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Learn or Forget a Skill Action
+             * @class
+             */
+            Actions.LearnForgetSkillAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.LearnForgetSkillAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.LearnForgetSkillAction.prototype = jQuery.extend(Actions.LearnForgetSkillAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.LearnForgetSkillAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeActionSelectSkill gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenSkill' title='" + DefaultNodeShapes.Localization.Actions.OpenSkillTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.LearnForgetSkillAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeActionSelectSkill").html(DefaultNodeShapes.Localization.Actions.ChooseSkillLabel);
+
+                var skillOpenLink = contentElement.find(".gn-nodeActionOpenSkill");
+
+                // Deserialize
+                var existingSkillId = this.deserializeData();
+                if(existingSkillId)
+                {
+                    skillOpenLink.show();
+
+                    actionNode.showLoading();
+                    actionNode.hideError();
+
+                    this.loadObjectShared(existingSkillId).then(function(skill) {
+                        contentElement.find(".gn-nodeActionSelectSkill").text(skill.name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var selectSkillAction = contentElement.find(".gn-nodeActionSelectSkill");
+                contentElement.find(".gn-nodeActionSelectSkill").on("click", function() {
+                    DefaultNodeShapes.openSkillSearchDialog().then(function(skill) {
+                        selectSkillAction.data("skillid", skill.id);
+                        selectSkillAction.text(skill.name);
+                        self.saveData();
+
+                        skillOpenLink.show();
+                    });
+                });
+
+                skillOpenLink.on("click", function() {
+                    if(selectSkillAction.data("skillid"))
+                    {
+                        window.open("/Evne/Skill?id=" + selectSkillAction.data("skillid"));
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             * 
+             * @returns {string} Id of the selected skill
+             */
+            Actions.LearnForgetSkillAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var skillId = "";
+                if(data.skillId)
+                {
+                    this.contentElement.find(".gn-nodeActionSelectSkill").data("skillid", data.skillId);
+                    skillId = data.skillId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeActionSelectSkill").data("skillid", "");
+                }
+
+                return skillId;
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.LearnForgetSkillAction.prototype.saveData = function() {
+                var skillId = this.getObjectId();
+                var serializeData = {
+                    skillId: skillId
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", this.getObjectTypeName());
+                this.nodeModel.set("actionRelatedToObjectId", skillId);
+            }
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Actions.LearnForgetSkillAction.prototype.getObjectTypeName = function() {
+                return Actions.RelatedToObjectSkill;
+            };
+
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.LearnForgetSkillAction.prototype.getObjectId = function() {
+                return this.contentElement.find(".gn-nodeActionSelectSkill").data("skillid");
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.LearnForgetSkillAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Loads the skill
+             * 
+             * @param {string} skillId Skill Id
+             * @returns {jQuery.Deferred} Deferred for the skill loading
+             */
+            Actions.LearnForgetSkillAction.prototype.loadObject = function(skillId) {
+                var def = new jQuery.Deferred();
+
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + skillId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for learning a new skill for the player
+            var actionTypePlayerLearnSkill = 18;
+
+            /**
+             * Player learn a new skill Action
+             * @class
+             */
+            Actions.PlayerLearnSkillAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.apply(this);
+            };
+
+            Actions.PlayerLearnSkillAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayerLearnSkillAction.prototype.buildAction = function() {
+                return new Actions.PlayerLearnSkillAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayerLearnSkillAction.prototype.getType = function() {
+                return actionTypePlayerLearnSkill;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayerLearnSkillAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.PlayerLearnSkillLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayerLearnSkillAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for forgetting a skill for the player
+            var actionTypePlayerForgetSkill = 19;
+
+            /**
+             * Player forget a skill Action
+             * @class
+             */
+            Actions.PlayerForgetSkillAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.apply(this);
+            };
+
+            Actions.PlayerForgetSkillAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.LearnForgetSkillAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayerForgetSkillAction.prototype.buildAction = function() {
+                return new Actions.PlayerForgetSkillAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayerForgetSkillAction.prototype.getType = function() {
+                return actionTypePlayerForgetSkill;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayerForgetSkillAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.PlayerForgetSkillLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayerForgetSkillAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+            
+            /**
+             * Change skill value Action
+             * @class
+             */
+            Actions.ChangeSkillValueAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.ChangeValueChooseObjectAction.apply(this);
+            };
+
+            Actions.ChangeSkillValueAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.ChangeValueChooseObjectAction.prototype);
+
+            /**
+             * Returns the choose object label
+             * 
+             * @returns {string} Choose object label
+             */
+            Actions.ChangeSkillValueAction.prototype.getChooseLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseSkillLabel;
+            };
+
+            /**
+             * Returns the open object tool label
+             * 
+             * @returns {string} Open object label
+             */
+            Actions.ChangeSkillValueAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenSkillTooltip;
+            };
+            
+            /**
+             * Opens the object
+             * @param {string} id Id of the object
+             */
+            Actions.ChangeSkillValueAction.prototype.openObject = function(id) {
+                window.open("/Evne/Skill?id=" + encodeURIComponent(id));
+            };
+
+            /**
+             * Returns the object type name. Used for dependency objects
+             * 
+             * @returns {string} Object Type name used for depends on objects 
+             */
+            Actions.ChangeSkillValueAction.prototype.getObjectTypeName = function() {
+                return Actions.RelatedToObjectSkill;
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.ChangeSkillValueAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+            };
+
+            /**
+             * Opens the search dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred for the picking
+             */
+            Actions.ChangeSkillValueAction.prototype.openSearchDialog = function() {
+                return GoNorth.DefaultNodeShapes.openSkillSearchDialog();
+            };
+
+            /**
+             * Loads the skill
+             * 
+             * @returns {jQuery.Deferred} Deferred for the skill loading
+             */
+            Actions.ChangeSkillValueAction.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+
+                var self = this;
+                jQuery.ajax({ 
+                    url: "/api/EvneApi/FlexFieldObject?id=" + this.nodeModel.get("objectId"), 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for changing a player skill value
+            var actionTypeChangePlayerSkillValue = 22;
+
+            /**
+             * Change skill value Action
+             * @class
+             */
+            Actions.ChangePlayerSkillValueAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.ChangeSkillValueAction.apply(this);
+            };
+
+            Actions.ChangePlayerSkillValueAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.ChangeSkillValueAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.ChangePlayerSkillValueAction.prototype.buildAction = function() {
+                return new Actions.ChangePlayerSkillValueAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.ChangePlayerSkillValueAction.prototype.getType = function() {
+                return actionTypeChangePlayerSkillValue;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.ChangePlayerSkillValueAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChangePlayerSkillValueLabel;
+            };
+
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ChangePlayerSkillValueAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Play animation Action
+             * @class
+             */
+            Actions.PlayAnimationAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.PlayAnimationAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.PlayAnimationAction.prototype.getContent = function() {
+                return  "<input type='text' class='gn-nodeActionPlayAnimation' placeholder='" + DefaultNodeShapes.Localization.Actions.AnimationPlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.PlayAnimationAction + "'/>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.PlayAnimationAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                // Deserialize
+                this.deserializeData();
+
+                // Handlers
+                var self = this;
+                var animationName = contentElement.find(".gn-nodeActionPlayAnimation");
+                animationName.change(function(e) {
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.PlayAnimationAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-nodeActionPlayAnimation").val(data.animationName);
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.PlayAnimationAction.prototype.saveData = function() {
+                var animationName = this.contentElement.find(".gn-nodeActionPlayAnimation").val();
+                var serializeData = {
+                    animationName: animationName
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            }
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayAnimationAction.prototype.buildAction = function() {
+                return new Actions.PlayAnimationAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayAnimationAction.prototype.getType = function() {
+                return -1;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayAnimationAction.prototype.getLabel = function() {
+                return "";
+            };
+
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.PlayAnimationAction.prototype.getConfigKey = function() {
+                return GoNorth.ProjectConfig.ConfigKeys.PlayAnimationAction;
+            }
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for playing a player animation
+            var actionTypePlayPlayerAnimation = 27;
+
+            /**
+             * Play player animation action
+             * @class
+             */
+            Actions.PlayPlayerAnimationAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.PlayAnimationAction.apply(this);
+            };
+
+            Actions.PlayPlayerAnimationAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.PlayAnimationAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayPlayerAnimationAction.prototype.buildAction = function() {
+                return new Actions.PlayPlayerAnimationAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayPlayerAnimationAction.prototype.getType = function() {
+                return actionTypePlayPlayerAnimation;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayPlayerAnimationAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.PlayPlayerAnimationLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayPlayerAnimationAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for entering a code
+            var actionTypeCode = 28;
+
+            /**
+             * Code Action
+             * @class
+             */
+            Actions.CodeAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.CodeAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.CodeAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'><a class='gn-clickable gn-nodeActionScriptName'>" + DefaultNodeShapes.Localization.Actions.ClickHereToEditCode + "</a></div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.CodeAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                // Deserialize
+                this.deserializeData();
+
+                // Handlers
+                var self = this;
+                var scriptName = contentElement.find(".gn-nodeActionScriptName");
+                scriptName.click(function(e) {
+                    self.openCodeEditor();
+                });
+            };
+
+            /**
+             * Opens the code editor
+             */
+            Actions.CodeAction.prototype.openCodeEditor = function() {
+                var actionData = null;
+                try
+                {
+                    actionData = JSON.parse(this.nodeModel.get("actionData"));
+                }
+                catch(e) 
+                {
+                }
+
+                var scriptName = "";
+                var scriptCode = "";
+                if(actionData) 
+                {
+                    scriptName = actionData.scriptName;
+                    scriptCode = actionData.scriptCode;
+                }
+                
+                var self = this;
+                DefaultNodeShapes.openCodeEditor(scriptName, scriptCode).then(function(codeResult) {
+                    var serializeData = {
+                        scriptName: codeResult.name,
+                        scriptCode: codeResult.code
+                    }; 
+                    
+                    self.nodeModel.set("actionData", JSON.stringify(serializeData));
+                    self.contentElement.find(".gn-nodeActionScriptName").text(serializeData.scriptName);
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.CodeAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-nodeActionScriptName").text(data.scriptName);
+            }
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.CodeAction.prototype.buildAction = function() {
+                return new Actions.CodeAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.CodeAction.prototype.getType = function() {
+                return actionTypeCode;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.CodeAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.CodeActionLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.CodeAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Show floating text above an object action
+             * @class
+             */
+            Actions.ShowFloatingTextAboveObjectAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.ShowFloatingTextAboveObjectAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.ShowFloatingTextAboveObjectAction.prototype.getContent = function() {
+                return "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.FloatingText + "</div>" +
+                       "<textarea class='gn-nodeActionFloatingText'></textarea>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.ShowFloatingTextAboveObjectAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                // Deserialize
+                this.deserializeData();
+
+                // Handlers
+                var self = this;
+                var floatingText = contentElement.find(".gn-nodeActionFloatingText");
+                floatingText.change(function(e) {
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.ShowFloatingTextAboveObjectAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-nodeActionFloatingText").val(data.floatingText);
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.ShowFloatingTextAboveObjectAction.prototype.saveData = function() {
+                var floatingText = this.contentElement.find(".gn-nodeActionFloatingText").val();
+                var serializeData = {
+                    floatingText: floatingText
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            }
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for showing a floating text above the player
+            var actionTypeShowFloatingTextAbovePlayer = 30;
+
+            /**
+             * Show floating text above player Action
+             * @class
+             */
+            Actions.ShowFloatingTextAbovePlayerAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.ShowFloatingTextAboveObjectAction.apply(this);
+            };
+
+            Actions.ShowFloatingTextAbovePlayerAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.ShowFloatingTextAboveObjectAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.ShowFloatingTextAbovePlayerAction.prototype.buildAction = function() {
+                return new Actions.ShowFloatingTextAbovePlayerAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.ShowFloatingTextAbovePlayerAction.prototype.getType = function() {
+                return actionTypeShowFloatingTextAbovePlayer;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.ShowFloatingTextAbovePlayerAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ShowFloatingTextAbovePlayerLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ShowFloatingTextAbovePlayerAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for showing a floating text above the player
+            var actionTypeShowFloatingTextAboveChooseNpc = 31;
+
+            /**
+             * Show floating text above pc action
+             * @class
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype = jQuery.extend(Actions.ShowFloatingTextAboveChooseNpcAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.getContent = function() {
+                return "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeNpcSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseNpcLabel + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
+                       "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.FloatingText + "</div>" +
+                       "<textarea class='gn-nodeActionFloatingText'></textarea>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                var npcOpenLink = contentElement.find(".gn-nodeActionOpenObject");
+
+                // Deserialize
+                var npcId = this.deserializeData();
+                if(npcId)
+                {
+                    // Set related object data
+                    this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectNpc);
+                    this.nodeModel.set("actionRelatedToObjectId", npcId);
+
+                    npcOpenLink.show();
+
+                    actionNode.showLoading();
+                    actionNode.hideError();
+
+                    this.loadObjectShared(npcId).then(function(npc) {
+                        contentElement.find(".gn-actionNodeNpcSelect").text(npc.name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var floatingText = contentElement.find(".gn-nodeActionFloatingText");
+                floatingText.change(function(e) {
+                    self.saveData();
+                });
+
+                var selectNpcAction = contentElement.find(".gn-actionNodeNpcSelect");
+                selectNpcAction.on("click", function() {
+                    GoNorth.DefaultNodeShapes.openNpcSearchDialog().then(function(npc) {
+                        selectNpcAction.data("npcid", npc.id);
+                        selectNpcAction.text(npc.name);
+                        
+                        // Set related object data
+                        self.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectNpc);
+                        self.nodeModel.set("actionRelatedToObjectId", npc.id);
+
+                        npcOpenLink.show();
+                    });
+                });
+                
+                npcOpenLink.on("click", function() {
+                    if(selectNpcAction.data("npcid"))
+                    {
+                        window.open("/Kortisto/Npc?id=" + selectNpcAction.data("npcid"));
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-nodeActionFloatingText").val(data.floatingText);
+                var npcId = "";
+                if(data.npcId)
+                {
+                    this.contentElement.find(".gn-actionNodeNpcSelect").data("npcid", data.npcId);
+                    npcId = data.npcId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-actionNodeNpcSelect").data("npcid", "");
+                }
+
+                return npcId;
+            };
+
+            /**
+             * Saves the data
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.saveData = function() {
+                var floatingText = this.contentElement.find(".gn-nodeActionFloatingText").val();
+                var serializeData = {
+                    floatingText: floatingText,
+                    npcId: this.contentElement.find(".gn-actionNodeNpcSelect").data("npcid")
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.buildAction = function() {
+                return new Actions.ShowFloatingTextAboveChooseNpcAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.getType = function() {
+                return actionTypeShowFloatingTextAboveChooseNpc;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ShowFloatingTextAboveChooseNpcLabel;
+            };
+
+
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.getObjectId = function() {
+                return this.contentElement.find(".gn-actionNodeNpcSelect").data("npcid");
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Loads the npc
+             * 
+             * @param {string} npcId Npc Id
+             * @returns {jQuery.Deferred} Deferred for the npc loading
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.loadObject = function(npcId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ShowFloatingTextAboveChooseNpcAction());
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -8683,6 +13507,2462 @@
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
     "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Set Daily Routine event state action
+             * @class
+             */
+            Actions.SetDailyRoutineEventStateAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.SetDailyRoutineEventStateAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.SetDailyRoutineEventStateAction.prototype = jQuery.extend(Actions.SetDailyRoutineEventStateAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeObjectSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseDailyRoutineEvent + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenDailyRoutineEventNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                
+                var openObjectLink = contentElement.find(".gn-nodeActionOpenObject");
+
+                // Deserialize
+                var deserializedData = this.deserializeData();
+                if(deserializedData)
+                {
+                    this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectNpc);
+                    this.nodeModel.set("actionRelatedToObjectId", deserializedData.npcId);
+                    this.nodeModel.set("actionRelatedToAdditionalObjects", [{
+                        objectType: Actions.RelatedToObjectDailyRoutine,
+                        objectId: deserializedData.eventId
+                    }]);
+
+                    this.loadEventFromNpc(deserializedData.npcId, deserializedData.eventId);
+                }
+
+                // Handlers
+                var self = this;
+                contentElement.find(".gn-actionNodeObjectSelect").on("click", function() {
+                    GoNorth.DefaultNodeShapes.openDailyRoutineEventSearchDialog().then(function(dailyRoutine) {
+                        self.nodeModel.set("objectId", dailyRoutine.parentObject.id);
+                        self.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectNpc);
+                        self.nodeModel.set("actionRelatedToObjectId", dailyRoutine.parentObject.id);
+                        self.nodeModel.set("actionRelatedToAdditionalObjects", [{
+                            objectType: Actions.RelatedToObjectDailyRoutine,
+                            objectId: dailyRoutine.eventId
+                        }]);
+
+                        self.saveData(dailyRoutine.parentObject.id, dailyRoutine.eventId);
+
+                        contentElement.find(".gn-actionNodeObjectSelect").text(dailyRoutine.parentObject.name + ": " + dailyRoutine.name);
+
+                        openObjectLink.show();
+                    });
+                });
+                
+                openObjectLink.on("click", function() {
+                    var npcId = self.nodeModel.get("objectId");
+                    if(npcId) 
+                    {
+                        window.open("/Kortisto/Npc?id=" + npcId);
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             * @returns {object} Deserialized data
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return null;
+                }
+
+                var data = JSON.parse(actionData);
+                this.nodeModel.set("objectId", data.npcId);
+
+                return data;
+            };
+
+            /**
+             * Loads the event from an npc
+             * @param {string} npcId Id of the npc
+             * @param {string} eventId Id of the event
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.loadEventFromNpc = function(npcId, eventId) {
+                var self = this;
+                this.loadObjectShared(npcId).then(function(npc) {
+                    if(!npc.dailyRoutine) 
+                    {
+                        return;
+                    }
+
+                    for(var curEvent = 0; curEvent < npc.dailyRoutine.length; ++curEvent)
+                    {
+                        if(npc.dailyRoutine[curEvent].eventId == eventId)
+                        {
+                            var eventName = GoNorth.DailyRoutines.Util.formatTimeSpan(DefaultNodeShapes.Localization.Actions.TimeFormat, npc.dailyRoutine[curEvent].earliestTime, npc.dailyRoutine[curEvent].latestTime);
+                            self.contentElement.find(".gn-actionNodeObjectSelect").text(npc.name + ": " + eventName);
+                            self.contentElement.find(".gn-nodeActionOpenObject").show();
+                            break;
+                        }
+                    }
+                });
+            };
+
+            /**
+             * Saves the data
+             * @param {string} npcId Id of the npc
+             * @param {string} eventId Id of the event
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.saveData = function(npcId, eventId) {
+                var serializeData = {
+                    npcId: npcId,
+                    eventId: eventId
+                };
+                
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            /**
+             * Returns the names of the custom action attributes
+             * 
+             * @returns {string[]} Name of the custom action attributes
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.getCustomActionAttributes = function() {
+                return [ "objectId" ];
+            };
+
+
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.getObjectId = function() {
+                return this.nodeModel.get("objectId");
+            };
+
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Loads the npc
+             * 
+             * @returns {jQuery.Deferred} Deferred for the npc loading
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + this.nodeModel.get("objectId"), 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.buildAction = function() {
+                return new Actions.SetDailyRoutineEventStateAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.getType = function() {
+                return -1;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SetDailyRoutineEventStateAction.prototype.getLabel = function() {
+                return "";
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for disabling a daily routine event
+            var actionTypeDisableDailyRoutineEvent = 37;
+
+            /**
+             * Disable daily routine event action
+             * @class
+             */
+            Actions.DisableDailyRoutineEventAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.SetDailyRoutineEventStateAction.apply(this);
+            };
+
+            Actions.DisableDailyRoutineEventAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.SetDailyRoutineEventStateAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.DisableDailyRoutineEventAction.prototype.buildAction = function() {
+                return new Actions.DisableDailyRoutineEventAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.DisableDailyRoutineEventAction.prototype.getType = function() {
+                return actionTypeDisableDailyRoutineEvent;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.DisableDailyRoutineEventAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.DisableDailyRoutineEventLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.DisableDailyRoutineEventAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for enabling a daily routine event
+            var actionTypeEnableDailyRoutineEvent = 38;
+
+            /**
+             * Enable daily routine event action
+             * @class
+             */
+            Actions.EnableDailyRoutineEventAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.SetDailyRoutineEventStateAction.apply(this);
+            };
+
+            Actions.EnableDailyRoutineEventAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.SetDailyRoutineEventStateAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.EnableDailyRoutineEventAction.prototype.buildAction = function() {
+                return new Actions.EnableDailyRoutineEventAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.EnableDailyRoutineEventAction.prototype.getType = function() {
+                return actionTypeEnableDailyRoutineEvent;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.EnableDailyRoutineEventAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.EnableDailyRoutineEventLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.EnableDailyRoutineEventAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Move object action
+             * @class
+             */
+            Actions.MoveObjectAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.MoveObjectAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.MoveObjectAction.prototype = jQuery.extend(Actions.MoveObjectAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.MoveObjectAction.prototype.hasMovementState = function() {
+                return false;
+            };
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.MoveObjectAction.prototype.getContent = function() {
+                var templateHtml = "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeMarkerSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseMarkerLabel + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenMarkerTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+                
+                if(this.hasMovementState())
+                {
+                    templateHtml += "<input type='text' class='gn-nodeActionMovementState' placeholder='" + DefaultNodeShapes.Localization.Actions.MovementStatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
+                }
+
+                return templateHtml;
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.MoveObjectAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                var markerOpenLink = contentElement.find(".gn-nodeActionOpenObject");
+
+                // Deserialize
+                var deserializedData = this.deserializeData();
+                if(deserializedData) {
+                    this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectMapMarker);
+                    this.nodeModel.set("actionRelatedToObjectId", deserializedData.markerId);
+                    this.nodeModel.set("actionRelatedToAdditionalObjects", [{
+                        objectType: Actions.RelatedToObjectMap,
+                        objectId: deserializedData.mapId
+                    }]);
+
+                    this.loadMarkerFromMap(deserializedData.mapId, deserializedData.markerId);
+                }
+
+                // Handlers
+                var self = this;
+                var selectMarkerAction = contentElement.find(".gn-actionNodeMarkerSelect");
+                selectMarkerAction.on("click", function() {
+                    GoNorth.DefaultNodeShapes.openMarkerSearchDialog().then(function(marker) {
+                        selectMarkerAction.data("mapid", marker.mapId);
+                        selectMarkerAction.data("markerid", marker.id);
+                        selectMarkerAction.data("markertype", marker.markerType);
+                        selectMarkerAction.text(marker.name);
+                        
+                        // Set related object data
+                        self.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectMapMarker);
+                        self.nodeModel.set("actionRelatedToObjectId", marker.id);
+                        self.nodeModel.set("actionRelatedToAdditionalObjects", [{
+                            objectType: Actions.RelatedToObjectMap,
+                            objectId: marker.mapId
+                        }]);
+
+                        self.saveData(marker.mapId, marker.id, marker.markerType)
+
+                        markerOpenLink.show();
+                    });
+                });
+                 
+                markerOpenLink.on("click", function() {
+                    if(selectMarkerAction.data("markerid"))
+                    {
+                        window.open("/Karta?id=" + selectMarkerAction.data("mapid") + "&zoomOnMarkerId=" + selectMarkerAction.data("markerid") + "&zoomOnMarkerType=" + selectMarkerAction.data("markertype"))
+                    }
+                });
+
+                var movementState = contentElement.find(".gn-nodeActionMovementState");
+                movementState.change(function(e) {
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.MoveObjectAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return null;
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+                selectMarkerAction.data("mapid", data.mapId);
+                selectMarkerAction.data("markerid", data.markerId);
+                selectMarkerAction.data("markertype", data.markerType);
+                
+                this.contentElement.find(".gn-nodeActionMovementState").val(data.movementState);
+
+                return data;
+            };
+
+            /**
+             * Loads the marker from a map
+             * @param {string} mapId Id of the map
+             * @param {string} markerId Id of the marker
+             */
+            Actions.MoveObjectAction.prototype.loadMarkerFromMap = function(mapId, markerId) {
+                var self = this;
+                this.loadObjectShared({ mapId: mapId, markerId: markerId }).then(function(marker) {
+                    if(!marker) 
+                    {
+                        return;
+                    }
+
+                    self.contentElement.find(".gn-actionNodeMarkerSelect").text(marker.markerName + " (" + marker.mapName + ")");
+                    self.contentElement.find(".gn-nodeActionOpenObject").show();
+                });
+            };
+
+            /**
+             * Saves the data
+             */
+            Actions.MoveObjectAction.prototype.saveData = function() {
+                var movementState = this.contentElement.find(".gn-nodeActionMovementState").val();
+                if(!movementState)
+                {
+                    movementState = "";
+                }
+
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+
+                var serializeData = {
+                    mapId: selectMarkerAction.data("mapid"),
+                    markerId: selectMarkerAction.data("markerid"),
+                    markerType: selectMarkerAction.data("markertype"),
+                    movementState: movementState
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.MoveObjectAction.prototype.getObjectId = function(existingData) {
+                return existingData.mapId + "|" + existingData.markerId;
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.MoveObjectAction.prototype.getObjectResource = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceMapMarker;
+            };
+
+            /**
+             * Loads the marker
+             * 
+             * @returns {jQuery.Deferred} Deferred for the marker loading
+             */
+            Actions.MoveObjectAction.prototype.loadObject = function() {
+                var def = new jQuery.Deferred();
+
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+
+                jQuery.ajax({ 
+                    url: "/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid"), 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.MoveObjectAction.prototype.getConfigKey = function() {
+                if(this.hasMovementState())
+                {
+                    return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
+                }
+
+                return null;
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for teleporting the player
+            var actionTypeTeleportPlayer = 40;
+
+            /**
+             * Teleport player Action
+             * @class
+             */
+            Actions.TeleportPlayerAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.MoveObjectAction.apply(this);
+            };
+
+            Actions.TeleportPlayerAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.MoveObjectAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.TeleportPlayerAction.prototype.buildAction = function() {
+                return new Actions.TeleportPlayerAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.TeleportPlayerAction.prototype.getType = function() {
+                return actionTypeTeleportPlayer;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.TeleportPlayerAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.TeleportPlayerLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.TeleportPlayerAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Indicating am object must be loaded
+            var loadTypeObject = 0;
+
+            /// Indicating a marker must be loaded
+            var loadTypeMarker = 1;
+
+            /**
+             * Move choose object action
+             * @class
+             */
+            Actions.MoveChooseObjectAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.MoveChooseObjectAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.MoveChooseObjectAction.prototype = jQuery.extend(Actions.MoveChooseObjectAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.MoveChooseObjectAction.prototype.hasMovementState = function() {
+                return false;
+            };
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.MoveChooseObjectAction.prototype.getContent = function() {
+                var templateHtml = "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeObjectSelect gn-clickable'>" + this.getChooseObjectLabel() + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenChooseObject' title='" + this.getOpenObjectTooltip() + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" + 
+                        "<div class='gn-actionNodeObjectSelectionSeperator'>" + this.getSelectionSeperatorLabel() + "</div>" +
+                        "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeMarkerSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseMarkerLabel + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenMarkerTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+
+                if(this.hasMovementState())
+                {
+                    templateHtml += "<input type='text' class='gn-nodeActionMovementState' placeholder='" + DefaultNodeShapes.Localization.Actions.MovementStatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
+                }
+
+                return templateHtml;
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.MoveChooseObjectAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                var objectOpenLink = contentElement.find(".gn-nodeActionOpenChooseObject");
+                var markerOpenLink = contentElement.find(".gn-nodeActionOpenObject");
+
+                // Deserialize
+                var deserializedData = this.deserializeData();
+                if(deserializedData) {
+                    this.loadObjectFromDeserialize(deserializedData.objectId);
+                    this.loadMarkerFromMap(deserializedData.mapId, deserializedData.markerId);
+                }
+
+                // Handlers
+                var self = this;
+                var selectObjectAction = contentElement.find(".gn-actionNodeObjectSelect");
+                selectObjectAction.on("click", function() {
+                    self.openChooseObjectDialog().then(function(object) {
+                        selectObjectAction.data("selectedobjectid", object.id);
+                        selectObjectAction.text(object.name);
+                        
+                        self.saveData();
+
+                        objectOpenLink.show();
+                    });
+                });
+
+                objectOpenLink.on("click", function() {
+                    if(selectObjectAction.data("selectedobjectid"))
+                    {
+                        self.openObject(selectObjectAction.data("selectedobjectid"))
+                    }
+                });
+
+
+                var selectMarkerAction = contentElement.find(".gn-actionNodeMarkerSelect");
+                selectMarkerAction.on("click", function() {
+                    GoNorth.DefaultNodeShapes.openMarkerSearchDialog().then(function(marker) {
+                        selectMarkerAction.data("mapid", marker.mapId);
+                        selectMarkerAction.data("markerid", marker.id);
+                        selectMarkerAction.data("markertype", marker.markerType);
+                        selectMarkerAction.text(marker.name);
+                        
+                        self.saveData();
+
+                        markerOpenLink.show();
+                    });
+                });
+                 
+                markerOpenLink.on("click", function() {
+                    if(selectMarkerAction.data("markerid"))
+                    {
+                        window.open("/Karta?id=" + selectMarkerAction.data("mapid") + "&zoomOnMarkerId=" + selectMarkerAction.data("markerid") + "&zoomOnMarkerType=" + selectMarkerAction.data("markertype"))
+                    }
+                });
+                
+                var movementState = contentElement.find(".gn-nodeActionMovementState");
+                movementState.change(function(e) {
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.MoveChooseObjectAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return null;
+                }
+
+                var data = JSON.parse(actionData);
+
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                selectObjectAction.data("selectedobjectid", data.objectId);
+
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+                selectMarkerAction.data("mapid", data.mapId);
+                selectMarkerAction.data("markerid", data.markerId);
+                selectMarkerAction.data("markertype", data.markerType);
+
+                this.contentElement.find(".gn-nodeActionMovementState").val(data.movementState);
+
+                this.setRelatedToData();
+
+                return data;
+            };
+
+            /**
+             * Loads the marker from a map
+             * @param {string} mapId Id of the map
+             * @param {string} markerId Id of the marker
+             */
+            Actions.MoveChooseObjectAction.prototype.loadObjectFromDeserialize = function(objectId) {
+                if(!objectId) {
+                    return;
+                }
+
+                var self = this;
+                this.loadObjectShared({ loadType: loadTypeObject, objectId: objectId }).then(function(loadedObject) {
+                    if(!loadedObject) 
+                    {
+                        return;
+                    }
+
+                    self.contentElement.find(".gn-actionNodeObjectSelect").text(loadedObject.name);
+                    self.contentElement.find(".gn-nodeActionOpenChooseObject").show();
+                });
+            };
+
+            /**
+             * Loads the marker from a map
+             * @param {string} mapId Id of the map
+             * @param {string} markerId Id of the marker
+             */
+            Actions.MoveChooseObjectAction.prototype.loadMarkerFromMap = function(mapId, markerId) {
+                if(!mapId || !markerId) {
+                    return;
+                }
+
+                var self = this;
+                this.loadObjectShared({ loadType: loadTypeMarker, mapId: mapId, markerId: markerId }).then(function(marker) {
+                    if(!marker) 
+                    {
+                        return;
+                    }
+
+                    self.contentElement.find(".gn-actionNodeMarkerSelect").text(marker.markerName + " (" + marker.mapName + ")");
+                    self.contentElement.find(".gn-nodeActionOpenObject").show();
+                });
+            };
+
+            /**
+             * Sets the related to data
+             */
+            Actions.MoveChooseObjectAction.prototype.setRelatedToData = function() {
+                var additionalRelatedObjects = [];
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                if(selectObjectAction.data("selectedobjectid"))
+                {
+                    this.nodeModel.set("actionRelatedToObjectType", this.getRelatedToObjectType());
+                    this.nodeModel.set("actionRelatedToObjectId", selectObjectAction.data("selectedobjectid"));
+                    
+                }
+
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+                if(selectMarkerAction.data("markerid"))
+                {
+                    additionalRelatedObjects.push({
+                        objectType: Actions.RelatedToObjectMapMarker,
+                        objectId: selectMarkerAction.data("markerid")
+                    });
+                }
+
+                if(selectMarkerAction.data("mapid"))
+                {
+                    additionalRelatedObjects.push({
+                        objectType: Actions.RelatedToObjectMap,
+                        objectId: selectMarkerAction.data("mapid")
+                    });
+                }
+                this.nodeModel.set("actionRelatedToAdditionalObjects", additionalRelatedObjects);
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.MoveChooseObjectAction.prototype.saveData = function() {
+                this.setRelatedToData();
+                
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+
+                var movementState = this.contentElement.find(".gn-nodeActionMovementState").val();
+                if(!movementState)
+                {
+                    movementState = "";
+                }
+
+                var serializeData = {
+                    objectId: selectObjectAction.data("selectedobjectid"),
+                    mapId: selectMarkerAction.data("mapid"),
+                    markerId: selectMarkerAction.data("markerid"),
+                    markerType: selectMarkerAction.data("markertype"),
+                    movementState: movementState
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.MoveChooseObjectAction.prototype.getObjectId = function(existingData) {
+                if(existingData.loadType == loadTypeMarker)
+                {
+                    return existingData.mapId + "|" + existingData.markerId;
+                }
+
+                return existingData.objectId;
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.MoveChooseObjectAction.prototype.getObjectResource = function(existingData) {
+                if(existingData.loadType == loadTypeMarker)
+                {
+                    return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceMapMarker;
+                }
+
+                return this.getObjectResourceType();
+            };
+
+            /**
+             * Loads the marker or npc
+             * 
+             * @param {string} objectId Extracted object id
+             * @param {string} existingData Existing data
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.MoveChooseObjectAction.prototype.loadObject = function(objectId, existingData) {
+                if(existingData.loadType == loadTypeMarker)
+                {
+                    var def = new jQuery.Deferred();
+
+                    var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+                    jQuery.ajax({ 
+                        url: "/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid"), 
+                        type: "GET"
+                    }).done(function(data) {
+                        def.resolve(data);
+                    }).fail(function(xhr) {
+                        def.reject();
+                    });
+
+                    return def.promise();
+                }
+
+                return this.loadChoosenObject(existingData.objectId);
+            };
+            
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.MoveChooseObjectAction.prototype.getConfigKey = function() {
+                if(this.hasMovementState())
+                {
+                    return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
+                }
+
+                return null;
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for teleporting an npc which is choosen
+            var actionTypeTeleportChoseNpc = 41;
+
+            /**
+             * Teleport choose npc Action
+             * @class
+             */
+            Actions.TeleportChooseNpcAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectAction.apply(this);
+            };
+
+            Actions.TeleportChooseNpcAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.TeleportChooseNpcAction.prototype.buildAction = function() {
+                return new Actions.TeleportChooseNpcAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.TeleportChooseNpcAction.prototype.getType = function() {
+                return actionTypeTeleportChoseNpc;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.TeleportChooseNpcAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.TeleportChooseNpcLabel;
+            };
+        
+
+            /**
+             * Opens the choose object dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
+             */
+            Actions.TeleportChooseNpcAction.prototype.openChooseObjectDialog = function() {
+                return GoNorth.DefaultNodeShapes.openNpcSearchDialog();
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.TeleportChooseNpcAction.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseNpcLabel;
+            };
+
+            /**
+             * Returns the selections seperator label
+             * 
+             * @returns {string} Label for seperation
+             */
+            Actions.TeleportChooseNpcAction.prototype.getSelectionSeperatorLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.TeleportTo;
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.TeleportChooseNpcAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenNpcTooltip;
+            };
+
+            /**
+             * Opens the object
+             * 
+             * @param {string} id Id of the object
+             */
+            Actions.TeleportChooseNpcAction.prototype.openObject = function(id) {
+                window.open("/Kortisto/Npc?id=" + id)
+            }
+
+            /**
+             * Returns the related object type of the choosen object
+             * 
+             * @returns {string} Related object type of the choosen object
+             */
+            Actions.TeleportChooseNpcAction.prototype.getRelatedToObjectType = function() {
+                return Actions.RelatedToObjectNpc;
+            };
+
+            /**
+             * Returns the loading object resource type
+             * 
+             * @returns {number} Loading objcet resource type
+             */
+            Actions.TeleportChooseNpcAction.prototype.getObjectResourceType = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Loads the choosen object
+             * 
+             * @returns {number} Loading objcet resource type
+             * @param {string} npcId Npc Id
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.TeleportChooseNpcAction.prototype.loadChoosenObject = function(npcId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.TeleportChooseNpcAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for walking an npc which is choosen
+            var actionTypeWalkChoseNpc = 43;
+
+            /**
+             * Walk choose npc to marker Action
+             * @class
+             */
+            Actions.WalkChooseNpcToMarkerAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectAction.apply(this);
+            };
+
+            Actions.WalkChooseNpcToMarkerAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectAction.prototype);
+
+            /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.hasMovementState = function() {
+                return true;
+            };
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.buildAction = function() {
+                return new Actions.WalkChooseNpcToMarkerAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getType = function() {
+                return actionTypeWalkChoseNpc;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkChooseNpcLabel;
+            };
+        
+            /**
+             * Returns the label for the main output
+             * 
+             * @returns {string} Label for the main output
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getMainOutputLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkOnTargetReachLabel;
+            };
+
+            /**
+             * Returns the additional outports of the action
+             * 
+             * @returns {string[]} Additional outports
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getAdditionalOutports = function() {
+                return [ DefaultNodeShapes.Localization.Actions.WalkDirectContinueLabel ];
+            };
+
+
+            /**
+             * Opens the choose object dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.openChooseObjectDialog = function() {
+                return GoNorth.DefaultNodeShapes.openNpcSearchDialog();
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseNpcLabel;
+            };
+
+            /**
+             * Returns the selections seperator label
+             * 
+             * @returns {string} Label for seperation
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getSelectionSeperatorLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkTo;
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenNpcTooltip;
+            };
+
+            /**
+             * Opens the object
+             * 
+             * @param {string} id Id of the object
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.openObject = function(id) {
+                window.open("/Kortisto/Npc?id=" + id)
+            }
+
+            /**
+             * Returns the related object type of the choosen object
+             * 
+             * @returns {string} Related object type of the choosen object
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getRelatedToObjectType = function() {
+                return Actions.RelatedToObjectNpc;
+            };
+
+            /**
+             * Returns the loading object resource type
+             * 
+             * @returns {number} Loading objcet resource type
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.getObjectResourceType = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Loads the choosen object
+             * 
+             * @returns {number} Loading objcet resource type
+             * @param {string} npcId Npc Id
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.WalkChooseNpcToMarkerAction.prototype.loadChoosenObject = function(npcId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.WalkChooseNpcToMarkerAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Indicating am object must be loaded
+            var loadTypeObject = 0;
+
+            /// Indicating a npc must be loaded
+            var loadTypeNpc = 1;
+
+            /**
+             * Move choose object to npcaction
+             * @class
+             */
+            Actions.MoveChooseObjectToNpcAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.MoveChooseObjectToNpcAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.MoveChooseObjectToNpcAction.prototype = jQuery.extend(Actions.MoveChooseObjectToNpcAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.hasMovementState = function() {
+                return false;
+            };
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.getContent = function() {
+                var templateHtml = "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeObjectSelect gn-clickable'>" + this.getChooseObjectLabel() + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenChooseObject' title='" + this.getOpenObjectTooltip() + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" + 
+                        "<div class='gn-actionNodeObjectSelectionSeperator'>" + this.getSelectionSeperatorLabel() + "</div>" +
+                        "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeNpcSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseNpcLabel + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+                
+                if(this.hasMovementState())
+                {
+                    templateHtml += "<input type='text' class='gn-nodeActionMovementState' placeholder='" + DefaultNodeShapes.Localization.Actions.MovementStatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
+                }
+
+                return templateHtml;
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                var objectOpenLink = contentElement.find(".gn-nodeActionOpenChooseObject");
+                var npcOpenLink = contentElement.find(".gn-nodeActionOpenObject");
+
+                // Deserialize
+                var deserializedData = this.deserializeData();
+                if(deserializedData) {
+                    this.loadObjectFromDeserialize(deserializedData.objectId);
+                    this.loadNpc(deserializedData.npcId);
+                }
+
+                // Handlers
+                var self = this;
+                var selectObjectAction = contentElement.find(".gn-actionNodeObjectSelect");
+                selectObjectAction.on("click", function() {
+                    self.openChooseObjectDialog().then(function(object) {
+                        selectObjectAction.data("selectedobjectid", object.id);
+                        selectObjectAction.text(object.name);
+                        
+                        self.saveData();
+
+                        objectOpenLink.show();
+                    });
+                });
+
+                objectOpenLink.on("click", function() {
+                    if(selectObjectAction.data("selectedobjectid"))
+                    {
+                        self.openObject(selectObjectAction.data("selectedobjectid"))
+                    }
+                });
+
+
+                var selectNpcAction = contentElement.find(".gn-actionNodeNpcSelect");
+                selectNpcAction.on("click", function() {
+                    GoNorth.DefaultNodeShapes.openNpcSearchDialog().then(function(npc) {
+                        selectNpcAction.data("npcid", npc.id);
+                        selectNpcAction.text(npc.name);
+                        
+                        self.saveData();
+
+                        npcOpenLink.show();
+                    });
+                });
+                 
+                npcOpenLink.on("click", function() {
+                    if(selectNpcAction.data("npcid"))
+                    {
+                        window.open("/Kortisto/Npc?id=" + selectNpcAction.data("npcid"))
+                    }
+                });
+
+                var movementState = contentElement.find(".gn-nodeActionMovementState");
+                movementState.change(function(e) {
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return null;
+                }
+
+                var data = JSON.parse(actionData);
+
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                selectObjectAction.data("selectedobjectid", data.objectId);
+
+                var selectNpcAction = this.contentElement.find(".gn-actionNodeNpcSelect");
+                selectNpcAction.data("npcid", data.npcId);
+                
+                this.contentElement.find(".gn-nodeActionMovementState").val(data.movementState);
+
+                this.setRelatedToData();
+
+                return data;
+            };
+
+            /**
+             * Loads the npc
+             * @param {string} objectId Id of the npc
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.loadObjectFromDeserialize = function(objectId) {
+                if(!objectId) {
+                    return;
+                }
+
+                var self = this;
+                this.loadObjectShared({ loadType: loadTypeObject, objectId: objectId }).then(function(loadedObject) {
+                    if(!loadedObject) 
+                    {
+                        return;
+                    }
+
+                    self.contentElement.find(".gn-actionNodeObjectSelect").text(loadedObject.name);
+                    self.contentElement.find(".gn-nodeActionOpenChooseObject").show();
+                });
+            };
+
+            /**
+             * Loads the npc
+             * @param {string} npcId Id of the npc
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.loadNpc = function(npcId) {
+                if(!npcId) {
+                    return;
+                }
+
+                var self = this;
+                this.loadObjectShared({ loadType: loadTypeNpc, npcId: npcId }).then(function(npc) {
+                    if(!npc) 
+                    {
+                        return;
+                    }
+
+                    self.contentElement.find(".gn-actionNodeNpcSelect").text(npc.name);
+                    self.contentElement.find(".gn-nodeActionOpenObject").show();
+                });
+            };
+
+            /**
+             * Sets the related to data
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.setRelatedToData = function() {
+                var additionalRelatedObjects = [];
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                if(selectObjectAction.data("selectedobjectid"))
+                {
+                    this.nodeModel.set("actionRelatedToObjectType", this.getRelatedToObjectType());
+                    this.nodeModel.set("actionRelatedToObjectId", selectObjectAction.data("selectedobjectid"));
+                    
+                }
+
+                var selectNpcAction = this.contentElement.find(".gn-actionNodeNpcSelect");
+                if(selectNpcAction.data("npcid"))
+                {
+                    additionalRelatedObjects.push({
+                        objectType: Actions.RelatedToObjectNpc,
+                        objectId: selectNpcAction.data("npcid")
+                    });
+                }
+
+                this.nodeModel.set("actionRelatedToAdditionalObjects", additionalRelatedObjects);
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.saveData = function() {
+                this.setRelatedToData();
+                
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                var selectNpcAction = this.contentElement.find(".gn-actionNodeNpcSelect");
+
+                var movementState = this.contentElement.find(".gn-nodeActionMovementState").val();
+                if(!movementState)
+                {
+                    movementState = "";
+                }
+
+                var serializeData = {
+                    objectId: selectObjectAction.data("selectedobjectid"),
+                    npcId: selectNpcAction.data("npcid"),
+                    movementState: movementState
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.getObjectId = function(existingData) {
+                if(existingData.loadType == loadTypeNpc)
+                {
+                    return existingData.npcId;
+                }
+
+                return existingData.objectId;
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.getObjectResource = function(existingData) {
+                if(existingData.loadType == loadTypeNpc)
+                {
+                    return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+                }
+
+                return this.getObjectResourceType();
+            };
+
+            /**
+             * Loads the npc
+             * 
+             * @param {string} objectId Extracted object id
+             * @param {string} existingData Existing data
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.loadObject = function(objectId, existingData) {
+                if(existingData.loadType == loadTypeNpc)
+                {
+                    var def = new jQuery.Deferred();
+
+                    var selectNpcAction = this.contentElement.find(".gn-actionNodeNpcSelect");
+                    jQuery.ajax({ 
+                        url: "/api/KortistoApi/FlexFieldObject?id=" + selectNpcAction.data("npcid"), 
+                        type: "GET"
+                    }).done(function(data) {
+                        def.resolve(data);
+                    }).fail(function(xhr) {
+                        def.reject();
+                    });
+
+                    return def.promise();
+                }
+
+                return this.loadChoosenObject(existingData.objectId);
+            };
+            
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.MoveChooseObjectToNpcAction.prototype.getConfigKey = function() {
+                if(this.hasMovementState())
+                {
+                    return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
+                }
+
+                return null;
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for teleporting an npc to an npc which is choosen
+            var actionTypeTeleportChoseNpcToNpc = 45;
+
+            /**
+             * Teleport choose npc Action
+             * @class
+             */
+            Actions.TeleportChooseNpcToNpcAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectToNpcAction.apply(this);
+            };
+
+            Actions.TeleportChooseNpcToNpcAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectToNpcAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.buildAction = function() {
+                return new Actions.TeleportChooseNpcToNpcAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.getType = function() {
+                return actionTypeTeleportChoseNpcToNpc;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.TeleportChooseNpcToNpcLabel;
+            };
+        
+
+            /**
+             * Opens the choose object dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.openChooseObjectDialog = function() {
+                return GoNorth.DefaultNodeShapes.openNpcSearchDialog();
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseNpcLabel;
+            };
+
+            /**
+             * Returns the selections seperator label
+             * 
+             * @returns {string} Label for seperation
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.getSelectionSeperatorLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.TeleportToNpc;
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenNpcTooltip;
+            };
+
+            /**
+             * Opens the object
+             * 
+             * @param {string} id Id of the object
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.openObject = function(id) {
+                window.open("/Kortisto/Npc?id=" + id)
+            }
+
+            /**
+             * Returns the related object type of the choosen object
+             * 
+             * @returns {string} Related object type of the choosen object
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.getRelatedToObjectType = function() {
+                return Actions.RelatedToObjectNpc;
+            };
+
+            /**
+             * Returns the loading object resource type
+             * 
+             * @returns {number} Loading objcet resource type
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.getObjectResourceType = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Loads the choosen object
+             * 
+             * @returns {number} Loading objcet resource type
+             * @param {string} npcId Npc Id
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.TeleportChooseNpcToNpcAction.prototype.loadChoosenObject = function(npcId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.TeleportChooseNpcToNpcAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for walking an npc to an npc which is choosen
+            var actionTypeWalkChoseNpcToNpc = 47;
+
+            /**
+             * Walk choose npc Action
+             * @class
+             */
+            Actions.WalkChooseNpcToNpcAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectToNpcAction.apply(this);
+            };
+
+            Actions.WalkChooseNpcToNpcAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectToNpcAction.prototype);
+
+            /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.hasMovementState = function() {
+                return true;
+            };
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.buildAction = function() {
+                return new Actions.WalkChooseNpcToNpcAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getType = function() {
+                return actionTypeWalkChoseNpcToNpc;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkChooseNpcToNpcLabel;
+            };
+                
+            /**
+             * Returns the label for the main output
+             * 
+             * @returns {string} Label for the main output
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getMainOutputLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkOnTargetReachLabel;
+            };
+
+            /**
+             * Returns the additional outports of the action
+             * 
+             * @returns {string[]} Additional outports
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getAdditionalOutports = function() {
+                return [ DefaultNodeShapes.Localization.Actions.WalkDirectContinueLabel ];
+            };
+
+
+            /**
+             * Opens the choose object dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.openChooseObjectDialog = function() {
+                return GoNorth.DefaultNodeShapes.openNpcSearchDialog();
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseNpcLabel;
+            };
+
+            /**
+             * Returns the selections seperator label
+             * 
+             * @returns {string} Label for seperation
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getSelectionSeperatorLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkToNpc;
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenNpcTooltip;
+            };
+
+            /**
+             * Opens the object
+             * 
+             * @param {string} id Id of the object
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.openObject = function(id) {
+                window.open("/Kortisto/Npc?id=" + id)
+            }
+
+            /**
+             * Returns the related object type of the choosen object
+             * 
+             * @returns {string} Related object type of the choosen object
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getRelatedToObjectType = function() {
+                return Actions.RelatedToObjectNpc;
+            };
+
+            /**
+             * Returns the loading object resource type
+             * 
+             * @returns {number} Loading objcet resource type
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getObjectResourceType = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Loads the choosen object
+             * 
+             * @returns {number} Loading objcet resource type
+             * @param {string} npcId Npc Id
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.loadChoosenObject = function(npcId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.WalkChooseNpcToNpcAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Indicating am object must be loaded
+            var loadTypeObject = 0;
+
+            /// Indicating a marker must be loaded
+            var loadTypeMarker = 1;
+
+            /**
+             * Spawn object action
+             * @class
+             */
+            Actions.SpawnChooseObjectAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+                GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+            };
+
+            Actions.SpawnChooseObjectAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+            Actions.SpawnChooseObjectAction.prototype = jQuery.extend(Actions.SpawnChooseObjectAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.SpawnChooseObjectAction.prototype.getContent = function() {
+                return "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<a class='gn-actionNodeObjectSelect gn-clickable'>" + this.getChooseObjectLabel() + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenChooseObject' title='" + this.getOpenObjectTooltip() + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" + 
+                        "<div class='gn-actionNodeObjectSelectionSeperator'>" + this.getSelectionSeperatorLabel() + "</div>" +
+                        "<div class='gn-actionNodeObjectSelectContainer gn-spawnObjectMarkerActionContainer'>" +
+                            "<a class='gn-actionNodeMarkerSelect gn-spawnObjectMarkerAction gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseMarkerLabel + "</a>" +
+                            "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenMarkerTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open gn-spawnObjectMarkerActionOpenIcon'></i></a>" +
+                        "</div>" +
+                        "<div class='gn-actionNodeObjectSelectionSeperator'>" + DefaultNodeShapes.Localization.Actions.RotationLabel + "</div>" +
+                        "<div class='gn-actionNodeObjectSelectContainer'>" +
+                            "<input type='text' class='gn-actionNodeObjectSpawnRotation gn-actionNodeObjectSpawnRotationPitch' placeholder='" + DefaultNodeShapes.Localization.Actions.PitchLabel + "' value='0'/>" +
+                            "<input type='text' class='gn-actionNodeObjectSpawnRotation gn-actionNodeObjectSpawnRotationYaw' placeholder='" + DefaultNodeShapes.Localization.Actions.YawLabel + "' value='0'/>" +
+                            "<input type='text' class='gn-actionNodeObjectSpawnRotation gn-actionNodeObjectSpawnRotationRoll' placeholder='" + DefaultNodeShapes.Localization.Actions.RollLabel + "' value='0'/>" +
+                        "</div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.SpawnChooseObjectAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+
+                var objectOpenLink = contentElement.find(".gn-nodeActionOpenChooseObject");
+                var markerOpenLink = contentElement.find(".gn-nodeActionOpenObject");
+
+                // Deserialize
+                var deserializedData = this.deserializeData();
+                if(deserializedData) {
+                    this.loadObjectFromDeserialize(deserializedData.objectId);
+                    this.loadMarkerFromMap(deserializedData.mapId, deserializedData.markerId);
+
+                    contentElement.find(".gn-actionNodeObjectSpawnRotationPitch").val(deserializedData.pitch ? deserializedData.pitch : 0);
+                    contentElement.find(".gn-actionNodeObjectSpawnRotationYaw").val(deserializedData.yaw ? deserializedData.yaw : 0);
+                    contentElement.find(".gn-actionNodeObjectSpawnRotationRoll").val(deserializedData.roll ? deserializedData.roll : 0);
+                }
+
+                // Handlers
+                var self = this;
+                var selectObjectAction = contentElement.find(".gn-actionNodeObjectSelect");
+                selectObjectAction.on("click", function() {
+                    self.openChooseObjectDialog().then(function(object) {
+                        selectObjectAction.data("selectedobjectid", object.id);
+                        selectObjectAction.text(object.name);
+                        
+                        self.saveData();
+
+                        objectOpenLink.show();
+                    });
+                });
+
+                objectOpenLink.on("click", function() {
+                    if(selectObjectAction.data("selectedobjectid"))
+                    {
+                        self.openObject(selectObjectAction.data("selectedobjectid"))
+                    }
+                });
+
+
+                var selectMarkerAction = contentElement.find(".gn-actionNodeMarkerSelect");
+                selectMarkerAction.on("click", function() {
+                    GoNorth.DefaultNodeShapes.openMarkerSearchDialog().then(function(marker) {
+                        selectMarkerAction.data("mapid", marker.mapId);
+                        selectMarkerAction.data("markerid", marker.id);
+                        selectMarkerAction.data("markertype", marker.markerType);
+                        selectMarkerAction.text(marker.name);
+                        selectMarkerAction.prop("title", marker.name);
+                        
+                        self.saveData();
+
+                        markerOpenLink.show();
+                    });
+                });
+                 
+                markerOpenLink.on("click", function() {
+                    if(selectMarkerAction.data("markerid"))
+                    {
+                        window.open("/Karta?id=" + selectMarkerAction.data("mapid") + "&zoomOnMarkerId=" + selectMarkerAction.data("markerid") + "&zoomOnMarkerType=" + selectMarkerAction.data("markertype"))
+                    }
+                });
+
+
+                var nodeObjectSpawnRotation = contentElement.find(".gn-actionNodeObjectSpawnRotation");
+                nodeObjectSpawnRotation.keydown(function(e) {
+                    GoNorth.Util.validateNumberKeyPress(jQuery(this), e);
+                });
+
+                nodeObjectSpawnRotation.change(function(e) {
+                    self.ensureNumberValue(jQuery(this));
+                    self.saveData();
+                });
+            };
+
+            /**
+             * Ensures a number value for an input element
+             * 
+             * @param {object} rotationElement Element with the rotation
+             */
+            Actions.SpawnChooseObjectAction.prototype.ensureNumberValue = function(rotationElement) {
+                var parsedValue = parseInt(rotationElement.val());
+                if(isNaN(parsedValue))
+                {
+                    rotationElement.val("");
+                }
+            };
+
+            /**
+             * Deserializes the data
+             */
+            Actions.SpawnChooseObjectAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return null;
+                }
+
+                var data = JSON.parse(actionData);
+
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                selectObjectAction.data("selectedobjectid", data.objectId);
+
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+                selectMarkerAction.data("mapid", data.mapId);
+                selectMarkerAction.data("markerid", data.markerId);
+                selectMarkerAction.data("markertype", data.markerType);
+
+                this.setRelatedToData();
+
+                return data;
+            };
+
+            /**
+             * Loads the marker from a map
+             * @param {string} mapId Id of the map
+             * @param {string} markerId Id of the marker
+             */
+            Actions.SpawnChooseObjectAction.prototype.loadObjectFromDeserialize = function(objectId) {
+                if(!objectId) {
+                    return;
+                }
+
+                var self = this;
+                this.loadObjectShared({ loadType: loadTypeObject, objectId: objectId }).then(function(loadedObject) {
+                    if(!loadedObject) 
+                    {
+                        return;
+                    }
+
+                    self.contentElement.find(".gn-actionNodeObjectSelect").text(loadedObject.name);
+                    self.contentElement.find(".gn-nodeActionOpenChooseObject").show();
+                });
+            };
+
+            /**
+             * Loads the marker from a map
+             * @param {string} mapId Id of the map
+             * @param {string} markerId Id of the marker
+             */
+            Actions.SpawnChooseObjectAction.prototype.loadMarkerFromMap = function(mapId, markerId) {
+                if(!mapId || !markerId) {
+                    return;
+                }
+
+                var self = this;
+                this.loadObjectShared({ loadType: loadTypeMarker, mapId: mapId, markerId: markerId }).then(function(marker) {
+                    if(!marker) 
+                    {
+                        return;
+                    }
+
+                    var markerName = marker.markerName + " (" + marker.mapName + ")";
+                    self.contentElement.find(".gn-actionNodeMarkerSelect").text(markerName);
+                    self.contentElement.find(".gn-actionNodeMarkerSelect").prop("title", markerName);
+                    self.contentElement.find(".gn-nodeActionOpenObject").show();
+                });
+            };
+
+            /**
+             * Sets the related to data
+             */
+            Actions.SpawnChooseObjectAction.prototype.setRelatedToData = function() {
+                var additionalRelatedObjects = [];
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                if(selectObjectAction.data("selectedobjectid"))
+                {
+                    this.nodeModel.set("actionRelatedToObjectType", this.getRelatedToObjectType());
+                    this.nodeModel.set("actionRelatedToObjectId", selectObjectAction.data("selectedobjectid"));
+                    
+                }
+
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+                if(selectMarkerAction.data("markerid"))
+                {
+                    additionalRelatedObjects.push({
+                        objectType: Actions.RelatedToObjectMapMarker,
+                        objectId: selectMarkerAction.data("markerid")
+                    });
+                }
+
+                if(selectMarkerAction.data("mapid"))
+                {
+                    additionalRelatedObjects.push({
+                        objectType: Actions.RelatedToObjectMap,
+                        objectId: selectMarkerAction.data("mapid")
+                    });
+                }
+                this.nodeModel.set("actionRelatedToAdditionalObjects", additionalRelatedObjects);
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.SpawnChooseObjectAction.prototype.saveData = function() {
+                this.setRelatedToData();
+                
+                var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
+                var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+
+                var serializeData = {
+                    objectId: selectObjectAction.data("selectedobjectid"),
+                    mapId: selectMarkerAction.data("mapid"),
+                    markerId: selectMarkerAction.data("markerid"),
+                    markerType: selectMarkerAction.data("markertype"),
+                    pitch: this.extractRotationValue(this.contentElement.find(".gn-actionNodeObjectSpawnRotationPitch")),
+                    yaw: this.extractRotationValue(this.contentElement.find(".gn-actionNodeObjectSpawnRotationYaw")),
+                    roll: this.extractRotationValue(this.contentElement.find(".gn-actionNodeObjectSpawnRotationRoll"))
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            };
+
+            /**
+             * Extracts a rotation value
+             * 
+             * @param {object} rotationElement Element with the rotation
+             * @returns {float} Rotation
+             */
+            Actions.SpawnChooseObjectAction.prototype.extractRotationValue = function(rotationElement) {
+                var parsedValue = parseInt(rotationElement.val());
+                if(isNaN(parsedValue))
+                {
+                    return 0;
+                }
+
+                return parsedValue;
+            };
+
+            
+            /**
+             * Returns the object id
+             * 
+             * @returns {string} Object Id
+             */
+            Actions.SpawnChooseObjectAction.prototype.getObjectId = function(existingData) {
+                if(existingData.loadType == loadTypeMarker)
+                {
+                    return existingData.mapId + "|" + existingData.markerId;
+                }
+
+                return existingData.objectId;
+            };
+            
+            /**
+             * Returns the object resource
+             * 
+             * @returns {int} Object Resource
+             */
+            Actions.SpawnChooseObjectAction.prototype.getObjectResource = function(existingData) {
+                if(existingData.loadType == loadTypeMarker)
+                {
+                    return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceMapMarker;
+                }
+
+                return this.getObjectResourceType();
+            };
+
+            /**
+             * Loads the marker or object
+             * 
+             * @param {string} objectId Extracted object id
+             * @param {string} existingData Existing data
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.SpawnChooseObjectAction.prototype.loadObject = function(objectId, existingData) {
+                if(existingData.loadType == loadTypeMarker)
+                {
+                    var def = new jQuery.Deferred();
+
+                    var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
+                    jQuery.ajax({ 
+                        url: "/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid"), 
+                        type: "GET"
+                    }).done(function(data) {
+                        def.resolve(data);
+                    }).fail(function(xhr) {
+                        def.reject();
+                    });
+
+                    return def.promise();
+                }
+
+                return this.loadChoosenObject(existingData.objectId);
+            };
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for spawning an npc at a marker
+            var actionTypeSpawnNpcAtMarker = 48;
+
+            /**
+             * Spawn npc at marker Action
+             * @class
+             */
+            Actions.SpawnNpcAtMarkerAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.SpawnChooseObjectAction.apply(this);
+            };
+
+            Actions.SpawnNpcAtMarkerAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.SpawnChooseObjectAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.buildAction = function() {
+                return new Actions.SpawnNpcAtMarkerAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.getType = function() {
+                return actionTypeSpawnNpcAtMarker;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SpawnNpcAtMarkerLabel;
+            };
+        
+
+            /**
+             * Opens the choose object dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.openChooseObjectDialog = function() {
+                return GoNorth.DefaultNodeShapes.openNpcSearchDialog();
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseNpcLabel;
+            };
+
+            /**
+             * Returns the selections seperator label
+             * 
+             * @returns {string} Label for seperation
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.getSelectionSeperatorLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SpawnAt;
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenNpcTooltip;
+            };
+
+            /**
+             * Opens the object
+             * 
+             * @param {string} id Id of the object
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.openObject = function(id) {
+                window.open("/Kortisto/Npc?id=" + id)
+            }
+
+            /**
+             * Returns the related object type of the choosen object
+             * 
+             * @returns {string} Related object type of the choosen object
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.getRelatedToObjectType = function() {
+                return Actions.RelatedToObjectNpc;
+            };
+
+            /**
+             * Returns the loading object resource type
+             * 
+             * @returns {number} Loading objcet resource type
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.getObjectResourceType = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+            };
+
+            /**
+             * Loads the choosen object
+             * 
+             * @returns {number} Loading objcet resource type
+             * @param {string} npcId Npc Id
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.SpawnNpcAtMarkerAction.prototype.loadChoosenObject = function(npcId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SpawnNpcAtMarkerAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for spawning an item at a marker
+            var actionTypeSpawnItemAtMarker = 49;
+
+            /**
+             * Spawn item at marker Action
+             * @class
+             */
+            Actions.SpawnItemAtMarkerAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.SpawnChooseObjectAction.apply(this);
+            };
+
+            Actions.SpawnItemAtMarkerAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.SpawnChooseObjectAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.buildAction = function() {
+                return new Actions.SpawnItemAtMarkerAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.getType = function() {
+                return actionTypeSpawnItemAtMarker;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SpawnItemAtMarkerLabel;
+            };
+        
+
+            /**
+             * Opens the choose object dialog
+             * 
+             * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.openChooseObjectDialog = function() {
+                return GoNorth.DefaultNodeShapes.openItemSearchDialog();
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.getChooseObjectLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseItemLabel;
+            };
+
+            /**
+             * Returns the selections seperator label
+             * 
+             * @returns {string} Label for seperation
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.getSelectionSeperatorLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.SpawnAt;
+            };
+
+            /**
+             * Returns the choose label
+             * 
+             * @returns {string} Label for choosing
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.getOpenObjectTooltip = function() {
+                return DefaultNodeShapes.Localization.Actions.OpenItemTooltip;
+            };
+
+            /**
+             * Opens the object
+             * 
+             * @param {string} id Id of the object
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.openObject = function(id) {
+                window.open("/Styr/Item?id=" + id)
+            }
+
+            /**
+             * Returns the related object type of the choosen object
+             * 
+             * @returns {string} Related object type of the choosen object
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.getRelatedToObjectType = function() {
+                return Actions.RelatedToObjectItem;
+            };
+
+            /**
+             * Returns the loading object resource type
+             * 
+             * @returns {number} Loading objcet resource type
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.getObjectResourceType = function() {
+                return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceItem;
+            };
+
+            /**
+             * Loads the choosen object
+             * 
+             * @returns {number} Loading objcet resource type
+             * @param {string} itemId Item Id
+             * @returns {jQuery.Deferred} Deferred for the objcet loading
+             */
+            Actions.SpawnItemAtMarkerAction.prototype.loadChoosenObject = function(itemId) {
+                var def = new jQuery.Deferred();
+
+                jQuery.ajax({ 
+                    url: "/api/StyrApi/FlexFieldObject?id=" + itemId, 
+                    type: "GET"
+                }).done(function(data) {
+                    def.resolve(data);
+                }).fail(function(xhr) {
+                    def.reject();
+                });
+
+                return def.promise();
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SpawnItemAtMarkerAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
     (function(Evne) {
         (function(Skill) {
 
@@ -8821,11 +16101,7 @@
             Skill.ViewModel = function()
             {
                 GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
-                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Evne", "EvneApi", "EvneSkill", "EvneTemplate", "GetPagesBySkill?skillId=", null ]);
-
-                this.conditionDialog = new GoNorth.DefaultNodeShapes.Conditions.ConditionDialog();
-            
-                this.chooseObjectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
+                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Evne", "EvneApi", "Skill", "EvneSkill", "EvneTemplate", "GetPagesBySkill?skillId=", null ]);
 
                 this.isSkillFlowExpanded = new ko.observable(false);
                 this.loadedGraph = null;
@@ -8841,49 +16117,6 @@
                 Evne.getCurrentSkillId = function() {
                     return self.id();
                 };
-
-                // Add access to condition dialog
-                GoNorth.DefaultNodeShapes.openConditionDialog = function(condition) {
-                    if(self.isReadonly())
-                    {
-                        var readonlyDeferred = new jQuery.Deferred();
-                        readonlyDeferred.reject();
-                        return readonlyDeferred.promise();
-                    }
-
-                    var conditionDialogDeferred = new jQuery.Deferred();
-                    self.conditionDialog.openDialog(condition, conditionDialogDeferred);
-                    return conditionDialogDeferred;
-                };
-
-                // Opens the quest search dialog 
-                GoNorth.DefaultNodeShapes.openQuestSearchDialog = function() {
-                    if(self.isReadonly())
-                    {
-                        var readonlyDeferred = new jQuery.Deferred();
-                        readonlyDeferred.reject();
-                        return readonlyDeferred.promise();
-                    }
-
-                    return self.chooseObjectDialog.openQuestSearch(Evne.Localization.SkillViewModel.ChooseQuest);                    
-                };
-                
-                // Opens the npc search dialog 
-                GoNorth.DefaultNodeShapes.openNpcSearchDialog = function() {
-                    if(self.isReadonly())
-                    {
-                        var readonlyDeferred = new jQuery.Deferred();
-                        readonlyDeferred.reject();
-                        return readonlyDeferred.promise();
-                    }
-
-                    return self.chooseObjectDialog.openNpcSearch(Evne.Localization.SkillViewModel.ChooseNpc);                    
-                };
-
-                // Load config lists
-                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
-                    self.errorOccured(true);
-                });
             };
 
             Skill.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);

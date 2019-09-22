@@ -17,15 +17,31 @@
             Actions.MoveObjectToNpcAction.prototype = jQuery.extend(Actions.MoveObjectToNpcAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
 
             /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.MoveObjectToNpcAction.prototype.hasMovementState = function() {
+                return false;
+            };
+
+            /**
              * Returns the HTML Content of the action
              * 
              * @returns {string} HTML Content of the action
              */
             Actions.MoveObjectToNpcAction.prototype.getContent = function() {
-                return "<div class='gn-actionNodeObjectSelectContainer'>" +
+                var templateHtml = "<div class='gn-actionNodeObjectSelectContainer'>" +
                             "<a class='gn-actionNodeNpcSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseNpcLabel + "</a>" +
                             "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>";
+
+                if(this.hasMovementState())
+                {
+                    templateHtml += "<input type='text' class='gn-nodeActionMovementState' placeholder='" + DefaultNodeShapes.Localization.Actions.MovementStatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
+                }
+        
+                return templateHtml;
             };
 
             /**
@@ -41,7 +57,7 @@
 
                 // Deserialize
                 var deserializedData = this.deserializeData();
-                if(deserializedData) {
+                if(deserializedData && deserializedData.npcId) {
                     this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectNpc);
                     this.nodeModel.set("actionRelatedToObjectId", deserializedData.npcId);
 
@@ -72,6 +88,11 @@
                         window.open("/Kortisto/Npc?id=" + selectNpcAction.data("npcid"))
                     }
                 });
+
+                var movementState = contentElement.find(".gn-nodeActionMovementState");
+                movementState.change(function(e) {
+                    self.saveData();
+                });
             };
 
             /**
@@ -88,6 +109,8 @@
                 
                 var selectNpcAction = this.contentElement.find(".gn-actionNodeNpcSelect");
                 selectNpcAction.data("npcid", data.npcId);
+
+                this.contentElement.find(".gn-nodeActionMovementState").val(data.movementState);
 
                 return data;
             };
@@ -114,8 +137,15 @@
              * @param {string} npcId Npc id
              */
             Actions.MoveObjectToNpcAction.prototype.saveData = function(npcId) {
+                var movementState = this.contentElement.find(".gn-nodeActionMovementState").val();
+                if(!movementState)
+                {
+                    movementState = "";
+                }
+
                 var serializeData = {
-                    npcId: npcId
+                    npcId: npcId,
+                    movementState: movementState
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
@@ -160,6 +190,20 @@
                 });
 
                 return def.promise();
+            };
+
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.MoveObjectToNpcAction.prototype.getConfigKey = function() {
+                if(this.hasMovementState())
+                {
+                    return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
+                }
+
+                return null;
             };
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));

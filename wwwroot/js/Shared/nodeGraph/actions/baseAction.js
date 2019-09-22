@@ -98,6 +98,24 @@
                 },
 
                 /**
+                 * Returns the label for the main output
+                 * 
+                 * @returns {string} Label for the main output
+                 */
+                getMainOutputLabel: function() {
+                    return "";
+                },
+
+                /**
+                 * Returns the additional outports of the action
+                 * 
+                 * @returns {string[]} Additional outports
+                 */
+                getAdditionalOutports: function() {
+                    return [];
+                },
+
+                /**
                  * Gets called once the action was intialized
                  * 
                  * @param {object} contentElement Content element

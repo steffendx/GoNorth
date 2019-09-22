@@ -514,13 +514,7 @@ footer {
     margin-top: 25px;
 }
 
-.gn-flexFieldOverviewObjectImageContainer {
-    height: 112px;
-    margin-bottom: 5px;
-    margin-top: 5px;
-}
-
-.gn-flexFieldOverviewFolderImageContainer {
+.gn-flexFieldOverviewTileImageContainer {
     height: 93px;
     margin-top: -5px;
     margin-bottom: 10px;
@@ -553,6 +547,98 @@ footer {
     box-shadow: 0px 0px 30px -8px rgba(200,200,200,1);
 }
 
+.gn-flexFieldObjectRow {
+    margin-left: -9px;
+    margin-right: -9px;
+}
+
+.gn-flexFieldOverviewTileObjectHovering {
+    outline: 2px dashed rgb(128, 128, 128);
+}
+
+.gn-flexFieldOverviewTileDropToParent {
+    background-color: #FAFAFA;
+    border: 1px solid #DCDCDC;
+    text-align: center;
+    -webkit-box-shadow: 0px 0px 30px -8px rgba(200,200,200,1);
+    -moz-box-shadow: 0px 0px 30px -8px rgba(200,200,200,1);
+    box-shadow: 0px 0px 30px -8px rgba(200,200,200,1);
+    margin-top: 10px;
+    height: 82px;
+    font-size: 50px;
+    padding-top: 5px;
+    padding-left: 10px;
+}
+
+.gn-flexFieldMoveObjectDialogListExpandIndicator {
+    width: 15px;
+    display: inline-block;
+}
+
+.gn-flexFieldMoveObjectDialogListActive {
+    background-color: #EEEEEE;
+}
+
+.gn-flexFieldMoveObjectDialogListCurrentFolderIndicator {
+    font-style: italic;
+}
+
+.gn-flexFieldMoveObjectDialogListRootLevel {
+    padding-left: 10px !important;
+}
+
+.gn-flexFieldMoveObjectDialogList {
+    list-style: none;
+    padding-left: 15px;
+}
+
+.gn-flexFieldMoveObjectDialogListEntry {
+    padding: 5px;
+}
+
+@media(min-width:768px) {
+    .gn-flexFieldOverviewTileDropToParent {
+        float: right;
+        width: 125px;
+        margin-top: -40px;
+    }
+}
+
+.gn-flexFieldMoveObjectDialogContent {
+    overflow-y: auto;
+    max-height: 150px;
+}
+
+@media(min-height:400px) {
+    .gn-flexFieldMoveObjectDialogContent {
+        max-height: 210px;
+    }
+}
+
+@media(min-height:550px) {
+    .gn-flexFieldMoveObjectDialogContent {
+        max-height: 320px;
+    }
+}
+
+@media(min-height:700px) {
+    .gn-flexFieldMoveObjectDialogContent {
+        max-height: 500px;
+    }
+}
+
+@media(min-height:900px) {
+    .gn-flexFieldMoveObjectDialogContent {
+        max-height: 700px;
+    }
+}
+
+@media(min-height:1200px) {
+    .gn-flexFieldMoveObjectDialogContent {
+        max-height: 1000px;
+    }
+}
+
 .gn-flexFieldOverviewFolderDropzone {
     width: 100%;
     height: 165px;
@@ -570,7 +656,7 @@ footer {
     pointer-events: none;
 }
 
-.gn-flexFieldOverviewFolderButtons {
+.gn-flexFieldOverviewObjectButtons {
     height: 25px;
     width: 100%;
     text-align: right;
@@ -702,6 +788,10 @@ footer {
 .gn-flexFieldObjectExportResultTextarea {
     resize: none;
     height: 200px;
+}
+
+.gn-flexFieldObjectExportResultErrorListHeader {
+    margin-top: 10px;
 }
 
 .gn-flexFieldObjectExportResultErrorList {
@@ -1327,7 +1417,7 @@ path.leaflet-interactive {
 }
 
 .gn-actionNodeObjectSelectionSeperator {
-    margin-top: 6px;
+    margin-top: 3px;
     margin-left: 5px;
 }
 

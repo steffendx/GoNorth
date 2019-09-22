@@ -1,4 +1,4 @@
-// knockout-sortable 1.1.0 | (c) 2017 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
+// knockout-sortable 1.1.1 | (c) 2019 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD anonymous module
@@ -82,7 +82,7 @@
         var unwrapped = unwrap(items);
 
         if (unwrapped) {
-            for (var i = 0; i < index; i++) {
+            for (var i = 0; i <= index; i++) {
                 //add one for every destroyed item we find before the targetIndex in the target array
                 if (unwrapped[i] && unwrap(unwrapped[i]._destroy)) {
                     index++;

@@ -125,6 +125,9 @@
             Localization.Conditions.DailyRoutineEventIsActive = "Daily event {0} active";
             Localization.Conditions.DailyRoutineEventIsDisabled = "Daily event {0} disabled";
 
+            Localization.Conditions.CheckCodeLabel = "Code condition";
+            Localization.Conditions.CheckCodeConditionPlaceholderString = "Scriptcode";
+
             // Actions
             Localization.Actions = {};
 
@@ -152,6 +155,8 @@
             Localization.Actions.WaitUnitMinutes = "Minutes";
             Localization.Actions.WaitUnitHours = "Hours";
             Localization.Actions.WaitUnitDays = "Days";
+            Localization.Actions.WaitLaterContinueLabel = "After wait";
+            Localization.Actions.WaitDirectContinueLabel = "Directly";
 
             Localization.Actions.StatePlaceholder = "State";
 
@@ -175,12 +180,16 @@
             Localization.Actions.PlayPlayerAnimationLabel = "Play player animation";
 
             Localization.Actions.ChooseItem = "<Choose item>";
+            Localization.Actions.ChooseNpc = "<Choose npc>";
             Localization.Actions.OpenItemTooltip  = "Öffnet das ausgewählte Item";
             Localization.Actions.SpawnItemInPlayerInventoryLabel = "Spawn item in player inventory";
             Localization.Actions.SpawnItemInNpcInventoryLabel = "Spawn item in npc inventory";
+            Localization.Actions.SpawnItemInChooseNpcInventoryLabel = "Spawn item in choose npc inventory";
+            Localization.Actions.RemoveItemFromChooseNpcInventoryLabel = "Remove item from choose npc inventory";
             Localization.Actions.TransferItemToPlayerInventoryLabel = "Give item to player";
             Localization.Actions.TransferItemToNpcInventoryLabel = "Give item to npc";
             Localization.Actions.ItemQuantity = "Quantity (blank = 1):";
+            Localization.Actions.InInventoryOf = "in inventory of";
 
             Localization.Actions.CodeActionLabel = "Script Code";
             Localization.Actions.ClickHereToEditCode = "&lt;Click here to edit code&gt;";
@@ -222,7 +231,20 @@
             Localization.Actions.WalkNpcToNpcLabel = "Walk npc to npc";
             Localization.Actions.WalkChooseNpcToNpcLabel = "Walk pick npc to npc";
             Localization.Actions.WalkToNpc = "move to";
+            Localization.Actions.WalkOnTargetReachLabel = "On target reach";
+            Localization.Actions.WalkDirectContinueLabel = "Directly";
+            Localization.Actions.MovementStatePlaceholder = "Movement state";
 
+            Localization.Actions.SpawnNpcAtMarkerLabel = "Spawn npc at marker";
+            Localization.Actions.SpawnItemAtMarkerLabel = "Spawn item at marker";
+            Localization.Actions.SpawnAt = "spawn at";
+            Localization.Actions.RotationLabel = "Rotation:";
+            Localization.Actions.PitchLabel = "Pitch";
+            Localization.Actions.YawLabel = "Yaw";
+            Localization.Actions.RollLabel = "Roll";
+            Localization.Actions.ChooseItemLabel = "&lt;Choose item&gt;";
+            Localization.Actions.OpenItemTooltip = "Opens the chosen item";
+            
         }(DefaultNodeShapes.Localization = DefaultNodeShapes.Localization || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
 }(window.GoNorth = window.GoNorth || {}));

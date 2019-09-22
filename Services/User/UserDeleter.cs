@@ -61,6 +61,11 @@ namespace GoNorth.Services.User
         private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
 
         /// <summary>
+        /// Object Export Snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+
+        /// <summary>
         /// Map Db Access
         /// </summary>
         private readonly IKartaMapDbAccess _mapDbAccess;
@@ -130,6 +135,7 @@ namespace GoNorth.Services.User
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="exportTemplateDbAccess">Export template Db access</param>
+        /// <param name="objectExportSnippetDbAccess">Object Export snippet Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
@@ -143,7 +149,7 @@ namespace GoNorth.Services.User
         /// <param name="timelineDbAccess">Timeline Db Access</param>
         /// <param name="userManager">User manager</param>
         public UserDeleter(IAikaQuestDbAccess questDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, IKortistoNpcDbAccess npcDbAccess, 
-                           IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
+                           IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
                            IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
                            ILockServiceDbAccess lockDbService, ITimelineDbAccess timelineDbAccess, UserManager<GoNorthUser> userManager)
         {
@@ -154,6 +160,7 @@ namespace GoNorth.Services.User
             _npcDbAccess = npcDbAccess;
             _itemDbAccess = itemDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _mapDbAccess = mapDbAccess;
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
@@ -248,6 +255,14 @@ namespace GoNorth.Services.User
                 await _exportTemplateDbAccess.UpdateTemplate(curTemplate);
             }
             
+            List<ObjectExportSnippet> objectExportSnippets = await _objectExportSnippetDbAccess.GetExportSnippetByModifiedUser(user.Id);
+            foreach(ObjectExportSnippet curExportSnippet in objectExportSnippets)
+            {
+                curExportSnippet.ModifiedBy = Guid.Empty.ToString();
+                curExportSnippet.ModifiedOn = DateTimeOffset.UtcNow;
+                await _objectExportSnippetDbAccess.UpdateExportSnippet(curExportSnippet);
+            }
+
             List<KartaMap> maps = await _mapDbAccess.GetMapsByModifiedUser(user.Id);
             foreach(KartaMap curMap in maps)
             {

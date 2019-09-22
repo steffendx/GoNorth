@@ -13,5 +13,10 @@
     "PlaceholderDesc_Tale_Action_WaitUnit_Hours_Start": "Start des Inhalts der nur gerendert wird wenn die Zeit Einheit Stunden ist. Muss mit Tale_Action_WaitUnit_Hours_End beendet werden.",
     "PlaceholderDesc_Tale_Action_WaitUnit_Hours_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Stunden ist.",
     "PlaceholderDesc_Tale_Action_WaitUnit_Days_Start": "Start des Inhalts der nur gerendert wird wenn die Zeit Einheit Tage ist. Muss mit Tale_Action_WaitUnit_Days_End beendet werden.",
-    "PlaceholderDesc_Tale_Action_WaitUnit_Days_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Tage ist."
+    "PlaceholderDesc_Tale_Action_WaitUnit_Days_End": "Ende des Inhalts der nur gerendert wird wenn die Zeit Einheit Tage ist.",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_Start": "Start des Inhalts der nur gerendert wird wenn der Knoten eine Funktion hat die das Skript sofort fortsetzt. Muss mit Tale_Action_HasDirectContinueFunction_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_End": "Ende des Inhalts der nur gerendert wird wenn der Knoten eine Funktion hat die das Skript sofort fortsetzt.",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_Start": "Start des Inhalts der nur gerendert wird wenn der Knoten keine Funktion hat die das Skript sofort fortsetzt. Muss mit Tale_Action_HasNoDirectContinueFunction_End beendet werden.",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_End": "Ende des Inhalts der nur gerendert wird wenn der Knoten keine Funktion hat die das Skript sofort fortsetzt.",
+    "PlaceholderDesc_Tale_Action_DirectContinueFunction": "Name der Funktion die das Skript sofort fortsetzt."
 }

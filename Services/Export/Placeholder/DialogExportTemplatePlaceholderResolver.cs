@@ -68,7 +68,7 @@ namespace GoNorth.Services.Export.Placeholder
         /// Dialog Renderer
         /// </summary>
         private readonly IExportDialogRenderer _dialogRenderer;
-
+        
         /// <summary>
         /// Constructor
         /// </summary>
@@ -126,23 +126,31 @@ namespace GoNorth.Services.Export.Placeholder
             GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
             TaleDialog dialog = await _taleDbAccess.GetDialogByRelatedObjectId(npc.Id);
 
-            _dialogParser.SetErrorCollection(_errorCollection);
-            _dialogRenderer.SetErrorCollection(_errorCollection);
-            ExportDialogData exportDialog = null;
-            bool hasValidDialog = HasValidDialog(dialog);
-            if(hasValidDialog)
+            try
             {
-                exportDialog = _dialogParser.ParseDialog(dialog);
-                if(exportDialog == null)
+                _errorCollection.CurrentErrorContext = _localizer["DialogErrorContext"].Value;
+                _dialogParser.SetErrorCollection(_errorCollection);
+                _dialogRenderer.SetErrorCollection(_errorCollection);
+                ExportDialogData exportDialog = null;
+                bool hasValidDialog = HasValidDialog(dialog);
+                if(hasValidDialog)
                 {
-                    return string.Empty;
+                    exportDialog = _dialogParser.ParseDialog(dialog);
+                    if(exportDialog == null)
+                    {
+                        return string.Empty;
+                    }
+                    exportDialog = await _dialogFunctionGenerator.GenerateFunctions(project.Id, npc.Id, exportDialog, _errorCollection);
                 }
-                exportDialog = await _dialogFunctionGenerator.GenerateFunctions(project.Id, npc.Id, exportDialog, _errorCollection);
+
+                code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_HasDialog_Start, Placeholder_HasDialog_End, hasValidDialog);
+
+                code = await RenderDialog(project, code, exportDialog, dialog, npc);
             }
-
-            code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_HasDialog_Start, Placeholder_HasDialog_End, hasValidDialog);
-
-            code = await RenderDialog(project, code, exportDialog, dialog, npc);
+            finally
+            {
+                _errorCollection.CurrentErrorContext = "";
+            }
 
             return code;
         }

@@ -50,6 +50,11 @@ namespace GoNorth.Data.Exporting
         /// </summary>
         ObjectDailyRoutineFunction = 9,
 
+        /// <summary>
+        /// Export snippet Function
+        /// </summary>
+        ObjectExportSnippetFunction = 10,
+
 
         /// <summary>
         /// Tale dialog step
@@ -165,6 +170,21 @@ namespace GoNorth.Data.Exporting
         /// Tale Condition to check if a daily routine event is enabled
         /// </summary>  
         TaleConditionDailyRoutineEventEnabled = 222,
+ 
+        /// <summary>
+        /// Tale Condition to run custom code
+        /// </summary>  
+        TaleConditionCode = 223,
+         
+        /// <summary>
+        /// Tale Condition to check an item value
+        /// </summary>  
+        TaleConditionItemValue = 224,
+             
+        /// <summary>
+        /// Tale Condition to check the current skill value
+        /// </summary> 
+        TaleConditionCurrentSkillValue = 225,
 
 
         /// <summary>
@@ -381,6 +401,41 @@ namespace GoNorth.Data.Exporting
         /// Tale Action to walk a choosen npc to an npc
         /// </summary> 
         TaleActionWalkChooseNpcToNpc = 342,
+
+        /// <summary>
+        /// Tale Action to spawn an npc at a marker
+        /// </summary> 
+        TaleActionSpawnNpcAtMarker = 343,
+
+        /// <summary>
+        /// Tale Action to spawn an item at a marker
+        /// </summary> 
+        TaleActionSpawnItemAtMarker = 344,
+
+        /// <summary>
+        /// Tale Action to change an item value
+        /// </summary> 
+        TaleActionChangeItemValue = 345,
+
+        /// <summary>
+        /// Tale Action to change the current skill value
+        /// </summary> 
+        TaleActionChangeCurrentSkillValue = 346,
+
+        /// <summary>
+        /// Tale Action to change the target npc state
+        /// </summary> 
+        TaleActionSetTargetNpcState = 347,
+
+        /// <summary>
+        /// Tale Action to remove an item from a choosen npc
+        /// </summary> 
+        TaleActionRemoveItemFromChooseNpc = 348,
+
+        /// <summary>
+        /// Tale Action to spawn an item in the inventory of a choosen npc
+        /// </summary> 
+        TaleActionSpawnItemForChooseNpc = 349,
 
 
         /// <summary>

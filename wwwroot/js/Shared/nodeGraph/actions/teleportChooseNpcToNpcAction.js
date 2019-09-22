@@ -46,7 +46,7 @@
         
 
             /**
-             * Opens teh choose object dialog
+             * Opens the choose object dialog
              * 
              * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
              */

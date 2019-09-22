@@ -70,6 +70,59 @@
     </div>
 </div>
 
+<!-- Move object to folder dialog -->
+<!-- ko with: flexFieldFolderTreeViewDialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: isOpen" id="gn-flexFieldMoveObjectDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Model.Localizer["SelectTargetCategory"]</h4>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="gn-folderCreateEditForm">
+                        <div class="alert alert-danger" style="display: none" data-bind="visible: moveObjectError">
+                            <strong>@Model.Localizer["Error"]</strong> @Model.Localizer["ErrorOccured"]
+                        </div>
+                        <div class="form-group gn-flexFieldMoveObjectDialogContent">
+                            <div class="gn-clickable gn-flexFieldMoveObjectDialogListRootLevel gn-flexFieldMoveObjectDialogListEntry" data-bind="css: { 'gn-flexFieldMoveObjectDialogListActive': !selectedFolderId() && hasSelectedFolder() }, click: function(folder) { selectFolder({ id: '' }); }">@Model.Localizer["RootLevel"]</div>
+                            <ul class="gn-flexFieldMoveObjectDialogList" data-bind="template: { name: 'gn-flexFieldMoveObjectDialogFolderTemplate', foreach: rootFolders }">
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: moveObject, disable: dialogLoading() || !hasSelectedFolder()">
+                        <span data-bind="visible: !dialogLoading()">@Model.Localizer["Move"]</span>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: dialogLoading"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" data-bind="click: cancelDialog, disable: dialogLoading" id="gn-flexFieldFolderMoveObjectDialogCancel">@Model.Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="gn-flexFieldMoveObjectDialogFolderTemplate">
+        <li class="gn-flexFieldMoveObjectDialogListEntry" data-bind="css: { 'gn-flexFieldMoveObjectDialogListActive': $data.id == $parents[$parents.length - 2].selectedFolderId() && $parents[$parents.length - 2].hasSelectedFolder() }">
+            <span data-bind="click: function(folder) { $parents[$parents.length - 2].toggleFolder(folder); }" class="gn-flexFieldMoveObjectDialogListExpandIndicator"><i class="glyphicon glyphicon-triangle-right gn-clickable" data-bind="visible: !isExpanded() && (!hasLoadedChildren() || children().length > 0) && ($parents[$parents.length - 2].folderToMoveId() != id)"></i><i class="glyphicon glyphicon-triangle-bottom gn-clickable" data-bind="visible: isExpanded() && (!hasLoadedChildren() || children().length > 0) && ($parents[$parents.length - 2].folderToMoveId() != id)"></i></span>
+            <span class="gn-clickable" data-bind="text: name, click: function(folder) { $parents[$parents.length - 2].selectFolder(folder); }, css: { 'gn-clickable': $parents[$parents.length - 2].folderToMoveId() != id }"></span>
+            <span data-bind="visible: $parents[$parents.length - 2].folderToMoveId() == id" class="gn-flexFieldMoveObjectDialogListCurrentFolderIndicator">@Model.Localizer["ThisIsFolderBeingMoved"]</span>
+            <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+        </li>
+        <!-- ko if: $data.children && $data.children().length -->
+        <li>
+            <ul class="gn-flexFieldMoveObjectDialogList" data-bind="template: { name: 'gn-flexFieldMoveObjectDialogFolderTemplate', foreach: $data.children }, visible: isExpanded">
+            </ul>
+        </li>
+        <!-- /ko -->
+    </script>
+<!-- /ko -->
+
+
 <!-- Overview -->
 <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
     <strong>@Model.Localizer["Error"]</strong> @Model.Localizer["ErrorOccured"]
@@ -95,6 +148,10 @@
 
 <button class="btn btn-default gn-commandWidgetTopMargin" type="button" style="display: none" data-bind="click: navigateLevelBack, visible: parentFolderId() || currentFolderId()"><i class="glyphicon glyphicon-level-up"></i> @Model.Localizer["LevelBack"]</button>
 
+<div class="gn-flexFieldOverviewTileDropToParent" style="display: none" data-bind="visible: isDraggingObject() && currentFolderId(), droppableElement: function(draggable, leftPos, topPos, objectToMove) { $root.moveObjectToCategory(objectToMove, parentFolderId()); }, droppableHoverClass: 'gn-flexFieldOverviewTileObjectHovering'">
+    <i class="glyphicon glyphicon-level-up" title="@Model.Localizer["DropHereToMoveToParent"]"></i>
+</div>
+
 <div class="input-group gn-commandWidgetTopMargin">
     <input type="text" class="form-control" placeholder="@Model.Localizer["Search"]" data-bind="value: searchPattern, enterPressed: searchFlexFieldObjects"/>
     <span class="input-group-addon gn-clickable" data-bind="click: searchFlexFieldObjects" title="@Model.Localizer["Search"]">
@@ -102,11 +159,14 @@
     </span>
 </div>
 
-<div class="container gn-defaultContentTopMargin" data-bind="foreach: displayObjectRows">
-    <div class="row" data-bind="foreach: $data, visible: true" style="display: none">
+<div class="gn-defaultContentTopMargin" data-bind="foreach: displayObjectRows">
+    <div class="gn-flexFieldObjectRow" data-bind="foreach: $data, visible: true" style="display: none">
         <div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 gn-flexFieldOverviewTileContainer">
             <a data-bind="href: tileUrl, isPushStateHref: isFolder">
-                <div class="gn-flexFieldOverviewTile" data-bind="template: { name: template, data: $data }"></div>
+                <div class="gn-flexFieldOverviewTile" data-bind="draggableElement: 'original', draggableObject: $data, draggableRevert: true, draggableRevertDuration: 100, draggableZIndex: 10000, draggableDistance: 40, draggableOnStart: function(obj, event, ui) { $root.onStartDragObject(ui); }, draggableOnStop: function(obj, event, ui) { $root.onStopDragObject(ui); },
+                                                                 droppableElement: function(draggable, leftPos, topPos, objectToMove) { $root.moveObjectToCategory(objectToMove, this.id); }, droppableAccept: isFolder ? '.gn-flexFieldOverviewTile' : 'acceptNothing',
+                                                                 droppableHoverClass: 'gn-flexFieldOverviewTileObjectHovering',
+                                                                 template: { name: template, data: $data }"></div>
             </a>
         </div>
     </div>
@@ -124,9 +184,10 @@
 </div>
 
 <script type="text/html" id="gn-folderTemplate">
-    <div class="gn-flexFieldOverviewFolderButtons">
+    <div class="gn-flexFieldOverviewObjectButtons">
         <a data-bind="visible: imageFile, attr: { href: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }" target="_blank" title="@Model.Localizer["OpenImageInFullSize"]"><i class="glyphicon glyphicon-eye-open"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openEditFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["EditCategory"]"><i class="glyphicon glyphicon-pencil"></i></a>
+        <a class="gn-clickable" data-bind="click: function(folder) { $root.openMoveObjectToCategoryDialog(folder); }, clickBubble: false" title="@Model.Localizer["MoveToCategory"]"><i class="glyphicon glyphicon-share"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openDeleteFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["DeleteCategory"]"><i class="glyphicon glyphicon-trash"></i></a>
     </div>
     <!-- ko if: !imageFile -->
@@ -135,7 +196,7 @@
     </div>
     <!-- /ko -->
     <!-- ko if: imageFile -->
-    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewFolderImageContainer" data-bind="attr: { title: description }">
+    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewTileImageContainer" data-bind="attr: { title: description }">
         <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + thumbnailImage }">
     </div>
     <!-- /ko -->
@@ -144,13 +205,16 @@
 </script>
 
 <script type="text/html" id="gn-flexFieldObjectTemplate">
+    <div class="gn-flexFieldOverviewObjectButtons">
+        <a class="gn-clickable" data-bind="click: function(object) { $root.openMoveObjectToCategoryDialog(object); }, clickBubble: false" title="@Model.Localizer["MoveToCategory"]"><i class="glyphicon glyphicon-share"></i></a>
+    </div>
     <!-- ko if: !imageFile -->
-    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewObjectTileIcon">
+    <div class="gn-flexFieldOverviewTileIcon">
         <i class="glyphicon @Model.ObjectIcon"></i>
     </div>
     <!-- /ko -->
     <!-- ko if: imageFile -->
-    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewObjectImageContainer">
+    <div class="gn-flexFieldOverviewTileIcon gn-flexFieldOverviewTileImageContainer">
         <img class="gn-flexFieldOverviewObjectImage" data-bind="attr: { src: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + thumbnailImage }">
     </div>
     <!-- /ko -->

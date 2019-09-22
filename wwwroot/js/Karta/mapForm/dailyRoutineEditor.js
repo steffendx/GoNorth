@@ -62,7 +62,7 @@
                 });
                 
                 this.objectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
-                this.chooseScriptTypeDialog = new GoNorth.DailyRoutines.ChooseScriptTypeDialog.ViewModel();
+                this.chooseScriptTypeDialog = new GoNorth.Shared.ChooseScriptTypeDialog.ViewModel();
                 this.codeScriptDialog = new GoNorth.ScriptDialog.CodeScriptDialog(this.errorOccured);
                 this.nodeScriptDialog = new GoNorth.ScriptDialog.NodeScriptDialog(this.currentNpcId, this.objectDialog, this.codeScriptDialog, this.errorOccured);
 
@@ -565,7 +565,7 @@
                 addTargetReachedScript: function() {
                     var self = this;
                     this.chooseScriptTypeDialog.openDialog().done(function(selectedType) {
-                        if(selectedType == GoNorth.DailyRoutines.ChooseScriptTypeDialog.nodeGraph)
+                        if(selectedType == GoNorth.Shared.ChooseScriptTypeDialog.nodeGraph)
                         {
                             self.nodeScriptDialog.openCreateDialog().done(function(result) {
                                 self.addEditEventTargetReachedScript(result.name);
@@ -574,7 +574,7 @@
                                 self.addEditEventTargetReachedScriptGraph = result.graph;
                             });
                         }
-                        else if(selectedType == GoNorth.DailyRoutines.ChooseScriptTypeDialog.codeScript)
+                        else if(selectedType == GoNorth.Shared.ChooseScriptTypeDialog.codeScript)
                         {
                             self.codeScriptDialog.openCreateDialog().done(function(result) {
                                 self.addEditEventTargetReachedScript(result.name);

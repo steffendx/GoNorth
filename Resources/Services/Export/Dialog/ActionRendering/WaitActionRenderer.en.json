@@ -13,5 +13,10 @@
     "PlaceholderDesc_Tale_Action_WaitUnit_Hours_Start": "Start of the content that will only be rendered if the wait unit is hours. Must be closed using Tale_Action_WaitUnit_Hours_End.",
     "PlaceholderDesc_Tale_Action_WaitUnit_Hours_End": "End of the content that will only be rendered if the wait unit is hours.",
     "PlaceholderDesc_Tale_Action_WaitUnit_Days_Start": "Start of the content that will only be rendered if the wait unit is days. Must be closed using Tale_Action_WaitUnit_Days_End.",
-    "PlaceholderDesc_Tale_Action_WaitUnit_Days_End": "End of the content that will only be rendered if the wait unit is days."
+    "PlaceholderDesc_Tale_Action_WaitUnit_Days_End": "End of the content that will only be rendered if the wait unit is days.",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_Start": "Start of the content that will only be rendered if the node has a child node that will directly continue the script. Must be closed using Tale_Action_HasDirectContinueFunction_End.",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_End": "End of the content that will only be rendered if the node has a child node that will directly continue the script.",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_Start": "Start of the content that will only be rendered if the node has no child node that will directly continue the script. Must be closed using Tale_Action_HasNoDirectContinueFunction_End",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_End": "End of the content that will only be rendered if the node has no child node that will directly continue the script.",
+    "PlaceholderDesc_Tale_Action_DirectContinueFunction": "Name of the function that will directly continue the script."
 }

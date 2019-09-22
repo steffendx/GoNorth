@@ -26,6 +26,8 @@
                  * @param {object[]} skills Skills of the npc
                  */
                 loadSkills: function (skills) {
+                    var skillDef = new jQuery.Deferred();
+
                     var learnedSkillIds = [];
                     for (var curSkill = 0; curSkill < skills.length; ++curSkill) {
                         learnedSkillIds.push(skills[curSkill].skillId);
@@ -51,11 +53,17 @@
 
                         self.learnedSkills(loadedSkills);
                         self.isLoadingSkills(false);
+
+                        skillDef.resolve();
                     }).fail(function (xhr) {
                         self.learnedSkills([]);
                         self.isLoadingSkills(false);
                         self.loadingSkillsError(true);
+
+                        skillDef.reject();
                     });
+
+                    return skillDef.promise();
                 },
 
                 /**

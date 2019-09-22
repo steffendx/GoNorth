@@ -114,6 +114,7 @@
 
             /**
              * Deserializes the data
+             * @returns {string} Deserialized item id
              */
             Actions.ChangeInventoryAction.prototype.deserializeData = function() {
                 var actionData = this.nodeModel.get("actionData");

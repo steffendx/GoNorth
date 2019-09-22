@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace GoNorth.Data.Exporting
 {
@@ -31,6 +32,11 @@ namespace GoNorth.Data.Exporting
         /// Type of the template
         /// </summary>
         public TemplateType TemplateType { get; set; }
+
+        /// <summary>
+        /// Export Snippets of the template
+        /// </summary>
+        public List<ExportTemplateSnippet> ExportSnippets { get; set; }
 
         /// <summary>
         /// Code of the template

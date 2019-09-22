@@ -976,22 +976,22 @@ exports.getOS = function() {
         return exports.OS.WINDOWS;
     }
 };
-if (typeof navigator != "object")
-    return;
+var _navigator = typeof navigator == "object" ? navigator : {};
 
-var os = (navigator.platform.match(/mac|win|linux/i) || ["other"])[0].toLowerCase();
-var ua = navigator.userAgent;
+var os = (/mac|win|linux/i.exec(_navigator.platform) || ["other"])[0].toLowerCase();
+var ua = _navigator.userAgent || "";
+var appName = _navigator.appName || "";
 exports.isWin = (os == "win");
 exports.isMac = (os == "mac");
 exports.isLinux = (os == "linux");
 exports.isIE = 
-    (navigator.appName == "Microsoft Internet Explorer" || navigator.appName.indexOf("MSAppHost") >= 0)
+    (appName == "Microsoft Internet Explorer" || appName.indexOf("MSAppHost") >= 0)
     ? parseFloat((ua.match(/(?:MSIE |Trident\/[0-9]+[\.0-9]+;.*rv:)([0-9]+[\.0-9]+)/)||[])[1])
     : parseFloat((ua.match(/(?:Trident\/[0-9]+[\.0-9]+;.*rv:)([0-9]+[\.0-9]+)/)||[])[1]); // for ie
     
 exports.isOldIE = exports.isIE && exports.isIE < 9;
 exports.isGecko = exports.isMozilla = ua.match(/ Gecko\/\d+/);
-exports.isOpera = window.opera && Object.prototype.toString.call(window.opera) == "[object Opera]";
+exports.isOpera = typeof opera == "object" && Object.prototype.toString.call(window.opera) == "[object Opera]";
 exports.isWebKit = parseFloat(ua.split("WebKit/")[1]) || undefined;
 
 exports.isChrome = parseFloat(ua.split(" Chrome/")[1]) || undefined;
@@ -1473,30 +1473,6 @@ exports.capture = function(el, eventHandler, releaseCaptureHandler) {
     exports.addListener(document, "dragstart", onMouseUp, true);
     
     return onMouseUp;
-};
-
-exports.addTouchMoveListener = function (el, callback) {
-    var startx, starty;
-    exports.addListener(el, "touchstart", function (e) {
-        var touches = e.touches;
-        var touchObj = touches[0];
-        startx = touchObj.clientX;
-        starty = touchObj.clientY;
-    });
-    exports.addListener(el, "touchmove", function (e) {
-        var touches = e.touches;
-        if (touches.length > 1) return;
-        
-        var touchObj = touches[0];
-
-        e.wheelX = startx - touchObj.clientX;
-        e.wheelY = starty - touchObj.clientY;
-
-        startx = touchObj.clientX;
-        starty = touchObj.clientY;
-
-        callback(e);
-    });
 };
 
 exports.addMouseWheelListener = function(el, callback) {
@@ -2317,7 +2293,7 @@ var TextInput = function(parentNode, host) {
     
     var resetSelection = isIOS
     ? function(value) {
-        if (!isFocused || (copied && !value)) return;
+        if (!isFocused || (copied && !value) || sendingText) return;
         if (!value) 
             value = "";
         var newValue = "\n ab" + value + "cde fg\n";
@@ -2704,16 +2680,14 @@ var TextInput = function(parentNode, host) {
         var left = rect.left + (parseInt(rect.borderLeftWidth) || 0);
         var maxTop = rect.bottom - top - text.clientHeight -2;
         var move = function(e) {
-            text.style.left = e.clientX - left - 2 + "px";
-            text.style.top = Math.min(e.clientY - top - 2, maxTop) + "px";
+            dom.translate(text, e.clientX - left - 2, Math.min(e.clientY - top - 2, maxTop));
         }; 
         move(e);
 
         if (e.type != "mousedown")
             return;
 
-        if (host.renderer.$keepTextAreaAtCursor)
-            host.renderer.$keepTextAreaAtCursor = null;
+        host.renderer.$isMousePressed = true;
 
         clearTimeout(closeTimeout);
         if (useragent.isWin)
@@ -2729,10 +2703,9 @@ var TextInput = function(parentNode, host) {
                 text.style.cssText = tempStyle;
                 tempStyle = '';
             }
-            if (host.renderer.$keepTextAreaAtCursor == null) {
-                host.renderer.$keepTextAreaAtCursor = true;
+            host.renderer.$isMousePressed = false;
+            if (host.renderer.$keepTextAreaAtCursor)
                 host.renderer.$moveTextAreaToCursor();
-            }
         }, 0);
     }
 
@@ -2767,7 +2740,7 @@ var TextInput = function(parentNode, host) {
         }, true);
         var detectArrowKeys = function(e) {
             if (document.activeElement !== text) return;
-            if (typing || inComposition) return;
+            if (typing || inComposition || host.$mouseHandler.isMousePressed) return;
 
             if (copied) {
                 return;
@@ -2850,7 +2823,6 @@ function DefaultHandlers(mouseHandler) {
     editor.setDefaultHandler("tripleclick", this.onTripleClick.bind(mouseHandler));
     editor.setDefaultHandler("quadclick", this.onQuadClick.bind(mouseHandler));
     editor.setDefaultHandler("mousewheel", this.onMouseWheel.bind(mouseHandler));
-    editor.setDefaultHandler("touchmove", this.onTouchMove.bind(mouseHandler));
 
     var exports = ["select", "startSelect", "selectEnd", "selectAllEnd", "selectByWordsEnd",
         "selectByLinesEnd", "dragWait", "dragWaitEnd", "focusWait"];
@@ -3083,10 +3055,6 @@ function DefaultHandlers(mouseHandler) {
             editor.renderer.scrollBy(ev.wheelX * ev.speed, ev.wheelY * ev.speed);
             return ev.stop();
         }
-    };
-    
-    this.onTouchMove = function(ev) {
-        this.editor._emit("mousewheel", ev);
     };
 
 }).call(DefaultHandlers.prototype);
@@ -3486,7 +3454,7 @@ function DragdropHandler(mouseHandler) {
             var dropEffect = e.dataTransfer.dropEffect;
             if (!dragOperation && dropEffect == "move")
                 editor.session.remove(editor.getSelectionRange());
-            editor.renderer.$cursorLayer.setBlinking(true);
+            editor.$resetCursorStyle();
         }
         this.editor.unsetStyle("ace_dragging");
         this.editor.renderer.setCursorStyle("");
@@ -3651,7 +3619,7 @@ function DragdropHandler(mouseHandler) {
         dragSelectionMarker = null;
         editor.selection.fromOrientedRange(range);
         if (editor.isFocused() && !isInternal)
-            editor.renderer.$cursorLayer.setBlinking(!editor.getReadOnly());
+            editor.$resetCursorStyle();
         range = null;
         dragCursor = null;
         counter = 0;
@@ -3714,7 +3682,7 @@ function DragdropHandler(mouseHandler) {
     };
 
     this.dragReadyEnd = function(e) {
-        this.editor.renderer.$cursorLayer.setBlinking(!this.editor.getReadOnly());
+        this.editor.$resetCursorStyle();
         this.editor.unsetStyle("ace_dragging");
         this.editor.renderer.setCursorStyle("");
         this.dragWaitEnd();
@@ -3787,6 +3755,209 @@ function calcDistance(ax, ay, bx, by) {
 }
 
 exports.DragdropHandler = DragdropHandler;
+
+});
+
+define("ace/mouse/touch_handler",["require","exports","module","ace/mouse/mouse_event"], function(require, exports, module) {
+"use strict";
+
+var MouseEvent = require("./mouse_event").MouseEvent;
+
+exports.addTouchListeners = function(el, editor) {
+    var mode = "scroll";
+    var startX;
+    var startY;
+    var touchStartT;
+    var lastT;
+    var longTouchTimer;
+    var animationTimer;
+    var animationSteps = 0;
+    var pos;
+    var clickCount = 0;
+    var vX = 0;
+    var vY = 0;
+    var pressed;
+    function handleLongTap() {
+        longTouchTimer = null;
+        clearTimeout(longTouchTimer);
+        if (editor.selection.isEmpty())
+            editor.selection.moveToPosition(pos);
+        mode = "wait";
+    }
+    function switchToSelectionMode() {
+        longTouchTimer = null;
+        clearTimeout(longTouchTimer);
+        editor.selection.moveToPosition(pos);
+        var range = clickCount >= 2
+            ? editor.selection.getLineRange(pos.row)
+            : editor.session.getBracketRange(pos);
+        if (range && !range.isEmpty()) {
+            editor.selection.setRange(range);
+        } else {
+            editor.selection.selectWord();
+        }
+        mode = "wait";
+    }
+    el.addEventListener("contextmenu", function(e) {
+        if (!pressed) return;
+        var textarea = editor.textInput.getElement();
+        textarea.focus();
+    });
+    el.addEventListener("touchstart", function (e) {
+        var touches = e.touches;
+        if (longTouchTimer || touches.length > 1) {
+            clearTimeout(longTouchTimer);
+            longTouchTimer = null;
+            mode = "zoom";
+            return;
+        }
+        
+        pressed = editor.$mouseHandler.isMousePressed = true;
+        var touchObj = touches[0];
+        startX = touchObj.clientX;
+        startY = touchObj.clientY;
+        vX = vY = 0;
+
+        e.clientX = touchObj.clientX;
+        e.clientY = touchObj.clientY;
+
+        var t = e.timeStamp;
+        lastT = t;
+        
+        var ev = new MouseEvent(e, editor);
+        pos = ev.getDocumentPosition();
+
+        if (t - touchStartT < 500 && touches.length == 1 && !animationSteps) {
+            clickCount++;
+            e.preventDefault();
+            e.button = 0;
+            switchToSelectionMode();
+        } else {
+            clickCount = 0;
+            longTouchTimer = setTimeout(handleLongTap, 450);
+            var cursor = editor.selection.cursor;
+            var anchor = editor.selection.isEmpty() ? cursor : editor.selection.anchor;
+            
+            var cursorPos = editor.renderer.$cursorLayer.getPixelPosition(cursor, true);
+            var anchorPos = editor.renderer.$cursorLayer.getPixelPosition(anchor, true);
+            var rect = editor.renderer.scroller.getBoundingClientRect();
+            var h = editor.renderer.layerConfig.lineHeight;
+            var w = editor.renderer.layerConfig.lineHeight;
+            var weightedDistance = function(x, y) {
+                x = x / w;
+                y = y / h - 0.75;
+                return x * x + y * y;
+            };
+            
+            var diff1 = weightedDistance(
+                e.clientX - rect.left - cursorPos.left,
+                e.clientY - rect.top - cursorPos.top
+            );
+            var diff2 = weightedDistance(
+                e.clientX - rect.left - anchorPos.left,
+                e.clientY - rect.top - anchorPos.top
+            );
+            if (diff1 < 3.5 && diff2 < 3.5)
+                mode = diff1 > diff2 ? "cursor" : "anchor";
+                
+            if (diff2 < 3.5)
+                mode = "anchor";
+            else if (diff1 < 3.5)
+                mode = "cursor";
+            else
+                mode = "scroll";
+        }
+        touchStartT = t;
+    });
+
+    el.addEventListener("touchend", function (e) {
+        pressed = editor.$mouseHandler.isMousePressed = false;
+        if (animationTimer) clearInterval(animationTimer);
+        if (mode == "zoom") {
+            mode = "";
+            animationSteps = 0;
+        } else if (longTouchTimer) {
+            editor.selection.moveToPosition(pos);
+            animationSteps = 0;
+        } else if (mode == "scroll") {
+            animate();
+            e.preventDefault();
+        }
+        clearTimeout(longTouchTimer);
+        longTouchTimer = null;
+    });
+    el.addEventListener("touchmove", function (e) {
+        if (longTouchTimer) {
+            clearTimeout(longTouchTimer);
+            longTouchTimer = null;
+        }
+        var touches = e.touches;
+        if (touches.length > 1 || mode == "zoom") return;
+
+        var touchObj = touches[0];
+
+        var wheelX = startX - touchObj.clientX;
+        var wheelY = startY - touchObj.clientY;
+
+        if (mode == "wait") {
+            if (wheelX * wheelX + wheelY * wheelY > 4)
+                mode = "cursor";
+            else
+                return e.preventDefault();
+        }
+
+        startX = touchObj.clientX;
+        startY = touchObj.clientY;
+
+        e.clientX = touchObj.clientX;
+        e.clientY = touchObj.clientY;
+
+        var t = e.timeStamp;
+        var dt = t - lastT;
+        lastT = t;
+        if (mode == "scroll") {
+            var mouseEvent = new MouseEvent(e, editor);
+            mouseEvent.speed = 1;
+            mouseEvent.wheelX = wheelX;
+            mouseEvent.wheelY = wheelY;
+            if (10 * Math.abs(wheelX) < Math.abs(wheelY)) wheelX = 0;
+            if (10 * Math.abs(wheelY) < Math.abs(wheelX)) wheelY = 0;
+            if (dt != 0) {
+                vX = wheelX / dt;
+                vY = wheelY / dt;
+            }
+            editor._emit("mousewheel", mouseEvent);
+            if (!mouseEvent.propagationStopped) {
+                vX = vY = 0;
+            }
+        }
+        else {
+            var ev = new MouseEvent(e, editor);
+            var pos = ev.getDocumentPosition();
+            if (mode == "cursor")
+                editor.selection.moveCursorToPosition(pos);
+            else if (mode == "anchor")
+                editor.selection.setSelectionAnchor(pos.row, pos.column);
+            editor.renderer.scrollCursorIntoView(pos);
+            e.preventDefault();
+        }
+    });
+
+    function animate() {
+        animationSteps += 60;
+        animationTimer = setInterval(function() {
+            if (animationSteps-- <= 0) {
+                clearInterval(animationTimer);
+                animationTimer = null;
+            }
+            if (Math.abs(vX) < 0.01) vX = 0;
+            if (Math.abs(vY) < 0.01) vY = 0;
+            if (animationSteps < 20) vX = 0.9 * vX;
+            if (animationSteps < 20) vY = 0.9 * vY;
+            editor.renderer.scrollBy(10 * vX, 10 * vY);
+        }, 10);
+    }
+};
 
 });
 
@@ -4059,6 +4230,13 @@ var AppConfig = function() {
     };
 
     this.setDefaultValue = function(path, name, value) {
+        if (!path) {
+            for (path in this.$defaultOptions)
+                if (this.$defaultOptions[path][name])
+                    break;
+            if (!this.$defaultOptions[path][name])
+                return false;
+        }
         var opts = this.$defaultOptions[path] || (this.$defaultOptions[path] = {});
         if (opts[name]) {
             if (opts.forwardTo)
@@ -4104,7 +4282,9 @@ var options = {
     themePath: null,
     basePath: "",
     suffix: ".js",
-    $moduleUrls: {}
+    $moduleUrls: {},
+    loadWorkerFromBlob: true,
+    sharedPopups: false
 };
 
 exports.get = function(key) {
@@ -4115,10 +4295,10 @@ exports.get = function(key) {
 };
 
 exports.set = function(key, value) {
-    if (!options.hasOwnProperty(key))
+    if (options.hasOwnProperty(key))
+        options[key] = value;
+    else if (this.setDefaultValue("", key, value) == false)
         throw new Error("Unknown config key: " + key);
-
-    options[key] = value;
 };
 
 exports.all = function() {
@@ -4265,9 +4445,11 @@ function deHyphenate(str) {
     return str.replace(/-(.)/g, function(m, m1) { return m1.toUpperCase(); });
 }
 
+exports.version = "1.4.5";
+
 });
 
-define("ace/mouse/mouse_handler",["require","exports","module","ace/lib/event","ace/lib/useragent","ace/mouse/default_handlers","ace/mouse/default_gutter_handler","ace/mouse/mouse_event","ace/mouse/dragdrop_handler","ace/config"], function(require, exports, module) {
+define("ace/mouse/mouse_handler",["require","exports","module","ace/lib/event","ace/lib/useragent","ace/mouse/default_handlers","ace/mouse/default_gutter_handler","ace/mouse/mouse_event","ace/mouse/dragdrop_handler","ace/mouse/touch_handler","ace/config"], function(require, exports, module) {
 "use strict";
 
 var event = require("../lib/event");
@@ -4276,6 +4458,7 @@ var DefaultHandlers = require("./default_handlers").DefaultHandlers;
 var DefaultGutterHandler = require("./default_gutter_handler").GutterHandler;
 var MouseEvent = require("./mouse_event").MouseEvent;
 var DragdropHandler = require("./dragdrop_handler").DragdropHandler;
+var addTouchListeners = require("./touch_handler").addTouchListeners;
 var config = require("../config");
 
 var MouseHandler = function(editor) {
@@ -4304,7 +4487,7 @@ var MouseHandler = function(editor) {
         editor.textInput && editor.textInput.getElement()
     ].filter(Boolean), [400, 300, 250], this, "onMouseEvent");
     event.addMouseWheelListener(editor.container, this.onMouseWheel.bind(this, "mousewheel"));
-    event.addTouchMoveListener(editor.container, this.onTouchMove.bind(this, "touchmove"));
+    addTouchListeners(editor.container, editor);
 
     var gutterEl = editor.renderer.$gutter;
     event.addListener(gutterEl, "mousedown", this.onMouseEvent.bind(this, "guttermousedown"));
@@ -4357,14 +4540,6 @@ var MouseHandler = function(editor) {
         this.editor._emit(name, mouseEvent);
     };
     
-    this.onTouchMove = function (name, e) {
-        var mouseEvent = new MouseEvent(e, this.editor);
-        mouseEvent.speed = 1;//this.$scrollSpeed * 2;
-        mouseEvent.wheelX = e.wheelX;
-        mouseEvent.wheelY = e.wheelY;
-        this.editor._emit(name, mouseEvent);
-    };
-
     this.setState = function(state) {
         this.state = state;
     };
@@ -4376,8 +4551,7 @@ var MouseHandler = function(editor) {
         this.isMousePressed = true;
         var editor = this.editor;
         var renderer = this.editor.renderer;
-        if (renderer.$keepTextAreaAtCursor)
-            renderer.$keepTextAreaAtCursor = null;
+        renderer.$isMousePressed = true;
 
         var self = this;
         var onMouseMove = function(e) {
@@ -4398,11 +4572,9 @@ var MouseHandler = function(editor) {
             onCaptureInterval();
             self[self.state + "End"] && self[self.state + "End"](e);
             self.state = "";
-            if (renderer.$keepTextAreaAtCursor == null) {
-                renderer.$keepTextAreaAtCursor = true;
+            self.isMousePressed = renderer.$isMousePressed = false;
+            if (renderer.$keepTextAreaAtCursor)
                 renderer.$moveTextAreaToCursor();
-            }
-            self.isMousePressed = false;
             self.$onCaptureMouseMove = self.releaseMouse = null;
             e && self.onMouseEvent("mouseup", e);
             editor.endOperation();
@@ -4481,7 +4653,7 @@ function FoldHandler(editor) {
         var target = e.domEvent && e.domEvent.target;
         if (target && dom.hasCssClass(target, "ace_inline_button")) {
             if (dom.hasCssClass(target, "ace_toggle_wrap")) {
-                session.setOption("wrap", true);
+                session.setOption("wrap", !session.getUseWrapMode());
                 editor.renderer.scrollCursorIntoView();
             }
         }
@@ -4998,6 +5170,7 @@ var BidiHandler = function(session) {
     this.EOL = "\xAC";
     this.showInvisibles = true;
     this.isRtlDir = false;
+    this.$isRtl = false;
     this.line = "";
     this.wrapIndent = 0;
     this.EOF = "\xB6";
@@ -5075,7 +5248,7 @@ var BidiHandler = function(session) {
 
         this.wrapIndent = 0;
         this.line = this.session.getLine(docRow);
-        this.isRtlDir = this.line.charAt(0) === this.RLE;
+        this.isRtlDir = this.$isRtl || this.line.charAt(0) === this.RLE;
         if (this.session.$useWrapMode) {
             var splits = this.session.$wrapData[docRow];
             if (splits) {
@@ -5108,7 +5281,7 @@ var BidiHandler = function(session) {
         });
 
         if (this.isRtlDir) {
-            this.fontMetrics.$main.innerHTML = (this.line.charAt(this.line.length - 1) == bidiUtil.DOT) ? this.line.substr(0, this.line.length - 1) : this.line;
+            this.fontMetrics.$main.textContent = (this.line.charAt(this.line.length - 1) == bidiUtil.DOT) ? this.line.substr(0, this.line.length - 1) : this.line;
             this.rtlLineOffset = this.contentWidth - this.fontMetrics.$main.getBoundingClientRect().width;
         }
     };
@@ -5154,6 +5327,7 @@ var BidiHandler = function(session) {
     };
 
     this.isRtlLine = function(row) {
+        if (this.$isRtl) return true;
         if (row != undefined)
             return (this.session.getLine(row).charAt(0) == this.RLE);
         else
@@ -5858,7 +6032,7 @@ var Selection = function(session) {
 
     this.fromJSON = function(data) {
         if (data.start == undefined) {
-            if (this.rangeList) {
+            if (this.rangeList && data.length > 1) {
                 this.toSingleRange(data[0]);
                 for (var i = data.length; i--; ) {
                     var r = Range.fromPoints(data[i].start, data[i].end);
@@ -6176,7 +6350,7 @@ var Tokenizer = function(rules) {
                     if (token.type)
                         tokens.push(token);
                     token = {
-                        value: line.substring(lastIndex, lastIndex += 2000),
+                        value: line.substring(lastIndex, lastIndex += 500),
                         type: "overflow"
                     };
                 }
@@ -6819,6 +6993,9 @@ var CstyleBehaviour = function(options) {
                         return null; // before or after alphanumeric
                     if (rightChar && !/[\s;,.})\]\\]/.test(rightChar))
                         return null; // there is rightChar and it isn't closing
+                    var charBefore = line[cursor.column - 2];
+                    if (leftChar == quote &&  (charBefore == quote || wordRe.test(charBefore)))
+                        return null;
                     pair = true;
                 }
                 return {
@@ -7201,7 +7378,7 @@ var Mode = function() {
     };
 
     this.$delegator = function(method, args, defaultHandler) {
-        var state = args[0];
+        var state = args[0] || "start";
         if (typeof state != "string") {
             if (Array.isArray(state[2])) {
                 var language = state[2][state[2].length - 1];
@@ -7209,7 +7386,7 @@ var Mode = function() {
                 if (mode)
                     return mode[method].apply(mode, [state[1]].concat([].slice.call(args, 1)));
             }
-            state = state[0];
+            state = state[0] || "start";
         }
             
         for (var i = 0; i < this.$embeds.length; i++) {
@@ -8519,10 +8696,9 @@ var RangeList = function() {
 exports.RangeList = RangeList;
 });
 
-define("ace/edit_session/fold",["require","exports","module","ace/range","ace/range_list","ace/lib/oop"], function(require, exports, module) {
+define("ace/edit_session/fold",["require","exports","module","ace/range_list","ace/lib/oop"], function(require, exports, module) {
 "use strict";
 
-var Range = require("../range").Range;
 var RangeList = require("../range_list").RangeList;
 var oop = require("../lib/oop");
 var Fold = exports.Fold = function(range, placeholder) {
@@ -8564,9 +8740,6 @@ oop.inherits(Fold, RangeList);
     this.addSubFold = function(fold) {
         if (this.range.isEqual(fold))
             return;
-
-        if (!this.range.containsRange(fold))
-            throw new Error("A fold can't intersect already existing fold" + fold.range + this.range);
         consumeRange(fold, this.start);
 
         var row = fold.start.row, column = fold.start.column;
@@ -8576,21 +8749,26 @@ oop.inherits(Fold, RangeList);
                 break;
         }
         var afterStart = this.subFolds[i];
+        var firstConsumed = 0;
 
-        if (cmp == 0)
-            return afterStart.addSubFold(fold);
+        if (cmp == 0) {
+            if (afterStart.range.containsRange(fold))
+                return afterStart.addSubFold(fold);
+            else
+                firstConsumed = 1;
+        }
         var row = fold.range.end.row, column = fold.range.end.column;
         for (var j = i, cmp = -1; j < this.subFolds.length; j++) {
             cmp = this.subFolds[j].range.compare(row, column);
             if (cmp != 1)
                 break;
         }
-        var afterEnd = this.subFolds[j];
-
-        if (cmp == 0)
-            throw new Error("A fold can't intersect already existing fold" + fold.range + this.range);
-
+        if (cmp == 0)  j++;
         var consumedFolds = this.subFolds.splice(i, j - i, fold);
+        var last = cmp == 0 ? consumedFolds.length - 1 : consumedFolds.length;
+        for (var k = firstConsumed; k < last; k++) {
+            fold.addSubFold(consumedFolds[k]);
+        }
         fold.setFoldLine(this.foldLine);
 
         return fold;
@@ -8639,14 +8817,14 @@ function Folding() {
 
         var folds = foldLine.folds;
         for (var i = 0; i < folds.length; i++) {
-            var fold = folds[i];
-            if (fold.range.contains(row, column)) {
-                if (side == 1 && fold.range.isEnd(row, column)) {
+            var range = folds[i].range;
+            if (range.contains(row, column)) {
+                if (side == 1 && range.isEnd(row, column) && !range.isEmpty()) {
                     continue;
-                } else if (side == -1 && fold.range.isStart(row, column)) {
+                } else if (side == -1 && range.isStart(row, column) && !range.isEmpty()) {
                     continue;
                 }
-                return fold;
+                return folds[i];
             }
         }
     };
@@ -8825,9 +9003,6 @@ function Folding() {
         var startColumn = fold.start.column;
         var endRow = fold.end.row;
         var endColumn = fold.end.column;
-        if (!(startRow < endRow || 
-            startRow == endRow && startColumn <= endColumn - 2))
-            throw new Error("The range has to be at least 2 characters width");
 
         var startFold = this.getFoldAt(startRow, startColumn, 1);
         var endFold = this.getFoldAt(endRow, endColumn, -1);
@@ -9442,7 +9617,9 @@ function BracketMatch() {
         "]": "[",
         "[": "]",
         "{": "}",
-        "}": "{"
+        "}": "{",
+        "<": ">",
+        ">": "<"
     };
 
     this.$findOpeningBracket = function(bracket, position, typeRe) {
@@ -10880,7 +11057,7 @@ EditSession.$uid = 0;
         }
     };
     this.getScreenTabSize = function(screenColumn) {
-        return this.$tabSize - screenColumn % this.$tabSize;
+        return this.$tabSize - (screenColumn % this.$tabSize | 0);
     };
 
 
@@ -11251,12 +11428,13 @@ config.defineOptions(EditSession.prototype, "session", {
     useSoftTabs: {initialValue: true},
     tabSize: {
         set: function(tabSize) {
-            if (isNaN(tabSize) || this.$tabSize === tabSize) return;
-
-            this.$modified = true;
-            this.$rowLengthCache = [];
-            this.$tabSize = tabSize;
-            this._signal("changeTabSize");
+            tabSize = parseInt(tabSize);
+            if (tabSize > 0 && this.$tabSize !== tabSize) {
+                this.$modified = true;
+                this.$rowLengthCache = [];
+                this.$tabSize = tabSize;
+                this._signal("changeTabSize");
+            }
         },
         initialValue: 4,
         handlesSet: true
@@ -11966,23 +12144,24 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectall",
+    description: "Select all",
     bindKey: bindKey("Ctrl-A", "Command-A"),
     exec: function(editor) { editor.selectAll(); },
     readOnly: true
 }, {
     name: "centerselection",
+    description: "Center selection",
     bindKey: bindKey(null, "Ctrl-L"),
     exec: function(editor) { editor.centerSelection(); },
     readOnly: true
 }, {
     name: "gotoline",
+    description: "Go to line...",
     bindKey: bindKey("Ctrl-L", "Command-L"),
     exec: function(editor, line) {
-        if (typeof line !== "number")
-            line = parseInt(prompt("Enter line number:"), 10);
-        if (!isNaN(line)) {
+        if (typeof line === "number" && !isNaN(line))
             editor.gotoLine(line);
-        }
+        editor.prompt({ $type: "gotoLine" });
     },
     readOnly: true
 }, {
@@ -12015,12 +12194,14 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "foldall",
+    description: "Fold all",
     bindKey: bindKey(null, "Ctrl-Command-Option-0"),
     exec: function(editor) { editor.session.foldAll(); },
     scrollIntoView: "center",
     readOnly: true
 }, {
     name: "foldOther",
+    description: "Fold other",
     bindKey: bindKey("Alt-0", "Command-Option-0"),
     exec: function(editor) { 
         editor.session.foldAll();
@@ -12030,12 +12211,14 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "unfoldall",
+    description: "Unfold all",
     bindKey: bindKey("Alt-Shift-0", "Command-Option-Shift-0"),
     exec: function(editor) { editor.session.unfold(); },
     scrollIntoView: "center",
     readOnly: true
 }, {
     name: "findnext",
+    description: "Find next",
     bindKey: bindKey("Ctrl-K", "Command-G"),
     exec: function(editor) { editor.findNext(); },
     multiSelectAction: "forEach",
@@ -12043,6 +12226,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "findprevious",
+    description: "Find previous",
     bindKey: bindKey("Ctrl-Shift-K", "Command-Shift-G"),
     exec: function(editor) { editor.findPrevious(); },
     multiSelectAction: "forEach",
@@ -12050,6 +12234,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectOrFindNext",
+    description: "Select or find next",
     bindKey: bindKey("Alt-K", "Ctrl-G"),
     exec: function(editor) {
         if (editor.selection.isEmpty())
@@ -12060,6 +12245,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectOrFindPrevious",
+    description: "Select or find previous",
     bindKey: bindKey("Alt-Shift-K", "Ctrl-Shift-G"),
     exec: function(editor) { 
         if (editor.selection.isEmpty())
@@ -12070,6 +12256,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "find",
+    description: "Find",
     bindKey: bindKey("Ctrl-F", "Command-F"),
     exec: function(editor) {
         config.loadModule("ace/ext/searchbox", function(e) {e.Search(editor);});
@@ -12077,11 +12264,13 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "overwrite",
+    description: "Overwrite",
     bindKey: "Insert",
     exec: function(editor) { editor.toggleOverwrite(); },
     readOnly: true
 }, {
     name: "selecttostart",
+    description: "Select to start",
     bindKey: bindKey("Ctrl-Shift-Home", "Command-Shift-Home|Command-Shift-Up"),
     exec: function(editor) { editor.getSelection().selectFileStart(); },
     multiSelectAction: "forEach",
@@ -12090,6 +12279,7 @@ exports.commands = [{
     aceCommandGroup: "fileJump"
 }, {
     name: "gotostart",
+    description: "Go to start",
     bindKey: bindKey("Ctrl-Home", "Command-Home|Command-Up"),
     exec: function(editor) { editor.navigateFileStart(); },
     multiSelectAction: "forEach",
@@ -12098,6 +12288,7 @@ exports.commands = [{
     aceCommandGroup: "fileJump"
 }, {
     name: "selectup",
+    description: "Select up",
     bindKey: bindKey("Shift-Up", "Shift-Up|Ctrl-Shift-P"),
     exec: function(editor) { editor.getSelection().selectUp(); },
     multiSelectAction: "forEach",
@@ -12105,6 +12296,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "golineup",
+    description: "Go line up",
     bindKey: bindKey("Up", "Up|Ctrl-P"),
     exec: function(editor, args) { editor.navigateUp(args.times); },
     multiSelectAction: "forEach",
@@ -12112,6 +12304,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selecttoend",
+    description: "Select to end",
     bindKey: bindKey("Ctrl-Shift-End", "Command-Shift-End|Command-Shift-Down"),
     exec: function(editor) { editor.getSelection().selectFileEnd(); },
     multiSelectAction: "forEach",
@@ -12120,6 +12313,7 @@ exports.commands = [{
     aceCommandGroup: "fileJump"
 }, {
     name: "gotoend",
+    description: "Go to end",
     bindKey: bindKey("Ctrl-End", "Command-End|Command-Down"),
     exec: function(editor) { editor.navigateFileEnd(); },
     multiSelectAction: "forEach",
@@ -12128,6 +12322,7 @@ exports.commands = [{
     aceCommandGroup: "fileJump"
 }, {
     name: "selectdown",
+    description: "Select down",
     bindKey: bindKey("Shift-Down", "Shift-Down|Ctrl-Shift-N"),
     exec: function(editor) { editor.getSelection().selectDown(); },
     multiSelectAction: "forEach",
@@ -12135,6 +12330,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "golinedown",
+    description: "Go line down",
     bindKey: bindKey("Down", "Down|Ctrl-N"),
     exec: function(editor, args) { editor.navigateDown(args.times); },
     multiSelectAction: "forEach",
@@ -12142,6 +12338,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectwordleft",
+    description: "Select word left",
     bindKey: bindKey("Ctrl-Shift-Left", "Option-Shift-Left"),
     exec: function(editor) { editor.getSelection().selectWordLeft(); },
     multiSelectAction: "forEach",
@@ -12149,6 +12346,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "gotowordleft",
+    description: "Go to word left",
     bindKey: bindKey("Ctrl-Left", "Option-Left"),
     exec: function(editor) { editor.navigateWordLeft(); },
     multiSelectAction: "forEach",
@@ -12156,6 +12354,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selecttolinestart",
+    description: "Select to line start",
     bindKey: bindKey("Alt-Shift-Left", "Command-Shift-Left|Ctrl-Shift-A"),
     exec: function(editor) { editor.getSelection().selectLineStart(); },
     multiSelectAction: "forEach",
@@ -12163,6 +12362,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "gotolinestart",
+    description: "Go to line start",
     bindKey: bindKey("Alt-Left|Home", "Command-Left|Home|Ctrl-A"),
     exec: function(editor) { editor.navigateLineStart(); },
     multiSelectAction: "forEach",
@@ -12170,6 +12370,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectleft",
+    description: "Select left",
     bindKey: bindKey("Shift-Left", "Shift-Left|Ctrl-Shift-B"),
     exec: function(editor) { editor.getSelection().selectLeft(); },
     multiSelectAction: "forEach",
@@ -12177,6 +12378,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "gotoleft",
+    description: "Go to left",
     bindKey: bindKey("Left", "Left|Ctrl-B"),
     exec: function(editor, args) { editor.navigateLeft(args.times); },
     multiSelectAction: "forEach",
@@ -12184,6 +12386,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectwordright",
+    description: "Select word right",
     bindKey: bindKey("Ctrl-Shift-Right", "Option-Shift-Right"),
     exec: function(editor) { editor.getSelection().selectWordRight(); },
     multiSelectAction: "forEach",
@@ -12191,6 +12394,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "gotowordright",
+    description: "Go to word right",
     bindKey: bindKey("Ctrl-Right", "Option-Right"),
     exec: function(editor) { editor.navigateWordRight(); },
     multiSelectAction: "forEach",
@@ -12198,6 +12402,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selecttolineend",
+    description: "Select to line end",
     bindKey: bindKey("Alt-Shift-Right", "Command-Shift-Right|Shift-End|Ctrl-Shift-E"),
     exec: function(editor) { editor.getSelection().selectLineEnd(); },
     multiSelectAction: "forEach",
@@ -12205,6 +12410,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "gotolineend",
+    description: "Go to line end",
     bindKey: bindKey("Alt-Right|End", "Command-Right|End|Ctrl-E"),
     exec: function(editor) { editor.navigateLineEnd(); },
     multiSelectAction: "forEach",
@@ -12212,6 +12418,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectright",
+    description: "Select right",
     bindKey: bindKey("Shift-Right", "Shift-Right"),
     exec: function(editor) { editor.getSelection().selectRight(); },
     multiSelectAction: "forEach",
@@ -12219,6 +12426,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "gotoright",
+    description: "Go to right",
     bindKey: bindKey("Right", "Right|Ctrl-F"),
     exec: function(editor, args) { editor.navigateRight(args.times); },
     multiSelectAction: "forEach",
@@ -12226,46 +12434,55 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectpagedown",
+    description: "Select page down",
     bindKey: "Shift-PageDown",
     exec: function(editor) { editor.selectPageDown(); },
     readOnly: true
 }, {
     name: "pagedown",
+    description: "Page down",
     bindKey: bindKey(null, "Option-PageDown"),
     exec: function(editor) { editor.scrollPageDown(); },
     readOnly: true
 }, {
     name: "gotopagedown",
+    description: "Go to page down",
     bindKey: bindKey("PageDown", "PageDown|Ctrl-V"),
     exec: function(editor) { editor.gotoPageDown(); },
     readOnly: true
 }, {
     name: "selectpageup",
+    description: "Select page up",
     bindKey: "Shift-PageUp",
     exec: function(editor) { editor.selectPageUp(); },
     readOnly: true
 }, {
     name: "pageup",
+    description: "Page up",
     bindKey: bindKey(null, "Option-PageUp"),
     exec: function(editor) { editor.scrollPageUp(); },
     readOnly: true
 }, {
     name: "gotopageup",
+    description: "Go to page up",
     bindKey: "PageUp",
     exec: function(editor) { editor.gotoPageUp(); },
     readOnly: true
 }, {
     name: "scrollup",
+    description: "Scroll up",
     bindKey: bindKey("Ctrl-Up", null),
     exec: function(e) { e.renderer.scrollBy(0, -2 * e.renderer.layerConfig.lineHeight); },
     readOnly: true
 }, {
     name: "scrolldown",
+    description: "Scroll down",
     bindKey: bindKey("Ctrl-Down", null),
     exec: function(e) { e.renderer.scrollBy(0, 2 * e.renderer.layerConfig.lineHeight); },
     readOnly: true
 }, {
     name: "selectlinestart",
+    description: "Select line start",
     bindKey: "Shift-Home",
     exec: function(editor) { editor.getSelection().selectLineStart(); },
     multiSelectAction: "forEach",
@@ -12273,6 +12490,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selectlineend",
+    description: "Select line end",
     bindKey: "Shift-End",
     exec: function(editor) { editor.getSelection().selectLineEnd(); },
     multiSelectAction: "forEach",
@@ -12280,16 +12498,19 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "togglerecording",
+    description: "Toggle recording",
     bindKey: bindKey("Ctrl-Alt-E", "Command-Option-E"),
     exec: function(editor) { editor.commands.toggleRecording(editor); },
     readOnly: true
 }, {
     name: "replaymacro",
+    description: "Replay macro",
     bindKey: bindKey("Ctrl-Shift-E", "Command-Shift-E"),
     exec: function(editor) { editor.commands.replay(editor); },
     readOnly: true
 }, {
     name: "jumptomatching",
+    description: "Jump to matching",
     bindKey: bindKey("Ctrl-P", "Ctrl-P"),
     exec: function(editor) { editor.jumpToMatching(); },
     multiSelectAction: "forEach",
@@ -12297,6 +12518,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "selecttomatching",
+    description: "Select to matching",
     bindKey: bindKey("Ctrl-Shift-P", "Ctrl-Shift-P"),
     exec: function(editor) { editor.jumpToMatching(true); },
     multiSelectAction: "forEach",
@@ -12304,6 +12526,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "expandToMatching",
+    description: "Expand to matching",
     bindKey: bindKey("Ctrl-Shift-M", "Ctrl-Shift-M"),
     exec: function(editor) { editor.jumpToMatching(true, true); },
     multiSelectAction: "forEach",
@@ -12311,18 +12534,21 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "passKeysToBrowser",
+    description: "Pass keys to browser",
     bindKey: bindKey(null, null),
     exec: function() {},
     passEvent: true,
     readOnly: true
 }, {
     name: "copy",
+    description: "Copy",
     exec: function(editor) {
     },
     readOnly: true
 },
 {
     name: "cut",
+    description: "Cut",
     exec: function(editor) {
         var cutLine = editor.$copyWithEmptySelection && editor.selection.isEmpty();
         var range = cutLine ? editor.selection.getLineRange() : editor.selection.getRange();
@@ -12336,94 +12562,111 @@ exports.commands = [{
     multiSelectAction: "forEach"
 }, {
     name: "paste",
+    description: "Paste",
     exec: function(editor, args) {
         editor.$handlePaste(args);
     },
     scrollIntoView: "cursor"
 }, {
     name: "removeline",
+    description: "Remove line",
     bindKey: bindKey("Ctrl-D", "Command-D"),
     exec: function(editor) { editor.removeLines(); },
     scrollIntoView: "cursor",
     multiSelectAction: "forEachLine"
 }, {
     name: "duplicateSelection",
+    description: "Duplicate selection",
     bindKey: bindKey("Ctrl-Shift-D", "Command-Shift-D"),
     exec: function(editor) { editor.duplicateSelection(); },
     scrollIntoView: "cursor",
     multiSelectAction: "forEach"
 }, {
     name: "sortlines",
+    description: "Sort lines",
     bindKey: bindKey("Ctrl-Alt-S", "Command-Alt-S"),
     exec: function(editor) { editor.sortLines(); },
     scrollIntoView: "selection",
     multiSelectAction: "forEachLine"
 }, {
     name: "togglecomment",
+    description: "Toggle comment",
     bindKey: bindKey("Ctrl-/", "Command-/"),
     exec: function(editor) { editor.toggleCommentLines(); },
     multiSelectAction: "forEachLine",
     scrollIntoView: "selectionPart"
 }, {
     name: "toggleBlockComment",
+    description: "Toggle block comment",
     bindKey: bindKey("Ctrl-Shift-/", "Command-Shift-/"),
     exec: function(editor) { editor.toggleBlockComment(); },
     multiSelectAction: "forEach",
     scrollIntoView: "selectionPart"
 }, {
     name: "modifyNumberUp",
+    description: "Modify number up",
     bindKey: bindKey("Ctrl-Shift-Up", "Alt-Shift-Up"),
     exec: function(editor) { editor.modifyNumber(1); },
     scrollIntoView: "cursor",
     multiSelectAction: "forEach"
 }, {
     name: "modifyNumberDown",
+    description: "Modify number down",
     bindKey: bindKey("Ctrl-Shift-Down", "Alt-Shift-Down"),
     exec: function(editor) { editor.modifyNumber(-1); },
     scrollIntoView: "cursor",
     multiSelectAction: "forEach"
 }, {
     name: "replace",
+    description: "Replace",
     bindKey: bindKey("Ctrl-H", "Command-Option-F"),
     exec: function(editor) {
         config.loadModule("ace/ext/searchbox", function(e) {e.Search(editor, true);});
     }
 }, {
     name: "undo",
+    description: "Undo",
     bindKey: bindKey("Ctrl-Z", "Command-Z"),
     exec: function(editor) { editor.undo(); }
 }, {
     name: "redo",
+    description: "Redo",
     bindKey: bindKey("Ctrl-Shift-Z|Ctrl-Y", "Command-Shift-Z|Command-Y"),
     exec: function(editor) { editor.redo(); }
 }, {
     name: "copylinesup",
+    description: "Copy lines up",
     bindKey: bindKey("Alt-Shift-Up", "Command-Option-Up"),
     exec: function(editor) { editor.copyLinesUp(); },
     scrollIntoView: "cursor"
 }, {
     name: "movelinesup",
+    description: "Move lines up",
     bindKey: bindKey("Alt-Up", "Option-Up"),
     exec: function(editor) { editor.moveLinesUp(); },
     scrollIntoView: "cursor"
 }, {
     name: "copylinesdown",
+    description: "Copy lines down",
     bindKey: bindKey("Alt-Shift-Down", "Command-Option-Down"),
     exec: function(editor) { editor.copyLinesDown(); },
     scrollIntoView: "cursor"
 }, {
     name: "movelinesdown",
+    description: "Move lines down",
     bindKey: bindKey("Alt-Down", "Option-Down"),
     exec: function(editor) { editor.moveLinesDown(); },
     scrollIntoView: "cursor"
 }, {
     name: "del",
+    description: "Delete",
     bindKey: bindKey("Delete", "Delete|Ctrl-D|Shift-Delete"),
     exec: function(editor) { editor.remove("right"); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "backspace",
+    description: "Backspace",
     bindKey: bindKey(
         "Shift-Backspace|Backspace",
         "Ctrl-Backspace|Shift-Backspace|Backspace|Ctrl-H"
@@ -12433,6 +12676,7 @@ exports.commands = [{
     scrollIntoView: "cursor"
 }, {
     name: "cut_or_delete",
+    description: "Cut or delete",
     bindKey: bindKey("Shift-Delete", null),
     exec: function(editor) { 
         if (editor.selection.isEmpty()) {
@@ -12445,18 +12689,21 @@ exports.commands = [{
     scrollIntoView: "cursor"
 }, {
     name: "removetolinestart",
+    description: "Remove to line start",
     bindKey: bindKey("Alt-Backspace", "Command-Backspace"),
     exec: function(editor) { editor.removeToLineStart(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "removetolineend",
+    description: "Remove to line end",
     bindKey: bindKey("Alt-Delete", "Ctrl-K|Command-Delete"),
     exec: function(editor) { editor.removeToLineEnd(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "removetolinestarthard",
+    description: "Remove to line start hard",
     bindKey: bindKey("Ctrl-Shift-Backspace", null),
     exec: function(editor) {
         var range = editor.selection.getRange();
@@ -12467,6 +12714,7 @@ exports.commands = [{
     scrollIntoView: "cursor"
 }, {
     name: "removetolineendhard",
+    description: "Remove to line end hard",
     bindKey: bindKey("Ctrl-Shift-Delete", null),
     exec: function(editor) {
         var range = editor.selection.getRange();
@@ -12477,47 +12725,55 @@ exports.commands = [{
     scrollIntoView: "cursor"
 }, {
     name: "removewordleft",
+    description: "Remove word left",
     bindKey: bindKey("Ctrl-Backspace", "Alt-Backspace|Ctrl-Alt-Backspace"),
     exec: function(editor) { editor.removeWordLeft(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "removewordright",
+    description: "Remove word right",
     bindKey: bindKey("Ctrl-Delete", "Alt-Delete"),
     exec: function(editor) { editor.removeWordRight(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "outdent",
+    description: "Outdent",
     bindKey: bindKey("Shift-Tab", "Shift-Tab"),
     exec: function(editor) { editor.blockOutdent(); },
     multiSelectAction: "forEach",
     scrollIntoView: "selectionPart"
 }, {
     name: "indent",
+    description: "Indent",
     bindKey: bindKey("Tab", "Tab"),
     exec: function(editor) { editor.indent(); },
     multiSelectAction: "forEach",
     scrollIntoView: "selectionPart"
 }, {
     name: "blockoutdent",
+    description: "Block outdent",
     bindKey: bindKey("Ctrl-[", "Ctrl-["),
     exec: function(editor) { editor.blockOutdent(); },
     multiSelectAction: "forEachLine",
     scrollIntoView: "selectionPart"
 }, {
     name: "blockindent",
+    description: "Block indent",
     bindKey: bindKey("Ctrl-]", "Ctrl-]"),
     exec: function(editor) { editor.blockIndent(); },
     multiSelectAction: "forEachLine",
     scrollIntoView: "selectionPart"
 }, {
     name: "insertstring",
+    description: "Insert string",
     exec: function(editor, str) { editor.insert(str); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "inserttext",
+    description: "Insert text",
     exec: function(editor, args) {
         editor.insert(lang.stringRepeat(args.text  || "", args.times || 1));
     },
@@ -12525,30 +12781,35 @@ exports.commands = [{
     scrollIntoView: "cursor"
 }, {
     name: "splitline",
+    description: "Split line",
     bindKey: bindKey(null, "Ctrl-O"),
     exec: function(editor) { editor.splitLine(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "transposeletters",
+    description: "Transpose letters",
     bindKey: bindKey("Alt-Shift-X", "Ctrl-T"),
     exec: function(editor) { editor.transposeLetters(); },
     multiSelectAction: function(editor) {editor.transposeSelections(1); },
     scrollIntoView: "cursor"
 }, {
     name: "touppercase",
+    description: "To uppercase",
     bindKey: bindKey("Ctrl-U", "Ctrl-U"),
     exec: function(editor) { editor.toUpperCase(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "tolowercase",
+    description: "To lowercase",
     bindKey: bindKey("Ctrl-Shift-U", "Ctrl-Shift-U"),
     exec: function(editor) { editor.toLowerCase(); },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor"
 }, {
     name: "expandtoline",
+    description: "Expand to line",
     bindKey: bindKey("Ctrl-Shift-L", "Command-Shift-L"),
     exec: function(editor) {
         var range = editor.selection.getRange();
@@ -12562,6 +12823,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "joinlines",
+    description: "Join lines",
     bindKey: bindKey(null, null),
     exec: function(editor) {
         var isBackwards = editor.selection.isBackwards();
@@ -12599,6 +12861,7 @@ exports.commands = [{
     readOnly: true
 }, {
     name: "invertSelection",
+    description: "Invert selection",
     bindKey: bindKey(null, null),
     exec: function(editor) {
         var endRow = editor.session.doc.getLength() - 1;
@@ -12634,6 +12897,22 @@ exports.commands = [{
     },
     readOnly: true,
     scrollIntoView: "none"
+}, {
+    name: "openCommandPallete",
+    description: "Open command pallete",
+    bindKey: bindKey("F1", "F1"),
+    exec: function(editor) {
+        editor.prompt({ $type: "commands" });
+    },
+    readOnly: true
+}, {
+    name: "modeSelect",
+    description: "Change language mode...",
+    bindKey: bindKey(null, null),
+    exec: function(editor) {
+        editor.prompt({ $type: "modes" });
+    },
+    readOnly: true
 }];
 
 });
@@ -13631,7 +13910,8 @@ Editor.$uid = 0;
     this.removeToLineStart = function() {
         if (this.selection.isEmpty())
             this.selection.selectLineStart();
-
+        if (this.selection.isEmpty())
+            this.selection.selectLeft();
         this.session.remove(this.getSelectionRange());
         this.clearSelection();
     };
@@ -14525,6 +14805,12 @@ Editor.$uid = 0;
         cursorLayer.setSmoothBlinking(/smooth/.test(style));
         cursorLayer.isBlinking = !this.$readOnly && style != "wide";
         dom.setCssClass(cursorLayer.element, "ace_slim-cursors", /slim/.test(style));
+    };
+    this.prompt = function(message, options, callback) {
+        var editor = this;
+        config.loadModule("./ext/prompt", function (module) {
+            module.prompt(editor, message, options, callback);
+        });
     };
 
 }).call(Editor.prototype);
@@ -16289,7 +16575,7 @@ var Text = function(parentEl) {
                 valueFragment.appendChild(span);
             } else if (cjk) {
                 screenColumn += 1;
-                var span = dom.createElement("span");
+                var span = this.dom.createElement("span");
                 span.style.width = (self.config.characterWidth * 2) + "px";
                 span.className = "ace_cjk";
                 span.textContent = cjk;
@@ -16394,6 +16680,9 @@ var Text = function(parentEl) {
                 }
             }
         }
+        
+        if (splits[splits.length - 1] > this.MAX_LINE_LENGTH)
+            this.$renderOverflowMessage(lineEl, screenColumn, null, "", true);
     };
 
     this.$renderSimpleLine = function(parent, tokens) {
@@ -16413,15 +16702,13 @@ var Text = function(parentEl) {
         }
     };
     
-    this.$renderOverflowMessage = function(parent, screenColumn, token, value) {
-        this.$renderToken(parent, screenColumn, token,
+    this.$renderOverflowMessage = function(parent, screenColumn, token, value, hide) {
+        token && this.$renderToken(parent, screenColumn, token,
             value.slice(0, this.MAX_LINE_LENGTH - screenColumn));
             
         var overflowEl = this.dom.createElement("span");
         overflowEl.className = "ace_inline_button ace_keyword ace_toggle_wrap";
-        overflowEl.style.position = "absolute";
-        overflowEl.style.right = "0";
-        overflowEl.textContent = "<click to see more...>";
+        overflowEl.textContent = hide ? "<hide>" : "<click to see more...>";
         
         parent.appendChild(overflowEl);        
     };
@@ -16779,6 +17066,7 @@ var ScrollBar = function(parent) {
 
     this.inner = dom.createElement("div");
     this.inner.className = "ace_scrollbar-inner";
+    this.inner.textContent = "\xa0";
     this.element.appendChild(this.inner);
 
     parent.appendChild(this.element);
@@ -17735,7 +18023,7 @@ var VirtualRenderer = function(container, theme) {
     this.updateCharacterSize();
     this.setPadding(4);
     config.resetOptions(this);
-    config._emit("renderer", this);
+    config._signal("renderer", this);
 };
 
 (function() {
@@ -18036,15 +18324,16 @@ var VirtualRenderer = function(container, theme) {
         return this.container;
     };
     this.$moveTextAreaToCursor = function() {
+        if (this.$isMousePressed) return;
         var style = this.textarea.style;
-        if (!this.$keepTextAreaAtCursor) {
+        var composition = this.$composition;
+        if (!this.$keepTextAreaAtCursor && !composition) {
             dom.translate(this.textarea, -100, 0);
             return;
         }
         var pixelPos = this.$cursorLayer.$pixelPos;
         if (!pixelPos)
             return;
-        var composition = this.$composition;
         if (composition && composition.markerRange)
             pixelPos = this.$cursorLayer.getPixelPosition(composition.markerRange.start, true);
         
@@ -18398,7 +18687,7 @@ var VirtualRenderer = function(container, theme) {
         if (this.layerConfig.width != longestLine || hScrollChanged) 
             changes = this.CHANGE_H_SCROLL;
         if (hScrollChanged || vScrollChanged) {
-            changes = this.$updateCachedSize(true, this.gutterWidth, size.width, size.height);
+            changes |= this.$updateCachedSize(true, this.gutterWidth, size.width, size.height);
             this._signal("scrollbarVisibilityChanged");
             if (vScrollChanged)
                 longestLine = this.$getLongestLine();
@@ -18718,12 +19007,10 @@ var VirtualRenderer = function(container, theme) {
         this.$composition = composition;
         if (!composition.cssText) {
             composition.cssText = this.textarea.style.cssText;
-            composition.keepTextAreaAtCursor = this.$keepTextAreaAtCursor;
         }
         composition.useTextareaForIME = this.$useTextareaForIME;
         
         if (this.$useTextareaForIME) {
-            this.$keepTextAreaAtCursor = true;
             dom.addCssClass(this.textarea, "ace_composition");
             this.textarea.style.cssText = "";
             this.$moveTextAreaToCursor();
@@ -18746,7 +19033,6 @@ var VirtualRenderer = function(container, theme) {
             this.session.removeMarker(this.$composition.markerId);
 
         dom.removeCssClass(this.textarea, "ace_composition");
-        this.$keepTextAreaAtCursor = this.$composition.keepTextAreaAtCursor;
         this.textarea.style.cssText = this.$composition.cssText;
         this.$composition = null;
         this.$cursorLayer.element.style.display = "";
@@ -19016,41 +19302,23 @@ function $workerBlob(workerUrl) {
 function createWorker(workerUrl) {
     if (typeof Worker == "undefined")
         return { postMessage: function() {}, terminate: function() {} };
-    var blob = $workerBlob(workerUrl);
-    var URL = window.URL || window.webkitURL;
-    var blobURL = URL.createObjectURL(blob);
-    return new Worker(blobURL);
+    if (config.get("loadWorkerFromBlob")) {
+        var blob = $workerBlob(workerUrl);
+        var URL = window.URL || window.webkitURL;
+        var blobURL = URL.createObjectURL(blob);
+        return new Worker(blobURL);
+    }
+    return new Worker(workerUrl);
 }
 
-var WorkerClient = function(topLevelNamespaces, mod, classname, workerUrl, importScripts) {
+var WorkerClient = function(worker) {
+    if (!worker.postMessage)
+        worker = this.$createWorkerFromOldConfig.apply(this, arguments);
+
+    this.$worker = worker;
     this.$sendDeltaQueue = this.$sendDeltaQueue.bind(this);
     this.changeListener = this.changeListener.bind(this);
     this.onMessage = this.onMessage.bind(this);
-    if (require.nameToUrl && !require.toUrl)
-        require.toUrl = require.nameToUrl;
-    
-    if (config.get("packaged") || !require.toUrl) {
-        workerUrl = workerUrl || config.moduleUrl(mod, "worker");
-    } else {
-        var normalizePath = this.$normalizePath;
-        workerUrl = workerUrl || normalizePath(require.toUrl("ace/worker/worker.js", null, "_"));
-
-        var tlns = {};
-        topLevelNamespaces.forEach(function(ns) {
-            tlns[ns] = normalizePath(require.toUrl(ns, null, "_").replace(/(\.js)?(\?.*)?$/, ""));
-        });
-    }
-
-    this.$worker = createWorker(workerUrl);
-    if (importScripts) {
-        this.send("importScripts", importScripts);
-    }
-    this.$worker.postMessage({
-        init : true,
-        tlns : tlns,
-        module : mod,
-        classname : classname
-    });
 
     this.callbackId = 1;
     this.callbacks = {};
@@ -19061,6 +19329,35 @@ var WorkerClient = function(topLevelNamespaces, mod, classname, workerUrl, impor
 (function(){
 
     oop.implement(this, EventEmitter);
+
+    this.$createWorkerFromOldConfig = function(topLevelNamespaces, mod, classname, workerUrl, importScripts) {
+        if (require.nameToUrl && !require.toUrl)
+            require.toUrl = require.nameToUrl;
+
+        if (config.get("packaged") || !require.toUrl) {
+            workerUrl = workerUrl || config.moduleUrl(mod, "worker");
+        } else {
+            var normalizePath = this.$normalizePath;
+            workerUrl = workerUrl || normalizePath(require.toUrl("ace/worker/worker.js", null, "_"));
+
+            var tlns = {};
+            topLevelNamespaces.forEach(function(ns) {
+                tlns[ns] = normalizePath(require.toUrl(ns, null, "_").replace(/(\.js)?(\?.*)?$/, ""));
+            });
+        }
+
+        this.$worker = createWorker(workerUrl);
+        if (importScripts) {
+            this.send("importScripts", importScripts);
+        }
+        this.$worker.postMessage({
+            init : true,
+            tlns : tlns,
+            module : mod,
+            classname : classname
+        });
+        return this.$worker;
+    };
 
     this.onMessage = function(e) {
         var msg = e.data;
@@ -19160,32 +19457,28 @@ var WorkerClient = function(topLevelNamespaces, mod, classname, workerUrl, impor
 
 
 var UIWorkerClient = function(topLevelNamespaces, mod, classname) {
-    this.$sendDeltaQueue = this.$sendDeltaQueue.bind(this);
-    this.changeListener = this.changeListener.bind(this);
-    this.callbackId = 1;
-    this.callbacks = {};
-    this.messageBuffer = [];
-
     var main = null;
     var emitSync = false;
     var sender = Object.create(EventEmitter);
-    var _self = this;
 
-    this.$worker = {};
-    this.$worker.terminate = function() {};
-    this.$worker.postMessage = function(e) {
-        _self.messageBuffer.push(e);
-        if (main) {
+    var messageBuffer = [];
+    var workerClient = new WorkerClient({
+        messageBuffer: messageBuffer,
+        terminate: function() {},
+        postMessage: function(e) {
+            messageBuffer.push(e);
+            if (!main) return;
             if (emitSync)
                 setTimeout(processNext);
             else
                 processNext();
         }
-    };
-    this.setEmitSync = function(val) { emitSync = val; };
+    });
+
+    workerClient.setEmitSync = function(val) { emitSync = val; };
 
     var processNext = function() {
-        var msg = _self.messageBuffer.shift();
+        var msg = messageBuffer.shift();
         if (msg.command)
             main[msg.command].apply(main, msg.args);
         else if (msg.event)
@@ -19193,7 +19486,7 @@ var UIWorkerClient = function(topLevelNamespaces, mod, classname) {
     };
 
     sender.postMessage = function(msg) {
-        _self.onMessage({data: msg});
+        workerClient.onMessage({data: msg});
     };
     sender.callback = function(data, callbackId) {
         this.postMessage({type: "call", id: callbackId, data: data});
@@ -19204,12 +19497,12 @@ var UIWorkerClient = function(topLevelNamespaces, mod, classname) {
 
     config.loadModule(["worker", mod], function(Main) {
         main = new Main[classname](sender);
-        while (_self.messageBuffer.length)
+        while (messageBuffer.length)
             processNext();
     });
-};
 
-UIWorkerClient.prototype = WorkerClient.prototype;
+    return workerClient;
+};
 
 exports.UIWorkerClient = UIWorkerClient;
 exports.WorkerClient = WorkerClient;
@@ -19561,64 +19854,75 @@ exports.onMouseDown = onMouseDown;
 define("ace/commands/multi_select_commands",["require","exports","module","ace/keyboard/hash_handler"], function(require, exports, module) {
 exports.defaultCommands = [{
     name: "addCursorAbove",
+    description: "Add cursor above",
     exec: function(editor) { editor.selectMoreLines(-1); },
     bindKey: {win: "Ctrl-Alt-Up", mac: "Ctrl-Alt-Up"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "addCursorBelow",
+    description: "Add cursor below",
     exec: function(editor) { editor.selectMoreLines(1); },
     bindKey: {win: "Ctrl-Alt-Down", mac: "Ctrl-Alt-Down"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "addCursorAboveSkipCurrent",
+    description: "Add cursor above (skip current)",
     exec: function(editor) { editor.selectMoreLines(-1, true); },
     bindKey: {win: "Ctrl-Alt-Shift-Up", mac: "Ctrl-Alt-Shift-Up"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "addCursorBelowSkipCurrent",
+    description: "Add cursor below (skip current)",
     exec: function(editor) { editor.selectMoreLines(1, true); },
     bindKey: {win: "Ctrl-Alt-Shift-Down", mac: "Ctrl-Alt-Shift-Down"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "selectMoreBefore",
+    description: "Select more before",
     exec: function(editor) { editor.selectMore(-1); },
     bindKey: {win: "Ctrl-Alt-Left", mac: "Ctrl-Alt-Left"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "selectMoreAfter",
+    description: "Select more after",
     exec: function(editor) { editor.selectMore(1); },
     bindKey: {win: "Ctrl-Alt-Right", mac: "Ctrl-Alt-Right"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "selectNextBefore",
+    description: "Select next before",
     exec: function(editor) { editor.selectMore(-1, true); },
     bindKey: {win: "Ctrl-Alt-Shift-Left", mac: "Ctrl-Alt-Shift-Left"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "selectNextAfter",
+    description: "Select next after",
     exec: function(editor) { editor.selectMore(1, true); },
     bindKey: {win: "Ctrl-Alt-Shift-Right", mac: "Ctrl-Alt-Shift-Right"},
     scrollIntoView: "cursor",
     readOnly: true
 }, {
     name: "splitIntoLines",
+    description: "Split into lines",
     exec: function(editor) { editor.multiSelect.splitIntoLines(); },
     bindKey: {win: "Ctrl-Alt-L", mac: "Ctrl-Alt-L"},
     readOnly: true
 }, {
     name: "alignCursors",
+    description: "Align cursors",
     exec: function(editor) { editor.alignCursors(); },
     bindKey: {win: "Ctrl-Alt-A", mac: "Ctrl-Alt-A"},
     scrollIntoView: "cursor"
 }, {
     name: "findAll",
+    description: "Find all",
     exec: function(editor) { editor.findAll(); },
     bindKey: {win: "Ctrl-Alt-K", mac: "Ctrl-Alt-G"},
     scrollIntoView: "cursor",
@@ -19626,6 +19930,7 @@ exports.defaultCommands = [{
 }];
 exports.multiSelectCommands = [{
     name: "singleSelection",
+    description: "Single selection",
     bindKey: "esc",
     exec: function(editor) { editor.exitMultiSelectMode(); },
     scrollIntoView: "cursor",
@@ -21281,7 +21586,7 @@ exports.Editor = Editor;
 exports.EditSession = EditSession;
 exports.UndoManager = UndoManager;
 exports.VirtualRenderer = Renderer;
-exports.version = "1.4.2";
+exports.version = exports.config.version;
 });            (function() {
                 window.require(["ace/ace"], function(a) {
                     if (a) {

@@ -1,6 +1,6 @@
 using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.LanguageKeyGeneration;
@@ -65,10 +65,10 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// Returns the value object to use
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc</param>
+        /// <param name="flexFieldObject">Flex field object</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Value Object</returns>
-        protected override IFlexFieldExportable GetValueObject(ValueFieldConditionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        protected override IFlexFieldExportable GetValueObject(ValueFieldConditionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
             EvneSkill skill = _cachedDbAccess.GetSkillById(parsedData.SelectedObjectId).Result;
             if(skill == null)

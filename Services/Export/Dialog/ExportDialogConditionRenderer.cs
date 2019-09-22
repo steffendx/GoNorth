@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
@@ -140,9 +141,9 @@ namespace GoNorth.Services.Export.Dialog
         /// Renders a dialog step
         /// </summary>
         /// <param name="data">Dialog Step Data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Dialog Step Render Result</returns>
-        public async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, KortistoNpc npc)
+        public async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, FlexFieldObject flexFieldObject)
         {
             ConditionNode conditionNode = data.Condition;
             if(conditionNode == null)
@@ -155,10 +156,10 @@ namespace GoNorth.Services.Export.Dialog
             ExportDialogStepRenderResult renderResult = new ExportDialogStepRenderResult();
             renderResult.StepCode = ReplaceNodeId(template.Code, data);
             renderResult.StepCode = ExportUtil.BuildRangePlaceholderRegex(Placeholder_ConditionsStart, Placeholder_ConditionsEnd).Replace(renderResult.StepCode, m => {
-                return ExportUtil.TrimEmptyLines(ExportUtil.IndentListTemplate(BuildConditions(m.Groups[1].Value, data, conditionNode, npc, false), m.Groups[2].Value));
+                return ExportUtil.TrimEmptyLines(ExportUtil.IndentListTemplate(BuildConditions(m.Groups[1].Value, data, conditionNode, flexFieldObject, false), m.Groups[2].Value));
             });
             renderResult.StepCode = ExportUtil.BuildRangePlaceholderRegex(Placeholder_AllConditionsStart, Placeholder_AllConditionsEnd).Replace(renderResult.StepCode, m => {
-                return ExportUtil.TrimEmptyLines(ExportUtil.IndentListTemplate(BuildConditions(m.Groups[1].Value, data, conditionNode, npc, true), m.Groups[2].Value));
+                return ExportUtil.TrimEmptyLines(ExportUtil.IndentListTemplate(BuildConditions(m.Groups[1].Value, data, conditionNode, flexFieldObject, true), m.Groups[2].Value));
             });
             renderResult.StepCode = ExportUtil.BuildRangePlaceholderRegex(Placeholder_ElseStart, Placeholder_ElseEnd).Replace(renderResult.StepCode, m => {
                 return ExportUtil.IndentListTemplate(BuildElsePart(m.Groups[1].Value, data), m.Groups[2].Value);
@@ -172,10 +173,10 @@ namespace GoNorth.Services.Export.Dialog
         /// </summary>
         /// <param name="child">Child node</param>
         /// <param name="parent">Parent</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Parent text preview for the dialog step</returns>
-        public async Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public async Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
             ConditionNode conditionNode = parent.Condition;
             if(conditionNode == null)
@@ -192,7 +193,7 @@ namespace GoNorth.Services.Export.Dialog
                     continue;
                 }
                 
-                string conditionText = await _conditionRenderer.RenderCondition(_project, curCondition, _errorCollection, npc, _exportSettings);
+                string conditionText = await _conditionRenderer.RenderCondition(_project, curCondition, _errorCollection, flexFieldObject, _exportSettings);
                 previewForConditions.Add(ExportUtil.BuildTextPreview(conditionText));
             }
 
@@ -210,10 +211,10 @@ namespace GoNorth.Services.Export.Dialog
         /// <param name="conditionTemplate">Condition Template</param>
         /// <param name="data">Export dialog data</param>
         /// <param name="conditionNode">Condition node</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field to which the dialog belongs</param>
         /// <param name="includeConditionsWithoutChild">true if conditions without a child should be included, else false</param>
         /// <returns>Conditions as string</returns>
-        private string BuildConditions(string conditionTemplate, ExportDialogData data, ConditionNode conditionNode, KortistoNpc npc, bool includeConditionsWithoutChild)
+        private string BuildConditions(string conditionTemplate, ExportDialogData data, ConditionNode conditionNode, FlexFieldObject flexFieldObject, bool includeConditionsWithoutChild)
         {
             if(conditionNode.Conditions == null)
             {
@@ -230,7 +231,7 @@ namespace GoNorth.Services.Export.Dialog
                     continue;
                 }
                 
-                conditionsResult += BuildSingleCondition(conditionTemplate, data, curCondition, conditionNode, conditionChild, npc, conditionIndex);
+                conditionsResult += BuildSingleCondition(conditionTemplate, data, curCondition, conditionNode, conditionChild, flexFieldObject, conditionIndex);
                 ++conditionIndex;
             }
 
@@ -245,10 +246,10 @@ namespace GoNorth.Services.Export.Dialog
         /// <param name="conditionObj">Condition object</param>
         /// <param name="conditionNode">Condition node</param>
         /// <param name="condition">Export dialog data for the condition</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="conditionIndex">Index of the condition</param>
         /// <returns>Conditions as string</returns>
-        private string BuildSingleCondition(string conditionTemplate, ExportDialogData data, Condition conditionObj, ConditionNode conditionNode, ExportDialogDataChild condition, KortistoNpc npc, int conditionIndex)
+        private string BuildSingleCondition(string conditionTemplate, ExportDialogData data, Condition conditionObj, ConditionNode conditionNode, ExportDialogDataChild condition, FlexFieldObject flexFieldObject, int conditionIndex)
         {
             string conditionContent = ReplaceBaseStepPlaceholders(conditionTemplate, data, condition != null ? condition.Child : null);
             conditionContent = ExportUtil.BuildPlaceholderRegex(Placeholder_Condition_Id).Replace(conditionContent, conditionObj.Id.ToString());
@@ -256,7 +257,7 @@ namespace GoNorth.Services.Export.Dialog
             conditionContent = ExportUtil.RenderPlaceholderIfTrue(conditionContent, Placeholder_Condition_IsFirst_Start, Placeholder_Condition_IsFirst_End, conditionIndex == 0);
             conditionContent = ExportUtil.RenderPlaceholderIfTrue(conditionContent, Placeholder_Condition_IsNotFirst_Start, Placeholder_Condition_IsNotFirst_End, conditionIndex != 0);
             conditionContent = ExportUtil.BuildPlaceholderRegex(Placeholder_Condition).Replace(conditionContent, m => {
-                return BuildCondition(conditionObj, npc);
+                return BuildCondition(conditionObj, flexFieldObject);
             });
 
             return conditionContent;
@@ -266,9 +267,9 @@ namespace GoNorth.Services.Export.Dialog
         /// Builds a condition string
         /// </summary>
         /// <param name="condition">Condition</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Condition string</returns>
-        private string BuildCondition(Condition condition, KortistoNpc npc)
+        private string BuildCondition(Condition condition, FlexFieldObject flexFieldObject)
         {
             if(condition == null || string.IsNullOrEmpty(condition.ConditionElements))
             {
@@ -276,7 +277,7 @@ namespace GoNorth.Services.Export.Dialog
                 return string.Empty;
             }
 
-            return _conditionRenderer.RenderCondition(_project, condition, _errorCollection, npc, _exportSettings).Result;
+            return _conditionRenderer.RenderCondition(_project, condition, _errorCollection, flexFieldObject, _exportSettings).Result;
         }
 
         /// <summary>

@@ -66,7 +66,10 @@ GoNorth supports exporting Npcs, Dialogs, Skills and Items to JSON and scripts.
 
 The scripts can be adjusted using a template system with different placeholders for values, learned skills, inventory and dialogs.  
 For better localization support strings can be exported as language keys and localizable language files can be exported.  
-More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Export).
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Export).  
+
+To give an additional form of flexibility during exporting, GoNorth supports so called export snippets. These can be used to specify certain hooks in the templates that can be filled by the different npcs, items or skills. This way you can have a special behaviour when picking up an item like adding a quest log message for example.  
+More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Export-Snippets).
 
 
 ### Wiki Component (Kirja)

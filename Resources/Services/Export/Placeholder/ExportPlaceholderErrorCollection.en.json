@@ -1,12 +1,12 @@
 {
     "FlexFieldMissing": "The field '{0}' could not be found in '{1}'.",
 
-    "DialogRootNodeCountNotOne": "There are {0} root nodes in the dialog. Exactly one root node must exist for the start of the dialog.",
-    "DialogUnknownNodeType": "An unknown dialog node was used.",
-    "DialogUnknownFunctionGenerationCondition": "An unknown dialog function generation condition was encountered.",
-    "DialogNodeHasNoChildForFunction": "A dialog step function must be generated for a node that has no child. A check should be added to the template.",
-    "DialogInfinityLoop": "An infinite loop exists in the dialog with no possibility to exit the dialog. The dialog must be checked.",
-    "DialogConditionMissing": "A dialog step condition must be generated for a dialog step missing a condition. A check for an existing condition should be added to the template.",
+    "DialogRootNodeCountNotOne": "There are {0} root nodes in the node system. Exactly one root node must exist for the start of the node system.",
+    "DialogUnknownNodeType": "An unknown node type was used in the node system.",
+    "DialogUnknownFunctionGenerationCondition": "An unknown node system function generation condition was encountered.",
+    "DialogNodeHasNoChildForFunction": "A node system step function must be generated for a node that has no child. A check should be added to the template.",
+    "DialogInfinityLoop": "An infinite loop exists in the node system with no possibility to exit the system. The node system must be checked.",
+    "DialogConditionMissing": "A node system step condition must be generated for a step missing a condition. A check for an existing condition should be added to the template.",
     "DialogUnknownConditionTypeError": "An unknown condition type '{0}' was encountered. The condition can not be generated.",
     "DialogUnknownGroupOperator": "An unknown grouping operator '{0}' was encountered. The condition can not be correctly generated.",
     "DialogUnknownConditionOperator": "An unknown condition operator '{0}' was encountered. The condition can not be correctly generated.",
@@ -19,6 +19,9 @@
     "DialogUnknownActionTypeError": "An unknown action type '{0}' was encountered. The action can not be generated.",
     "DialogUnknownActionOperator": "An unknown action operator '{0}' was encountered. The action can not be correctly generated.",
     "DialogDailyRoutineEventNotFoundError": "A referenced daily routine event was not found in the npc {0} . The event was probably deleted.",
+    "WaitActionHasOnlyDirectContinueFunction": "A wait action node has only a direct continue child node. You should check if this wait node is required.",
 
-    "NoPlayerNpcExistsError": "No player npc exists."
+    "NoPlayerNpcExistsError": "No player npc exists.",
+
+    "ExportSnippetMissing": "The export snippet is missing a placeholder in the template. The content of the export snippet could not be rendered."
 }

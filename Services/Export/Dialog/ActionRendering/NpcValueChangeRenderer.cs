@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
@@ -74,23 +75,23 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Returns the value object to use
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc</param>
+        /// <param name="flexFieldObject">Flex field object</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Value Object</returns>
-        protected override async Task<IFlexFieldExportable> GetValueObject(ValueActionRenderBase.ValueFieldActionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        protected override async Task<IFlexFieldExportable> GetValueObject(ValueActionRenderBase.ValueFieldActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
             if(_isPlayer)
             {
                 GoNorthProject curProject = await _cachedDbAccess.GetDefaultProject();
-                npc = await _cachedDbAccess.GetPlayerNpc(curProject.Id);
-                if(npc == null)
+                flexFieldObject = await _cachedDbAccess.GetPlayerNpc(curProject.Id);
+                if(flexFieldObject == null)
                 {
                     errorCollection.AddNoPlayerNpcExistsError();
                     return null;
                 }
             }
 
-            return npc;
+            return flexFieldObject;
         }
 
         /// <summary>

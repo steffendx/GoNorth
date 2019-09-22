@@ -11,6 +11,11 @@ namespace GoNorth.Services.Export.Placeholder
         public ExportPlaceholderErrorType ErrorType { get; set; }
 
         /// <summary>
+        /// Context of the error
+        /// </summary>
+        public string ErrorContext { get; set; }
+
+        /// <summary>
         /// Message
         /// </summary>
         public string Message { get; set; }

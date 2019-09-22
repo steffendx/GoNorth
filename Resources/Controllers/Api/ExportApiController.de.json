@@ -14,6 +14,7 @@
     "TemplateTypeObjectDailyRoutineEventList": "Tagesablauf Ereignis Liste",
     "TemplateTypeObjectDailyRoutineFunctionList": "Tagesablauf Funktion Liste",
     "TemplateTypeObjectDailyRoutineFunction": "Tagesablauf Funktion",
+    "TemplateTypeObjectExportSnippetFunction": "Export Snippet Funktion",
 
 
     "TemplateTypeTaleDialogStep": "Dialogschritt",
@@ -29,6 +30,7 @@
     "TemplateTypeTaleConditionQuestValue": "Bedingung: Quest Wert prüfen",
     "TemplateTypeTaleConditionQuestState": "Bedingung: Quest Status prüfen",
     "TemplateTypeTaleConditionNpcAliveState": "Bedingung: Npc Überlebensstatus prüfen",
+    "TemplateTypeTaleConditionCurrentSkillValue": "Bedingung: Fähigkeits Wert prüfen",
     "TemplateTypeTaleConditionGameTime": "Bedingung: Spielzeit prüfen",
     "TemplateTypeTaleConditionPlayerSkillValue": "Bedingung: Spieler Fähigkeit Wert prüfen",
     "TemplateTypeTaleConditionNpcSkillValue": "Bedingung: Npc Fähigkeit Wert prüfen",
@@ -39,6 +41,8 @@
     "TemplateTypeTaleConditionRandomValue": "Bedingung: Zufallswert prüfen",
     "TemplateTypeTaleConditionDailyRoutineEventDisabled": "Bedingung: Tagesablauf ist deaktiviert prüfen",
     "TemplateTypeTaleConditionDailyRoutineEventEnabled": "Bedingung: Tagesablauf ist aktiv prüfen",
+    "TemplateTypeTaleConditionCode": "Bedingung: Script Bedingung",
+    "TemplateTypeTaleConditionItemValue": "Bedingung: Item Wert prüfen",
     "TemplateTypeTaleAction": "Aktion",
     "TemplateTypeTaleActionChangePlayerValue": "Aktion: Spielerwert ändern",
     "TemplateTypeTaleActionChangeNpcValue": "Aktion: Npcwert ändern",
@@ -48,12 +52,16 @@
     "TemplateTypeTaleActionTransferItemToNpc": "Aktion: Item an Npc übergeben",
     "TemplateTypeTaleActionSpawnItemForNpc": "Aktion: Item in Npc Inventar spawnen",
     "TemplateTypeTaleActionRemoveItemFromNpc": "Aktion: Item aus Npc inventar entfernen",
+    "TemplateTypeTaleActionSpawnItemForChooseNpc": "Aktion: Item in beliebigen Npc Inventar spawnen",
+    "TemplateTypeTaleActionRemoveItemFromChooseNpc": "Aktion: Item aus beliebigen Npc Inventar entfernen",
     "TemplateTypeTaleActionChangeQuestValue": "Aktion: Questwert ändern",
     "TemplateTypeTaleActionSetQuestState": "Aktion: Quest Status festlegen",
     "TemplateTypeTaleActionAddQuestText": "Aktion: Quest Text hinzufügen",
+    "TemplateTypeTaleActionChangeCurrentSkillValue": "Aktion: Fähigkeitswert ändern",
     "TemplateTypeTaleActionWait": "Aktion: Warten",
     "TemplateTypeTaleActionSetPlayerState": "Aktion: Spieler Zustand festlegen",
     "TemplateTypeTaleActionSetNpcState": "Aktion: Npc Zustand festlegen",
+    "TemplateTypeTaleActionSetTargetNpcState": "Aktion: Ziel Npc Zustand ändern",
     "TemplateTypeTaleActionPlayerLearnSkill": "Aktion: Spieler lernt Fähigkeit",
     "TemplateTypeTaleActionPlayerForgetSkill": "Aktion: Spieler vergisst Fähigkeit",
     "TemplateTypeTaleActionNpcLearnSkill": "Aktion: Npc lernt Fähigkeit",
@@ -82,7 +90,10 @@
     "TemplateTypeTaleActionTeleportChooseNpcToNpc": "Aktion: Beliebigen Npc zu Npc teleportieren",
     "TemplateTypeTaleActionWalkNpcToNpc": "Aktion: Npc zu Npc bewegen",
     "TemplateTypeTaleActionWalkChooseNpcToNpc": "Aktion: Beliebigen Npc zu Npc bewegen",
-
+    "TemplateTypeTaleActionSpawnNpcAtMarker": "Aktion: Npc spawnen an Markierung",
+    "TemplateTypeTaleActionSpawnItemAtMarker": "Aktion: Item spawnen an Markierung",
+    "TemplateTypeTaleActionChangeItemValue": "Aktion: Item Wert ändern",
+    
     
     "TemplateTypeGeneralLogicGroup": "Logik: Gruppe",
     "TemplateTypeGeneralLogicAnd": "Logik: Und Operator",

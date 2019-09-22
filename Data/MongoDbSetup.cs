@@ -127,6 +127,8 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(ExportFunctionIdMongoDbAccess.ExportFunctionIdCollectionName, collectionNames);
             await CreateCollectionIfNotExists(LanguageKeyMongoDbAccess.LanguageKeyIdCounterCollectionName, collectionNames);
             await CreateCollectionIfNotExists(LanguageKeyMongoDbAccess.LanguageKeyCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(ObjectExportSnippetMongoDbAccess.ObjectExportSnippetCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(ObjectExportSnippetSnapshotMongoDbAccess.ObjectExportSnippetSnapshotCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(TaskBoardMongoDbAccess.TaskBoardCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaskTypeMongoDbAccess.TaskTypeCollectionName, collectionNames);

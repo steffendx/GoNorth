@@ -121,6 +121,12 @@
 <!-- /ko -->
 </script>
 
+<script type="text/html" id="gn-nodeCheckCode">
+<!-- ko with: conditionData -->
+    <td colspan="4"><a data-bind="click: editScript" class="gn-clickable"><span data-bind="visible: scriptName, text: scriptName"></span><span data-bind="visible: !scriptName()">@Localizer["EditScript"]</span></a></td>
+<!-- /ko -->
+</script>
+
 <div class="modal fade gn-nodeConditionDialogContainer" role="dialog" data-bind="modal: isOpen">
     <div class="modal-dialog gn-nodeConditionDialog">
         <div class="modal-content">

@@ -77,6 +77,7 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectDailyRoutineEventList),
             new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectDailyRoutineFunctionList),
             new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectDailyRoutineFunction),
+            new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectExportSnippetFunction),
 
             // Tale
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleDialogStep),
@@ -92,6 +93,7 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionQuestValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionQuestState),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionNpcAliveState),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionCurrentSkillValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionGameTime),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionPlayerSkillValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionNpcSkillValue),
@@ -102,6 +104,9 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionRandomValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionDailyRoutineEventDisabled),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionDailyRoutineEventEnabled),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionCode),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleConditionItemValue),
+            
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleAction),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangePlayerValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangeNpcValue),
@@ -111,12 +116,16 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionTransferItemToNpc),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSpawnItemForNpc),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionRemoveItemFromNpc),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSpawnItemForChooseNpc),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionRemoveItemFromChooseNpc),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangeQuestValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSetQuestState),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionAddQuestText),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangeCurrentSkillValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionWait),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSetPlayerState),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSetNpcState),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSetTargetNpcState),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionPlayerLearnSkill),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionPlayerForgetSkill),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionNpcLearnSkill),
@@ -145,6 +154,9 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionTeleportChooseNpcToNpc),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionWalkNpcToNpc),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionWalkChooseNpcToNpc),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSpawnNpcAtMarker),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSpawnItemAtMarker),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangeItemValue),
             
             // General
             new DefaultTemplateEntry(TemplateCategory.General, TemplateType.GeneralLogicGroup),

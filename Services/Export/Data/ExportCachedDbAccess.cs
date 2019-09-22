@@ -28,6 +28,11 @@ namespace GoNorth.Services.Export.Data
         private readonly IExportSettingsDbAccess _exportSettingsDbAccess;
 
         /// <summary>
+        /// Object Export Snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+
+        /// <summary>
         /// Npc Db Access
         /// </summary>
         private readonly IKortistoNpcDbAccess _npcDbAccess;
@@ -102,23 +107,30 @@ namespace GoNorth.Services.Export.Data
         /// Cached Markers
         /// </summary>
         private Dictionary<string, KartaMapNamedMarkerQueryResult> _cachedMarkers;
+        
+        /// <summary>
+        /// Cached Export snippets
+        /// </summary>
+        private Dictionary<string, List<ObjectExportSnippet>> _cachedExportSnippets;
 
         /// <summary>
         /// Export Cached Db Access
         /// </summary>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="exportSettingsDbAccess">Export Settings Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="projectConfigProvider">Project config provider</param>
-        public ExportCachedDbAccess(IProjectDbAccess projectDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, 
-                                    IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, IProjectConfigProvider projectConfigProvider)
+        public ExportCachedDbAccess(IProjectDbAccess projectDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKortistoNpcDbAccess npcDbAccess, 
+                                    IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, IProjectConfigProvider projectConfigProvider)
         {
             _projectDbAccess = projectDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _npcDbAccess = npcDbAccess;
             _itemDbAccess = itemDbAccess;
             _skillDbAccess = skillDbAccess;
@@ -133,6 +145,7 @@ namespace GoNorth.Services.Export.Data
             _cachedSkills = new Dictionary<string, EvneSkill>();
             _cachedQuest = new Dictionary<string, AikaQuest>();
             _cachedMarkers = new Dictionary<string, KartaMapNamedMarkerQueryResult>();
+            _cachedExportSnippets = new Dictionary<string, List<ObjectExportSnippet>>();
         }
 
         /// <summary>
@@ -323,6 +336,28 @@ namespace GoNorth.Services.Export.Data
             KartaMapNamedMarkerQueryResult markerQueryResult = await _mapDbAccess.GetMarkerById(mapId, markerId);
             _cachedMarkers.Add(cacheId, markerQueryResult);
             return markerQueryResult;   
+        }
+
+        /// <summary>
+        /// Returns the object export snippets of an object
+        /// </summary>
+        /// <param name="exportObjectId">Id of the Object for which the snippets must be loaded</param>
+        /// <returns>Object export snippets</returns>
+        public async Task<List<ObjectExportSnippet>> GetObjectExportSnippetsByObject(string exportObjectId)
+        {
+            if(string.IsNullOrEmpty(exportObjectId))
+            {
+                return new List<ObjectExportSnippet>();
+            }
+
+            if(_cachedExportSnippets.ContainsKey(exportObjectId))
+            {
+                return _cachedExportSnippets[exportObjectId];
+            }
+
+            List<ObjectExportSnippet> exportSnippets = await _objectExportSnippetDbAccess.GetExportSnippets(exportObjectId);
+            _cachedExportSnippets.Add(exportObjectId, exportSnippets);
+            return exportSnippets;
         }
 
     }

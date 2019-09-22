@@ -76,6 +76,7 @@
             Localization.QuestViewModel = {};
             Localization.QuestViewModel.ChooseQuest = "Quest auswählen";
             Localization.QuestViewModel.ChooseNpc = "Npc auswählen";
+            Localization.QuestViewModel.ChooseItem = "Item auswählen";
             Localization.QuestViewModel.ChooseSkill = "Fähigkeit auswählen";
             Localization.QuestViewModel.ChooseDailyRoutineEvent = "Tagesablauf Ereignis auswählen";
             Localization.QuestViewModel.ChooseMarker = "Markierung auswählen";

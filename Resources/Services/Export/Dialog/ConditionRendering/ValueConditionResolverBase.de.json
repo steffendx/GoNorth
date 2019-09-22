@@ -9,5 +9,9 @@
     "PlaceholderDesc_Tale_Condition_ValueIsNumber_End": "Ende des Inhalts der nur gerendert wird wenn das Feld das geprüft wird ein Zahlenfeld ist.",
     "PlaceholderDesc_Tale_Condition_ValueIsString_Start": "Anfang des Inhalts der nur gerendert wird wenn das Feld das geprüft wird ein Textfeld ist. Muss mit Tale_Condition_ValueIsString_End abgeschlossen werden.",
     "PlaceholderDesc_Tale_Condition_ValueIsString_End": "Ende des Inhalts der nur gerendert wird wenn das Feld das geprüft wird ein Textfeld ist.",
+    "PlaceholderDesc_Tale_Condition_ValueName_Equals_NAME_OF_FIELD_Start": "Start des Inhalts der nur gerendert wird wenn der Name des Feldes das geprüft wird einem Namen entspricht. 'NAME_OF_FIELD' muss dabei mit dem Namen des Feldes ersetzt werden. Der Vergleich ist Case-Insensitive. Muss mit Tale_Condition_ValueName_Equals_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_ValueName_Equals_End": "Endes des Inhalts der nur gerendert wird wenn der Name des Feldes das geprüft wird einem Namen entspricht.",    
+    "PlaceholderDesc_Tale_Condition_ValueName_NotEquals_NAME_OF_FIELD_Start": "Start des Inhalts der nur gerendert wird wenn der Name des Feldes das geprüft wird nicht einem Namen entspricht. 'NAME_OF_FIELD' muss dabei mit dem Namen des Feldes ersetzt werden. Der Vergleich ist Case-Insensitive. Muss mit Tale_Condition_ValueName_NotEquals_End abgeschlossen werden.",
+    "PlaceholderDesc_Tale_Condition_ValueName_NotEquals_End": "Endes des Inhalts der nur gerendert wird wenn der Name des Feldes das geprüft wird nicht einem Namen entspricht.",
     "PlaceholderDesc_Tale_Condition_CompareValue": "Vergleichswert für die Operation."
 }

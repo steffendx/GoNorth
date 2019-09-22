@@ -12,6 +12,7 @@
     "Script": "Script",
     "JSON": "JSON",
     "LanguageFile": "Language file",
+    "ExportSnippets": "Export Snippets",
     "RegenerateLanguageKeys": "Regenerate language keys",
     "Cancel": "Cancel",
     "Delete": "Delete",
@@ -34,6 +35,17 @@
     "CopyToClipboard": "Copy to clipboard",
     "SuccessfullyCopiedToClipboard": "Code was copied to clipboard",
     "Ok": "Ok",
+
+    "InvalidSnippets": "Invalid export snippets",
+    "ValidSnippets": "Valid export snippets",
+    "ThereAreInvalidSnippets": "There are invalid snippets because the associated placeholders have been deleted from the template. They will not be exported.",
+    "NoExportSnippetExist": "No export snippets exist for this object. You have to add export snippets to the template using the export snippets placeholders to use this function.",
+    "DeleteSnippetToolTip": "Click here to delete the snippet",
+    "AreYouSureYouWantToDeleteTheExportSnippet": "Are you sure you want to delete the export snippet?",
+    "Close": "Close",
+
+    "UnsavedChanges": "Unsaved changes",
+    "AreYouSureYouWantToExportUnsavedChanges": "There are unsaved changes. The export will reflect an old state. Are you sure you want to export the old state?",
 
     "ReferencedInAikaQuests": "Referenced in Aika quests:",
     

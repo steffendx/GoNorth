@@ -18,6 +18,15 @@
             Actions.WalkChooseNpcToNpcAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.MoveChooseObjectToNpcAction.prototype);
 
             /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.hasMovementState = function() {
+                return true;
+            };
+
+            /**
              * Builds the action
              * 
              * @returns {object} Action
@@ -43,10 +52,28 @@
             Actions.WalkChooseNpcToNpcAction.prototype.getLabel = function() {
                 return DefaultNodeShapes.Localization.Actions.WalkChooseNpcToNpcLabel;
             };
-        
+                
+            /**
+             * Returns the label for the main output
+             * 
+             * @returns {string} Label for the main output
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getMainOutputLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkOnTargetReachLabel;
+            };
 
             /**
-             * Opens teh choose object dialog
+             * Returns the additional outports of the action
+             * 
+             * @returns {string[]} Additional outports
+             */
+            Actions.WalkChooseNpcToNpcAction.prototype.getAdditionalOutports = function() {
+                return [ DefaultNodeShapes.Localization.Actions.WalkDirectContinueLabel ];
+            };
+
+
+            /**
+             * Opens the choose object dialog
              * 
              * @returns {jQuery.Deferred} Deferred that will be resolved with the choosen object
              */

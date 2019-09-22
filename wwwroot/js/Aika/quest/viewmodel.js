@@ -161,6 +161,18 @@
 
                     return self.chooseObjectDialog.openNpcSearch(Aika.Localization.QuestViewModel.ChooseNpc);                    
                 };
+
+                // Opens the item search dialog 
+                GoNorth.DefaultNodeShapes.openItemSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.chooseObjectDialog.openItemSearch(Aika.Localization.QuestViewModel.ChooseItem);                    
+                };
                 
                 // Opens the skill search dialog 
                 GoNorth.DefaultNodeShapes.openSkillSearchDialog = function() {

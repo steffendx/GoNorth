@@ -135,10 +135,10 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// <param name="parsedData">Parsed data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Condition string</returns>
-        public override string BuildConditionElementFromParsedData(InventoryConditionResolver.InventoryConditionData parsedData, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
+        public override string BuildConditionElementFromParsedData(InventoryConditionResolver.InventoryConditionData parsedData, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
             ExportTemplate conditionTemplate = _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, _isPlayer ? TemplateType.TaleConditionPlayerInventory : TemplateType.TaleConditionNpcInventory).Result;
 

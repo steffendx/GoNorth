@@ -62,10 +62,10 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// Returns the value object to use
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc</param>
+        /// <param name="flexFieldObject">Flex field object</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Value Object</returns>
-        protected override IFlexFieldExportable GetValueObject(ValueFieldConditionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        protected override IFlexFieldExportable GetValueObject(ValueFieldConditionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
             AikaQuest quest = _cachedDbAccess.GetQuestById(parsedData.SelectedObjectId).Result;
             if(quest == null)

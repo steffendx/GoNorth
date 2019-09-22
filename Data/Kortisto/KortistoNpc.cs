@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using GoNorth.Data.FlexFieldDatabase;
+using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Kortisto
@@ -8,7 +8,7 @@ namespace GoNorth.Data.Kortisto
     /// <summary>
     /// Kortisto Npc
     /// </summary>
-    public class KortistoNpc : FlexFieldObject
+    public class KortistoNpc : FlexFieldObject, IExportSnippetExportable
     {
 
         /// <summary>

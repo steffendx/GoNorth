@@ -101,10 +101,21 @@ namespace GoNorth.Services.Export.Placeholder
         /// </summary>
         DialogDailyRoutineEventNotFoundError = 18,
 
+        /// <summary>
+        /// A wait action has only a direct continue function
+        /// </summary>
+        WaitActionHasOnlyDirectContinueFunction = 19,
+
 
         /// <summary>
         /// No Player Npc Exists
         /// </summary>
-        NoPlayerNpcExistsError = 200
+        NoPlayerNpcExistsError = 200,
+
+
+        /// <summary>
+        /// Export snippet is missing its placeholder
+        /// </summary>
+        ExportSnippetMissing = 500
     }
 }

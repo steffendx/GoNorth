@@ -100,6 +100,116 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         private const string Placeholder_OperatorIsNotSetTo_End = "Tale_Action_OperatorIsNotSetTo_End";
 
         /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is "add"
+        /// </summary>
+        private const string Placeholder_OperatorIsAdd_Start = "Tale_Action_OperatorIsAdd_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is "add"
+        /// </summary>
+        private const string Placeholder_OperatorIsAdd_End = "Tale_Action_OperatorIsAdd_End";
+        
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is not "add"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotAdd_Start = "Tale_Action_OperatorIsNotAdd_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is not "add"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotAdd_End = "Tale_Action_OperatorIsNotAdd_End";
+
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is "Substract"
+        /// </summary>
+        private const string Placeholder_OperatorIsSubstract_Start = "Tale_Action_OperatorIsSubstract_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is "Substract"
+        /// </summary>
+        private const string Placeholder_OperatorIsSubstract_End = "Tale_Action_OperatorIsSubstract_End";
+        
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is not "Substract"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotSubstract_Start = "Tale_Action_OperatorIsNotSubstract_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is not "Substract"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotSubstract_End = "Tale_Action_OperatorIsNotSubstract_End";
+
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is "multiply"
+        /// </summary>
+        private const string Placeholder_OperatorIsMultiply_Start = "Tale_Action_OperatorIsMultiply_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is "multiply"
+        /// </summary>
+        private const string Placeholder_OperatorIsMultiply_End = "Tale_Action_OperatorIsMultiply_End";
+        
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is not "multiply"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotMultiply_Start = "Tale_Action_OperatorIsNotMultiply_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is not "multiply"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotMultiply_End = "Tale_Action_OperatorIsNotMultiply_End";
+
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is "divide"
+        /// </summary>
+        private const string Placeholder_OperatorIsDivide_Start = "Tale_Action_OperatorIsDivide_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is "divide"
+        /// </summary>
+        private const string Placeholder_OperatorIsDivide_End = "Tale_Action_OperatorIsDivide_End";
+        
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the operator is not "divide"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotDivide_Start = "Tale_Action_OperatorIsNotDivide_Start";
+
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the operator is not "divide"
+        /// </summary>
+        private const string Placeholder_OperatorIsNotDivide_End = "Tale_Action_OperatorIsNotDivide_End";
+
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the name of the value equals a certain value
+        /// </summary>
+        private const string Placeholder_ValueNameEquals_Start = "Tale_Action_ValueName_Equals_(.*)_Start";
+        
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the name of the value equals a certain value friendly name
+        /// </summary>
+        private const string Placeholder_ValueNameEquals_Start_FriendlyName = "Tale_Action_ValueName_Equals_NAME_OF_FIELD_Start";
+        
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the name of the value equals a certain value
+        /// </summary>
+        private const string Placeholder_ValueNameEquals_End = "Tale_Action_ValueName_Equals_End";
+        
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the name of the value does not equal a certain value
+        /// </summary>
+        private const string Placeholder_ValueNameNotEquals_Start = "Tale_Action_ValueName_NotEquals_(.*)_Start";
+        
+        /// <summary>
+        /// Placeholder for the start of the content that will only be rendered if the name of the value does not equal a certain value friendly name
+        /// </summary>
+        private const string Placeholder_ValueNameNotEquals_Start_FriendlyName = "Tale_Action_ValueName_NotEquals_NAME_OF_FIELD_Start";
+        
+        /// <summary>
+        /// Placeholder for the end of the content that will only be rendered if the name of the value does not equal a certain value
+        /// </summary>
+        private const string Placeholder_ValueNameNotEquals_End = "Tale_Action_ValueName_NotEquals_End";
+
+        /// <summary>
         /// Value change
         /// </summary>
         private const string Placeholder_ValueChange = "Tale_Action_ValueChange";
@@ -147,13 +257,13 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Action string</returns>
-        public override async Task<string> BuildActionFromParsedData(ValueActionRenderBase.ValueFieldActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
+        public override async Task<string> BuildActionFromParsedData(ValueActionRenderBase.ValueFieldActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
             ExportTemplate actionTemplate = await GetExportTemplate(project);
-            IFlexFieldExportable valueObject = await GetValueObject(parsedData, npc, errorCollection);
+            IFlexFieldExportable valueObject = await GetValueObject(parsedData, flexFieldObject, errorCollection);
             if(valueObject == null)
             {
                 return string.Empty;
@@ -173,8 +283,36 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Operator).Replace(actionCode, GetOperatorFromTemplate(project, parsedData.Operator, errorCollection));
             actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsSetTo_Start, Placeholder_OperatorIsSetTo_End, parsedData.Operator == "=");
             actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsNotSetTo_Start, Placeholder_OperatorIsNotSetTo_End, parsedData.Operator != "=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsAdd_Start, Placeholder_OperatorIsAdd_End, parsedData.Operator == "+=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsNotAdd_Start, Placeholder_OperatorIsNotAdd_End, parsedData.Operator != "+=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsSubstract_Start, Placeholder_OperatorIsSubstract_End, parsedData.Operator == "-=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsNotSubstract_Start, Placeholder_OperatorIsNotSubstract_End, parsedData.Operator != "-=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsMultiply_Start, Placeholder_OperatorIsMultiply_End, parsedData.Operator == "*=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsNotMultiply_Start, Placeholder_OperatorIsNotMultiply_End, parsedData.Operator != "*=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsDivide_Start, Placeholder_OperatorIsDivide_End, parsedData.Operator == "/=");
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_OperatorIsNotDivide_Start, Placeholder_OperatorIsNotDivide_End, parsedData.Operator != "/=");
             actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_ValueIsString_Start, Placeholder_ValueIsString_End, exportField.FieldType != ExportConstants.FlexFieldType_Number);
             actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_ValueIsNumber_Start, Placeholder_ValueIsNumber_End, exportField.FieldType == ExportConstants.FlexFieldType_Number);
+            actionCode = ExportUtil.RenderPlaceholderIfFuncTrue(actionCode, Placeholder_ValueNameEquals_Start, Placeholder_ValueNameEquals_End, m => {
+                string searchedFieldName = m.Groups[1].Value;
+                searchedFieldName = searchedFieldName.ToLowerInvariant();
+                string fieldName = string.Empty;
+                if(!string.IsNullOrEmpty(exportField.Name))
+                {
+                    fieldName = exportField.Name.ToLowerInvariant();
+                }
+                return fieldName == searchedFieldName;
+            });
+            actionCode = ExportUtil.RenderPlaceholderIfFuncTrue(actionCode, Placeholder_ValueNameNotEquals_Start, Placeholder_ValueNameNotEquals_End, m => {
+                string searchedFieldName = m.Groups[1].Value;
+                searchedFieldName = searchedFieldName.ToLowerInvariant();
+                string fieldName = string.Empty;
+                if(!string.IsNullOrEmpty(exportField.Name))
+                {
+                    fieldName = exportField.Name.ToLowerInvariant();
+                }
+                return fieldName != searchedFieldName;
+            });
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_ValueChange).Replace(actionCode, m => {
                 if(exportField.FieldType != ExportConstants.FlexFieldType_Number) 
                 {
@@ -198,12 +336,14 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Builds a preview text from parsed data
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
+        /// <param name="child">Child node</param>
+        /// <param name="parent">Parent</param>
         /// <returns>Preview text</returns>
-        public override async Task<string> BuildPreviewTextFromParsedData(ValueActionRenderBase.ValueFieldActionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public override async Task<string> BuildPreviewTextFromParsedData(ValueActionRenderBase.ValueFieldActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
         {
-            IFlexFieldExportable valueObject = await GetValueObject(parsedData, npc, errorCollection);
+            IFlexFieldExportable valueObject = await GetValueObject(parsedData, flexFieldObject, errorCollection);
             if(valueObject == null)
             {
                 return string.Empty;
@@ -251,10 +391,10 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Returns the value object to use
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc</param>
+        /// <param name="flexFieldObject">Flex Field object</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Value Object</returns>
-        protected abstract Task<IFlexFieldExportable> GetValueObject(ValueFieldActionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection);
+        protected abstract Task<IFlexFieldExportable> GetValueObject(ValueFieldActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection);
 
 
         /// <summary>
@@ -303,6 +443,26 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
                 ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsSetTo_End, _localizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotSetTo_Start, _localizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotSetTo_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsAdd_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsAdd_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotAdd_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotAdd_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsSubstract_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsSubstract_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotSubstract_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotSubstract_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsMultiply_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsMultiply_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotMultiply_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotMultiply_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsDivide_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsDivide_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotDivide_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_OperatorIsNotDivide_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_ValueNameEquals_Start_FriendlyName, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_ValueNameEquals_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_ValueNameNotEquals_Start_FriendlyName, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_ValueNameNotEquals_End, _localizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_ValueChange, _localizer)
             };
 

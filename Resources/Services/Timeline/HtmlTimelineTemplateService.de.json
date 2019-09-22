@@ -10,6 +10,8 @@
     "KortistoFolderCreated": "Ein neuer Kategorie <a href='/Kortisto?folderId={1}'>{0}</a> wurde in Kortisto angelegt.",
     "KortistoFolderDeleted": "Die Kategorie {0} wurde in Kortisto gelöscht.",
     "KortistoFolderUpdated": "Die Kategorie <a href='/Kortisto?folderId={1}'>{0}</a> wurde in Kortisto aktualisiert.",
+    "KortistoFolderMovedToFolder": "Die Kategorie {0} wurde in die Kategorie <a href='/Kortisto?folderId={3}'>{2}</a> in Kortisto verschoben.",
+    "KortistoFolderMovedToRootFolder": "Die Kategorie {0} wurde auf die <a href='/Kortisto'>oberste Ebene</a> in Kortisto verschoben.",
 
     "KortistoNpcTemplateCreated": "Ein neues Npc Template <a href='/Kortisto/Npc?template=1&id={1}'>{0}</a> wurde angelegt.",
     "KortistoNpcTemplateDeleted": "Das Npc Template {0} wurde gelöscht.",
@@ -21,10 +23,16 @@
     "KortistoNpcDeleted": "Der Npc {0} wurde gelöscht.",
     "KortistoNpcUpdated": "Der Npc <a href='/Kortisto/Npc?id={1}'>{0}</a> wurde aktualisiert.",
     "KortistoNpcImageUpload": "Das Bild des Npc <a href='/Kortisto/Npc?id={1}'>{0}</a> wurde geändert.",
+    "KortistoNpcMovedToFolder": "Der Npc {0} wurde in die Kategorie <a href='/Kortisto?folderId={3}'>{2}</a> in Kortisto verschoben.",
+    "KortistoNpcMovedToRoot": "Der Npc {0} wurde auf die <a href='/Kortisto'>oberste Ebene</a> in Kortisto verschoben.",
+    "KortistoNpcExportSnippetChanged": "Das Export Snippet {0} des Npc <a href='/Kortisto/Npc?id={2}'>{1}</a> wurde geändert.",
+    "KortistoNpcExportSnippetDeleted": "Das Export Snippet {0} des Npc <a href='/Kortisto/Npc?id={2}'>{1}</a> wurde gelöscht.",
 
     "StyrFolderCreated": "Ein neue Kategorie <a href='/Styr?folderId={1}'>{0}</a> wurde in Styr angelegt.",
     "StyrFolderDeleted": "Die Kategorie {0} wurde in Styr gelöscht.",
     "StyrFolderUpdated": "Die Kategorie <a href='/Styr?folderId={1}'>{0}</a> wurde in Styr aktualisiert.",
+    "StyrFolderMovedToFolder": "Die Kategorie {0} wurde in die Kategorie <a href='/Styr?folderId={3}'>{2}</a> in Styr verschoben.",
+    "StyrFolderMovedToRootFolder": "Die Kategorie {0} wurde auf die <a href='/Styr'>oberste Ebene</a> in Styr verschoben.",
 
     "StyrItemTemplateCreated": "Ein neues Item Template <a href='/Styr/Item?template=1&id={1}'>{0}</a> wurde angelegt.",
     "StyrItemTemplateDeleted": "Das Item Template {0} wurde gelöscht.",
@@ -36,10 +44,16 @@
     "StyrItemDeleted": "Das Item {0} wurde gelöscht.",
     "StyrItemUpdated": "Das Item <a href='/Styr/Item?id={1}'>{0}</a> wurde aktualisiert.",
     "StyrItemImageUpload": "Das Bild des Item <a href='/Styr/Item?id={1}'>{0}</a> wurde geändert.",
+    "StyrItemMovedToFolder": "Das Item {0} wurde in die Kategorie <a href='/Styr?folderId={3}'>{2}</a> in Styr verschoben.",
+    "StyrItemMovedToRoot": "Das Item {0} wurde auf die <a href='/Styr'>oberste Ebene</a> in Styr verschoben.",
+    "StyrItemExportSnippetChanged": "Das Export Snippet {0} des Item <a href='/Styr/Item?id={2}'>{1}</a> wurde geändert.",
+    "StyrItemExportSnippetDeleted": "Das Export Snippet {0} des Item <a href='/Styr/Item?id={2}'>{1}</a> wurde gelöscht.",
 
     "EvneFolderCreated": "Ein neue Kategorie <a href='/Evne?folderId={1}'>{0}</a> wurde in Evne angelegt.",
     "EvneFolderDeleted": "Die Kategorie {0} wurde in Evne gelöscht.",
     "EvneFolderUpdated": "Die Kategorie <a href='/Evne?folderId={1}'>{0}</a> wurde in Evne aktualisiert.",
+    "EvneFolderMovedToFolder": "Die Kategorie {0} wurde in die Kategorie <a href='/Evne?folderId={3}'>{2}</a> in Evne verschoben.",
+    "EvneFolderMovedToRootFolder": "Die Kategorie {0} wurde auf die <a href='/Evne'>oberste Ebene</a> in Evne verschoben.",
 
     "EvneSkillTemplateCreated": "Ein neues Fertigkeiten Template <a href='/Evne/Skill?template=1&id={1}'>{0}</a> wurde angelegt.",
     "EvneSkillTemplateDeleted": "Das Fertigkeiten Template {0} wurde gelöscht.",
@@ -51,6 +65,10 @@
     "EvneSkillDeleted": "Die Fähigkeit {0} wurde gelöscht.",
     "EvneSkillUpdated": "Die Fähigkeit <a href='/Evne/Skill?id={1}'>{0}</a> wurde aktualisiert.",
     "EvneSkillImageUpload": "Das Bild der Fähigkeit <a href='/Evne/Skill?id={1}'>{0}</a> wurde geändert.",
+    "EvneSkillMovedToFolder": "Die Fähigkeit {0} wurde in die Kategorie <a href='/Evne?folderId={3}'>{2}</a> in Evne verschoben.",
+    "EvneSkillMovedToRoot": "Die Fähigkeit {0} wurde auf die <a href='/Evne'>oberste Ebene</a> in Evne verschoben.",
+    "EvneSkillExportSnippetChanged": "Das Export Snippet {0} der Fähigkeit <a href='/Evne/Skill?id={2}'>{1}</a> wurde geändert.",
+    "EvneSkillExportSnippetDeleted": "Das Export Snippet {0} der Fähigkeit <a href='/Evne/Skill?id={2}'>{1}</a> wurde gelöscht.",
 
     "KirjaPageCreated": "Eine neue Seite <a href='/Kirja?id={1}'>{0}</a> wurde in Kirja angelegt.",
     "KirjaPageDeleted": "Die Seite {0} wurde in Kirja gelöscht.",

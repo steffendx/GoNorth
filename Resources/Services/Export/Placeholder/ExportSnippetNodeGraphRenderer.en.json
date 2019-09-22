@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_ExportSnippet_ScriptFunctionName": "Name of the script function",
+    "PlaceholderDesc_ExportSnippet_Function_ParentPreview": "Text preview of the parent nodes that lead to this function. This placeholder is intended to be used in a comment to increase readability.",
+    "PlaceholderDesc_ExportSnippet_ScriptContent": "Content of the script function"
+}

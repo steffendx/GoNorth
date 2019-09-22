@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
@@ -16,6 +15,11 @@ namespace GoNorth.Services.Export.Placeholder
         private readonly IStringLocalizer _localizer;
 
         /// <summary>
+        /// Current Error Context
+        /// </summary>
+        public string CurrentErrorContext { get; set; }
+
+        /// <summary>
         /// Error Messages
         /// </summary>
         private List<ExportPlaceholderError> _errorMessages { get; set; }
@@ -28,8 +32,10 @@ namespace GoNorth.Services.Export.Placeholder
         {
             _localizer = localizerFactory.Create(typeof(ExportPlaceholderErrorCollection));
 
+            CurrentErrorContext = string.Empty;
             _errorMessages = new List<ExportPlaceholderError>();
         }
+
 
         /// <summary>
         /// Adds an error that a flex field is missing
@@ -194,6 +200,14 @@ namespace GoNorth.Services.Export.Placeholder
             AddErrorMessage(ExportPlaceholderErrorType.DialogUnknownActionOperator, _localizer[ExportPlaceholderErrorType.DialogUnknownActionOperator.ToString(), actionOperator].Value);
         }
 
+        /// <summary>
+        /// Adds an error if a wait function has only a direct continue function
+        /// </summary>
+        public void AddWaitActionHasOnlyDirectContinueFunction()
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.WaitActionHasOnlyDirectContinueFunction, _localizer[ExportPlaceholderErrorType.WaitActionHasOnlyDirectContinueFunction.ToString()].Value);
+        }
+
 
         /// <summary>
         /// Adds an no player npc exists error
@@ -203,6 +217,16 @@ namespace GoNorth.Services.Export.Placeholder
             AddErrorMessage(ExportPlaceholderErrorType.NoPlayerNpcExistsError, _localizer[ExportPlaceholderErrorType.NoPlayerNpcExistsError.ToString()].Value);
         }
 
+
+        /// <summary>
+        /// Adds an error if an export snippet is missing its placeholder
+        /// </summary>
+        public void AddExportSnippetMissingPlaceholder()
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.ExportSnippetMissing, _localizer[ExportPlaceholderErrorType.ExportSnippetMissing.ToString()].Value);
+        }
+
+
         /// <summary>
         /// Adds an error message
         /// </summary>
@@ -210,7 +234,7 @@ namespace GoNorth.Services.Export.Placeholder
         /// <param name="message">Message</param>
         private void AddErrorMessage(ExportPlaceholderErrorType errorType, string message)
         {
-            ExportPlaceholderError existingError = _errorMessages.FirstOrDefault(e => e.ErrorType == errorType && e.Message == message);
+            ExportPlaceholderError existingError = _errorMessages.FirstOrDefault(e => e.ErrorType == errorType && e.Message == message && e.ErrorContext == CurrentErrorContext);
             if(existingError != null)
             {
                 ++existingError.Count;
@@ -219,6 +243,7 @@ namespace GoNorth.Services.Export.Placeholder
 
             _errorMessages.Add(new ExportPlaceholderError() {
                 ErrorType = errorType,
+                ErrorContext = CurrentErrorContext,
                 Message = message,
                 Count = 1
             });

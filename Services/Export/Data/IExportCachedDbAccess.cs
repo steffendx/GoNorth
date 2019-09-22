@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
@@ -76,5 +77,12 @@ namespace GoNorth.Services.Export.Data
         /// </summary>
         /// <returns>Misc project config</returns>
         Task<MiscProjectConfig> GetMiscProjectConfig();
+
+        /// <summary>
+        /// Returns the object export snippets of an object
+        /// </summary>
+        /// <param name="exportObjectId">Id of the Object for which the snippets must be loaded</param>
+        /// <returns>Object export snippets</returns>
+        Task<List<ObjectExportSnippet>> GetObjectExportSnippetsByObject(string exportObjectId);
     }
 }

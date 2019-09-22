@@ -106,6 +106,16 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         protected abstract TimelineEvent FolderUpdatedEvent { get; }
 
+        /// <summary>
+        /// Event used for the folder moved to folder event
+        /// </summary>
+        protected abstract TimelineEvent FolderMovedToFolderEvent { get; }
+
+        /// <summary>
+        /// Event used for the folder moved to root level event
+        /// </summary>
+        protected abstract TimelineEvent FolderMovedToRootEvent { get; }
+
 
         /// <summary>
         /// Event used for the template created event
@@ -151,7 +161,17 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Event used for the flex field object image updated event
         /// </summary>
-        protected abstract TimelineEvent ObjectImageUploadEvent { get; }        
+        protected abstract TimelineEvent ObjectImageUploadEvent { get; }   
+        
+        /// <summary>
+        /// Event used for the object moved to folder event
+        /// </summary>
+        protected abstract TimelineEvent ObjectMovedToFolderEvent { get; }
+
+        /// <summary>
+        /// Event used for the object moved to root level event
+        /// </summary>
+        protected abstract TimelineEvent ObjectMovedToRootEvent { get; }     
 
 
         /// <summary>
@@ -193,6 +213,16 @@ namespace GoNorth.Controllers.Api
         /// Export Function Id Db Access
         /// </summary>
         private readonly IExportFunctionIdDbAccess _exportFunctionIdDbAccess;
+
+        /// <summary>
+        /// Object export snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+
+        /// <summary>
+        /// Object export snippet snapshot Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetSnapshotDbAccess _objectExportSnippetSnapshotDbAccess;
 
         /// <summary>
         /// Image Access
@@ -245,6 +275,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="imageAccess">Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="userManager">User Manager</param>
@@ -254,8 +286,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public FlexFieldBaseApiController(IFlexFieldFolderDbAccess folderDbAccess, IFlexFieldObjectDbAccess<T> templateDbAccess, IFlexFieldObjectDbAccess<T> objectDbAccess, IProjectDbAccess projectDbAccess, IFlexFieldObjectTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
-                                          ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IFlexFieldObjectImageAccess imageAccess, IFlexFieldThumbnailService thumbnailService, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, 
-                                          ITimelineService timelineService, IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, IStringLocalizerFactory localizerFactory)
+                                          ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, 
+                                          IFlexFieldObjectImageAccess imageAccess, IFlexFieldThumbnailService thumbnailService, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, 
+                                          IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, IStringLocalizerFactory localizerFactory)
         {
             _folderDbAccess = folderDbAccess;
             _templateDbAccess = templateDbAccess;
@@ -265,6 +298,8 @@ namespace GoNorth.Controllers.Api
             _exportTemplateDbAccess = exportTemplateDbAccess;
             _languageKeyDbAccess = languageKeyDbAccess;
             _exportFunctionIdDbAccess = exportFunctionIdDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _objectExportSnippetSnapshotDbAccess = objectExportSnippetSnapshotDbAccess;
             _imageAccess = imageAccess;
             _thumbnailService = thumbnailService;
             _userManager = userManager;
@@ -422,6 +457,64 @@ namespace GoNorth.Controllers.Api
 
             return Ok(id);
         }
+
+        /// <summary>
+        /// Moves a folder to a folder
+        /// </summary>
+        /// <param name="id">Id of the folder to move</param>
+        /// <param name="newParentId">Id of the folder to move the object to</param>
+        /// <returns>Result</returns>
+        [Produces(typeof(string))]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MoveFolderToFolder(string id, string newParentId)
+        {
+            if(string.IsNullOrEmpty(id))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest);
+            }
+
+            if(newParentId == null)
+            {
+                newParentId = string.Empty;
+            }
+
+            try
+            {
+                FlexFieldFolder folderToMove = await _folderDbAccess.GetFolderById(id);
+                if(folderToMove == null)
+                {
+                    return StatusCode((int)HttpStatusCode.NotFound);
+                }
+
+                FlexFieldFolder folderToMoveTo = null;
+                if(!string.IsNullOrEmpty(newParentId))
+                {
+                    folderToMoveTo = await _folderDbAccess.GetFolderById(newParentId);
+                    if(folderToMoveTo == null)
+                    {
+                        return StatusCode((int)HttpStatusCode.NotFound);
+                    }
+                }
+
+                await _folderDbAccess.MoveToFolder(id, newParentId);
+                
+                TimelineEvent eventToUse = FolderMovedToFolderEvent;
+                if(string.IsNullOrEmpty(newParentId))
+                {
+                    eventToUse = FolderMovedToRootEvent;
+                }
+                await _timelineService.AddTimelineEntry(eventToUse, folderToMove.Name, folderToMove.Id, folderToMoveTo != null ? folderToMoveTo.Name : string.Empty, folderToMoveTo != null ? folderToMoveTo.Id : string.Empty);
+
+                return Ok(id);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not move folder {0}", id);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
 
         /// <summary>
         /// Generates the Thumbnail Filename
@@ -909,6 +1002,8 @@ namespace GoNorth.Controllers.Api
 
             await _languageKeyDbAccess.DeleteAllLanguageKeysInGroup(flexFieldObject.ProjectId, flexFieldObject.Id);
             await _exportFunctionIdDbAccess.DeleteAllExportFunctionIdsForObject(flexFieldObject.ProjectId, flexFieldObject.Id);
+            await _objectExportSnippetDbAccess.DeleteExportSnippetsByObjectId(flexFieldObject.Id);
+            await _objectExportSnippetSnapshotDbAccess.DeleteExportSnippetSnapshotsByObjectId(flexFieldObject.Id);
 
             await DeleteAdditionalFlexFieldObjectDependencies(flexFieldObject);
 
@@ -1166,6 +1261,63 @@ namespace GoNorth.Controllers.Api
             catch(FileNotFoundException)
             {
                 return NotFound();
+            }
+        }
+
+        
+        /// <summary>
+        /// Moves an object to a folder
+        /// </summary>
+        /// <param name="id">Id of the folder to move</param>
+        /// <param name="newParentId">Id of the folder to move the object to</param>
+        /// <returns>Result</returns>
+        [Produces(typeof(string))]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MoveObjectToFolder(string id, string newParentId)
+        {
+            if(string.IsNullOrEmpty(id))
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest);
+            }
+
+            if(newParentId == null)
+            {
+                newParentId = string.Empty;
+            }
+
+            try
+            {
+                T objectToMove = await _objectDbAccess.GetFlexFieldObjectById(id);
+                if(objectToMove == null)
+                {
+                    return StatusCode((int)HttpStatusCode.NotFound);
+                }
+
+                FlexFieldFolder folderToMoveTo = null;
+                if(!string.IsNullOrEmpty(newParentId))
+                {
+                    folderToMoveTo = await _folderDbAccess.GetFolderById(newParentId);
+                    if(folderToMoveTo == null)
+                    {
+                        return StatusCode((int)HttpStatusCode.NotFound);
+                    }
+                }
+
+                TimelineEvent eventToUse = ObjectMovedToFolderEvent;
+                if(string.IsNullOrEmpty(newParentId))
+                {
+                    eventToUse = ObjectMovedToRootEvent;
+                }
+
+                await _objectDbAccess.MoveToFolder(id, newParentId);
+                await _timelineService.AddTimelineEntry(eventToUse, objectToMove.Name, objectToMove.Id, folderToMoveTo != null ? folderToMoveTo.Name : string.Empty, folderToMoveTo != null ? folderToMoveTo.Id : string.Empty);
+                return Ok(id);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not move folder {0}", id);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 

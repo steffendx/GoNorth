@@ -49,22 +49,6 @@ namespace GoNorth.Services.Export.Placeholder
 
 
         /// <summary>
-        /// Script Type none
-        /// </summary>
-        private const int ScriptType_None = -1;
-
-        /// <summary>
-        /// Script Type none
-        /// </summary>
-        private const int ScriptType_NodeGraph = 0;
-
-        /// <summary>
-        /// Script Type none
-        /// </summary>
-        private const int ScriptType_Code = 1;
-
-
-        /// <summary>
         /// Node graph exporter
         /// </summary>
         private readonly INodeGraphExporter _nodeGraphExporter;
@@ -116,7 +100,7 @@ namespace GoNorth.Services.Export.Placeholder
         public string ResolveDailyRoutineEventContentPlaceholders(string code, KortistoNpc npc, KortistoNpcDailyRoutineEvent dailyRoutineEvent, ExportPlaceholderErrorCollection errorCollection)
         {
             code = ExportUtil.RenderPlaceholderIfFuncTrue(code, Placeholder_HasAdditionalScriptFunctions_Start, Placeholder_HasAdditionalScriptFunctions_End, m => {
-                if(dailyRoutineEvent.ScriptType == ScriptType_NodeGraph)
+                if(dailyRoutineEvent.ScriptType == ExportConstants.ScriptType_NodeGraph)
                 {
                     return !string.IsNullOrEmpty(this.RenderNodeGraph(dailyRoutineEvent, npc, errorCollection).AdditionalFunctionsCode);
                 }
@@ -125,7 +109,7 @@ namespace GoNorth.Services.Export.Placeholder
             });
 
             code = ExportUtil.RenderPlaceholderIfFuncTrue(code, Placeholder_HasNoAdditionalScriptFunctions_Start, Placeholder_HasNoAdditionalScriptFunctions_End, m => {
-                if(dailyRoutineEvent.ScriptType == ScriptType_NodeGraph)
+                if(dailyRoutineEvent.ScriptType == ExportConstants.ScriptType_NodeGraph)
                 {
                     return string.IsNullOrEmpty(this.RenderNodeGraph(dailyRoutineEvent, npc, errorCollection).AdditionalFunctionsCode);
                 }
@@ -134,11 +118,11 @@ namespace GoNorth.Services.Export.Placeholder
             });
 
             code = ExportUtil.BuildPlaceholderRegex(Placeholder_ScriptContent, ExportConstants.ListIndentPrefix).Replace(code, m => {
-                if(dailyRoutineEvent.ScriptType == ScriptType_NodeGraph)
+                if(dailyRoutineEvent.ScriptType == ExportConstants.ScriptType_NodeGraph)
                 {
                     return ExportUtil.IndentListTemplate(this.RenderNodeGraph(dailyRoutineEvent, npc, errorCollection).StartStepCode, m.Groups[1].Value);
                 }
-                else if(dailyRoutineEvent.ScriptType == ScriptType_Code)
+                else if(dailyRoutineEvent.ScriptType == ExportConstants.ScriptType_Code)
                 {
                     return ExportUtil.IndentListTemplate(dailyRoutineEvent.ScriptCode != null ? dailyRoutineEvent.ScriptCode : string.Empty, m.Groups[1].Value);
                 }
@@ -147,7 +131,7 @@ namespace GoNorth.Services.Export.Placeholder
             });
 
             code = ExportUtil.BuildPlaceholderRegex(Placeholder_AdditionalScriptFunctions, ExportConstants.ListIndentPrefix).Replace(code, m => {
-                if(dailyRoutineEvent.ScriptType == ScriptType_NodeGraph)
+                if(dailyRoutineEvent.ScriptType == ExportConstants.ScriptType_NodeGraph)
                 {
                     return ExportUtil.IndentListTemplate(this.RenderNodeGraph(dailyRoutineEvent, npc, errorCollection).AdditionalFunctionsCode, m.Groups[1].Value);
                 }

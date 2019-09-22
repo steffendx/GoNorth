@@ -8,13 +8,6 @@
     (function(DailyRoutines) {
 
         /**
-        * Daily Routine Script Type selection Namespace
-        * @namespace ChooseScriptTypeDialog
-        */
-        (function(ChooseScriptTypeDialog) {
-        }(DailyRoutines.ChooseScriptTypeDialog = DailyRoutines.ChooseScriptTypeDialog || {}));
-        
-        /**
         * Daily routines util function namespace
         * @namespace Util
         */

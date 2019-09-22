@@ -52,6 +52,14 @@
         </ul>
     </div>
 
+    <div class="alert alert-warning gn-defaultContentTopMargin gn-exportManageTemplateChildObjectsList" style="display: none" data-bind="visible: objectWithInvalidSnippets().length > 0">
+        @Localizer["ObjectsHavingInvalidSnippets"]
+        <ul data-bind="foreach: objectWithInvalidSnippets">
+            <li><a data-bind="href: function(childTemplate) { return $root.buildChildTemplateUrl(childTemplate); }"><span data-bind="text: objectName"></span></a></li>
+        </ul>
+    </div>
+    
+
     <!-- Command Buttons -->
     <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: save, disable: isLoading() || isReadonly()">
         <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["Save"]

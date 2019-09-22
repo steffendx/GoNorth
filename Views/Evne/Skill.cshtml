@@ -11,18 +11,10 @@
 <div id="gn-evneSkillContainer">
     <h2><span data-bind="visible: !isTemplateMode()">@ViewData["Title"]</span><span data-bind="visible: isTemplateMode" style="display: none">@Localizer["Template"]</span><span data-bind="visible: objectNameDisplay"> <span data-bind="text: objectNameDisplay"></span></span></h2>
 
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormDialogsButtons.cshtml", new ObjectFormButtonsViewModel { Localizer = Localizer, ExportTemplateType = TemplateType.ObjectSkill })
+
     <!-- Node Dialog -->
     @await Html.PartialAsync("~/Views/Shared/NodeGraphDialogs.cshtml")
-
-    <!-- Condition Dialog -->
-    <!-- ko with: conditionDialog -->
-        @await Html.PartialAsync("~/Views/Shared/NodeConditionBase.cshtml")
-    <!-- /ko -->
-    
-    <!-- Choose Object Dialog -->
-    <!-- ko with: chooseObjectDialog -->
-        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
-    <!-- /ko -->
 
     @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
     {
@@ -30,8 +22,6 @@
             @await Html.PartialAsync("~/Views/ImplementationStatus/CompareDialog.cshtml")
         <!-- /ko -->
     }
-
-    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormDialogsButtons.cshtml", new ObjectFormButtonsViewModel { Localizer = Localizer, ExportTemplateType = TemplateType.ObjectSkill })
 
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormContent.cshtml", new ObjectFormViewModel { Localizer = Localizer, ApiControllerName = "EvneApi", ObjectIcon = "glyphicon-flash" } )
 
@@ -98,6 +88,9 @@
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormBaseScripts.cshtml", Localizer)
 
     <environment include="Development">
+        <script src="~/lib/ace-builds/src-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-noconflict/ext-language_tools.js"></script>
+
         <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"]).js"></script>
         <script src="~/js/Evne/evneLang.@(Localizer["NodeLang"]).js"></script>
 
@@ -105,6 +98,9 @@
         <script src="~/js/Evne/skill.viewmodel.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
+        <script src="~/lib/ace-builds/src-min-noconflict/ace.js"></script>
+        <script src="~/lib/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+        
         <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"]).min.js"></script>
         <script src="~/js/Evne/evneLang.@(Localizer["NodeLang"]).min.js"></script>
         

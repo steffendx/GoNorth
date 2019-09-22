@@ -34,6 +34,7 @@
     "Script": "Skript",
     "JSON": "JSON",
     "LanguageFile": "Sprachdatei",
+    "ExportSnippets": "Export Snippets",
     "RegenerateLanguageKeys": "Sprachschlüssel neu erstellen",
     "Ok": "Ok",
 
@@ -89,6 +90,17 @@
     "Download": "Herunterladen",
     "CopyToClipboard": "In die Zwischenablage kopieren",
     "SuccessfullyCopiedToClipboard": "Code wurde in die zwischenablage kopiert",
+
+    "InvalidSnippets": "Ungültige Export Snippets",
+    "ValidSnippets": "Gültige Export Snippets",
+    "ThereAreInvalidSnippets": "Es gibt ungültige Export Snippets da der zugehörige Platzhalter aus dem Template gelöscht wurde. Sie werden nicht exportiert werden.",
+    "NoExportSnippetExist": "Es existieren keine Export Snippets für dieses Objekt. Du musst im Template einen Export Snippet Platzhalter einfügen um diese Funktion nutzen zu können.",
+    "DeleteSnippetToolTip": "Hier klicken um das Snippet zu löschen",
+    "AreYouSureYouWantToDeleteTheExportSnippet": "Bist du sicher das du das Export Snippet löschen willst?",
+    "Close": "Schließen",
+
+    "UnsavedChanges": "Ungespeicherte Änderungen",
+    "AreYouSureYouWantToExportUnsavedChanges": "Es liegen ungespeicherte Änderungen vor. Der Export wird einen veralteten Stand reflektieren. Bist du sicher das du einen veralteten Stand exportieren willst?",
 
     "ReferencedInAikaQuests": "Referenziert in Aika Quests:",
 

@@ -49,6 +49,8 @@ using GoNorth.Data.ProjectConfig;
 using GoNorth.Services.DataMigration;
 using GoNorth.Services.ProjectConfig;
 using GoNorth.Services.Export.NodeGraphExport;
+using GoNorth.Services.Export.TemplateParsing;
+using GoNorth.Services.Export.ExportSnippets;
 
 namespace GoNorth
 {
@@ -168,6 +170,12 @@ namespace GoNorth
             services.AddScoped<IExportCachedDbAccess, ExportCachedDbAccess>();
             services.AddTransient<INodeGraphExporter, NodeGraphExporter>();
             services.AddTransient<INodeGraphParser, NodeGraphParser>();
+            services.AddTransient<IExportSnippetParser, ExportSnippetParser>();
+            services.AddTransient<IExportTemplateParser, ExportTemplateParser>();
+            services.AddTransient<IExportSnippetFunctionNameGenerator, ExportSnippetFunctionNameGenerator>();
+            services.AddTransient<IExportSnippetNodeGraphFunctionGenerator, ExportSnippetNodeGraphFunctionGenerator>();
+            services.AddTransient<IExportSnippetNodeGraphRenderer, ExportSnippetNodeGraphRenderer>();
+            services.AddTransient<IExportSnippetRelatedObjectUpdater, ExportSnippetRelatedObjectUpdater>();
 
             services.AddScoped<GoNorthUserManager>();
 
@@ -224,6 +232,8 @@ namespace GoNorth
             services.AddScoped<IDialogFunctionGenerationConditionDbAccess, DialogFunctionGenerationConditionMongoDbAccess>();
             services.AddScoped<IDialogFunctionGenerationConditionProvider, DialogFunctionGenerationConditionProvider>();
             services.AddScoped<IExportFunctionIdDbAccess, ExportFunctionIdMongoDbAccess>();
+            services.AddScoped<IObjectExportSnippetDbAccess, ObjectExportSnippetMongoDbAccess>();
+            services.AddScoped<IObjectExportSnippetSnapshotDbAccess, ObjectExportSnippetSnapshotMongoDbAccess>();
 
             services.AddScoped<ILanguageKeyDbAccess, LanguageKeyMongoDbAccess>();
 

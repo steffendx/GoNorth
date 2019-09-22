@@ -9,13 +9,19 @@
              */
             Item.ViewModel = function()
             {
-                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Styr", "StyrApi", "StyrItem", "StyrTemplate", "GetPagesByItem?itemId=", "GetMapsByItemId?itemId=" ]);
+                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Styr", "StyrApi", "Item", "StyrItem", "StyrTemplate", "GetPagesByItem?itemId=", "GetMapsByItemId?itemId=" ]);
 
                 this.containedInNpcInventory = new ko.observableArray();
                 this.loadingContainedInNpcInventory = new ko.observable(false);
                 this.errorLoadingContainedInNpcInventory = new ko.observable(false);
 
                 this.init();
+
+                // Add access to object id for actions and conditions
+                var self = this;
+                Styr.getCurrentItemId = function() {
+                    return self.id();
+                };
             };
 
             Item.ViewModel.prototype = jQuery.extend({ }, GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.prototype);

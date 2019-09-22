@@ -10,11 +10,7 @@
             Skill.ViewModel = function()
             {
                 GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
-                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Evne", "EvneApi", "EvneSkill", "EvneTemplate", "GetPagesBySkill?skillId=", null ]);
-
-                this.conditionDialog = new GoNorth.DefaultNodeShapes.Conditions.ConditionDialog();
-            
-                this.chooseObjectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
+                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Evne", "EvneApi", "Skill", "EvneSkill", "EvneTemplate", "GetPagesBySkill?skillId=", null ]);
 
                 this.isSkillFlowExpanded = new ko.observable(false);
                 this.loadedGraph = null;
@@ -30,49 +26,6 @@
                 Evne.getCurrentSkillId = function() {
                     return self.id();
                 };
-
-                // Add access to condition dialog
-                GoNorth.DefaultNodeShapes.openConditionDialog = function(condition) {
-                    if(self.isReadonly())
-                    {
-                        var readonlyDeferred = new jQuery.Deferred();
-                        readonlyDeferred.reject();
-                        return readonlyDeferred.promise();
-                    }
-
-                    var conditionDialogDeferred = new jQuery.Deferred();
-                    self.conditionDialog.openDialog(condition, conditionDialogDeferred);
-                    return conditionDialogDeferred;
-                };
-
-                // Opens the quest search dialog 
-                GoNorth.DefaultNodeShapes.openQuestSearchDialog = function() {
-                    if(self.isReadonly())
-                    {
-                        var readonlyDeferred = new jQuery.Deferred();
-                        readonlyDeferred.reject();
-                        return readonlyDeferred.promise();
-                    }
-
-                    return self.chooseObjectDialog.openQuestSearch(Evne.Localization.SkillViewModel.ChooseQuest);                    
-                };
-                
-                // Opens the npc search dialog 
-                GoNorth.DefaultNodeShapes.openNpcSearchDialog = function() {
-                    if(self.isReadonly())
-                    {
-                        var readonlyDeferred = new jQuery.Deferred();
-                        readonlyDeferred.reject();
-                        return readonlyDeferred.promise();
-                    }
-
-                    return self.chooseObjectDialog.openNpcSearch(Evne.Localization.SkillViewModel.ChooseNpc);                    
-                };
-
-                // Load config lists
-                GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
-                    self.errorOccured(true);
-                });
             };
 
             Skill.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);

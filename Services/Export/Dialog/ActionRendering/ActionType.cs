@@ -49,6 +49,11 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Add quest text
         /// </summary>
         AddQuestText = 10,
+
+        /// <summary>
+        /// Change the current skill value
+        /// </summary>
+        ChangeCurrentSkillValue = 13,
         
         /// <summary>
         /// Wait
@@ -59,6 +64,11 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Change Player State
         /// </summary>
         ChangePlayerState = 15,
+
+        /// <summary>
+        /// Change target npc State
+        /// </summary>
+        ChangeTargetNpcState = 16,
 
         /// <summary>
         /// Change Npc State
@@ -214,5 +224,30 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Walk choose npc to npc
         /// </summary>
         WalkChooseNpcToNpc = 47,
+
+        /// <summary>
+        /// Spawn an npc at marker
+        /// </summary>
+        SpawnNpcAtMarker = 48,
+        
+        /// <summary>
+        /// Spawn an item at marker
+        /// </summary>
+        SpawnItemAtMarker = 49,
+        
+        /// <summary>
+        /// Change an item value
+        /// </summary>
+        ChangeItemValue = 50,
+        
+        /// <summary>
+        /// Spawn item in the inventory of a chosen npc
+        /// </summary>
+        SpawnItemInChooseNpcInventory = 51,
+        
+        /// <summary>
+        /// Remove item from the inventory of a chosen npc
+        /// </summary>
+        RemoveItemFromChooseNpcInventory = 52
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.LanguageKeyGeneration;
@@ -100,16 +101,16 @@ namespace GoNorth.Services.Export.Dialog
         /// </summary>
         /// <param name="additionalFunction">Function</param>
         /// <param name="additionalFunctionsCode">Additional Function Code to wrap</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex Field object to which the dialog belongs</param>
         /// <returns>Function Code</returns>
-        protected override async Task<string> BuildDialogFunctionCode(ExportDialogFunction additionalFunction, string additionalFunctionsCode, KortistoNpc npc)
+        protected override async Task<string> BuildDialogFunctionCode(ExportDialogFunction additionalFunction, string additionalFunctionsCode, FlexFieldObject flexFieldObject)
         {
             string functionCode = (await _defaultTemplateProvider.GetDefaultTemplateByType(_curProject.Id, TemplateType.TaleDialogFunction)).Code;
             string functionContentCode = (await _defaultTemplateProvider.GetDefaultTemplateByType(_curProject.Id, TemplateType.TaleDialogStep)).Code;
             functionContentCode = ExportUtil.BuildPlaceholderRegex(Placeholder_StepContent).Replace(functionContentCode, additionalFunctionsCode);
 
             functionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_FunctionName).Replace(functionCode, additionalFunction.RootNode.DialogStepFunctionName);
-            functionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Function_ParentPreview).Replace(functionCode, await BuildFunctionParentPreview(additionalFunction, npc));
+            functionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Function_ParentPreview).Replace(functionCode, await BuildFunctionParentPreview(additionalFunction, flexFieldObject));
             functionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_FunctionContent, ExportConstants.ListIndentPrefix).Replace(functionCode, m => {
                 return ExportUtil.TrimEmptyLines(ExportUtil.IndentListTemplate(functionContentCode, m.Groups[1].Value));
             });

@@ -13,6 +13,9 @@
             /// All available actions
             var availableActions = [];
 
+            /// Height of action node
+            var actionNodeHeight = 200;
+
             /**
              * Adds a new available action
              * 
@@ -216,7 +219,74 @@
                         currentAction.showErrorCallback = function() {
                             self.showError();
                         };
+                        this.syncOutputPorts(currentAction);
                         currentAction.onInitialized(actionContent, this);
+                    },
+
+                    /**
+                     * Syncs the output ports
+                     * @param {object} currentAction Action to load the output ports from
+                     */
+                    syncOutputPorts: function(currentAction) {
+                        var currentPortDisplayNames = [];
+                        this.$el.find(".gn-nodeActionOutputLabel").each(function() {
+                            currentPortDisplayNames.push(jQuery(this).find("tspan").text());
+                        });
+                        if(currentPortDisplayNames.length == 0)
+                        {
+                            currentPortDisplayNames.push("");
+                        }
+
+                        var outPorts = ["output"];
+                        var outPortDisplayNames = [currentAction.getMainOutputLabel()];
+
+                        var additionalOutPorts = currentAction.getAdditionalOutports();
+                        if(additionalOutPorts)
+                        {
+                            for(var curPort = 0; curPort < additionalOutPorts.length; ++curPort)
+                            {
+                                outPorts.push("additionalActionOutput" + (curPort + 1));
+                                outPortDisplayNames.push(additionalOutPorts[curPort])
+                            }
+                        }
+
+                        if(!GoNorth.Util.isEqual(currentPortDisplayNames, outPortDisplayNames))
+                        {
+                            this.model.set("outPorts", outPorts);
+
+                            // Update Port Positions
+                            if(outPorts.length > 1)
+                            {
+                                var heightsPerPort = actionNodeHeight / (outPorts.length + 1);
+                                for(var curPort = 0; curPort < outPorts.length; ++curPort)
+                                {
+                                    var label = "";
+                                    if(curPort == 0)
+                                    {
+                                        label = currentAction.getMainOutputLabel();
+                                    }
+                                    else
+                                    {
+                                        label = additionalOutPorts[curPort - 1];
+                                    }
+
+                                    this.model.attr(".outPorts>.port" + curPort, { "ref-y": (heightsPerPort * (curPort + 1)) + "px", "ref": ".body" });
+                                    this.model.attr(".outPorts>.port" + curPort + " .port-label", { "title": label, "class": "gn-nodeActionOutputLabel", "dx": 15, "dy": 0 });
+                                }
+                            }
+                            else
+                            {
+                                this.model.attr(".outPorts>.port0" + " .port-label", { "title": "", "class": "", "dx": 15, "dy": 0 });
+                            }
+
+                            // setTimeout is required to have the element ready on load
+                            var self = this;
+                            setTimeout(function() {
+                                self.$el.find(".gn-nodeActionOutputLabel").each(function() {
+                                    jQuery(this).find("tspan").text(jQuery(this).attr("title"));
+                                });
+                            }, 1);
+                        }
                     },
 
                     /**

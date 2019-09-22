@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.LanguageKeyGeneration;
@@ -91,13 +91,13 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Action string</returns>
-        public override async Task<string> BuildActionFromParsedData(ShowFloatingTextAboveObjectActionRenderer.FloatingTextActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
+        public override async Task<string> BuildActionFromParsedData(ShowFloatingTextAboveObjectActionRenderer.FloatingTextActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
             ExportTemplate actionTemplate = await GetExportTemplate(project);
-            IFlexFieldExportable valueObject = await GetValueObject(project, parsedData, npc, errorCollection);
+            IFlexFieldExportable valueObject = await GetValueObject(project, parsedData, flexFieldObject, errorCollection);
             if(valueObject == null)
             {
                 return string.Empty;
@@ -106,7 +106,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
             string actionCode = actionTemplate.Code;
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_FloatingText).Replace(actionCode, parsedData.FloatingText);
             actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_FloatingText_LangKey).Replace(actionCode, m => {
-                return _languageKeyGenerator.GetDialogTextLineKey(npc.Id, valueObject.Name, GetLanguageKeyType(), data.Id, parsedData.FloatingText).Result;
+                return _languageKeyGenerator.GetDialogTextLineKey(flexFieldObject.Id, valueObject.Name, GetLanguageKeyType(), data.Id, parsedData.FloatingText).Result;
             });
 
             ExportObjectData flexFieldExportData = new ExportObjectData();
@@ -123,10 +123,12 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Builds a preview text from parsed data
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex fieldo bject to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
+        /// <param name="child">Child node</param>
+        /// <param name="parent">Parent</param>
         /// <returns>Preview text</returns>
-        public override Task<string> BuildPreviewTextFromParsedData(ShowFloatingTextAboveObjectActionRenderer.FloatingTextActionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public override Task<string> BuildPreviewTextFromParsedData(ShowFloatingTextAboveObjectActionRenderer.FloatingTextActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
         {
             return Task<string>.FromResult(GetPreviewText());
         }
@@ -162,10 +164,10 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// </summary>
         /// <param name="project">Project</param>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc</param>
+        /// <param name="flexFieldObject">Flex field object</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Value Object</returns>
-        protected abstract Task<IFlexFieldExportable> GetValueObject(GoNorthProject project, ShowFloatingTextAboveObjectActionRenderer.FloatingTextActionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection);
+        protected abstract Task<IFlexFieldExportable> GetValueObject(GoNorthProject project, ShowFloatingTextAboveObjectActionRenderer.FloatingTextActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection);
 
         /// <summary>
         /// Returns the language key type

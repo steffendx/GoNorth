@@ -75,5 +75,7 @@
     "PropertyNameMovementTarget": "Bewegungsziel",
     "PropertyNameScriptName": "Skriptname",
     "PropertyNameScriptCode": "Skriptcode",
-    "ScriptCodeChanged": "Skriptcode geändert"
+    "ScriptCodeChanged": "Skriptcode geändert",
+
+    "ExportSnippetsChanged": "Export Snippets geändert"
 }

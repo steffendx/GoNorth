@@ -24,8 +24,11 @@
                  * Loads the inventory
                  * 
                  * @param {object[]} inventory Inventory to load
+                 * @returns {jQuery.Deferred} Deferred for the loading
                  */
                 loadInventory: function (inventory) {
+                    var inventoryDef = new jQuery.Deferred();
+
                     var inventoryItemIds = [];
                     var itemLookup = {};
                     for (var curItem = 0; curItem < inventory.length; ++curItem) {
@@ -55,11 +58,17 @@
 
                         self.inventoryItems(loadedInventoryItems);
                         self.isLoadingInventory(false);
+
+                        inventoryDef.resolve();
                     }).fail(function (xhr) {
                         self.inventoryItems([]);
                         self.isLoadingInventory(false);
                         self.loadingInventoryError(true);
+
+                        inventoryDef.reject();
                     });
+
+                    return inventoryDef.promise();
                 },
 
 

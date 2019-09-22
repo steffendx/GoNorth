@@ -9,5 +9,26 @@
         (function(Item) {
         }(Styr.Item = Styr.Item || {}));
         
+        /**
+         * Item Form Actions Namespace
+         * @namespace Actions
+         */
+        (function(Actions) {
+        }(Styr.Actions = Styr.Actions || {}));
+
+        /**
+         * Item Form Conditions Namespace
+         * @namespace Conditions
+         */
+        (function(Conditions) {
+        }(Styr.Conditions = Styr.Conditions || {}));
+
+        /**
+         * Item Localization Namespace
+         * @namespace Localization
+         */
+        (function(Localization) {
+        }(Styr.Localization = Styr.Localization || {}));
+        
     }(GoNorth.Styr = GoNorth.Styr || {}));
 }(window.GoNorth = window.GoNorth || {}));

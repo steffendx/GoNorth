@@ -1,4 +1,5 @@
-using System.Reflection;
+using System.Collections.Generic;
+using GoNorth.Data.Exporting;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Tale;
 
@@ -15,21 +16,19 @@ namespace GoNorth.Services.Export.Json
         /// <param name="baseNpc">Base Npc</param>
         public NpcJsonExportObject(KortistoNpc baseNpc)
         {
-            PropertyInfo[] properties = baseNpc.GetType().GetProperties();
-            foreach(PropertyInfo curProperty in properties)
-            {
-                PropertyInfo derivedProperty = this.GetType().GetProperty(curProperty.Name);
-                if (derivedProperty != null)
-                {
-                    object value = curProperty.GetValue(baseNpc);
-                    derivedProperty.SetValue(this, value);
-                }
-            }
+            ExportSnippets = new List<ObjectExportSnippet>();
+
+            JsonExportPropertyFill.FillBaseProperties(this, baseNpc);
         }
 
         /// <summary>
         /// Dialog of the Npc
         /// </summary>
         public TaleDialog Dialog { get; set; }
+
+        /// <summary>
+        /// Filled export snippets of the Npc
+        /// </summary>
+        public List<ObjectExportSnippet> ExportSnippets { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Services.Export.Placeholder;
 
@@ -15,19 +16,19 @@ namespace GoNorth.Services.Export.Dialog
         /// Renders a dialog step
         /// </summary>
         /// <param name="data">Dialog Step Data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Dialog Step Render Result</returns>
-        Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, KortistoNpc npc);
+        Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, FlexFieldObject flexFieldObject);
         
         /// <summary>
         /// Builds a parent text preview for the a dialog step
         /// </summary>
         /// <param name="child">Child node</param>
         /// <param name="parent">Parent</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Parent text preview for the dialog step</returns>
-        Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection);
+        Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection);
 
         /// <summary>
         /// Returns true if the dialog renderer has placeholders for a template type

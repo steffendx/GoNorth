@@ -6,9 +6,6 @@
             // Page Size
             var pageSize = 48;
 
-            // Row Size
-            var rowSize = 6;
-
             /**
              * Overview Management Base View Model
              * @param {string} apiControllerName Api Controller name
@@ -104,10 +101,15 @@
                 }, this); 
                 this.clearFolderFiles = null;
                 this.processFolderQueue = null;
+
+                this.isDraggingObject = new ko.observable(false);
+                this.flexFieldFolderTreeViewDialog = new Overview.FlexFieldFolderTreeViewDialog(apiControllerName);
                 
                 this.dialogLoading = new ko.observable(false);
 
                 this.errorOccured = new ko.observable(false);
+
+                this.currentDisplayRowSize = -1;
 
                 this.prevLoading(true);
                 this.nextLoading(true);
@@ -136,6 +138,11 @@
                     self.initializeEmptyValues();
                     self.loadPage(true);
                 });
+
+                var throttledUpdatedDisplay = GoNorth.Util.throttle(function() {
+                    self.updateDisplay(true);
+                }, 20);
+                jQuery(window).resize(throttledUpdatedDisplay);
             };
 
             Overview.BaseViewModel.prototype = {
@@ -210,7 +217,7 @@
                     this.errorOccured(false);
                     var self = this;
                     jQuery.when.apply(jQuery, loadingDefs).done(function() {
-                        self.updateDisplay();
+                        self.updateDisplay(false);
 
                         self.resetLoading();
                     }).fail(function() {
@@ -310,8 +317,21 @@
 
                 /**
                  * Updates the display
+                 * @param {boolean} isFromResize true if the update is triggered from a resize event
                  */
-                updateDisplay: function() {
+                updateDisplay: function(isFromResize) {
+                    var rowSize = 6;
+                    if(GoNorth.Util.isBootstrapMd())
+                    {
+                        rowSize = 4;
+                    }
+
+                    if(isFromResize && rowSize == this.currentDisplayRowSize)
+                    {
+                        return;
+                    }
+                    this.currentDisplayRowSize = rowSize;
+                    
                     var self = this;
                     var finalResult = [];
                     var curRow = [];
@@ -626,6 +646,71 @@
                     }).fail(function(xhr) {
                         self.dialogLoading(false);
                         self.deleteFolderError(xhr.responseText);
+                    });
+                },
+
+
+                /**
+                 * Gets called when the user starts dragging an object
+                 * @param {object} ui UI object
+                 */
+                onStartDragObject: function(ui) {
+                    this.errorOccured(false);
+                    this.isDraggingObject(true);
+
+                    ui.helper.bind("click.prevent", function(event) { event.preventDefault(); });
+                },
+
+                /**
+                 * Gets called when the user stops dragging an object
+                 * @param {object} ui UI object
+                 */
+                onStopDragObject: function(ui) {
+                    this.isDraggingObject(false);
+
+                    setTimeout(function() { ui.helper.unbind("click.prevent"); }, 300);
+                },
+
+                /**
+                 * Moves an object to a new category
+                 * @param {object} objectToMove Object to move
+                 * @param {object} newTargetId Id of the new category
+                 */
+                moveObjectToCategory: function(objectToMove, newTargetId) {
+                    var apiMethod = "MoveObjectToFolder";
+                    if(objectToMove.isFolder)
+                    {
+                        apiMethod = "MoveFolderToFolder";
+                    }
+
+                    if(!newTargetId)
+                    {
+                        newTargetId = "";
+                    }
+
+                    var self = this;
+                    this.errorOccured(false);
+                    this.showAllLoading();
+                    jQuery.ajax({ 
+                        url: "/api/" + this.apiControllerName + "/" + apiMethod + "?id=" + objectToMove.id + "&newParentId=" + newTargetId, 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        type: "POST"
+                    }).done(function() {
+                        self.loadPage();
+                    }).fail(function(xhr) {
+                        self.errorOccured(true);
+                        self.deleteFolderError(xhr.responseText);
+                    });
+                },
+
+                /**
+                 * Opens the move object to category dialog
+                 * @param {object} objectToMove The object to move
+                 */
+                openMoveObjectToCategoryDialog: function(objectToMove) {
+                    var self = this;
+                    this.flexFieldFolderTreeViewDialog.openDialog(objectToMove.isFolder ? objectToMove.id : null).done(function(targetFolderId) {
+                        self.moveObjectToCategory(objectToMove, targetFolderId);
                     });
                 },
 

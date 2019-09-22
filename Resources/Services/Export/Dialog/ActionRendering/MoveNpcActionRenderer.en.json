@@ -1,3 +1,13 @@
 {
-    "PlaceholderDesc_Tale_Action_TargetMarker_Name": "Export name of the target marker"
+    "PlaceholderDesc_Tale_Action_TargetMarker_Name": "Export name of the target marker",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_Start": "Start of the content that will only be rendered if the node has a direct continue function. Must be closed using Tale_Action_HasDirectContinueFunction_End.",
+    "PlaceholderDesc_Tale_Action_HasDirectContinueFunction_End": "End of the content that will only be rendered if the node has a direct continue function.",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_Start": "Start of the content that will only be rendered if the node has no direct continue function. Must be closed using Tale_Action_HasNoDirectContinueFunction_End.",
+    "PlaceholderDesc_Tale_Action_HasNoDirectContinueFunction_End": "End of the content that will only be rendered if the node has no direct continue function.",
+    "PlaceholderDesc_Tale_Action_DirectContinueFunction": "Name of the function that will directly continue the script.",
+    "PlaceholderDesc_Tale_Action_HasMovementState_Start": "Start of the content that will only be rendered if the node has a movement state. Must be closed using Tale_Action_HasMovementState_End.",
+    "PlaceholderDesc_Tale_Action_HasMovementState_End": "End of the content that will only be rendered if the node has a movement state.",
+    "PlaceholderDesc_Tale_Action_HasNoMovementState_Start": "Start of the content that will only be rendered if the node has no movement state. Must be closed using Tale_Action_HasNoMovementState_End.",
+    "PlaceholderDesc_Tale_Action_HasNoMovementState_End": "End of the content that will only be rendered if the node has no movement state.",
+    "PlaceholderDesc_Tale_Action_MovementState": "Movement state of the node."
 }

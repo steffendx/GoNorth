@@ -33,7 +33,7 @@
                 this.eventToEdit = new ko.observable(null);
                 GoNorth.DailyRoutines.Util.keepTimeObservablesInOrder(this.addEditEventEarliestTime, this.addEditEventLatestTime);
 
-                this.chooseScriptTypeDialog = new GoNorth.DailyRoutines.ChooseScriptTypeDialog.ViewModel();
+                this.chooseScriptTypeDialog = new GoNorth.Shared.ChooseScriptTypeDialog.ViewModel();
                 this.codeScriptDialog = new GoNorth.ScriptDialog.CodeScriptDialog(this.errorOccured);
                 this.nodeScriptDialog = new GoNorth.ScriptDialog.NodeScriptDialog(this.id, objectDialog, this.codeScriptDialog, this.errorOccured);
 
@@ -230,13 +230,13 @@
                     var self = this;
                     this.showAddEditEventDialog(false);
                     this.chooseScriptTypeDialog.openDialog().done(function(selectedType) {
-                        if(selectedType == GoNorth.DailyRoutines.ChooseScriptTypeDialog.nodeGraph)
+                        if(selectedType == GoNorth.Shared.ChooseScriptTypeDialog.nodeGraph)
                         {
                             self.nodeScriptDialog.openCreateDialog().done(function(result) {
                                 self.createScriptEvent(GoNorth.DailyRoutines.ScriptTypes.nodeGraph, result.name, null, result.graph);
                             });
                         }
-                        else if(selectedType == GoNorth.DailyRoutines.ChooseScriptTypeDialog.codeScript)
+                        else if(selectedType == GoNorth.Shared.ChooseScriptTypeDialog.codeScript)
                         {
                             self.codeScriptDialog.openCreateDialog().done(function(result) {
                                 self.createScriptEvent(GoNorth.DailyRoutines.ScriptTypes.codeScript, result.name, result.code, null);

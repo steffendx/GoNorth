@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
+using GoNorth.Data.Exporting;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Kortisto;
@@ -109,6 +110,16 @@ namespace GoNorth.Controllers.Api
         private readonly IKartaMarkerImplementationSnapshotDbAccess _markerSnapshotDbAccess;
 
         /// <summary>
+        /// Object Export Snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+        
+        /// <summary>
+        /// Object Export Snippet Snapshot Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetSnapshotDbAccess _objectExportSnippetSnapshotDbAccess;
+
+        /// <summary>
         /// Timeline Service
         /// </summary>
         private readonly ITimelineService _timelineService;
@@ -139,12 +150,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="questSnapshotDbAccess">Quest Implementation Snapshot Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="markerSnapshotDbAccess">Marker Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ImplementationStatusApiController(IImplementationStatusComparer implementationStatusComparer, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcSnapshotDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemImplementationSnapshotDbAccess itemSnapshotDbAccess,
                                                  IEvneSkillDbAccess skillDbAccess, IEvneSkillImplementationSnapshotDbAccess skillSnapshotDbAccess, ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, 
-                                                 IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, ITimelineService timelineService, ILogger<ImplementationStatusApiController> logger, IStringLocalizerFactory localizerFactory)
+                                                 IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, 
+                                                 ITimelineService timelineService, ILogger<ImplementationStatusApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _implementationStatusComparer = implementationStatusComparer;
             _npcDbAccess = npcDbAccess;
@@ -159,6 +173,8 @@ namespace GoNorth.Controllers.Api
             _questSnapshotDbAccess = questSnapshotDbAccess;
             _mapDbAccess = mapDbAccess;
             _markerSnapshotDbAccess = markerSnapshotDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _objectExportSnippetSnapshotDbAccess = objectExportSnippetSnapshotDbAccess;
             _timelineService = timelineService;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(ImplementationStatusApiController));
@@ -203,13 +219,13 @@ namespace GoNorth.Controllers.Api
             npc.IsImplemented = true;
             await _npcSnapshotDbAccess.SaveSnapshot(npc);
             await _npcDbAccess.UpdateFlexFieldObject(npc);
+            await FlagObjectExportSnippetsAsImplemented(npc.Id);
 
             // Add Timeline entry
             await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedNpc, npc.Id, npc.Name);
 
             return Ok();
         }
-
 
         /// <summary>
         /// Returns the compare results for an item
@@ -250,6 +266,7 @@ namespace GoNorth.Controllers.Api
             item.IsImplemented = true;
             await _itemSnapshotDbAccess.SaveSnapshot(item);
             await _itemDbAccess.UpdateFlexFieldObject(item);
+            await FlagObjectExportSnippetsAsImplemented(item.Id);
 
             // Add Timeline entry
             await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedItem, item.Id, item.Name);
@@ -297,6 +314,7 @@ namespace GoNorth.Controllers.Api
             skill.IsImplemented = true;
             await _skillSnapshotDbAccess.SaveSnapshot(skill);
             await _skillDbAccess.UpdateFlexFieldObject(skill);
+            await FlagObjectExportSnippetsAsImplemented(skill.Id);
 
             // Add Timeline entry
             await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedSkill, skill.Id, skill.Name);
@@ -485,6 +503,22 @@ namespace GoNorth.Controllers.Api
             await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedMarker, mapId, markerId, markerType.ToString(), map.Name);
 
             return Ok();
+        }
+
+
+        /// <summary>
+        /// Flags object export snippets as implemented
+        /// </summary>
+        /// <param name="id">Id of the object</param>
+        /// <returns>Task</returns>
+        private async Task FlagObjectExportSnippetsAsImplemented(string id)
+        {
+            List<ObjectExportSnippet> existingSnippets = await _objectExportSnippetDbAccess.GetExportSnippets(id);
+            await _objectExportSnippetSnapshotDbAccess.DeleteExportSnippetSnapshotsByObjectId(id);
+            foreach(ObjectExportSnippet curSnippet in existingSnippets)
+            {
+                await _objectExportSnippetSnapshotDbAccess.CreateExportSnippetSnapshot(curSnippet);
+            }
         }
 
                 

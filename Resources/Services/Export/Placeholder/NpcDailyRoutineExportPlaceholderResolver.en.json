@@ -8,5 +8,7 @@
     "PlaceholderDesc_DailyRoutine_Functions_Start": "Start of the list of daily routine functions of the npc. Must be closed using DailyRoutine_Functions_End. Attributes of the event can be used with the CurEvent_ placeholders.",
     "PlaceholderDesc_DailyRoutine_Functions_End": "Ende of the list of daily routine functions of the npc.",
     "PlaceholderDesc_DailyRoutine_Function": "A function of the daily routine. The daily routine function template will be used for this.",
-    "PlaceholderDesc_CurEvent_Index": "Zero based index of the current daily routine event in the daily routine list."
+    "PlaceholderDesc_CurEvent_Index": "Zero based index of the current daily routine event in the daily routine list.",
+
+    "DailyRoutineErrorContext": "Daily routine event {0}:{1}"
 }

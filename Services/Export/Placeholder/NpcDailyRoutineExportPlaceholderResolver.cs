@@ -177,6 +177,43 @@ namespace GoNorth.Services.Export.Placeholder
         }
 
         /// <summary>
+        /// Sorts the daily routine of an npc
+        /// </summary>
+        /// <param name="dailyRoutine">Daily routine to sort</param>
+        private void SortDailyRoutine(List<KortistoNpcDailyRoutineEvent> dailyRoutine)
+        {
+            dailyRoutine.Sort((d1, d2) => {
+                if(d1.EarliestTime == null && d2.EarliestTime != null) {
+                    return -1;
+                } else if(d1.EarliestTime != null && d2.EarliestTime == null) {
+                    return 1;
+                } else if(d1.EarliestTime == null && d2.EarliestTime == null) {
+                    return 0;
+                }
+
+                if(d1.EarliestTime.Hours < d2.EarliestTime.Hours)
+                {
+                    return -1;
+                }
+                else if(d2.EarliestTime.Hours < d1.EarliestTime.Hours)
+                {
+                    return 1;
+                }
+
+                if(d1.EarliestTime.Minutes < d2.EarliestTime.Minutes)
+                {
+                    return -1;
+                }
+                else if(d2.EarliestTime.Minutes < d1.EarliestTime.Minutes)
+                {
+                    return 1;
+                }
+
+                return 0;
+            });
+        }
+
+        /// <summary>
         /// Builds the event list
         /// </summary>
         /// <param name="eventCode">Code for the events to repeat</param>
@@ -189,6 +226,8 @@ namespace GoNorth.Services.Export.Placeholder
             {
                 return string.Empty;
             }
+
+            SortDailyRoutine(npc.DailyRoutine);
 
             int eventIndex = 0;
             string eventListCode = string.Empty;
@@ -219,14 +258,24 @@ namespace GoNorth.Services.Export.Placeholder
                 return string.Empty;
             }
 
+            SortDailyRoutine(npc.DailyRoutine);
+
             int eventIndex = 0;
             string eventListCode = string.Empty;
             foreach(KortistoNpcDailyRoutineEvent curEvent in npc.DailyRoutine)
             {
                 string curEventCode = ExportUtil.BuildPlaceholderRegex(Placeholder_CurEvent_Index).Replace(functionCode, eventIndex.ToString());
 
-                curEventCode = _eventContentPlaceholderResolver.ResolveDailyRoutineEventContentPlaceholders(curEventCode, npc, curEvent, _errorCollection);
-                curEventCode = _eventPlaceholderResolver.ResolveDailyRoutineEventPlaceholders(curEventCode, npc, curEvent).Result;
+                try
+                {
+                    _errorCollection.CurrentErrorContext = _localizer["DailyRoutineErrorContext", curEvent.EarliestTime.Hours.ToString().PadLeft(2, '0'), curEvent.EarliestTime.Minutes.ToString().PadLeft(2, '0')].Value;
+                    curEventCode = _eventContentPlaceholderResolver.ResolveDailyRoutineEventContentPlaceholders(curEventCode, npc, curEvent, _errorCollection);
+                    curEventCode = _eventPlaceholderResolver.ResolveDailyRoutineEventPlaceholders(curEventCode, npc, curEvent).Result;
+                }
+                finally
+                {
+                    _errorCollection.CurrentErrorContext = string.Empty;
+                }
 
                 eventListCode += curEventCode;
                 ++eventIndex;

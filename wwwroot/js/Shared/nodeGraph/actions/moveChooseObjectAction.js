@@ -23,12 +23,21 @@
             Actions.MoveChooseObjectAction.prototype = jQuery.extend(Actions.MoveChooseObjectAction.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
 
             /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.MoveChooseObjectAction.prototype.hasMovementState = function() {
+                return false;
+            };
+
+            /**
              * Returns the HTML Content of the action
              * 
              * @returns {string} HTML Content of the action
              */
             Actions.MoveChooseObjectAction.prototype.getContent = function() {
-                return "<div class='gn-actionNodeObjectSelectContainer'>" +
+                var templateHtml = "<div class='gn-actionNodeObjectSelectContainer'>" +
                             "<a class='gn-actionNodeObjectSelect gn-clickable'>" + this.getChooseObjectLabel() + "</a>" +
                             "<a class='gn-clickable gn-nodeActionOpenChooseObject' title='" + this.getOpenObjectTooltip() + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>" + 
@@ -37,6 +46,13 @@
                             "<a class='gn-actionNodeMarkerSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseMarkerLabel + "</a>" +
                             "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenMarkerTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>";
+
+                if(this.hasMovementState())
+                {
+                    templateHtml += "<input type='text' class='gn-nodeActionMovementState' placeholder='" + DefaultNodeShapes.Localization.Actions.MovementStatePlaceholder + "' list='gn-" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction + "'/>";
+                }
+
+                return templateHtml;
             };
 
             /**
@@ -100,6 +116,11 @@
                         window.open("/Karta?id=" + selectMarkerAction.data("mapid") + "&zoomOnMarkerId=" + selectMarkerAction.data("markerid") + "&zoomOnMarkerType=" + selectMarkerAction.data("markertype"))
                     }
                 });
+                
+                var movementState = contentElement.find(".gn-nodeActionMovementState");
+                movementState.change(function(e) {
+                    self.saveData();
+                });
             };
 
             /**
@@ -121,6 +142,8 @@
                 selectMarkerAction.data("mapid", data.mapId);
                 selectMarkerAction.data("markerid", data.markerId);
                 selectMarkerAction.data("markertype", data.markerType);
+
+                this.contentElement.find(".gn-nodeActionMovementState").val(data.movementState);
 
                 this.setRelatedToData();
 
@@ -212,11 +235,18 @@
                 var selectObjectAction = this.contentElement.find(".gn-actionNodeObjectSelect");
                 var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
 
+                var movementState = this.contentElement.find(".gn-nodeActionMovementState").val();
+                if(!movementState)
+                {
+                    movementState = "";
+                }
+
                 var serializeData = {
                     objectId: selectObjectAction.data("selectedobjectid"),
                     mapId: selectMarkerAction.data("mapid"),
                     markerId: selectMarkerAction.data("markerid"),
-                    markerType: selectMarkerAction.data("markertype")
+                    markerType: selectMarkerAction.data("markertype"),
+                    movementState: movementState
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
@@ -277,6 +307,20 @@
                 }
 
                 return this.loadChoosenObject(existingData.objectId);
+            };
+            
+            /**
+             * Returns the config key for the action
+             * 
+             * @returns {string} Config key
+             */
+            Actions.MoveChooseObjectAction.prototype.getConfigKey = function() {
+                if(this.hasMovementState())
+                {
+                    return GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction;
+                }
+
+                return null;
             };
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));

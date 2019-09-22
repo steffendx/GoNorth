@@ -271,18 +271,134 @@
             return timeFormat.replace(/hh/gi, hoursStr).replace(/mm/gi, minutesStr);
         }
 
+    
+        /**
+         * Compares to objects
+         * @param {object} item1 Item 1
+         * @param {object} item2 Item 2
+         */
+        function compareObject(item1, item2) {
+            var itemType = Object.prototype.toString.call(item1);
+    
+            if (['[object Array]', '[object Object]'].indexOf(itemType) >= 0) 
+            {
+                if (!Util.isEqual(item1, item2))
+                {
+                    return false;
+                }
+            }
+            else 
+            {
+                if (itemType !== Object.prototype.toString.call(item2))
+                {
+                    return false;
+                }
+
+                if (itemType === '[object Function]') 
+                {
+                    if (item1.toString() !== item2.toString())
+                    {
+                        return false;
+                    }
+                } 
+                else 
+                {
+                    if (item1 !== item2)
+                    {
+                        return false;
+                    }
+                }
+    
+            }
+
+            return true;
+        };
+
+        /**
+         * Checks if two objects are equal
+         * 
+         * @param {object} value1 First object to compare
+         * @param {object} value2 Second object to compare
+         */
+        Util.isEqual = function(value1, value2) {
+            // Compare types
+            var type = Object.prototype.toString.call(value1);
+            if (type !== Object.prototype.toString.call(value2))
+            {
+                return false;
+            }
+
+            if (type != '[object Array]' && type != '[object Object]')
+            {
+                return value1 === value2;
+            }
+        
+            var valueLen = type === '[object Array]' ? value1.length : Object.keys(value1).length;
+            var otherLen = type === '[object Array]' ? value2.length : Object.keys(value2).length;
+            if (valueLen !== otherLen)
+            {
+                return false;
+            }
+
+            // Compare properties
+            if (type === '[object Array]') 
+            {
+                for (var i = 0; i < valueLen; i++) 
+                {
+                    if (compareObject(value1[i], value2[i]) === false)
+                    {
+                        return false;
+                    }
+                }
+            } 
+            else 
+            {
+                for (var key in value1) 
+                {
+                    if (value1.hasOwnProperty(key)) 
+                    {
+                        if (compareObject(value1[key], value2[key]) === false)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        
+            // If nothing failed, return true
+            return true;
+        };
+
+
+        /**
+         * Checks if the window has a certain bootstrap size
+         * @param {string} bootstrapHiddenClass Bootstrap hidden class
+         * @param {string} elementCheckSelector jQuery Element selector to check 
+         * @returns {bool} true if the current screen size is the size, else false
+         */
+        function checkBootstrapSize(bootstrapHiddenClass, elementCheckSelector) {
+            var testElement = jQuery("<div class='" + bootstrapHiddenClass + "'></div>");
+            testElement.appendTo(jQuery('body'));
+        
+            var isSize = testElement.is(elementCheckSelector);
+            testElement.remove();
+            return isSize;
+        }
 
         /**
          * Returns true if the current screen size is a bootstrap xs size, else false
          * @returns {bool} true if the current screen size is a bootstrap xs size, else false
          */
         Util.isBootstrapXs = function() {
-            var testElement = jQuery("<div class='hidden-xs'></div>");
-            testElement.appendTo(jQuery('body'));
-        
-            var isXs = testElement.is(':hidden');
-            testElement.remove();
-            return isXs;
+            return checkBootstrapSize("hidden-xs", ":hidden");
+        };
+
+        /**
+         * Returns true if the current screen size is a bootstrap md size, else false
+         * @returns {bool} true if the current screen size is a bootstrap md size, else false
+         */
+        Util.isBootstrapMd = function() {
+            return checkBootstrapSize("visible-md-block", ":visible");
         };
 
     }(GoNorth.Util = GoNorth.Util || {}));

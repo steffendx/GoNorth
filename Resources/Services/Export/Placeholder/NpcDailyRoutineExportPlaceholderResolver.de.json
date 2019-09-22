@@ -8,5 +8,7 @@
     "PlaceholderDesc_DailyRoutine_Functions_Start": "Start der Liste von Tagesablauf Funktionen des Npcs. Muss mit DailyRoutine_Functions_End abgeschlossen werden.",
     "PlaceholderDesc_DailyRoutine_Functions_End": "Ende der Liste von Tagesablauf Funktionen des Npcs.",
     "PlaceholderDesc_DailyRoutine_Function": "Eine Funktion des Tagesablauf. Wird auf Basis des Tagesablauf Funktion Template generiert.",
-    "PlaceholderDesc_CurEvent_Index": "Null-basierter Index des Ereignis innerhalb der Tagesablauf Ereignis Liste."
+    "PlaceholderDesc_CurEvent_Index": "Null-basierter Index des Ereignis innerhalb der Tagesablauf Ereignis Liste.",
+
+    "DailyRoutineErrorContext": "Tagesablauf Ereignis {0}:{1}"
 }

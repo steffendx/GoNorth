@@ -18,6 +18,15 @@
             Actions.WalkNpcToMarkerAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.MoveObjectAction.prototype);
 
             /**
+             * Returns true if the action has a movement state, else false
+             * 
+             * @returns {bool} true if the action has a movement state, else false
+             */
+            Actions.WalkNpcToMarkerAction.prototype.hasMovementState = function() {
+                return true;
+            };
+
+            /**
              * Builds the action
              * 
              * @returns {object} Action
@@ -43,6 +52,25 @@
             Actions.WalkNpcToMarkerAction.prototype.getLabel = function() {
                 return DefaultNodeShapes.Localization.Actions.WalkNpcLabel;
             };
+                
+            /**
+             * Returns the label for the main output
+             * 
+             * @returns {string} Label for the main output
+             */
+            Actions.WalkNpcToMarkerAction.prototype.getMainOutputLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.WalkOnTargetReachLabel;
+            };
+
+            /**
+             * Returns the additional outports of the action
+             * 
+             * @returns {string[]} Additional outports
+             */
+            Actions.WalkNpcToMarkerAction.prototype.getAdditionalOutports = function() {
+                return [ DefaultNodeShapes.Localization.Actions.WalkDirectContinueLabel ];
+            };
+
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.WalkNpcToMarkerAction());
 

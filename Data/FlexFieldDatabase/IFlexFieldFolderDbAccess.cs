@@ -62,6 +62,14 @@ namespace GoNorth.Data.FlexFieldDatabase
         Task UpdateFolder(FlexFieldFolder folder);
 
         /// <summary>
+        /// Moves a folder to a folder
+        /// </summary>
+        /// <param name="folderId">Folder to move</param>
+        /// <param name="targetFolderId">Id of the folder to move the object to</param>
+        /// <returns>Task</returns>
+        Task MoveToFolder(string folderId, string targetFolderId);
+
+        /// <summary>
         /// Deletes a folder
         /// </summary>
         /// <param name="folder">Folder to delete</param>

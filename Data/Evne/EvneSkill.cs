@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.NodeGraph;
+using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Evne
@@ -9,7 +9,7 @@ namespace GoNorth.Data.Evne
     /// <summary>
     /// Evne Skill
     /// </summary>
-    public class EvneSkill : FlexFieldObject
+    public class EvneSkill : FlexFieldObject, IExportSnippetExportable
     {
         
         /// <summary>

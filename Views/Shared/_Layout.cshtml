@@ -124,6 +124,16 @@
         {
             <small><a asp-area="" asp-controller="LegalNotice" asp-action="Index" class="text-muted">@Localizer["LegalNotice"]</a></small>
         }
+
+        @if (SignInManager.IsSignedIn(User))
+        {
+            @if(AppSettings.IsUsingGdpr() || AppSettings.IsUsingLegalNotice())
+            {
+                <span class="text-muted">|</span>
+            }
+
+            <small class="text-muted">v<span>@GoNorthVersion.CurrentVersion.ToString()</span></small>
+        }
     </footer>
 
     <environment include="Development">

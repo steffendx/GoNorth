@@ -9,7 +9,7 @@
              */
             Npc.ViewModel = function()
             {
-                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Kortisto", "KortistoApi", "KortistoNpc", "KortistoTemplate", "GetPagesByNpc?npcId=", "GetMapsByNpcId?npcId=" ]);
+                GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Kortisto", "KortistoApi", "Npc", "KortistoNpc", "KortistoTemplate", "GetPagesByNpc?npcId=", "GetMapsByNpcId?npcId=" ]);
 
                 this.showConfirmRemoveDialog = new ko.observable(false);
 
@@ -60,14 +60,19 @@
 
                 this.nameGenTemplate(data.nameGenTemplate ? data.nameGenTemplate : "");
 
+                var self = this;
                 if(Npc.hasStyrRights && data.inventory && data.inventory.length > 0)
                 {
-                    this.inventoryForm.loadInventory(data.inventory);
+                    this.inventoryForm.loadInventory(data.inventory).done(function() {
+                        self.saveLastObjectState();
+                    });
                 }
 
                 if(Npc.hasEvneRights && data.skills && data.skills.length > 0)
                 {
-                    this.skillForm.loadSkills(data.skills);
+                    this.skillForm.loadSkills(data.skills).done(function() {
+                        self.saveLastObjectState();
+                    });
                 }
 
                 this.dailyRoutinesForm.loadEvents(data.dailyRoutine);

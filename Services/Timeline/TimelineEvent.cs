@@ -51,6 +51,16 @@ namespace GoNorth.Services.Timeline
         /// A Kortisto Folder was updated
         /// </summary>
         KortistoFolderUpdated = 8,
+        
+        /// <summary>
+        /// An Kortisto Folder was moved to a folder
+        /// </summary>
+        KortistoFolderMovedToFolder = 96,
+
+        /// <summary>
+        /// An Kortisto Folder was moved to root level
+        /// </summary>
+        KortistoFolderMovedToRootFolder = 97,
 
 
         /// <summary>
@@ -99,6 +109,26 @@ namespace GoNorth.Services.Timeline
         /// </summary>
         KortistoNpcImageUpload = 16,
 
+        /// <summary>
+        /// An Kortisto Npc was moved to a folder
+        /// </summary>
+        KortistoNpcMovedToFolder = 102,
+
+        /// <summary>
+        /// An Kortisto Npc was moved to root level
+        /// </summary>
+        KortistoNpcMovedToRoot = 103,
+        
+        /// <summary>
+        /// A Kortisto Npc Export Snippet was changed
+        /// </summary>
+        KortistoNpcExportSnippetChanged = 106,
+        
+        /// <summary>
+        /// A Kortisto Npc Export Snippet was deleted
+        /// </summary>
+        KortistoNpcExportSnippetDeleted = 109,
+
 
         /// <summary>
         /// A new Styr Folder was created
@@ -114,6 +144,16 @@ namespace GoNorth.Services.Timeline
         /// A Styr Folder was updated
         /// </summary>
         StyrFolderUpdated = 29,
+
+        /// <summary>
+        /// An Styr Folder was moved to a folder
+        /// </summary>
+        StyrFolderMovedToFolder = 98,
+
+        /// <summary>
+        /// An Styr Folder was moved to root level
+        /// </summary>
+        StyrFolderMovedToRootFolder = 99,
 
 
         /// <summary>
@@ -161,6 +201,26 @@ namespace GoNorth.Services.Timeline
         /// An Image was added to a Styr Item
         /// </summary>
         StyrItemImageUpload = 38,
+        
+        /// <summary>
+        /// A Styr Item was moved to a folder
+        /// </summary>
+        StyrItemMovedToFolder = 104,
+
+        /// <summary>
+        /// An Styr Item was moved to root level
+        /// </summary>
+        StyrItemMovedToRoot = 105,
+        
+        /// <summary>
+        /// A Styr Item Export Snippet was changed
+        /// </summary>
+        StyrItemExportSnippetChanged = 107,
+        
+        /// <summary>
+        /// A Styr Item Export Snippet was deleted
+        /// </summary>
+        StyrItemExportSnippetDeleted = 110,
 
 
         /// <summary>
@@ -177,6 +237,16 @@ namespace GoNorth.Services.Timeline
         /// An Evne Folder was updated
         /// </summary>
         EvneFolderUpdated = 67,
+
+        /// <summary>
+        /// An Evne Folder was moved to a folder
+        /// </summary>
+        EvneFolderMovedToFolder = 94,
+
+        /// <summary>
+        /// An Evne Folder was moved to root level
+        /// </summary>
+        EvneFolderMovedToRootFolder = 95,
 
 
         /// <summary>
@@ -224,6 +294,26 @@ namespace GoNorth.Services.Timeline
         /// An Image was added to an Evne Skill
         /// </summary>
         EvneSkillImageUpload = 76,
+
+        /// <summary>
+        /// An Evne Skill was moved to a folder
+        /// </summary>
+        EvneSkillMovedToFolder = 100,
+
+        /// <summary>
+        /// An Evne Skill was moved to root level
+        /// </summary>
+        EvneSkillMovedToRoot = 101,
+        
+        /// <summary>
+        /// An Evne Skill Export Snippet was changed
+        /// </summary>
+        EvneSkillExportSnippetChanged = 108,
+        
+        /// <summary>
+        /// An Evne Skill Export Snippet was deleted
+        /// </summary>
+        EvneSkillExportSnippetDeleted = 111,
 
 
         /// <summary>

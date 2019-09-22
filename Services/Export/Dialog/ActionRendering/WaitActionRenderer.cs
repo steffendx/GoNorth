@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Placeholder;
@@ -109,6 +111,31 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Placeholder for the end of content that will only be rendered if the wait unit is hours
         /// </summary>
         private const string Placeholder_WaitUnitIsDays_End = "Tale_Action_WaitUnit_Days_End";
+        
+        /// <summary>
+        /// Placeholder for for the start of the content that will only be rendered if the wait has a direct continue function
+        /// </summary>
+        private const string Placeholder_HasDirectContinueFunction_Start = "Tale_Action_HasDirectContinueFunction_Start";
+
+        /// <summary>
+        /// Placeholder for for the end of the content that will only be rendered if the wait has a direct continue function
+        /// </summary>
+        private const string Placeholder_HasDirectContinueFunction_End = "Tale_Action_HasDirectContinueFunction_End";
+                
+        /// <summary>
+        /// Placeholder for for the start of the content that will only be rendered if the wait has no direct continue function
+        /// </summary>
+        private const string Placeholder_HasNoDirectContinueFunction_Start = "Tale_Action_HasNoDirectContinueFunction_Start";
+
+        /// <summary>
+        /// Placeholder for for the end of the content that will only be rendered if the wait has no direct continue function
+        /// </summary>
+        private const string Placeholder_HasNoDirectContinueFunction_End = "Tale_Action_HasNoDirectContinueFunction_End";
+        
+        /// <summary>
+        /// Placeholder for for the name of the function that will continue the dialog directly
+        /// </summary>
+        private const string Placeholder_DirectContinueFunction = "Tale_Action_DirectContinueFunction";
 
 
         /// <summary>
@@ -149,6 +176,12 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
 
 
         /// <summary>
+        /// Id of the direct continue node
+        /// </summary>
+        private const int DirectContinueFunctionNodeId = 1;
+
+
+        /// <summary>
         /// Default Template Provider
         /// </summary>
         private readonly ICachedExportDefaultTemplateProvider _defaultTemplateProvider;
@@ -176,11 +209,16 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Action string</returns>
-        public override async Task<string> BuildActionFromParsedData(WaitActionRenderer.WaitActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
+        public override async Task<string> BuildActionFromParsedData(WaitActionRenderer.WaitActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
+            if(data.Children != null && data.Children.Count == 1 && data.Children[0].NodeChildId == DirectContinueFunctionNodeId)
+            {
+                errorCollection.AddWaitActionHasOnlyDirectContinueFunction();
+            }
+
             ExportTemplate actionTemplate = await GetExportTemplate(project);
 
             string actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_Wait_Amount).Replace(actionTemplate.Code, parsedData.WaitAmount.ToString());
@@ -192,6 +230,16 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
             actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_WaitUnitIsHours_Start, Placeholder_WaitUnitIsHours_End, parsedData.WaitUnit == WaitUnitHours);
             actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_WaitUnitIsDays_Start, Placeholder_WaitUnitIsDays_End, parsedData.WaitUnit == WaitUnitDays);
 
+            string directContinueFunction = string.Empty;
+            if(data.Children != null)
+            {
+                ExportDialogDataChild directStep = data.Children.FirstOrDefault(c => c.NodeChildId == DirectContinueFunctionNodeId);
+                directContinueFunction = directStep != null ? directStep.Child.DialogStepFunctionName : string.Empty;
+            }
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_HasDirectContinueFunction_Start, Placeholder_HasDirectContinueFunction_End, !string.IsNullOrEmpty(directContinueFunction));
+            actionCode = ExportUtil.RenderPlaceholderIfTrue(actionCode, Placeholder_HasNoDirectContinueFunction_Start, Placeholder_HasNoDirectContinueFunction_End, string.IsNullOrEmpty(directContinueFunction));
+            actionCode = ExportUtil.BuildPlaceholderRegex(Placeholder_DirectContinueFunction).Replace(actionCode, directContinueFunction);
+
             return actionCode;
         }
 
@@ -199,12 +247,34 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Builds a preview text from parsed data
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
+        /// <param name="child">Child node</param>
+        /// <param name="parent">Parent</param>
         /// <returns>Preview text</returns>
-        public override Task<string> BuildPreviewTextFromParsedData(WaitActionRenderer.WaitActionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public override Task<string> BuildPreviewTextFromParsedData(WaitActionRenderer.WaitActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
         {
-            return Task.FromResult("Wait " + parsedData.WaitAmount);
+            string previewPrefixText = "Wait";
+            if(parent != null && parent.Children != null && child != null)
+            {
+                ExportDialogDataChild actionChild = parent.Children.FirstOrDefault(c => c.Child.Id == child.Id);
+                if(actionChild != null && actionChild.NodeChildId == DirectContinueFunctionNodeId)
+                {
+                    previewPrefixText = "Direct Continue On Wait";
+                }
+            }
+            return Task.FromResult(string.Format("{0} {1}", previewPrefixText, parsedData.WaitAmount));
+        }
+
+        
+        /// <summary>
+        /// Returns the next step from a list of children
+        /// </summary>
+        /// <param name="children">Children to read</param>
+        /// <returns>Next Step</returns>
+        public override ExportDialogDataChild GetNextStep(List<ExportDialogDataChild> children)
+        {
+            return children.FirstOrDefault(c => c.NodeChildId != DirectContinueFunctionNodeId);
         }
 
 
@@ -250,7 +320,12 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
                 ExportUtil.CreatePlaceHolder(Placeholder_WaitUnitIsHours_Start, _localizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_WaitUnitIsHours_End, _localizer),
                 ExportUtil.CreatePlaceHolder(Placeholder_WaitUnitIsDays_Start, _localizer),
-                ExportUtil.CreatePlaceHolder(Placeholder_WaitUnitIsDays_End, _localizer)
+                ExportUtil.CreatePlaceHolder(Placeholder_WaitUnitIsDays_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_HasDirectContinueFunction_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_HasDirectContinueFunction_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_HasNoDirectContinueFunction_Start, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_HasNoDirectContinueFunction_End, _localizer),
+                ExportUtil.CreatePlaceHolder(Placeholder_DirectContinueFunction, _localizer)
             };
 
             return exportPlaceholders;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
@@ -87,13 +88,13 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Action string</returns>
-        public override async Task<string> BuildActionFromParsedData(PlayAnimationActionRenderer.PlayAnimationActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings)
+        public override async Task<string> BuildActionFromParsedData(PlayAnimationActionRenderer.PlayAnimationActionData parsedData, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
             ExportTemplate actionTemplate = await GetExportTemplate(project);
-            IFlexFieldExportable valueObject = await GetNpc(npc, errorCollection);
+            IFlexFieldExportable valueObject = await GetNpc(flexFieldObject, errorCollection);
             if(valueObject == null)
             {
                 return string.Empty;
@@ -115,12 +116,14 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// Builds a preview text from parsed data
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
+        /// <param name="child">Child node</param>
+        /// <param name="parent">Parent</param>
         /// <returns>Preview text</returns>
-        public override async Task<string> BuildPreviewTextFromParsedData(PlayAnimationActionRenderer.PlayAnimationActionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public override async Task<string> BuildPreviewTextFromParsedData(PlayAnimationActionRenderer.PlayAnimationActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
         {
-            IFlexFieldExportable valueObject = await GetNpc(npc, errorCollection);
+            IFlexFieldExportable valueObject = await GetNpc(flexFieldObject, errorCollection);
             if(valueObject == null)
             {
                 return string.Empty;
@@ -143,23 +146,23 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <summary>
         /// Returns the npc to use
         /// </summary>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Value Object</returns>
-        private async Task<IFlexFieldExportable> GetNpc(KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        private async Task<IFlexFieldExportable> GetNpc(FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
             if(_isPlayer)
             {
                 GoNorthProject curProject = await _cachedDbAccess.GetDefaultProject();
-                npc = await _cachedDbAccess.GetPlayerNpc(curProject.Id);
-                if(npc == null)
+                flexFieldObject = await _cachedDbAccess.GetPlayerNpc(curProject.Id);
+                if(flexFieldObject == null)
                 {
                     errorCollection.AddNoPlayerNpcExistsError();
                     return null;
                 }
             }
 
-            return npc;
+            return flexFieldObject;
         }
 
         /// <summary>

@@ -43,6 +43,16 @@ namespace GoNorth.Controllers.Api
         /// Event used for the folder updated event
         /// </summary>
         protected override TimelineEvent FolderUpdatedEvent { get { return TimelineEvent.EvneFolderUpdated; } }
+        
+        /// <summary>
+        /// Event used for the folder moved to folder event
+        /// </summary>
+        protected override TimelineEvent FolderMovedToFolderEvent { get { return TimelineEvent.EvneFolderMovedToFolder; } }
+
+        /// <summary>
+        /// Event used for the folder moved to root level event
+        /// </summary>
+        protected override TimelineEvent FolderMovedToRootEvent { get { return TimelineEvent.EvneFolderMovedToRootFolder; } }
 
 
         /// <summary>
@@ -90,6 +100,16 @@ namespace GoNorth.Controllers.Api
         /// Event used for the flex field object image updated event
         /// </summary>
         protected override TimelineEvent ObjectImageUploadEvent { get { return TimelineEvent.EvneSkillImageUpload; } }
+                
+        /// <summary>
+        /// Event used for the object moved to folder event
+        /// </summary>
+        protected override TimelineEvent ObjectMovedToFolderEvent { get { return TimelineEvent.EvneSkillMovedToFolder; } }
+
+        /// <summary>
+        /// Event used for the object moved to root level event
+        /// </summary>
+        protected override TimelineEvent ObjectMovedToRootEvent { get { return TimelineEvent.EvneSkillMovedToRoot; } }
 
 
         /// <summary>
@@ -124,6 +144,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="imageAccess">Skill Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db ACcess</param>
@@ -137,9 +159,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public EvneApiController(IEvneFolderDbAccess folderDbAccess, IEvneSkillTemplateDbAccess templateDbAccess, IEvneSkillDbAccess skillDbAccess, IProjectDbAccess projectDbAccess, IEvneSkillTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, ILanguageKeyDbAccess languageKeyDbAccess,
-                                 IExportFunctionIdDbAccess exportFunctionIdDbAccess, IEvneSkillImageAccess imageAccess, IEvneThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, 
-                                 UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<EvneApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, imageAccess, thumbnailService, userManager, 
+                                 IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IEvneSkillImageAccess imageAccess, IEvneThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, 
+                                 ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<EvneApiController> logger,
+                                 IStringLocalizerFactory localizerFactory) 
+                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, imageAccess, thumbnailService, userManager, 
                                             implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;

@@ -9,6 +9,8 @@
     "ChildObjectsHavingCustomizedTemplate": "The following child objects have a customized export template. You might need to update these as well.",
     "Template": "(Template)",
 
+    "ObjectsHavingInvalidSnippets": "The following objects use export snippets which no long exist in the template. The objects must be checked.",
+
     "Placeholders": "Placeholders",
     "Name": "Name",
     "Description": "Description",

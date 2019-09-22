@@ -68,23 +68,23 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// Returns the value object to use
         /// </summary>
         /// <param name="parsedData">Parsed data</param>
-        /// <param name="npc">Npc</param>
+        /// <param name="flexFieldObject">Flex field object</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Value Object</returns>
-        protected override IFlexFieldExportable GetValueObject(ValueFieldConditionData parsedData, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        protected override IFlexFieldExportable GetValueObject(ValueFieldConditionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
             if(_isPlayer)
             {
                 GoNorthProject curProject = _cachedDbAccess.GetDefaultProject().Result;
-                npc = _cachedDbAccess.GetPlayerNpc(curProject.Id).Result;
-                if(npc == null)
+                flexFieldObject = _cachedDbAccess.GetPlayerNpc(curProject.Id).Result;
+                if(flexFieldObject == null)
                 {
                     errorCollection.AddNoPlayerNpcExistsError();
                     return null;
                 }
             }
 
-            return npc;
+            return flexFieldObject;
         }
 
         /// <summary>

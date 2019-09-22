@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
@@ -104,10 +105,16 @@ namespace GoNorth.Services.Export.Dialog
         /// Renders a dialog step
         /// </summary>
         /// <param name="data">Dialog Step Data</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <returns>Dialog Step Render Result</returns>
-        public async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, KortistoNpc npc)
+        public async Task<ExportDialogStepRenderResult> RenderDialogStep(ExportDialogData data, FlexFieldObject flexFieldObject)
         {
+            KortistoNpc npc = flexFieldObject as KortistoNpc;
+            if(npc == null)
+            {
+                return null;
+            }
+
             TextNode textNode = GetValidTextNode(data);
             if(textNode == null)
             {
@@ -132,11 +139,17 @@ namespace GoNorth.Services.Export.Dialog
         /// </summary>
         /// <param name="child">Child node</param>
         /// <param name="parent">Parent</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field to which the dialog belongs</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <returns>Parent text preview for the dialog step</returns>
-        public Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, KortistoNpc npc, ExportPlaceholderErrorCollection errorCollection)
+        public Task<string> BuildParentTextPreview(ExportDialogData child, ExportDialogData parent, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection)
         {
+            KortistoNpc npc = flexFieldObject as KortistoNpc;
+            if(npc == null)
+            {
+                return Task.FromResult<string>(null);
+            }
+
             TextNode textNode = GetValidTextNode(parent);
             if(textNode == null)
             {

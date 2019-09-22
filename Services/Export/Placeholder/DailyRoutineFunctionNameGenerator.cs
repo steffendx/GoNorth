@@ -42,7 +42,6 @@ namespace GoNorth.Services.Export.Placeholder
         /// <returns>New Daily Routine Step Function</returns>
         public async Task<string> GetNewDailyRoutineStepFunction(string projectId, string npcId, string dailyRoutineEventId)
         {
-            string npcDailyRoutineId = npcId;
             ExportFunctionId functionId = await _functionIdDbAccess.GetExportFunctionId(projectId, npcId, dailyRoutineEventId);
             if(functionId == null)
             {

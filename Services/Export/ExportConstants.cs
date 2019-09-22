@@ -105,5 +105,27 @@ namespace GoNorth.Services.Export
         /// Language key for quest
         /// </summary>
         public const string LanguageKeyTypeQuest = "quest";
+
+
+        /// <summary>
+        /// Export Snippet Regex
+        /// </summary>
+        public const string ExportSnippetRegex = "CodeSnippet_(.*)";
+
+
+        /// <summary>
+        /// Script Type none
+        /// </summary>
+        public const int ScriptType_None = -1;
+
+        /// <summary>
+        /// Script Type node graph
+        /// </summary>
+        public const int ScriptType_NodeGraph = 0;
+
+        /// <summary>
+        /// Script Type code
+        /// </summary>
+        public const int ScriptType_Code = 1;
     }
 }        

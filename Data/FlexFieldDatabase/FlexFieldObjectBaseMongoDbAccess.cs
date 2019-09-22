@@ -202,6 +202,32 @@ namespace GoNorth.Data.FlexFieldDatabase
         {
             return await _ObjectCollection.AsQueryable().Where(n => n.TemplateId == templateId).ToListAsync();
         }
+        
+        /// <summary>
+        /// Returns all flex field objects that are not part of an id list. This means that they are not part of the list themselfs and or their template
+        /// </summary>
+        /// <param name="idList">List of ids</param>
+        /// <returns>Flex field objects</returns>
+        public async Task<List<T>> GetFlexFieldObjectsNotPartOfIdList(IEnumerable<string> idList)
+        {
+            return await _ObjectCollection.AsQueryable().Where(n => !idList.Contains(n.TemplateId) && !idList.Contains(n.Id)).Select(c => new T() {
+                Id = c.Id,
+                Name = c.Name,
+            }).ToListAsync();
+        }
+        
+        /// <summary>
+        /// Returns all flex field objects that are part of an id list. This means that they are not part of the list themselfs and or their template
+        /// </summary>
+        /// <param name="idList">List of ids</param>
+        /// <returns>Flex field objects</returns>
+        public async Task<List<T>> GetFlexFieldObjectsPartOfIdList(IEnumerable<string> idList)
+        {
+            return await _ObjectCollection.AsQueryable().Where(n => idList.Contains(n.TemplateId) || idList.Contains(n.Id)).Select(c => new T() {
+                Id = c.Id,
+                Name = c.Name,
+            }).ToListAsync();
+        }
 
         /// <summary>
         /// Resolves the names for a list of Flex Field Objects
@@ -224,6 +250,18 @@ namespace GoNorth.Data.FlexFieldDatabase
         public async Task UpdateFlexFieldObject(T flexFieldObject)
         {
             ReplaceOneResult result = await _ObjectCollection.ReplaceOneAsync(n => n.Id == flexFieldObject.Id, flexFieldObject);
+        }
+
+        /// <summary>
+        /// Moves an object to a folder
+        /// </summary>
+        /// <param name="objectId">Object to move</param>
+        /// <param name="targetFolderId">Id of the folder to move the object to</param>
+        /// <returns>Task</returns>
+        public async Task MoveToFolder(string objectId, string targetFolderId)
+        {
+            await _ObjectCollection.UpdateOneAsync(Builders<T>.Filter.Eq(f => f.Id, objectId), 
+                                                   Builders<T>.Update.Set(p => p.ParentFolderId, targetFolderId));
         }
 
         /// <summary>

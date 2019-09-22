@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
@@ -19,10 +20,10 @@ namespace GoNorth.Services.Export.Dialog
         /// <param name="project">Project</param>
         /// <param name="condition">Condition render</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Result of rendering the condition</returns>
-        Task<string> RenderCondition(GoNorthProject project, Condition condition, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings);
+        Task<string> RenderCondition(GoNorthProject project, Condition condition, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings);
 
         /// <summary>
         /// Renders a condition
@@ -31,10 +32,10 @@ namespace GoNorth.Services.Export.Dialog
         /// <param name="conditionElements">Condition Elements</param>
         /// <param name="groupOperator">Grouping operator (and, or)</param>
         /// <param name="errorCollection">Error Collection</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
+        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Result of rendering the condition</returns>
-        string RenderConditionElements(GoNorthProject project, List<ParsedConditionData> conditionElements, string groupOperator, ExportPlaceholderErrorCollection errorCollection, KortistoNpc npc, ExportSettings exportSettings);
+        string RenderConditionElements(GoNorthProject project, List<ParsedConditionData> conditionElements, string groupOperator, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings);
 
         /// <summary>
         /// Returns true if the condition renderer has placeholders for a template type

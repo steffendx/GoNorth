@@ -27,6 +27,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using GoNorth.Services.Export.LanguageExport;
 using GoNorth.Services.Export.LanguageKeyGeneration;
+using GoNorth.Services.Export.TemplateParsing;
+using GoNorth.Services.Export.ExportSnippets;
 
 namespace GoNorth.Controllers.Api
 {
@@ -132,6 +134,23 @@ namespace GoNorth.Controllers.Api
             /// </summary>
             public bool IsDefault { get; set; }
         }
+                    
+        /// <summary>
+        /// Result of an export template by object id query
+        /// </summary>
+        private class ExportSnippetChangeResult
+        {
+            /// <summary>
+            /// Id of the snippet
+            /// </summary>
+            public string Id { get; set; }
+
+            /// <summary>
+            /// true if the object is still implemented, else false
+            /// </summary>
+            public bool IsImplemented { get; set; }
+        }
+        
 
         /// <summary>
         /// Export Default Template Provider
@@ -147,6 +166,11 @@ namespace GoNorth.Controllers.Api
         /// Export Settings Db Access
         /// </summary>
         private readonly IExportSettingsDbAccess _exportSettingsDbAccess;
+
+        /// <summary>
+        /// Object Export snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
 
         /// <summary>
         /// Project Db Access
@@ -194,6 +218,16 @@ namespace GoNorth.Controllers.Api
         private readonly IExportTemplatePlaceholderResolver _templatePlaceholderResolver;
 
         /// <summary>
+        /// Template export parser
+        /// </summary>
+        private readonly IExportTemplateParser _exportTemplateParser;
+
+        /// <summary>
+        /// Export Snippet Related Object Updater
+        /// </summary>
+        private readonly IExportSnippetRelatedObjectUpdater _exportSnippetRelatedObjectUpdater;
+
+        /// <summary>
         /// Dialog Function Generation Condition Provider
         /// </summary>
         private readonly IDialogFunctionGenerationConditionProvider _dialogFunctionGenerationConditionProvider;
@@ -239,6 +273,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="defaultTemplateProvider">Default Template Provider</param>
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="exportSettingsDbAccess">Export Settings Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
@@ -248,6 +283,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="skillTemplateDbAccess">Skill Template Db Access</param>
         /// <param name="templatePlaceholderResolver">Template Placeholder Resolver</param>
+        /// <param name="exportTemplateParser">Export template parser</param>
+        /// <param name="exportSnippetRelatedObjectUpdater">Export Snippet related object updater</param>
         /// <param name="dialogFunctionDbAccess">Dialog Function Db Access</param>
         /// <param name="dialogFunctionGenerationConditionProvider">Dialog Function Generation Condition Provider</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
@@ -256,15 +293,17 @@ namespace GoNorth.Controllers.Api
         /// <param name="userManager">User Manager</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public ExportApiController(IExportDefaultTemplateProvider defaultTemplateProvider, IExportTemplateDbAccess exportTemplateDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IProjectDbAccess projectDbAccess, 
-                                   IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, ITaleDbAccess dialogDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, 
-                                   IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess skillTemplateDbAccess, IExportTemplatePlaceholderResolver templatePlaceholderResolver, IDialogFunctionGenerationConditionDbAccess dialogFunctionDbAccess,
-                                   IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector, ITimelineService timelineService, 
-                                   UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, IStringLocalizerFactory localizerFactory) 
+        public ExportApiController(IExportDefaultTemplateProvider defaultTemplateProvider, IExportTemplateDbAccess exportTemplateDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
+                                   IProjectDbAccess projectDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, ITaleDbAccess dialogDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, 
+                                   IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess skillTemplateDbAccess, IExportTemplatePlaceholderResolver templatePlaceholderResolver, IExportTemplateParser exportTemplateParser, 
+                                   IExportSnippetRelatedObjectUpdater exportSnippetRelatedObjectUpdater, IDialogFunctionGenerationConditionDbAccess dialogFunctionDbAccess, IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, 
+                                   ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector, ITimelineService timelineService, UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, 
+                                   IStringLocalizerFactory localizerFactory) 
         {
             _defaultTemplateProvider = defaultTemplateProvider;
             _exportTemplateDbAccess = exportTemplateDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _projectDbAccess = projectDbAccess;
             _npcDbAccess = npcDbAccess;
             _npcTemplateDbAccess = npcTemplateDbAccess;
@@ -274,6 +313,8 @@ namespace GoNorth.Controllers.Api
             _skillDbAccess = skillDbAccess;
             _skillTemplateDbAccess = skillTemplateDbAccess;
             _templatePlaceholderResolver = templatePlaceholderResolver;
+            _exportTemplateParser = exportTemplateParser;
+            _exportSnippetRelatedObjectUpdater = exportSnippetRelatedObjectUpdater;
             _dialogFunctionDbAccess = dialogFunctionDbAccess;
             _dialogFunctionGenerationConditionProvider = dialogFunctionGenerationConditionProvider;
             _languageKeyDbAccess = languageKeyDbAccess;
@@ -284,7 +325,7 @@ namespace GoNorth.Controllers.Api
 
             _exporters = new Dictionary<string, IObjectExporter>();
             _exporters.Add("script", new ScriptExporter(templatePlaceholderResolver, projectDbAccess, exportSettingsDbAccess));
-            _exporters.Add("json", new JsonExporter());
+            _exporters.Add("json", new JsonExporter(objectExportSnippetDbAccess));
             _exporters.Add("languagefile", new LanguageExporter(templatePlaceholderResolver, defaultTemplateProvider, projectDbAccess, exportSettingsDbAccess, languageKeyReferenceCollector));
         }
 
@@ -385,6 +426,191 @@ namespace GoNorth.Controllers.Api
             }
 
             return Ok(exportTemplate);
+        }
+
+        /// <summary>
+        /// Returns the export template snippets of an object
+        /// </summary>
+        /// <param name="id">Id of the object for which to read the export template</param>
+        /// <param name="templateType">Template Type</param>
+        /// <returns>Export Template snippets</returns>
+        [Produces(typeof(List<ExportTemplateSnippet>))]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [HttpGet]
+        public async Task<IActionResult> GetExportTemplateSnippetsByObjectId(string id, TemplateType templateType)
+        {
+            ExportTemplateByObjectIdResult template = await GetValidExportTemplateByIdAndType(id, templateType);
+            return Ok(template.Template.ExportSnippets != null ? template.Template.ExportSnippets : new List<ExportTemplateSnippet>());
+        }
+
+        /// <summary>
+        /// Returns the list of objects that are using export snippets which are no longer existing in a template
+        /// </summary>
+        /// <param name="id">Id of the object for which to read the export template</param>
+        /// <param name="templateType">Template Type</param>
+        /// <returns>List of objects that are using export snippets which no longer exist in the template</returns>
+        [Produces(typeof(List<ObjectUsingTemplate>))]
+        [Authorize(Roles = RoleNames.ManageExportTemplates)]
+        [HttpGet]
+        public async Task<IActionResult> GetObjectsWithInvalidSnippets(string id, TemplateType templateType)
+        {
+            ExportTemplateByObjectIdResult template = await GetValidExportTemplateByIdAndType(id, templateType);
+
+            List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetCustomizedObjectTemplatesByType(templateType);
+            List<FlexFieldObject> childObjects = new List<FlexFieldObject>();
+            if(template.IsDefault)
+            {
+                if(templateType == TemplateType.ObjectNpc)
+                {
+                    childObjects = (await _npcDbAccess.GetFlexFieldObjectsNotPartOfIdList(exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
+                }
+                else if(templateType == TemplateType.ObjectItem)
+                {
+                    childObjects = (await _itemDbAccess.GetFlexFieldObjectsNotPartOfIdList(exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
+                }
+                else if(templateType == TemplateType.ObjectSkill)
+                {
+                    childObjects = (await _skillDbAccess.GetFlexFieldObjectsNotPartOfIdList(exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
+                }
+            }
+            else
+            {
+                List<string> objectId = new List<string> { template.Template.CustomizedObjectId };
+                if(templateType == TemplateType.ObjectNpc)
+                {
+                    childObjects = (await _npcDbAccess.GetFlexFieldObjectsPartOfIdList(objectId)).Cast<FlexFieldObject>().ToList();
+                }
+                else if(templateType == TemplateType.ObjectItem)
+                {
+                    childObjects = (await _itemDbAccess.GetFlexFieldObjectsPartOfIdList(objectId)).Cast<FlexFieldObject>().ToList();
+                }
+                else if(templateType == TemplateType.ObjectSkill)
+                {
+                    childObjects = (await _skillDbAccess.GetFlexFieldObjectsPartOfIdList(objectId)).Cast<FlexFieldObject>().ToList();
+                }
+            }
+
+            List<ExportTemplateSnippet> exportSnippets = template.Template.ExportSnippets;
+            if(exportSnippets == null)
+            {
+                exportSnippets = new List<ExportTemplateSnippet>();
+            }
+
+            List<ObjectExportSnippet> invalidSnippets = await _objectExportSnippetDbAccess.GetInvalidExportSnippets(childObjects.Select(c => c.Id).ToList(), exportSnippets.Select(e => e.Name).ToList());
+            List<string> invalidObjectIds = invalidSnippets.Select(i => i.ObjectId).Distinct().ToList();
+            List<ObjectUsingTemplate> objectsUsingTemplate = invalidObjectIds.Select(oid => new ObjectUsingTemplate {
+                ObjectId = oid,
+                IsObjectTemplate = false,
+                ObjectName = childObjects.FirstOrDefault(c => c.Id == oid).Name
+            }).ToList();
+
+            return Ok(objectsUsingTemplate);
+        }
+
+        /// <summary>
+        /// Returns the filled object export snippets of an object
+        /// </summary>
+        /// <param name="id">Id of the object for which to read the export template</param>
+        /// <returns>Object Export Template snippets</returns>
+        [Produces(typeof(List<ObjectExportSnippet>))]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [HttpGet]
+        public async Task<IActionResult> GetFilledExportTemplateSnippetsByObjectId(string id)
+        {
+            List<ObjectExportSnippet> objectSnippets = await _objectExportSnippetDbAccess.GetExportSnippets(id);
+            return Ok(objectSnippets);
+        }
+
+        /// <summary>
+        /// Creates a new export snippet
+        /// </summary>
+        /// <param name="objectType">Object type of the object to which the snippet belongs</param>
+        /// <param name="snippet">Snippet to save</param>
+        /// <returns>Update result</returns>
+        [Produces(typeof(ExportSnippetChangeResult))]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateObjectExportSnippet(string objectType, [FromBody]ObjectExportSnippet snippet)
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            
+            snippet.ProjectId = project.Id;
+            await this.SetModifiedData(_userManager, snippet);
+            
+            ObjectExportSnippet objectSnippet = await _objectExportSnippetDbAccess.CreateExportSnippet(snippet);
+            FlexFieldObject updatedObject = await _exportSnippetRelatedObjectUpdater.CheckExportSnippetRelatedObjectOnUpdate(snippet, objectType, snippet.ObjectId);
+            
+            ExportSnippetChangeResult result = new ExportSnippetChangeResult();
+            result.Id = objectSnippet.Id;
+            result.IsImplemented = updatedObject != null ? updatedObject.IsImplemented : false;
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Updates an export snippet
+        /// </summary>
+        /// <param name="id">Id of the snippet</param>
+        /// <param name="objectType">Object type of the object to which the snippet belongs</param>
+        /// <param name="snippet">Snippet to save</param>
+        /// <returns>Update result</returns>
+        [Produces(typeof(ExportSnippetChangeResult))]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateObjectExportSnippet(string id, string objectType, [FromBody]ObjectExportSnippet snippet)
+        {
+            ObjectExportSnippet loadedSnippet = await _objectExportSnippetDbAccess.GetExportSnippetById(id);
+            if(loadedSnippet == null)
+            {
+                return NotFound();
+            }
+
+            await this.SetModifiedData(_userManager, loadedSnippet);
+            loadedSnippet.ObjectId = snippet.ObjectId;
+            loadedSnippet.SnippetName = snippet.SnippetName;
+            loadedSnippet.ScriptType = snippet.ScriptType;
+            loadedSnippet.ScriptName = snippet.ScriptName;
+            loadedSnippet.ScriptNodeGraph = snippet.ScriptNodeGraph;
+            loadedSnippet.ScriptCode = snippet.ScriptCode;
+            
+            await _objectExportSnippetDbAccess.UpdateExportSnippet(loadedSnippet);
+            FlexFieldObject updatedObject = await _exportSnippetRelatedObjectUpdater.CheckExportSnippetRelatedObjectOnUpdate(snippet, objectType, snippet.ObjectId);
+
+            ExportSnippetChangeResult result = new ExportSnippetChangeResult();
+            result.Id = loadedSnippet.Id;
+            result.IsImplemented = updatedObject != null ? updatedObject.IsImplemented : false;
+
+            return Ok(result);
+        }
+        
+        /// <summary>
+        /// Deletes an export snippet
+        /// </summary>
+        /// <param name="id">Id of the snippet</param>
+        /// <param name="objectType">Object type of the object to which the snippet belongs</param>
+        /// <returns>Result</returns>
+        [Produces(typeof(ExportSnippetChangeResult))]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteObjectExportSnippet(string id, string objectType)
+        {
+            ObjectExportSnippet loadedSnippet = await _objectExportSnippetDbAccess.GetExportSnippetById(id);
+            if(loadedSnippet == null)
+            {
+                return NotFound();
+            }
+
+            await _objectExportSnippetDbAccess.DeleteExportSnippet(loadedSnippet);            
+            FlexFieldObject updatedObject = await _exportSnippetRelatedObjectUpdater.CheckExportSnippetRelatedObjectOnDelete(loadedSnippet, objectType, loadedSnippet.ObjectId);
+
+            ExportSnippetChangeResult result = new ExportSnippetChangeResult();
+            result.Id = loadedSnippet.Id;
+            result.IsImplemented = updatedObject != null ? updatedObject.IsImplemented : false;
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -569,6 +795,8 @@ namespace GoNorth.Controllers.Api
             template.Code = code;
             
             await this.SetModifiedData(_userManager, template);
+
+            _exportTemplateParser.ParseExportTemplate(template);
 
             if(string.IsNullOrEmpty(template.Id))
             {
