@@ -20,7 +20,7 @@ It offers modules for:
 ## Deployment
 ![Badge](https://leif-dev.visualstudio.com/_apis/public/build/definitions/31ab5f65-48ba-4e5b-a93d-590ba3af9850/2/badge)
 
-Please refer to the [wiki for deployment details](https://github.com/steffendx/GoNorth/wiki/Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?tabs=aspnetcore2x).
+Please refer to the [wiki for deployment details](https://github.com/steffendx/GoNorth/wiki/Deployment), [docker deployment details](https://github.com/steffendx/GoNorth/wiki/Docker-Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?tabs=aspnetcore2x).
 
 ## Brief Overview
 
