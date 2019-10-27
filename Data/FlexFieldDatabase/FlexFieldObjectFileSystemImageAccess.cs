@@ -28,7 +28,7 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="hostingEnvironment">Hosting Environment</param>
         /// <param name="objectDbAccess">Object Db Access</param>
         /// <param name="templateDbAccess">Template Db Access</param>
-        public FlexFieldObjectFileSystemImageAccess(string folderName, IHostingEnvironment hostingEnvironment, DbAccess objectDbAccess, TemplateDbAccess templateDbAccess) : base(folderName, hostingEnvironment)
+        public FlexFieldObjectFileSystemImageAccess(string folderName, IWebHostEnvironment hostingEnvironment, DbAccess objectDbAccess, TemplateDbAccess templateDbAccess) : base(folderName, hostingEnvironment)
         {
             _objectDbAccess = objectDbAccess;
             _templateDbAccess = templateDbAccess;

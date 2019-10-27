@@ -437,6 +437,21 @@ namespace GoNorth.Data.Exporting
         /// </summary> 
         TaleActionSpawnItemForChooseNpc = 349,
 
+        /// <summary>
+        /// Tale Action to have an npc use an item
+        /// </summary> 
+        TaleActionNpcUseItem = 350,
+        
+        /// <summary>
+        /// Tale Action to have the player use an item
+        /// </summary> 
+        TaleActionPlayerUseItem = 351,
+                
+        /// <summary>
+        /// Tale Action to have a choosen npc to use an item
+        /// </summary> 
+        TaleActionChooseNpcUseItem = 352,
+
 
         /// <summary>
         /// Logic Grouping Template

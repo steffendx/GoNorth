@@ -1,4 +1,4 @@
-using GoNorth.Services.Export.Json;
+using System.Text.Json.Serialization;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.FlexFieldDatabase
@@ -50,13 +50,13 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <summary>
         /// Id which is used in a list compare to detect deleted or new objects
         /// </summary>
-        [JsonExportIgnoreAttribute]
+        [JsonIgnore]
         public string ListComparableId { get { return Id; } }
 
         /// <summary>
         /// Value which is used in a list compare for display
         /// </summary>
-        [JsonExportIgnoreAttribute]
+        [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue(Name, CompareDifferenceValue.ValueResolveType.None); } }
     }
 }

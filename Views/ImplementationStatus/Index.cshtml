@@ -245,18 +245,16 @@
             </text>
         }
 
-        var nonLocalizedMarkerTypes = {};
         var markerTypes = {};
         @foreach(MappedMarkerType curMarkerType in @Model.MarkerTypes)
         {
             <text>
-            nonLocalizedMarkerTypes[@curMarkerType.Value] = "@curMarkerType.Name";
-            markerTypes[@curMarkerType.Value] = "@Localizer["MarkerType" + @curMarkerType.Name]";
+            markerTypes["@curMarkerType.Name"] = "@Localizer["MarkerType" + @curMarkerType.Name]";
             </text>
         }
 
         jQuery(document).ready(function() {
-            ko.applyBindings(new GoNorth.ImplementationStatus.Overview.ViewModel(nonLocalizedMarkerTypes, markerTypes), jQuery("#gn-overviewContainer")[0]);
+            ko.applyBindings(new GoNorth.ImplementationStatus.Overview.ViewModel(markerTypes), jQuery("#gn-overviewContainer")[0]);
         });
     </script>
 }

@@ -248,6 +248,21 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <summary>
         /// Remove item from the inventory of a chosen npc
         /// </summary>
-        RemoveItemFromChooseNpcInventory = 52
+        RemoveItemFromChooseNpcInventory = 52,
+        
+        /// <summary>
+        /// Npc uses an it em
+        /// </summary>
+        NpcUseItem = 53,
+        
+        /// <summary>
+        /// Player uses an item
+        /// </summary>
+        PlayerUseItem = 54,
+        
+        /// <summary>
+        /// A chosen npc uses an item
+        /// </summary>
+        ChooseNpcUseItem = 55
     }
 }

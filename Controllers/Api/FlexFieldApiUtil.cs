@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using GoNorth.Data.FlexFieldDatabase;
-using Newtonsoft.Json;
 
 namespace GoNorth.Controllers.Api
 {
@@ -58,7 +58,7 @@ namespace GoNorth.Controllers.Api
                 List<string> fieldIds = null;
                 try
                 {
-                    fieldIds = JsonConvert.DeserializeObject<List<string>>(curField.Value);
+                    fieldIds = JsonSerializer.Deserialize<List<string>>(curField.Value);
                 }
                 catch(Exception)
                 {
@@ -116,7 +116,7 @@ namespace GoNorth.Controllers.Api
 
                 if(anyChange) 
                 {
-                    curField.Value = JsonConvert.SerializeObject(fieldIds);
+                    curField.Value = JsonSerializer.Serialize(fieldIds);
                 }
             }
         }

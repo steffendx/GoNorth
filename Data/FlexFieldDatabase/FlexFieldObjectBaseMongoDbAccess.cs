@@ -315,5 +315,42 @@ namespace GoNorth.Data.FlexFieldDatabase
         {
             return await _ObjectCollection.AsQueryable().Where(n => n.ModifiedBy == userId).ToListAsync();
         }
+                
+        /// <summary>
+        /// Returns all objects in Recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        public async Task<List<T>> GetRecycleBinFlexFieldObjectsByModifiedUser(string userId)
+        {
+            IMongoCollection<T> recyclingBin = _Database.GetCollection<T>(_RecylingBinCollectionName);
+
+            return await recyclingBin.AsQueryable().Where(b => b.ModifiedBy == userId).ToListAsync();
+        }
+
+        /// <summary>
+        /// Resets all objects in the Recycle bin that were modified by a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task ResetRecycleBinFlexFieldObjectsByModifiedUser(string userId)
+        {
+            IMongoCollection<T> recyclingBin = _Database.GetCollection<T>(_RecylingBinCollectionName);
+            await recyclingBin.UpdateManyAsync(n => n.ModifiedBy == userId, Builders<T>.Update.Set(n => n.ModifiedBy, Guid.Empty.ToString()).Set(n => n.ModifiedOn, DateTimeOffset.UtcNow));
+        }
+
+        /// <summary>
+        /// Resolves the names for a list of Flex Field Objects in the Recycle bin
+        /// </summary>
+        /// <param name="flexFieldObjectIds">Flex Field Object Ids</param>
+        /// <returns>Resolved Flex Field Objects with names</returns>
+        public async Task<List<T>> ResolveRecycleBinFlexFieldObjectNames(List<string> flexFieldObjectIds)
+        {
+            IMongoCollection<T> recyclingBin = _Database.GetCollection<T>(_RecylingBinCollectionName);
+            return await  recyclingBin.AsQueryable().Where(n => flexFieldObjectIds.Contains(n.Id)).Select(c => new T() {
+                Id = c.Id,
+                Name = c.Name,
+            }).ToListAsync();
+        }
     }
 }

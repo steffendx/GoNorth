@@ -118,6 +118,9 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionRemoveItemFromNpc),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSpawnItemForChooseNpc),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionRemoveItemFromChooseNpc),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionNpcUseItem),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionPlayerUseItem),
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChooseNpcUseItem),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangeQuestValue),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSetQuestState),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionAddQuestText),
@@ -185,7 +188,7 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Hosting Environment
         /// </summary>
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         /// <summary>
         /// Template Db Access
@@ -197,7 +200,7 @@ namespace GoNorth.Data.Exporting
         /// </summary>
         /// <param name="hostingEnvironment">Hosting Environment</param>
         /// <param name="templateDbAccess">Template Db Access</param>
-        public ExportDefaultTemplateProvider(IHostingEnvironment hostingEnvironment, IExportTemplateDbAccess templateDbAccess)
+        public ExportDefaultTemplateProvider(IWebHostEnvironment hostingEnvironment, IExportTemplateDbAccess templateDbAccess)
         {
             _hostingEnvironment = hostingEnvironment;
             _templateDbAccess = templateDbAccess;

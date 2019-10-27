@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.User;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,9 +12,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Util Api controller
     /// </summary>
+    [ApiController]
     [Authorize]
     [Route("/api/[controller]/[action]")]
-    public class UtilApiController : Controller
+    public class UtilApiController : ControllerBase
     {
         /// <summary>
         /// Trimmed user for response
@@ -57,6 +59,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Users</returns>
         [Produces(typeof(IList<TrimmedUtilResponseUser>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {

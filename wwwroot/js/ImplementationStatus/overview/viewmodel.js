@@ -23,11 +23,10 @@
 
             /**
              * Overview View Model
-             * @param {object} nonLocalizedMarkerTypes Non Localized Marker Types
              * @param {object} markerTypes Marker Types
              * @class
              */
-            Overview.ViewModel = function(nonLocalizedMarkerTypes, markerTypes)
+            Overview.ViewModel = function(markerTypes)
             {
                 this.markerTypes = markerTypes;
 
@@ -61,7 +60,7 @@
                 this.itemList = new Overview.ImplementationStatusItemList(this.isLoading, this.errorOccured, this.compareDialog);
                 this.skillList = new Overview.ImplementationStatusSkillList(this.isLoading, this.errorOccured, this.compareDialog);
                 this.questList = new Overview.ImplementationStatusQuestList(this.isLoading, this.errorOccured, this.compareDialog);
-                this.markerList = new Overview.ImplementationStatusMarkerList(nonLocalizedMarkerTypes, this.isLoading, this.errorOccured, this.compareDialog);
+                this.markerList = new Overview.ImplementationStatusMarkerList(this.isLoading, this.errorOccured, this.compareDialog);
 
                 // Select first list user has access to
                 var existingListType = parseInt(GoNorth.Util.getParameterFromUrl("listType"));

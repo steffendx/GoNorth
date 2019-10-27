@@ -25,6 +25,7 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Evne Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Evne)]
     [Route("/api/[controller]/[action]")]
     public class EvneApiController : FlexFieldBaseApiController<EvneSkill>

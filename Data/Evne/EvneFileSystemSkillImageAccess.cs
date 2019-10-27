@@ -18,7 +18,7 @@ namespace GoNorth.Data.Evne
         /// <param name="hostingEnvironment">Hosting Environment</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="templateDbAccess">Template Db Access</param>
-        public EvneFileSystemSkillImageAccess(IHostingEnvironment hostingEnvironment, IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess templateDbAccess) : base("SkillImages", hostingEnvironment, skillDbAccess, templateDbAccess)
+        public EvneFileSystemSkillImageAccess(IWebHostEnvironment hostingEnvironment, IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess templateDbAccess) : base("SkillImages", hostingEnvironment, skillDbAccess, templateDbAccess)
         {
         }
     }

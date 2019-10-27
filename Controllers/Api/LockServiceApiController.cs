@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.LockService;
 using GoNorth.Data.User;
-using GoNorth.Services.Timeline;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +12,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Timeline controller
     /// </summary>
+    [ApiController]
     [Authorize]
     [Route("/api/[controller]/[action]")]
-    public class LockServiceApiController : Controller
+    public class LockServiceApiController : ControllerBase
     {
         /// <summary>
         /// Lock Response
@@ -71,6 +71,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the resource</param>
         /// <returns>Lock Result</returns>
         [Produces(typeof(LockResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcquireLock(string category, string id)
@@ -85,6 +86,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the resource</param>
         /// <returns>Lock Result</returns>
         [Produces(typeof(LockResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> CheckLock(string category, string id)
         {

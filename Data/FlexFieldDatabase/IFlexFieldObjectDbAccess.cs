@@ -159,5 +159,26 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="userId">Id of the user</param>
         /// <returns>Objects</returns>
         Task<List<T>> GetFlexFieldObjectsByModifiedUser(string userId);
+        
+        /// <summary>
+        /// Returns all objects in Recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        Task<List<T>> GetRecycleBinFlexFieldObjectsByModifiedUser(string userId);
+        
+        /// <summary>
+        /// Resets all objects in the Recycle bin that were modified by a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        Task ResetRecycleBinFlexFieldObjectsByModifiedUser(string userId);
+        
+        /// <summary>
+        /// Resolves the names for a list of Flex Field Objects in the Recycle bin
+        /// </summary>
+        /// <param name="flexFieldObjectIds">Flex Field Object Ids</param>
+        /// <returns>Resolved Flex Field Objects with names</returns>
+        Task<List<T>> ResolveRecycleBinFlexFieldObjectNames(List<string> flexFieldObjectIds);
     }
 }

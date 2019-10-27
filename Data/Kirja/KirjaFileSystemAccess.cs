@@ -12,7 +12,7 @@ namespace GoNorth.Data.Kirja
         /// Constructor
         /// </summary>
         /// <param name="hostingEnvironment">Hosting Environment</param>
-        public KirjaFileSystemAccess(IHostingEnvironment hostingEnvironment) : base("KirjaFiles", hostingEnvironment)
+        public KirjaFileSystemAccess(IWebHostEnvironment hostingEnvironment) : base("KirjaFiles", hostingEnvironment)
         {
         }
 

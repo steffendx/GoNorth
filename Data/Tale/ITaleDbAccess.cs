@@ -73,5 +73,19 @@ namespace GoNorth.Data.Tale
         /// <param name="userId">User Id</param>
         /// <returns>List of Dialogs</returns>
         Task<List<TaleDialog>> GetDialogsByModifiedUser(string userId);
+
+        /// <summary>
+        /// Returns all recyle bin dialogs that were last modified by a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Dialogs</returns>
+        Task<List<TaleDialog>> GetRecycleBinDialogsByModifiedUser(string userId);
+
+        /// <summary>
+        /// Resets all dialogs in the Recycle bin that were modified by a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        Task ResetRecycleBinFlexFieldObjectsByModifiedUser(string userId);
     }
 }

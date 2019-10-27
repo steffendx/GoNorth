@@ -20,15 +20,17 @@ using GoNorth.Data.Kirja;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Services.ImplementationStatusCompare;
+using Microsoft.AspNetCore.Http;
 
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
     /// Aika Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Aika)]
     [Route("/api/[controller]/[action]")]
-    public class AikaApiController : Controller
+    public class AikaApiController : ControllerBase
     {
         /// <summary>
         /// Chapter data
@@ -204,6 +206,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Chapter Overview</returns>
         [Produces(typeof(AikaChapterOverview))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapterOverview()
         {
@@ -248,6 +251,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="overview">Overview to save</param>
         /// <returns>Chapter Overview</returns>
         [Produces(typeof(AikaChapterOverview))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveChapterOverview([FromBody]AikaChapterOverview overview)
@@ -297,7 +302,7 @@ namespace GoNorth.Controllers.Api
                        (deletedChapterDetail.Finish != null && deletedChapterDetail.Finish.Count > 0) )
                     {
                         _logger.LogInformation("Tried to delete non empty chapter");
-                        return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteNonEmptyChapter"].Value);
+                        return BadRequest(_localizer["CanNotDeleteNonEmptyChapter"].Value);
                     }
 
                     chapterDetailsToDelete.Add(deletedChapterDetail);
@@ -550,6 +555,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Available chapters</returns>
         [Produces(typeof(List<ChapterResponse>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapters()
         {
@@ -578,6 +584,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Chapter Details</returns>
         [Produces(typeof(List<ChapterDetailQueryResult>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapterDetails(string searchPattern, int start, int pageSize)
         {
@@ -609,12 +616,14 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the Chapter Detail</param>
         /// <returns>Chapter detail</returns>
         [Produces(typeof(AikaChapterDetail))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         public async Task<IActionResult> GetChapterDetail(string id)
         {
             if(string.IsNullOrEmpty(id))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             AikaChapterDetail detail = await _chapterDetailDbAccess.GetChapterDetailById(id);
@@ -627,6 +636,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="questId">Quest Id</param>
         /// <returns>Chapter Details</returns>
         [Produces(typeof(List<AikaChapterDetail>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapterDetailsByQuest(string questId)
         {
@@ -640,12 +650,14 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the Chapter Detail</param>
         /// <returns>Chapter detaildelete validation result</returns>
         [Produces(typeof(ChapterDetailDeleteValidationResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         public async Task<IActionResult> ValidateChapterDetailDelete(string id)
         {
             if(string.IsNullOrEmpty(id))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             AikaChapterDetail detail = await _chapterDetailDbAccess.GetChapterDetailById(id);
@@ -738,6 +750,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="chapterDetail">Chapter Detail</param>
         /// <returns>Created chapter detail</returns>
         [Produces(typeof(AikaChapterDetail))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChapterDetail([FromBody]AikaChapterDetail chapterDetail)
@@ -774,6 +787,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="chapterDetail">Chapter Detail</param>
         /// <returns>Updated chapter detail</returns>
         [Produces(typeof(AikaChapterDetail))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateChapterDetail(string id, [FromBody]AikaChapterDetail chapterDetail)
@@ -814,7 +829,7 @@ namespace GoNorth.Controllers.Api
                     (deletedChapterDetail.Finish != null && deletedChapterDetail.Finish.Count > 0) )
                 {
                     _logger.LogInformation("Tried to delete non empty chapter detail");
-                    return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteNonEmptyChapterDetail"].Value);
+                    return BadRequest(_localizer["CanNotDeleteNonEmptyChapterDetail"].Value);
                 }
 
                 chapterDetailsToDelete.Add(deletedChapterDetail);
@@ -901,6 +916,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the Chapter Detail</param>
         /// <returns>Deleted chapter detail</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteChapterDetail(string id)
@@ -923,6 +939,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Quests</returns>
         [Produces(typeof(QuestQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetQuests(string searchPattern, int start, int pageSize)
         {
@@ -955,6 +972,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Quests</returns>
         [Produces(typeof(QuestQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Aika)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]
@@ -978,6 +996,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Quest id</param>
         /// <returns>Quest</returns>
         [Produces(typeof(AikaQuest))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetQuest(string id)
         {
@@ -991,6 +1010,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="objectId">Object id</param>
         /// <returns>Quests</returns>
         [Produces(typeof(List<AikaQuest>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetQuestsObjectIsReferenced(string objectId)
         {
@@ -1004,6 +1024,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="questIds">Quest Ids</param>
         /// <returns>Resolved names</returns>
         [Produces(typeof(List<AikaQuest>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResolveQuestNames([FromBody]List<string> questIds)
@@ -1018,6 +1039,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="quest">Quest</param>
         /// <returns>Created quest</returns>
         [Produces(typeof(AikaQuest))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateQuest([FromBody]AikaQuest quest)
@@ -1045,6 +1067,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="quest">Quest</param>
         /// <returns>Updated quest</returns>
         [Produces(typeof(AikaQuest))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateQuest(string id, [FromBody]AikaQuest quest)
@@ -1103,6 +1126,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the quest</param>
         /// <returns>Deleted quest</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteQuest(string id)
@@ -1112,14 +1137,14 @@ namespace GoNorth.Controllers.Api
             if(chapterDetails.Count > 0)
             {
                 string usedInChapterDetails = string.Join(", ", chapterDetails.Select(p => p.Name));
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteQuestUsedInChapterDetail", usedInChapterDetails].Value);
+                return BadRequest(_localizer["CanNotDeleteQuestUsedInChapterDetail", usedInChapterDetails].Value);
             }
 
             List<KirjaPage> kirjaPages = await _kirjaPageDbAccess.GetPagesByQuest(id);
             if(kirjaPages.Count > 0)
             {
                 string mentionedInPages = string.Join(", ", kirjaPages.Select(p => p.Name));
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteQuestMentionedInKirjaPage", mentionedInPages].Value);
+                return BadRequest(_localizer["CanNotDeleteQuestMentionedInKirjaPage", mentionedInPages].Value);
             }
 
             List<TaleDialog> taleDialogs = await _taleDbAccess.GetDialogsObjectIsReferenced(id);
@@ -1128,14 +1153,14 @@ namespace GoNorth.Controllers.Api
             {
                 List<KortistoNpc> npcs = await _kortistoNpcDbAccess.ResolveFlexFieldObjectNames(taleDialogs.Select(t => t.RelatedObjectId).ToList());
                 string referencedInDialogs = string.Join(", ", npcs.Select(n => n.Name));
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteQuestReferencedInTaleDialog", referencedInDialogs].Value);
+                return BadRequest(_localizer["CanNotDeleteQuestReferencedInTaleDialog", referencedInDialogs].Value);
             }
 
             List<KortistoNpc> referencedInDailyRoutines = await _kortistoNpcDbAccess.GetNpcsObjectIsReferencedInDailyRoutine(id);
             if(referencedInDailyRoutines.Count > 0)
             {
                 string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteQuestUsedInDailyRoutine", usedInDailyRoutines].Value);
+                return BadRequest(_localizer["CanNotDeleteQuestUsedInDailyRoutine", usedInDailyRoutines].Value);
             }
 
             // Delete Quest

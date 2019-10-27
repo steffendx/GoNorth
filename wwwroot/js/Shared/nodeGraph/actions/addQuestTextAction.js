@@ -131,6 +131,10 @@
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest);
+                this.nodeModel.set("actionRelatedToObjectId", questId);
             }
 
             /**

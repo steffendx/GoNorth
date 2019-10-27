@@ -132,7 +132,8 @@
         Util.setupValidation = function(selector) {
             jQuery(selector).validate({
                 errorElement: "div",
-                errorClass: "text-danger"
+                errorClass: "text-danger",
+                ignore: ".gn-flexFieldObjectFormRichText"
             }).resetForm();
         }
 

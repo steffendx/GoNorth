@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
@@ -9,7 +11,6 @@ using GoNorth.Services.Export.Dialog.ConditionRendering;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 
 namespace GoNorth.Services.Export.Dialog
 {
@@ -81,8 +82,14 @@ namespace GoNorth.Services.Export.Dialog
             }
 
             ExportTemplate andTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.GeneralLogicAnd);
-            List<ParsedConditionData> conditionElements = JsonConvert.DeserializeObject<List<ParsedConditionData>>(condition.ConditionElements);
-            return RenderConditionElements(project, conditionElements, andTemplate.Code, errorCollection, flexFieldObject, exportSettings);
+
+            JsonSerializerOptions jsonOptions = new JsonSerializerOptions();
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+            jsonOptions.Converters.Add(new JsonConditionDataParser());
+            jsonOptions.PropertyNameCaseInsensitive = true;
+
+            List<ParsedConditionData> parsedConditionData = JsonSerializer.Deserialize<List<ParsedConditionData>>(condition.ConditionElements, jsonOptions);
+            return RenderConditionElements(project, parsedConditionData, andTemplate.Code, errorCollection, flexFieldObject, exportSettings);
         }
 
         /// <summary>

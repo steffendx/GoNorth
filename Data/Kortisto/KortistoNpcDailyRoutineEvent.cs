@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using GoNorth.Data.FlexFieldDatabase;
+using System.Text.Json.Serialization;
 using GoNorth.Data.NodeGraph;
-using GoNorth.Services.Export.Json;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Kortisto
@@ -80,13 +78,13 @@ namespace GoNorth.Data.Kortisto
         /// <summary>
         /// Id which is used in a list compare to detect deleted or new objects
         /// </summary>
-        [JsonExportIgnoreAttribute]
+        [JsonIgnore]
         public string ListComparableId { get { return EventId; } }
 
         /// <summary>
         /// Value which is used in a list compare for display
         /// </summary>
-        [JsonExportIgnoreAttribute]
+        [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { 
             string languageKeyToUse = "DailyRoutineEntryNameSingleTime";
             List<string> argumentValues = new List<string>();

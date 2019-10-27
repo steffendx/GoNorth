@@ -1,15 +1,12 @@
 using System.Threading.Tasks;
-using GoNorth.Data.Kortisto;
 using GoNorth.Services.Timeline;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using GoNorth.Data.User;
-using GoNorth.Data.Tale;
 using System.Collections.Generic;
 using System.Net;
-using GoNorth.Data.NodeGraph;
 using GoNorth.Extensions;
 using GoNorth.Data.TaskManagement;
 using GoNorth.Data.Project;
@@ -26,9 +23,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Task Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Task)]
     [Route("/api/[controller]/[action]")]
-    public class TaskApiController : Controller
+    public class TaskApiController : ControllerBase
     {
         /// <summary>
         /// Task Board Query Result
@@ -167,6 +165,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Board id</param>
         /// <returns>Task Board</returns>
         [Produces(typeof(TaskBoard))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskBoard(string id)
         {
@@ -181,6 +180,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Task Boards</returns>
         [Produces(typeof(TaskBoardQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetOpenTaskBoards(int start, int pageSize)
         {
@@ -204,6 +204,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Task Boards</returns>
         [Produces(typeof(TaskBoardQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetClosedTaskBoards(int start, int pageSize)
         {
@@ -226,6 +227,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="board">Board to create</param>
         /// <returns>Id of the board</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -234,7 +237,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(board.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Create Task Board
@@ -284,6 +287,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="board">Board to update</param>
         /// <returns>Id of the board</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -292,14 +298,14 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(id) || string.IsNullOrEmpty(board.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Updates a Task Board
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(id);
             if(updatedTaskBoard == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             updatedTaskBoard.Name = board.Name;
@@ -332,6 +338,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="closed">true if the board must be closed, else false</param>
         /// <returns>Id of the board</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -340,14 +349,14 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(id))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Updates a Task Board
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(id);
             if(updatedTaskBoard == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
             
             updatedTaskBoard.IsClosed = closed;
@@ -381,6 +390,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the board</param>
         /// <returns>Id of the board</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -389,7 +400,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(id))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Updates a Task Board
@@ -402,7 +413,7 @@ namespace GoNorth.Controllers.Api
             // Check if no tasks are associated
             if(updatedTaskBoard.TaskGroups != null && updatedTaskBoard.TaskGroups.Count > 0)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteNonEmptyTaskBoard"].Value);
+                return BadRequest(_localizer["CanNotDeleteNonEmptyTaskBoard"].Value);
             }
 
             // Delete board
@@ -430,6 +441,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="group">Group to create</param>
         /// <returns>Created Task Group</returns>
         [Produces(typeof(TaskGroup))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateTaskGroup(string boardId, [FromBody]TaskGroup group)
@@ -437,7 +451,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(group.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             _xssChecker.CheckXss(group.Name);
@@ -447,7 +461,7 @@ namespace GoNorth.Controllers.Api
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(updatedTaskBoard == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Create Task Group
@@ -501,6 +515,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="group">Group to create</param>
         /// <returns>Updated Task Group</returns>
         [Produces(typeof(TaskGroup))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateTaskGroup(string boardId, string groupId, [FromBody]TaskGroup group)
@@ -508,7 +525,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(group.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
             
             _xssChecker.CheckXss(group.Name);
@@ -518,14 +535,14 @@ namespace GoNorth.Controllers.Api
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(updatedTaskBoard == null || updatedTaskBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Update Task Group
             TaskGroup updatedGroup = updatedTaskBoard.TaskGroups.Where(t => t.Id == groupId).FirstOrDefault();
             if(updatedGroup == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             List<string> oldImages = _taskImageParser.ParseDescription(updatedGroup.Description);
@@ -582,6 +599,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="targetBoardId">Id of the target board</param>
         /// <returns>Updated Task group</returns>
         [Produces(typeof(TaskGroup))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> MoveTaskGroupToBoard(string sourceBoardId, string groupId, string targetBoardId)
@@ -589,27 +609,27 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(sourceBoardId) || string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(targetBoardId))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Get Source
             TaskBoard sourceBoard = await _taskBoardDbAccess.GetTaskBoardById(sourceBoardId);
             if(sourceBoard == null || sourceBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             TaskGroup moveGroup = sourceBoard.TaskGroups.Where(g => g.Id == groupId).FirstOrDefault();
             if(moveGroup == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Get Target
             TaskBoard targetBoard = await _taskBoardDbAccess.GetTaskBoardById(targetBoardId);
             if(targetBoard == null || targetBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             await this.SetModifiedData(_userManager, moveGroup);
@@ -650,6 +670,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="targetIndex">Target index of the group</param>
         /// <returns>Updated Task Group</returns>
         [Produces(typeof(TaskGroup))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> ReorderTaskGroup(string boardId, string groupId, int targetIndex)
@@ -657,21 +680,21 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Get Task Board
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(updatedTaskBoard == null || updatedTaskBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Get Task Group
             TaskGroup updatedGroup = updatedTaskBoard.TaskGroups.Where(t => t.Id == groupId).FirstOrDefault();
             if(updatedGroup == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             updatedTaskBoard.TaskGroups.Remove(updatedGroup);
@@ -709,6 +732,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <returns>Deletes Task Group</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
         public async Task<IActionResult> DeleteTaskGroup(string boardId, string groupId)
@@ -716,14 +742,14 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Get Task Board
             TaskBoard taskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(taskBoard == null || taskBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Delete Task Group
@@ -736,7 +762,7 @@ namespace GoNorth.Controllers.Api
             // Check task group is empty
             if(deletedGroup.Tasks != null && deletedGroup.Tasks.Count > 0)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteNonEmptyTaskGroup"].Value); 
+                return BadRequest(_localizer["CanNotDeleteNonEmptyTaskGroup"].Value); 
             }
 
             List<string> images = _taskImageParser.ParseDescription(deletedGroup.Description);
@@ -787,6 +813,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="task">Task to create</param>
         /// <returns>Created Task</returns>
         [Produces(typeof(GoNorthTask))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateTask(string boardId, string groupId, [FromBody]GoNorthTask task)
@@ -794,7 +823,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(task.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             _xssChecker.CheckXss(task.Name);
@@ -804,14 +833,14 @@ namespace GoNorth.Controllers.Api
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(updatedTaskBoard == null || updatedTaskBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Get Task Group
             TaskGroup updatedGroup = updatedTaskBoard.TaskGroups.Where(g => g.Id == groupId).FirstOrDefault();
             if(updatedGroup == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Create Task
@@ -901,6 +930,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="task">Task to update</param>
         /// <returns>Updated Task</returns>
         [Produces(typeof(GoNorthTask))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateTask(string boardId, string groupId, string taskId, string oldGroupId, int targetIndex, [FromBody]GoNorthTask task)
@@ -908,7 +940,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(taskId) || string.IsNullOrEmpty(task.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             _xssChecker.CheckXss(task.Name);
@@ -918,7 +950,7 @@ namespace GoNorth.Controllers.Api
             TaskBoard updatedTaskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(updatedTaskBoard == null || updatedTaskBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Get Task Group
@@ -930,14 +962,14 @@ namespace GoNorth.Controllers.Api
             TaskGroup updatedGroup = updatedTaskBoard.TaskGroups.Where(g => g.Id == groupIdToSearch).FirstOrDefault();
             if(updatedGroup == null || updatedGroup.Tasks == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Update Task
             GoNorthTask updatedTask = updatedGroup.Tasks.Where(t => t.Id == taskId).FirstOrDefault();
             if(updatedTask == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             List<string> oldImages = _taskImageParser.ParseDescription(updatedTask.Description);
@@ -956,7 +988,7 @@ namespace GoNorth.Controllers.Api
                 TaskGroup newGroup = updatedTaskBoard.TaskGroups.Where(g => g.Id == groupId).FirstOrDefault();
                 if(newGroup == null || newGroup.Tasks == null)
                 {
-                    return StatusCode((int)HttpStatusCode.NotFound); 
+                    return NotFound(); 
                 }
 
                 updatedGroup.Tasks.Remove(updatedTask);
@@ -1021,6 +1053,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="targetGroupId">If ot the target task group</param>
         /// <returns>Updated Task</returns>
         [Produces(typeof(GoNorthTask))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> MoveTaskToBoard(string sourceBoardId, string sourceGroupId, string taskId, string targetBoardId, string targetGroupId)
@@ -1028,39 +1063,39 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(sourceBoardId) || string.IsNullOrEmpty(sourceGroupId) || string.IsNullOrEmpty(taskId) || string.IsNullOrEmpty(targetBoardId) || string.IsNullOrEmpty(targetGroupId))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Get Source
             TaskBoard sourceBoard = await _taskBoardDbAccess.GetTaskBoardById(sourceBoardId);
             if(sourceBoard == null || sourceBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             TaskGroup sourceGroup = sourceBoard.TaskGroups.Where(g => g.Id == sourceGroupId).FirstOrDefault();
             if(sourceGroup == null || sourceGroup.Tasks == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             GoNorthTask moveTask = sourceGroup.Tasks.Where(t => t.Id == taskId).FirstOrDefault();
             if(moveTask == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Get Target
             TaskBoard targetBoard = await _taskBoardDbAccess.GetTaskBoardById(targetBoardId);
             if(targetBoard == null || targetBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             TaskGroup targetGroup = targetBoard.TaskGroups.Where(g => g.Id == targetGroupId).FirstOrDefault();
             if(targetGroup == null || targetGroup.Tasks == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             await this.SetModifiedData(_userManager, moveTask);
@@ -1101,6 +1136,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskId">Id of the task</param>
         /// <returns>Task Id</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
         public async Task<IActionResult> DeleteTask(string boardId, string groupId, string taskId)
@@ -1108,21 +1146,21 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(boardId) || string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(taskId))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Get Task Board
             TaskBoard taskBoard = await _taskBoardDbAccess.GetTaskBoardById(boardId);
             if(taskBoard == null || taskBoard.TaskGroups == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Get Task Group
             TaskGroup taskGroup = taskBoard.TaskGroups.Where(g => g.Id == groupId).FirstOrDefault();
             if(taskGroup == null || taskGroup.Tasks == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound); 
+                return NotFound(); 
             }
 
             // Delete Task
@@ -1177,6 +1215,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Image Name</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ImageUpload()
@@ -1185,7 +1225,7 @@ namespace GoNorth.Controllers.Api
             string validateResult = this.ValidateImageUploadData();
             if(validateResult != null)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer[validateResult]);
+                return BadRequest(_localizer[validateResult]);
             }
 
             // Save Image
@@ -1212,12 +1252,14 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="imageFile">Image File</param>
         /// <returns>Task Image</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         public IActionResult TaskImage(string imageFile)
         {
             if(string.IsNullOrEmpty(imageFile))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             string fileExtension = Path.GetExtension(imageFile);
@@ -1255,6 +1297,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Id of the last opened task board, "" if no task board was opened before</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetLastOpenedTaskBoard()
         {
@@ -1271,6 +1314,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="boardId">Id of the board</param>
         /// <returns>Task</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SetLastOpenedTaskBoard(string boardId)
@@ -1289,6 +1333,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Task board categories</returns>
         [Produces(typeof(List<TaskBoardCategory>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskBoardCategories()
         {
@@ -1303,6 +1348,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="category">Category to create</param>
         /// <returns>Id of the board category</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1311,7 +1358,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(category.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Create Task Board category
@@ -1356,6 +1403,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="category">Board category to update</param>
         /// <returns>Id of the board category</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1364,14 +1414,14 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(id) || string.IsNullOrEmpty(category.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Updates a Task Board category
             TaskBoardCategory updatedTaskBoardCategory = await _taskBoardCategoryDbAccess.GetTaskBoardCategoryById(id);
             if(updatedTaskBoardCategory == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             updatedTaskBoardCategory.Name = category.Name;
@@ -1414,6 +1464,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the board category</param>
         /// <returns>Id of the board category</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -1422,7 +1474,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(id))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Updates a Task Board category
@@ -1484,6 +1536,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Task group Types</returns>
         [Produces(typeof(List<GoNorthTaskType>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskGroupTypes()
         {
@@ -1495,6 +1548,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Task Types</returns>
         [Produces(typeof(List<GoNorthTaskType>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskTypes()
         {
@@ -1541,7 +1595,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(taskType.Name) || string.IsNullOrEmpty(taskType.Color))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Create Task Type
@@ -1597,6 +1651,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskType">Task group type to create</param>
         /// <returns>Id of the task group type</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1611,6 +1666,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskType">Task type to create</param>
         /// <returns>Id of the task type</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1633,14 +1689,14 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(id) || string.IsNullOrEmpty(taskType.Name) || string.IsNullOrEmpty(taskType.Color))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Updates a Task type
             GoNorthTaskType updatedTaskType = await dbTarget.GetTaskTypeById(id);
             if(updatedTaskType == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             updatedTaskType.Name = taskType.Name;
@@ -1682,6 +1738,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskType">Task group type to update</param>
         /// <returns>Id of the task group type</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1697,6 +1754,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskType">Task type to update</param>
         /// <returns>Id of the task type</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1718,7 +1776,7 @@ namespace GoNorth.Controllers.Api
             // Validate Data
             if(string.IsNullOrEmpty(id))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest); 
+                return BadRequest(); 
             }
 
             // Delete task type
@@ -1798,6 +1856,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="newTaskTypeId">Id of the task type to which the old task groups using this type must be changed</param>
         /// <returns>Id of the type</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -1813,6 +1872,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="newTaskTypeId">Id of the task type to which the old tasks using this type must be changed</param>
         /// <returns>Id of the type</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -1826,6 +1886,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>true if any task board has a task group without a task type</returns>
         [Produces(typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [HttpGet]
         public async Task<IActionResult> AnyTaskBoardHasTaskGroupsWithoutType()
@@ -1840,6 +1901,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>true if any task board has a task without a task type</returns>
         [Produces(typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [HttpGet]
         public async Task<IActionResult> AnyTaskBoardHasTasksWithoutType()

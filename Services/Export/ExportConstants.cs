@@ -110,7 +110,7 @@ namespace GoNorth.Services.Export
         /// <summary>
         /// Export Snippet Regex
         /// </summary>
-        public const string ExportSnippetRegex = "CodeSnippet_(.*)";
+        public const string ExportSnippetRegex = "CodeSnippet_(.*?)";
 
 
         /// <summary>

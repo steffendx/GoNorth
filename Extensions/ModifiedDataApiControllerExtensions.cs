@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using GoNorth.Data;
 using GoNorth.Data.User;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +21,7 @@ namespace GoNorth.Extensions
         /// <param name="userManager">UserManager</param>
         /// <param name="modifiedDataObject">Object which modified data should be set</param>
         /// <returns>Task</returns>
-        public static async Task SetModifiedData(this Controller controller, UserManager<GoNorthUser> userManager, IHasModifiedData modifiedDataObject)
+        public static async Task SetModifiedData(this ControllerBase controller, UserManager<GoNorthUser> userManager, IHasModifiedData modifiedDataObject)
         {
             GoNorthUser currentUser = await userManager.GetUserAsync(controller.User);
 

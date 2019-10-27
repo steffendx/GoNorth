@@ -868,8 +868,7 @@
             for(var curField = 0; curField < fields.length; ++curField)
             {
                 if(fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldTypeMultiLine ||
-                   fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldGroup ||
-                   (fields[curField].scriptSettings && fields[curField].scriptSettings.dontExportToScript))
+                   fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldGroup)
                 {
                     continue;
                 }
@@ -9093,6 +9092,10 @@
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest);
+                this.nodeModel.set("actionRelatedToObjectId", questId);
             }
 
             /**

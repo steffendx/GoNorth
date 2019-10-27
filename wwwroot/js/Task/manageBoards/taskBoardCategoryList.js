@@ -7,10 +7,9 @@
              * List of Task Board categories
              * 
              * @param {function} reloadBoardsFunc Function to reload the boards
-             * @param {ko.observable} errorOccuredObservable Observable which will be set to true or false if an error occured or a new load is started
              * @class
              */
-            ManageBoards.TaskBoardCategoryList = function(reloadBoardsFunc, errorOccuredObservable)
+            ManageBoards.TaskBoardCategoryList = function(reloadBoardsFunc)
             {
                 this.isExpanded = new ko.observable(false);
 
@@ -29,7 +28,7 @@
                 this.isLoading = new ko.observable(false);
 
                 this.reloadBoardsFunc = reloadBoardsFunc;
-                this.errorOccured = errorOccuredObservable;
+                this.errorOccured = new ko.observable(false);
             };
 
             ManageBoards.TaskBoardCategoryList.prototype = {

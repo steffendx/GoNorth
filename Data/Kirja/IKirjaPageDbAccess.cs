@@ -64,6 +64,13 @@ namespace GoNorth.Data.Kirja
         Task DeletePage(KirjaPage page);
 
         /// <summary>
+        /// Deletes all pages for a project
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Task</returns>
+        Task DeletePagesForProject(string projectId);
+
+        /// <summary>
         /// Returns all pages a page is mentioned in
         /// </summary>
         /// <param name="pageId">Page Id</param>

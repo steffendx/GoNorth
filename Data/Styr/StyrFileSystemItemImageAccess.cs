@@ -18,7 +18,7 @@ namespace GoNorth.Data.Styr
         /// <param name="hostingEnvironment">Hosting Environment</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="templateDbAccess">Template Db Access</param>
-        public StyrFileSystemItemImageAccess(IHostingEnvironment hostingEnvironment, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess templateDbAccess) : base("ItemImages", hostingEnvironment, itemDbAccess, templateDbAccess)
+        public StyrFileSystemItemImageAccess(IWebHostEnvironment hostingEnvironment, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess templateDbAccess) : base("ItemImages", hostingEnvironment, itemDbAccess, templateDbAccess)
         {
         }
     }

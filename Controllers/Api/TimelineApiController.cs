@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Services.Timeline;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoNorth.Controllers.Api
@@ -9,9 +9,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Timeline controller
     /// </summary>
+    [ApiController]
     [Authorize]
     [Route("/api/[controller]/[action]")]
-    public class TimelineApiController : Controller
+    public class TimelineApiController : ControllerBase
     {
         /// <summary>
         /// Timeline Service
@@ -32,6 +33,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Timeline Entries</returns>
         [Produces(typeof(TimelineEntriesQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> Entries(int start, int pageSize)
         {

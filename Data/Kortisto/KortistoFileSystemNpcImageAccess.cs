@@ -18,7 +18,7 @@ namespace GoNorth.Data.Kortisto
         /// <param name="hostingEnvironment">Hosting Environment</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="templateDbAccess">Template Db Access</param>
-        public KortistoFileSystemNpcImageAccess(IHostingEnvironment hostingEnvironment, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess) : base("NpcImages", hostingEnvironment, npcDbAccess, templateDbAccess)
+        public KortistoFileSystemNpcImageAccess(IWebHostEnvironment hostingEnvironment, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess) : base("NpcImages", hostingEnvironment, npcDbAccess, templateDbAccess)
         {
         }
     }

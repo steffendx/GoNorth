@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using GoNorth.Authentication;
 using GoNorth.Data;
 using GoNorth.Data.User;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace GoNorth.Services.DataMigration
@@ -13,79 +14,82 @@ namespace GoNorth.Services.DataMigration
     /// <summary>
     /// Class for a Data Migrator that will automatically update existing data
     /// </summary>
-    public class AutoDataMigrator : IDataMigrator
+    public class AutoDataMigrator : IHostedService
     {
         /// <summary>
-        /// Database setup
+        /// Service Scope Factory
         /// </summary>
-        private readonly IDbSetup _dbSetup;
-
-        /// <summary>
-        /// User Database access
-        /// </summary>
-        private readonly IUserDbAccess _userDbAccess;
-
-        /// <summary>
-        /// Logger
-        /// </summary>
-        private readonly ILogger _logger;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="dbSetup">Database setup</param>
-        /// <param name="userDbAccess">User database access</param>
-        /// <param name="logger">Logger</param>
-        public AutoDataMigrator(IDbSetup dbSetup, IUserDbAccess userDbAccess, ILogger<AutoDataMigrator> logger)
+        /// <param name="serviceScopeFactory">Service Scope Factory</param>
+        public AutoDataMigrator(IServiceScopeFactory serviceScopeFactory)
         {
-            _dbSetup = dbSetup;
-            _userDbAccess = userDbAccess;
-            _logger = logger;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
         /// Checks for migratable data
         /// </summary>
+        /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>Task for the async task</returns>
-        public async Task UpdateMigratableData()
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            try
+            using(IServiceScope serviceScope = _serviceScopeFactory.CreateScope())
             {
-                await RemoveUnusedRolesForUsers();
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, "Could not remove old user roles");
-            }
+                IUserDbAccess userDbAccess = (IUserDbAccess)serviceScope.ServiceProvider.GetService(typeof(IUserDbAccess));
+                IDbSetup dbSetup = (IDbSetup)serviceScope.ServiceProvider.GetService(typeof(IDbSetup));
+                ILogger logger = (ILogger)serviceScope.ServiceProvider.GetService(typeof(ILogger<AutoDataMigrator>));
 
-            try
-            {
-                await _dbSetup.CheckForNeededMigrations();
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, "Could not migrate database");
+                try
+                {
+                    await RemoveUnusedRolesForUsers(userDbAccess);
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError(ex, "Could not remove old user roles");
+                }
+
+                try
+                {
+                    await dbSetup.CheckForNeededMigrations();
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError(ex, "Could not migrate database");
+                }
             }
         }
 
         /// <summary>
         /// Removes the unused roles for the users
         /// </summary>
+        /// <param name="userDbAccess">Usser Db Access</param>
         /// <returns>Task</returns>
-        private async Task RemoveUnusedRolesForUsers()
+        private async Task RemoveUnusedRolesForUsers(IUserDbAccess userDbAccess)
         {
             List<string> existingRoles = RoleNames.GetAllRoleNames();
-            IList<GoNorthUser> users = await _userDbAccess.GetUsers(0, int.MaxValue);
+            IList<GoNorthUser> users = await userDbAccess.GetUsers(0, int.MaxValue);
             foreach(GoNorthUser curUser in users)
             {
                 IEnumerable<string> deletedRoles = curUser.Roles.Except(existingRoles);
                 if(deletedRoles != null && deletedRoles.Any())
                 {
-                    GoNorthUser user = await _userDbAccess.GetUserById(curUser.Id);
+                    GoNorthUser user = await userDbAccess.GetUserById(curUser.Id);
                     user.Roles = curUser.Roles.Except(deletedRoles).ToList();
-                    await _userDbAccess.UpdateUser(user);
+                    await userDbAccess.UpdateUser(user);
                 }
             }
         }
+
+
+        /// <summary>
+        /// Gets called on stop
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token</param>
+        /// <returns>Task</returns>
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

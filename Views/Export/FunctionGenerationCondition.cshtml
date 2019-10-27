@@ -104,14 +104,6 @@
     </environment>
 
     <script type="text/javascript">
-        GoNorth.Export.FunctionGenerationCondition.conditionTypesByName = {};
-        @foreach(MappedDialogFunctionGenerationConditionType curConditionType in @Model.DialogFunctionGenerationConditionTypes)
-        {
-            <text>
-            GoNorth.Export.FunctionGenerationCondition.conditionTypesByName["@curConditionType.Name"] = @curConditionType.Value;
-            </text>
-        }
-
         GoNorth.Export.FunctionGenerationCondition.localizedNodeTypes = {};
         GoNorth.Export.FunctionGenerationCondition.nodeTypes = [];
         @foreach(string curNodeType in Model.NodeTypes)
@@ -130,9 +122,9 @@
         @foreach(MappedDialogFunctionGenerationActionType curActionType in Model.DialogFunctionGenerationActionTypes)
         {
             <text>
-            GoNorth.Export.FunctionGenerationCondition.localizedActionTypes[@curActionType.Value] = "@Localizer["ActionType" + @curActionType.Name]";
+            GoNorth.Export.FunctionGenerationCondition.localizedActionTypes["@curActionType.Name"] = "@Localizer["ActionType" + @curActionType.Name]";
             GoNorth.Export.FunctionGenerationCondition.actionTypes.push({
-                actionType: @curActionType.Value,
+                actionType: "@curActionType.Name",
                 displayName: "@Localizer["ActionType" + @curActionType.Name]"
             });
             </text>

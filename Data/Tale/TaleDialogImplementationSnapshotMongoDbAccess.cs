@@ -1,15 +1,18 @@
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using GoNorth.Config;
-using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.ImplementationSnapshot;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace GoNorth.Data.Tale
 {
     /// <summary>
     /// Tale Dialog Implementation Snapshot Mongo Db Access
     /// </summary>
-    public class TaleDialogImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotMongoDbAccess<TaleDialog>, ITaleDialogImplementationSnapshotDbAccess
+    public class TaleDialogImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotExtendedMongoDbAccess<TaleDialog>, ITaleDialogImplementationSnapshotDbAccess
     {
         /// <summary>
         /// Collection Name of the Tale Dioalog Implementation Snapshots

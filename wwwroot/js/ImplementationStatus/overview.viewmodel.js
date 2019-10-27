@@ -794,17 +794,15 @@
             /**
              * Implementation for implementation status marker list
              * 
-             * @param {object} markerTypes Marker types Lookup Object to marker names for passing to karta
              * @param {ko.observable} loadingObs Observbale for loading display
              * @param {ko.observable} errorOccuredObs Observable if an error occurs
              * @param {GoNorth.ImplementationStatus.CompareDialog.ViewModel} compareDialog Compare Dialog
              * @class
              */
-            Overview.ImplementationStatusMarkerList = function(markerTypes, loadingObs, errorOccuredObs, compareDialog)
+            Overview.ImplementationStatusMarkerList = function(loadingObs, errorOccuredObs, compareDialog)
             {
                 Overview.ImplementationStatusObjectList.apply(this, [ loadingObs, errorOccuredObs, compareDialog ]);
 
-                this.markerTypes = markerTypes;
                 this.hasMarkerTypeRow = true;
             };
 
@@ -850,7 +848,7 @@
              * @returns {string} Url of the object
              */
             Overview.ImplementationStatusMarkerList.prototype.buildObjectUrl = function(obj) {
-                var zoomOnMarkerParam = "&zoomOnMarkerType=" + this.markerTypes[obj.type] + "&zoomOnMarkerId=" + obj.id;
+                var zoomOnMarkerParam = "&zoomOnMarkerType=" + obj.type + "&zoomOnMarkerId=" + obj.id;
                 return "/Karta?id=" + obj.mapId + zoomOnMarkerParam;
             };
 
@@ -882,11 +880,10 @@
 
             /**
              * Overview View Model
-             * @param {object} nonLocalizedMarkerTypes Non Localized Marker Types
              * @param {object} markerTypes Marker Types
              * @class
              */
-            Overview.ViewModel = function(nonLocalizedMarkerTypes, markerTypes)
+            Overview.ViewModel = function(markerTypes)
             {
                 this.markerTypes = markerTypes;
 
@@ -920,7 +917,7 @@
                 this.itemList = new Overview.ImplementationStatusItemList(this.isLoading, this.errorOccured, this.compareDialog);
                 this.skillList = new Overview.ImplementationStatusSkillList(this.isLoading, this.errorOccured, this.compareDialog);
                 this.questList = new Overview.ImplementationStatusQuestList(this.isLoading, this.errorOccured, this.compareDialog);
-                this.markerList = new Overview.ImplementationStatusMarkerList(nonLocalizedMarkerTypes, this.isLoading, this.errorOccured, this.compareDialog);
+                this.markerList = new Overview.ImplementationStatusMarkerList(this.isLoading, this.errorOccured, this.compareDialog);
 
                 // Select first list user has access to
                 var existingListType = parseInt(GoNorth.Util.getParameterFromUrl("listType"));

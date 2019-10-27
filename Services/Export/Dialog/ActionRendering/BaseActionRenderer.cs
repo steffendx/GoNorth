@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Placeholder;
-using Newtonsoft.Json;
 
 namespace GoNorth.Services.Export.Dialog.ActionRendering
 {
@@ -24,7 +25,11 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         {
             if(actionData != null)
             {
-                return JsonConvert.DeserializeObject<T>(actionData);
+                JsonSerializerOptions jsonOptions = new JsonSerializerOptions();
+                jsonOptions.Converters.Add(new JsonStringEnumConverter());
+                jsonOptions.PropertyNameCaseInsensitive = true;
+
+                return JsonSerializer.Deserialize<T>(actionData, jsonOptions);
             }
             
             return new T();

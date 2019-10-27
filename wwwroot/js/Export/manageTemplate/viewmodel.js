@@ -9,7 +9,7 @@
              */
             ManageTemplate.ViewModel = function()
             {
-                this.templateType = parseInt(GoNorth.Util.getParameterFromUrl("templateType"));
+                this.templateType = GoNorth.Util.getParameterFromUrl("templateType");
                 this.customizedObjectId = new ko.observable("");
                 var customizedObjectId = GoNorth.Util.getParameterFromUrl("customizedObjectId");
                 if(customizedObjectId)
@@ -51,7 +51,7 @@
                 this.isReadonly = new ko.observable(false);
                 this.lockedByUser = new ko.observable("");
 
-                if(!isNaN(this.templateType))
+                if(this.templateType)
                 {
                     this.loadInvalidSnippets();
                     this.loadTemplatePlaceholders();

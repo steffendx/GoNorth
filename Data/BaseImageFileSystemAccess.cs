@@ -17,14 +17,14 @@ namespace GoNorth.Data
         /// <summary>
         /// Hosting Environment
         /// </summary>
-        private IHostingEnvironment _hostingEnvironment;
+        private IWebHostEnvironment _hostingEnvironment;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="folderName">Foldername</param>
         /// <param name="hostingEnvironment">Hosting Environment</param>
-        public BaseFileSystemAccess(string folderName, IHostingEnvironment hostingEnvironment)
+        public BaseFileSystemAccess(string folderName, IWebHostEnvironment hostingEnvironment)
         {
             _FileFolder = folderName;
             _hostingEnvironment = hostingEnvironment;

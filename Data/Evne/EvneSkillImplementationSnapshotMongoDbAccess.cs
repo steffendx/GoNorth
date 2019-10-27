@@ -9,7 +9,7 @@ namespace GoNorth.Data.Evne
     /// <summary>
     /// Evne Implementation Snapshot Mongo Db Access
     /// </summary>
-    public class EvneSkillImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotMongoDbAccess<EvneSkill>, IEvneSkillImplementationSnapshotDbAccess
+    public class EvneSkillImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotExtendedMongoDbAccess<EvneSkill>, IEvneSkillImplementationSnapshotDbAccess
     {
         /// <summary>
         /// Collection Name of the Evne Skill Implementation Snapshots

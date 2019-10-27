@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
@@ -23,16 +25,16 @@ using GoNorth.Services.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
     /// Personal data Api controller
     /// </summary>
+    [ApiController]
     [Authorize]
     [Route("/api/[controller]/[action]")]
-    public class PersonalDataApiController : Controller
+    public class PersonalDataApiController : ControllerBase
     {
         /// <summary>
         /// Trimmed response user
@@ -212,6 +214,11 @@ namespace GoNorth.Controllers.Api
         private readonly IAikaQuestDbAccess _questDbAccess;
 
         /// <summary>
+        /// Quest Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IAikaQuestImplementationSnapshotDbAccess _questImplementationSnapshotDbAccess;
+
+        /// <summary>
         /// Chapter Detail Db Access
         /// </summary>
         private readonly IAikaChapterDetailDbAccess _chapterDetailDbAccess;
@@ -227,14 +234,44 @@ namespace GoNorth.Controllers.Api
         private readonly IEvneSkillDbAccess _skillDbAccess;
 
         /// <summary>
+        /// Skill Template Db Access
+        /// </summary>
+        private readonly IEvneSkillTemplateDbAccess _skillTemplateDbAccess;
+
+        /// <summary>
+        /// Skill Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IEvneSkillImplementationSnapshotDbAccess _skillImplementationSnapshotDbAccess;
+
+        /// <summary>
         /// Npc Db Access
         /// </summary>
         private readonly IKortistoNpcDbAccess _npcDbAccess;
 
         /// <summary>
+        /// Npc Template Db Access
+        /// </summary>
+        private readonly IKortistoNpcTemplateDbAccess _npcTemplateDbAccess;
+
+        /// <summary>
+        /// Npc Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IKortistoNpcImplementationSnapshotDbAccess _npcImplementationSnapshotDbAccess;
+
+        /// <summary>
         /// Item Db Access
         /// </summary>
         private readonly IStyrItemDbAccess _itemDbAccess;
+        
+        /// <summary>
+        /// Item Template Db Access
+        /// </summary>
+        private readonly IStyrItemTemplateDbAccess _itemTemplateDbAccess;
+
+        /// <summary>
+        /// Item Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IStyrItemImplementationSnapshotDbAccess _itemImplementationSnapshotDbAccess;
 
         /// <summary>
         /// Export Template Db Access
@@ -265,6 +302,11 @@ namespace GoNorth.Controllers.Api
         /// Tale Db Access
         /// </summary>
         private readonly ITaleDbAccess _taleDbAccess;
+
+        /// <summary>
+        /// Tale Implementation Snapshot Db Access
+        /// </summary>
+        private readonly ITaleDialogImplementationSnapshotDbAccess _taleImplementationSnapshotDbAccess;
 
         /// <summary>
         /// Project Config Db Access
@@ -325,11 +367,18 @@ namespace GoNorth.Controllers.Api
         /// Constructor
         /// </summary>
         /// <param name="questDbAccess">Quest Db Access</param>
+        /// <param name="questImplementationSnapshotDbAccess">Quest Implementation Snapshot Db Access</param>
         /// <param name="chapterDetailDbAccess">Chapter Detail Db Access</param>
         /// <param name="chapterOverviewDbAccess">Chapter Overview Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
+        /// <param name="skillTemplateDbAccess">Skill Template Db Access</param>
+        /// <param name="skillImplementationSnapshotDbAccess">Skill Implementation Snapshot Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
+        /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
+        /// <param name="npcImplementationSnapshotDbAccess">Npc Implementation Snapshot Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
+        /// <param name="itemTemplateDbAccess">Item Template Db Access</param>
+        /// <param name="itemImplementationSnapshotDbAccess">Item Implementation Snapshot Db Access</param>
         /// <param name="exportTemplateDbAccess">Export template Db access</param>
         /// <param name="objectExportSnippetDbAccess">Object Export snippet Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
@@ -337,6 +386,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
         /// <param name="projectConfigDbAccess">Project Config Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
+        /// <param name="taleImplementationSnapshotDbAccess">Tale Implementation Snapshot Db Access</param>
         /// <param name="taskBoardDbAccess">Task Bord Db Access</param>
         /// <param name="taskGroupTypeDbAccess">Task Group Type Db Access</param>
         /// <param name="taskTypeDbAccess">Task Type Db Access</param>
@@ -347,23 +397,33 @@ namespace GoNorth.Controllers.Api
         /// <param name="userManager">User manager</param>
         /// <param name="signInManager">Signin Manager</param>
         /// <param name="userDeleter">User Deleter</param>
-        public PersonalDataApiController(IAikaQuestDbAccess questDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, IKortistoNpcDbAccess npcDbAccess, 
-                                         IStyrItemDbAccess itemDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, 
-                                         IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, 
-                                         IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
+        public PersonalDataApiController(IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questImplementationSnapshotDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, 
+                                         IEvneSkillTemplateDbAccess skillTemplateDbAccess, IEvneSkillImplementationSnapshotDbAccess skillImplementationSnapshotDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, 
+                                         IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
+                                         IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, IProjectConfigDbAccess projectConfigDbAccess, 
+                                         ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, 
+                                         ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
         {
             _questDbAccess = questDbAccess;
+            _questImplementationSnapshotDbAccess = questImplementationSnapshotDbAccess;
             _chapterDetailDbAccess = chapterDetailDbAccess;
             _chapterOverviewDbAccess = chapterOverviewDbAccess;
             _skillDbAccess = skillDbAccess;
+            _skillTemplateDbAccess = skillTemplateDbAccess;
+            _skillImplementationSnapshotDbAccess = skillImplementationSnapshotDbAccess;
             _npcDbAccess = npcDbAccess;
+            _npcTemplateDbAccess = npcTemplateDbAccess;
+            _npcImplementationSnapshotDbAccess = npcImplementationSnapshotDbAccess;
             _itemDbAccess = itemDbAccess;
+            _itemTemplateDbAccess = itemTemplateDbAccess;
+            _itemImplementationSnapshotDbAccess = itemImplementationSnapshotDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _mapDbAccess = mapDbAccess;
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
             _taleDbAccess = taleDbAccess;
+            _taleImplementationSnapshotDbAccess = taleImplementationSnapshotDbAccess;
             _projectConfigDbAccess = projectConfigDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
             _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
@@ -394,9 +454,15 @@ namespace GoNorth.Controllers.Api
             await FillTaskBoardHistory(response, currentUser);
             await FillLockEntries(response, currentUser);
 
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
             MemoryStream returnStream = new MemoryStream();
             StreamWriter writer = new StreamWriter(returnStream);
-            string serializedResponse = JsonConvert.SerializeObject(response);
+            string serializedResponse = JsonSerializer.Serialize(response, options);
             await writer.WriteAsync(serializedResponse);
             await writer.FlushAsync();
 
@@ -441,9 +507,30 @@ namespace GoNorth.Controllers.Api
                 ModifiedDate = p.ModifiedOn
             }));
 
+            List<AikaQuest> questRecycleBin = await _questDbAccess.GetRecycleBinQuestsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(questRecycleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "QuestRecycleBin",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<AikaQuest> questImplementationSnapshots = await _questImplementationSnapshotDbAccess.GetSnapshotsModifiedByUsers(currentUser.Id);
+            response.ModifiedData.AddRange(questImplementationSnapshots.Select(p => new TrimmedModifiedData {
+                ObjectType = "QuestImplementationSnapshot",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
             List<AikaChapterDetail> chapterDetail = await _chapterDetailDbAccess.GetChapterDetailsByModifiedUser(currentUser.Id);
             response.ModifiedData.AddRange(chapterDetail.Select(p => new TrimmedModifiedData {
                 ObjectType = "ChapterDetail",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+            
+            List<AikaChapterDetail> chapterDetailRecycleBin = await _chapterDetailDbAccess.GetRecycleBinChapterDetailsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(chapterDetailRecycleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "ChapterDetailRecycleBin",
                 Name = p.Name,
                 ModifiedDate = p.ModifiedOn
             }));
@@ -455,9 +542,44 @@ namespace GoNorth.Controllers.Api
                 ModifiedDate = p.ModifiedOn
             }));
 
+            List<AikaChapterOverview> chapterOverviewRecycleBin = await _chapterOverviewDbAccess.GetRecycleBinChapterOverviewByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(chapterOverviewRecycleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "ChapterOverviewRecycleBin",
+                Name = "ChapterOverview",
+                ModifiedDate = p.ModifiedOn
+            }));
+
             List<EvneSkill> skills = await _skillDbAccess.GetFlexFieldObjectsByModifiedUser(currentUser.Id);
             response.ModifiedData.AddRange(skills.Select(p => new TrimmedModifiedData {
                 ObjectType = "Skill",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<EvneSkill> skillsRecyleBin = await _skillDbAccess.GetRecycleBinFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(skillsRecyleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "SkillRecycleBin",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<EvneSkill> skillsImplementationSnapshots = await _skillImplementationSnapshotDbAccess.GetSnapshotsModifiedByUsers(currentUser.Id);
+            response.ModifiedData.AddRange(skillsImplementationSnapshots.Select(p => new TrimmedModifiedData {
+                ObjectType = "SkillImplementationSnapshot",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<EvneSkill> skillTemplates = await _skillTemplateDbAccess.GetFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(skillTemplates.Select(p => new TrimmedModifiedData {
+                ObjectType = "SkillTemplate",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<EvneSkill> skillsTemplateRecyleBin = await _skillTemplateDbAccess.GetRecycleBinFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(skillsTemplateRecyleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "SkillTemplateRecycleBin",
                 Name = p.Name,
                 ModifiedDate = p.ModifiedOn
             }));
@@ -469,6 +591,34 @@ namespace GoNorth.Controllers.Api
                 ModifiedDate = p.ModifiedOn
             }));
 
+            List<KortistoNpc> npcsRecycleBin = await _npcDbAccess.GetRecycleBinFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(npcsRecycleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "NpcRecycleBin",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+                        
+            List<KortistoNpc> npcImplementationSnapshots = await _npcImplementationSnapshotDbAccess.GetSnapshotsModifiedByUsers(currentUser.Id);
+            response.ModifiedData.AddRange(npcImplementationSnapshots.Select(p => new TrimmedModifiedData {
+                ObjectType = "NpcImplementationSnapshot",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+                       
+            List<KortistoNpc> npcTemplates = await _npcTemplateDbAccess.GetFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(npcTemplates.Select(p => new TrimmedModifiedData {
+                ObjectType = "NpcTemplate",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<KortistoNpc> npcTemplatesRecycleBin = await _npcTemplateDbAccess.GetRecycleBinFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(npcTemplatesRecycleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "NpcTemplateRecycleBin",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
             List<StyrItem> items = await _itemDbAccess.GetFlexFieldObjectsByModifiedUser(currentUser.Id);
             response.ModifiedData.AddRange(items.Select(p => new TrimmedModifiedData {
                 ObjectType = "Item",
@@ -476,9 +626,44 @@ namespace GoNorth.Controllers.Api
                 ModifiedDate = p.ModifiedOn
             }));
 
+            List<StyrItem> itemsRecyleBin = await _itemDbAccess.GetRecycleBinFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(itemsRecyleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "ItemReycleBin",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<StyrItem> itemImplementationSnapshots = await _itemImplementationSnapshotDbAccess.GetSnapshotsModifiedByUsers(currentUser.Id);
+            response.ModifiedData.AddRange(itemImplementationSnapshots.Select(p => new TrimmedModifiedData {
+                ObjectType = "ItemImplementationSnapshot",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<StyrItem> itemTemplates = await _itemTemplateDbAccess.GetFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(itemTemplates.Select(p => new TrimmedModifiedData {
+                ObjectType = "ItemTemplate",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<StyrItem> itemTemplatesRecyleBin = await _itemTemplateDbAccess.GetRecycleBinFlexFieldObjectsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(itemTemplatesRecyleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "ItemTemplateReycleBin",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
             List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetExportTemplatesByModifiedUser(currentUser.Id);
             response.ModifiedData.AddRange(exportTemplates.Select(p => new TrimmedModifiedData {
                 ObjectType = "ExportTemplate",
+                Name = "Template " + p.TemplateType.ToString() + " " + p.Category.ToString(),
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<ExportTemplate> exportTemplatesRecycleBin = await _exportTemplateDbAccess.GetRecycleBinExportTemplatesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(exportTemplatesRecycleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "ExportTemplateRecycleBin",
                 Name = "Template " + p.TemplateType.ToString() + " " + p.Category.ToString(),
                 ModifiedDate = p.ModifiedOn
             }));
@@ -524,6 +709,38 @@ namespace GoNorth.Controllers.Api
                     ObjectType = "Dialog",
                     Name = npcName,
                     ModifiedDate = curDialog.ModifiedOn
+                });
+            }
+
+            List<TaleDialog> dialogsRecyleBin = await _taleDbAccess.GetRecycleBinDialogsByModifiedUser(currentUser.Id);
+            Dictionary<string, KortistoNpc> dialogRecyleBinNpcs = (await _npcDbAccess.ResolveRecycleBinFlexFieldObjectNames(dialogsRecyleBin.Select(n => n.RelatedObjectId).ToList())).ToDictionary(n => n.Id);
+            foreach(TaleDialog curDialog in dialogsRecyleBin)
+            {
+                string npcName = "DELETED";
+                if(dialogRecyleBinNpcs.ContainsKey(curDialog.RelatedObjectId))
+                {
+                    npcName = dialogRecyleBinNpcs[curDialog.RelatedObjectId].Name;
+                }
+                response.ModifiedData.Add(new TrimmedModifiedData {
+                    ObjectType = "DialogRecyleBin",
+                    Name = npcName,
+                    ModifiedDate = curDialog.ModifiedOn
+                });
+            }
+
+            List<TaleDialog> dialogsSnapshots = await _taleImplementationSnapshotDbAccess.GetSnapshotsModifiedByUsers(currentUser.Id);
+            Dictionary<string, KortistoNpc> dialogSnapshotNpcs = (await _npcDbAccess.ResolveFlexFieldObjectNames(dialogsSnapshots.Select(n => n.RelatedObjectId).ToList())).ToDictionary(n => n.Id);
+            foreach(TaleDialog curDialogSnapshot in dialogsSnapshots)
+            {
+                string npcName = "DELETED";
+                if(dialogNpcs.ContainsKey(curDialogSnapshot.RelatedObjectId))
+                {
+                    npcName = dialogNpcs[curDialogSnapshot.RelatedObjectId].Name;
+                }
+                response.ModifiedData.Add(new TrimmedModifiedData {
+                    ObjectType = "DialogSnapshot",
+                    Name = npcName,
+                    ModifiedDate = curDialogSnapshot.ModifiedOn
                 });
             }
 

@@ -67,7 +67,7 @@ namespace GoNorth.Services.FlexFieldThumbnail
         {
             using(Stream imageStream = _imageAccess.OpenFlexFieldObjectImage(sourceFile))
             {
-                Image<Rgba32> rawImage = Image.Load(imageStream);
+                Image<Rgba32> rawImage = Image.Load<Rgba32>(imageStream);
                 return rawImage;
             }
         }

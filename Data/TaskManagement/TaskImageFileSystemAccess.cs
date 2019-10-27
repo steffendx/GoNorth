@@ -12,7 +12,7 @@ namespace GoNorth.Data.TaskManagement
         /// Constructor
         /// </summary>
         /// <param name="hostingEnvironment">Hosting Environment</param>
-        public TaskImageFileSystemAccess(IHostingEnvironment hostingEnvironment) : base("TaskImages", hostingEnvironment)
+        public TaskImageFileSystemAccess(IWebHostEnvironment hostingEnvironment) : base("TaskImages", hostingEnvironment)
         {
         }
 

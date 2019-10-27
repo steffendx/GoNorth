@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
@@ -14,6 +12,7 @@ using GoNorth.Data.Tale;
 using GoNorth.Services.ImplementationStatusCompare;
 using GoNorth.Services.Timeline;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -23,9 +22,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Implementation Status controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
     [Route("/api/[controller]/[action]")]
-    public class ImplementationStatusApiController : Controller
+    public class ImplementationStatusApiController : ControllerBase
     {
         /// <summary>
         /// Formatted Compare Response
@@ -186,6 +186,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="npcId">Id of the npc</param>
         /// <returns>Compare results</returns>
         [Produces(typeof(FormattedCompareResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Kortisto)]
         [HttpGet]
@@ -202,6 +203,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="npcId">Id of the npc</param>
         /// <returns>Result</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Kortisto)]
         [ValidateAntiForgeryToken]
@@ -212,7 +215,7 @@ namespace GoNorth.Controllers.Api
             KortistoNpc npc = await _npcDbAccess.GetFlexFieldObjectById(npcId);
             if(npc == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Flag npc as implemented
@@ -233,6 +236,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="itemId">Id of the item</param>
         /// <returns>Compare results</returns>
         [Produces(typeof(FormattedCompareResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Styr)]
         [HttpGet]
@@ -249,6 +253,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Id of the item</param>
         /// <returns>Result</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Styr)]
         [ValidateAntiForgeryToken]
@@ -259,7 +265,7 @@ namespace GoNorth.Controllers.Api
             StyrItem item = await _itemDbAccess.GetFlexFieldObjectById(itemId);
             if(item == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Flag item as implemented
@@ -281,6 +287,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="skillId">Id of the skill</param>
         /// <returns>Compare results</returns>
         [Produces(typeof(FormattedCompareResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Evne)]
         [HttpGet]
@@ -297,6 +304,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="skillId">Id of the skill</param>
         /// <returns>Result</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Evne)]
         [ValidateAntiForgeryToken]
@@ -307,7 +316,7 @@ namespace GoNorth.Controllers.Api
             EvneSkill skill = await _skillDbAccess.GetFlexFieldObjectById(skillId);
             if(skill == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Flag skill as implemented
@@ -329,6 +338,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="dialogId">Id of the dialog</param>
         /// <returns>Compare results</returns>
         [Produces(typeof(FormattedCompareResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Tale)]
         [HttpGet]
@@ -345,6 +355,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="dialogId">Id of the dialog</param>
         /// <returns>Result</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Tale)]
         [ValidateAntiForgeryToken]
@@ -355,7 +367,7 @@ namespace GoNorth.Controllers.Api
             TaleDialog dialog = await _dialogDbAccess.GetDialogById(dialogId);
             if(dialog == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Flag dialog as implemented
@@ -382,6 +394,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="questId">Id of the quest</param>
         /// <returns>Compare results</returns>
         [Produces(typeof(FormattedCompareResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Aika)]
         [HttpGet]
@@ -398,6 +411,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Id of the Quest</param>
         /// <returns>Result</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Aika)]
         [ValidateAntiForgeryToken]
@@ -408,7 +423,7 @@ namespace GoNorth.Controllers.Api
             AikaQuest quest = await _questDbAccess.GetQuestById(questId);
             if(quest == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Flag quest as implemented
@@ -431,6 +446,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="markerType">Type of the marker</param>
         /// <returns>Compare results</returns>
         [Produces(typeof(FormattedCompareResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Karta)]
         [HttpGet]
@@ -449,6 +465,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="markerId">Id of the marker</param>
         /// <param name="markerType">Type of the marker</param>
         /// <returns>Result</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Karta)]
         [ValidateAntiForgeryToken]
@@ -459,7 +477,7 @@ namespace GoNorth.Controllers.Api
             KartaMap map = await _mapDbAccess.GetMapById(mapId);
             if(map == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Flag Marker as implemented

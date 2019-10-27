@@ -36,7 +36,7 @@ namespace GoNorth.Services.Export.Dialog.ActionConditionShared
                 return exportField.Name;
             }
 
-            if(string.IsNullOrEmpty(exportField.ScriptSettings.AdditionalScriptNames))
+            if(!string.IsNullOrEmpty(exportField.ScriptSettings.AdditionalScriptNames))
             {
                 string[] additionalFieldNames = exportField.ScriptSettings.AdditionalScriptNames.Split(ExportConstants.FlexFieldAdditionalScriptNamesSeperator, StringSplitOptions.RemoveEmptyEntries);
                 if(additionalFieldNames.Any(f => f.ToLowerInvariant() == searchedFieldName.ToLowerInvariant()))

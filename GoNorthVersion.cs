@@ -10,6 +10,6 @@ namespace GoNorth
         /// <summary>
         /// Current GoNorth Version
         /// </summary>
-        public static readonly Version CurrentVersion = new Version(1, 6, 0, 0);
+        public static readonly Version CurrentVersion = new Version(1, 6, 0, 5);
     };
 }

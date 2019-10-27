@@ -148,6 +148,16 @@ namespace GoNorth.Data.Kirja
         }
 
         /// <summary>
+        /// Deletes all pages for a project
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Task</returns>
+        public async Task DeletePagesForProject(string projectId)
+        {
+            await _PageCollection.DeleteManyAsync(p => p.ProjectId == projectId);
+        }
+
+        /// <summary>
         /// Returns all pages a page is mentioned in
         /// </summary>
         /// <param name="pageId">Page Id</param>

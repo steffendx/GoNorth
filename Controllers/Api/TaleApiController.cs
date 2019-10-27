@@ -8,22 +8,22 @@ using Microsoft.AspNetCore.Identity;
 using GoNorth.Data.User;
 using GoNorth.Data.Tale;
 using System.Collections.Generic;
-using System.Net;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Extensions;
 using GoNorth.Data.Project;
 using System.Linq;
 using GoNorth.Services.ImplementationStatusCompare;
-using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
     /// Tale Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Tale)]
     [Route("/api/[controller]/[action]")]
-    public class TaleApiController : Controller
+    public class TaleApiController : ControllerBase
     {
         /// <summary>
         /// Dialog Query Result object, includes npc names
@@ -142,6 +142,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="relatedObjectId">Related object id</param>
         /// <returns>Dialog</returns>
         [Produces(typeof(TaleDialog))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetDialogByRelatedObjectId(string relatedObjectId)
         {
@@ -155,6 +156,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="relatedObjectId">Related object id</param>
         /// <returns>Dialog Implemented state</returns>
         [Produces(typeof(DialogImplementedResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [Authorize(Roles = RoleNames.Tale)]
         [HttpGet]
@@ -178,6 +180,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="objectId">Object id</param>
         /// <returns>Dialogs</returns>
         [Produces(typeof(List<TaleDialog>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetDialogsObjectIsReferenced(string objectId)
         {
@@ -192,6 +195,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="dialog">Dialog Data to save</param>
         /// <returns>Dialog</returns>
         [Produces(typeof(TaleDialog))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SaveDialog(string relatedObjectId, [FromBody]TaleDialog dialog)
@@ -199,13 +204,13 @@ namespace GoNorth.Controllers.Api
             // Validate data
             if(string.IsNullOrEmpty(relatedObjectId))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             List<KortistoNpc> npcNames = await _npcDbAccess.ResolveFlexFieldObjectNames(new List<string> { relatedObjectId });
             if(npcNames.Count == 0)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             string npcName = npcNames[0].Name;
 
@@ -264,6 +269,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Items</returns>
         [Produces(typeof(DialogQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Tale)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]

@@ -14,7 +14,7 @@ services:
   mongo:
     image: 'mongo'
     volumes:
-      - ./dbdata:/data/db
+      - GoNorthMongoData:/data/db
 
 volumes:
   MapImages:
@@ -28,4 +28,6 @@ volumes:
   TaskImages:
     external: true
   SkillImages:
+    external: true
+  GoNorthMongoData:
     external: true

@@ -1,5 +1,5 @@
 ﻿// GoNorth - Created by Steffen Noertershaeuser
-using Microsoft.AspNetCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using GoNorth.Logging;
 
@@ -16,7 +16,7 @@ namespace GoNorth
         /// <param name="args">Arguments</param>
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Build().Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         /// <summary>
@@ -24,9 +24,12 @@ namespace GoNorth
         /// </summary>
         /// <param name="args">Arguments</param>
         /// <returns>WebHost</returns>
-        public static IWebHostBuilder BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(builder => builder.AddFile())
-                .UseStartup<Startup>();
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

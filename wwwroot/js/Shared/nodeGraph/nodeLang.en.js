@@ -188,8 +188,12 @@
             Localization.Actions.RemoveItemFromChooseNpcInventoryLabel = "Remove item from choose npc inventory";
             Localization.Actions.TransferItemToPlayerInventoryLabel = "Give item to player";
             Localization.Actions.TransferItemToNpcInventoryLabel = "Give item to npc";
+            Localization.Actions.NpcUseItemLabel = "Npc uses item";
+            Localization.Actions.PlayerUseItemLabel = "Player uses item";
+            Localization.Actions.ChooseNpcUseItemLabel = "Choose npc uses item";
             Localization.Actions.ItemQuantity = "Quantity (blank = 1):";
             Localization.Actions.InInventoryOf = "in inventory of";
+            Localization.Actions.UsesItem = "uses";
 
             Localization.Actions.CodeActionLabel = "Script Code";
             Localization.Actions.ClickHereToEditCode = "&lt;Click here to edit code&gt;";

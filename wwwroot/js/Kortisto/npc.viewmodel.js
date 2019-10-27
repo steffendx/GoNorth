@@ -17,8 +17,7 @@
             for(var curField = 0; curField < fields.length; ++curField)
             {
                 if(fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldTypeMultiLine ||
-                   fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldGroup ||
-                   (fields[curField].scriptSettings && fields[curField].scriptSettings.dontExportToScript))
+                   fields[curField].fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldGroup)
                 {
                     continue;
                 }
@@ -6901,8 +6900,19 @@
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
 
                 // Set related object data
-                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem);
+                this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectItem);
                 this.nodeModel.set("actionRelatedToObjectId", itemId);
+
+                var additionalRelatedObjects = [];
+                if(npcId)
+                {
+                    additionalRelatedObjects.push({
+                        objectType: Actions.RelatedToObjectNpc,
+                        objectId: npcId
+                    });
+                }
+
+                this.nodeModel.set("actionRelatedToAdditionalObjects", additionalRelatedObjects);
             }
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
@@ -7312,6 +7322,494 @@
             };
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.RemoveItemFromChooseNpcInventoryAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /**
+             * Object Use Item Action
+             * @class
+             */
+            Actions.ObjectUseItemAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.ObjectUseItemAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.ObjectUseItemAction.prototype.getContent = function() {
+                return  "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeSelectItemAction gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenItem' title='" + DefaultNodeShapes.Localization.Actions.OpenItemTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.ObjectUseItemAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeSelectItemAction").text(DefaultNodeShapes.Localization.Actions.ChooseItem);
+
+                var itemOpenLink = contentElement.find(".gn-nodeActionOpenItem");
+
+                // Deserialize
+                var existingItemId = this.deserializeData();
+                if(existingItemId)
+                {
+                    itemOpenLink.show();
+
+                    actionNode.showLoading();
+                    actionNode.hideError();
+                    jQuery.ajax({ 
+                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify([ existingItemId ]), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(itemNames) {
+                        if(itemNames.length == 0)
+                        {
+                            actionNode.hideLoading();
+                            actionNode.showError();
+                            return;
+                        }
+
+                        contentElement.find(".gn-nodeSelectItemAction").text(itemNames[0].name);
+                        actionNode.hideLoading();
+                    }).fail(function(xhr) {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    });
+                }
+
+                // Handlers
+                var self = this;
+                var selectItemAction = contentElement.find(".gn-nodeSelectItemAction");
+                contentElement.find(".gn-nodeSelectItemAction").on("click", function() {
+                    DefaultNodeShapes.openItemSearchDialog().then(function(item) {
+                        selectItemAction.data("itemid", item.id);
+                        selectItemAction.text(item.name);
+                        self.saveData();
+
+                        itemOpenLink.show();
+                    });
+                });
+
+                itemOpenLink.on("click", function() {
+                    if(selectItemAction.data("itemid"))
+                    {
+                        window.open("/Styr/Item?id=" + selectItemAction.data("itemid"));
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             * @returns {string} Deserialized item id
+             */
+            Actions.ObjectUseItemAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var itemId = "";
+                if(data.itemId)
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", data.itemId);
+                    itemId = data.itemId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", "");
+                }
+
+                return itemId;
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.ObjectUseItemAction.prototype.saveData = function() {
+                var itemId = this.contentElement.find(".gn-nodeSelectItemAction").data("itemid");
+
+                var serializeData = {
+                    itemId: itemId
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem);
+                this.nodeModel.set("actionRelatedToObjectId", itemId);
+            }
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for the npc using an item
+            var actionTypeNpcUseItem = 53;
+
+            /**
+             * Npc uses an item action
+             * @class
+             */
+            Actions.NpcUseItemAction = function()
+            {
+                Actions.ObjectUseItemAction.apply(this);
+            };
+
+            Actions.NpcUseItemAction.prototype = jQuery.extend({ }, Actions.ObjectUseItemAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.NpcUseItemAction.prototype.buildAction = function() {
+                return new Actions.NpcUseItemAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.NpcUseItemAction.prototype.getType = function() {
+                return actionTypeNpcUseItem;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.NpcUseItemAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.NpcUseItemLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.NpcUseItemAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for the player using an item
+            var actionTypePlayerUseItem = 54;
+
+            /**
+             * Player uses an item action
+             * @class
+             */
+            Actions.PlayerUseItemAction = function()
+            {
+                Actions.ObjectUseItemAction.apply(this);
+            };
+
+            Actions.PlayerUseItemAction.prototype = jQuery.extend({ }, Actions.ObjectUseItemAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.PlayerUseItemAction.prototype.buildAction = function() {
+                return new Actions.PlayerUseItemAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.PlayerUseItemAction.prototype.getType = function() {
+                return actionTypePlayerUseItem;
+            };
+
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.PlayerUseItemAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.PlayerUseItemLabel;
+            };
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.PlayerUseItemAction());
+
+        }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Actions) {
+
+            /// Action Type for a choose npc using an item
+            var actionTypeNpcUseItem = 55;
+
+            /**
+             * Choose Npc Use Item Action
+             * @class
+             */
+            Actions.ChooseNpcUseItemAction = function()
+            {
+                GoNorth.DefaultNodeShapes.Actions.BaseAction.apply(this);
+            };
+
+            Actions.ChooseNpcUseItemAction.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Actions.BaseAction.prototype);
+
+            /**
+             * Builds the action
+             * 
+             * @returns {object} Action
+             */
+            Actions.ChooseNpcUseItemAction.prototype.buildAction = function() {
+                return new Actions.ChooseNpcUseItemAction();
+            };
+
+            /**
+             * Returns the type of the action
+             * 
+             * @returns {number} Type of the action
+             */
+            Actions.ChooseNpcUseItemAction.prototype.getType = function() {
+                return actionTypeNpcUseItem;
+            };
+            
+            /**
+             * Returns the label of the action
+             * 
+             * @returns {string} Label of the action
+             */
+            Actions.ChooseNpcUseItemAction.prototype.getLabel = function() {
+                return DefaultNodeShapes.Localization.Actions.ChooseNpcUseItemLabel;
+            };
+
+            /**
+             * Returns the HTML Content of the action
+             * 
+             * @returns {string} HTML Content of the action
+             */
+            Actions.ChooseNpcUseItemAction.prototype.getContent = function() {
+                return "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeSelectNpcAction gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenNpc' title='" + DefaultNodeShapes.Localization.Actions.OpenNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>" +
+                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.UsesItem + "</div>" +
+                        "<div class='gn-actionNodeObjectSelectContainer'>" + 
+                            "<a class='gn-clickable gn-nodeSelectItemAction gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
+                            "<a class='gn-clickable gn-nodeActionOpenItem' title='" + DefaultNodeShapes.Localization.Actions.OpenItemTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
+                        "</div>";
+            };
+
+            /**
+             * Gets called once the action was intialized
+             * 
+             * @param {object} contentElement Content element
+             * @param {ActionNode} actionNode Parent Action node
+             */
+            Actions.ChooseNpcUseItemAction.prototype.onInitialized = function(contentElement, actionNode) {
+                this.contentElement = contentElement;
+                this.contentElement.find(".gn-nodeSelectNpcAction").text(DefaultNodeShapes.Localization.Actions.ChooseNpc);
+                this.contentElement.find(".gn-nodeSelectItemAction").text(DefaultNodeShapes.Localization.Actions.ChooseItem);
+
+                var npcOpenLink = contentElement.find(".gn-nodeActionOpenNpc");
+                var itemOpenLink = contentElement.find(".gn-nodeActionOpenItem");
+
+                // Deserialize
+                var existingIds = this.deserializeData();
+                var loadingDefs = [];
+                if(existingIds.itemId)
+                {
+                    itemOpenLink.show();
+                    
+                    var itemDef = new jQuery.Deferred();
+                    loadingDefs.push(itemDef);
+                    jQuery.ajax({ 
+                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify([ existingIds.itemId ]), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(itemNames) {
+                        if(itemNames.length == 0)
+                        {
+                            itemDef.reject();
+                            return;
+                        }
+
+                        contentElement.find(".gn-nodeSelectItemAction").text(itemNames[0].name);
+                        itemDef.resolve();
+                    }).fail(function(xhr) {
+                        itemDef.reject();
+                    });
+                }
+
+                if(existingIds.npcId)
+                {
+                    npcOpenLink.show();
+
+                    var npcDef = new jQuery.Deferred();
+                    loadingDefs.push(npcDef);
+                    jQuery.ajax({ 
+                        url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify([ existingIds.npcId ]), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(npcNames) {
+                        if(npcNames.length == 0)
+                        {
+                            npcDef.reject();
+                            return;
+                        }
+
+                        contentElement.find(".gn-nodeSelectNpcAction").text(npcNames[0].name);
+                        npcDef.resolve();
+                    }).fail(function(xhr) {
+                        npcDef.reject();
+                    });
+                }
+
+                if(loadingDefs.length > 0)
+                {
+                    actionNode.showLoading();
+                    actionNode.hideError();
+                    jQuery.when.apply(jQuery, loadingDefs).done(function() {
+                        actionNode.hideLoading();
+                    }).fail(function() {
+                        actionNode.hideLoading();
+                        actionNode.showError();
+                    })
+                }
+
+                // Handlers
+                var self = this;
+                var selectNpcAction = contentElement.find(".gn-nodeSelectNpcAction");
+                selectNpcAction.on("click", function() {
+                    DefaultNodeShapes.openNpcSearchDialog().then(function(npc) {
+                        selectNpcAction.data("npcid", npc.id);
+                        selectNpcAction.text(npc.name);
+                        self.saveData();
+
+                        npcOpenLink.show();
+                    });
+                });  
+
+                var selectItemAction = contentElement.find(".gn-nodeSelectItemAction");
+                contentElement.find(".gn-nodeSelectItemAction").on("click", function() {
+                    DefaultNodeShapes.openItemSearchDialog().then(function(item) {
+                        selectItemAction.data("itemid", item.id);
+                        selectItemAction.text(item.name);
+                        self.saveData();
+
+                        itemOpenLink.show();
+                    });
+                });
+
+                itemOpenLink.on("click", function() {
+                    if(selectItemAction.data("itemid"))
+                    {
+                        window.open("/Styr/Item?id=" + selectItemAction.data("itemid"));
+                    }
+                });   
+
+                npcOpenLink.on("click", function() {
+                    if(selectNpcAction.data("npcid"))
+                    {
+                        window.open("/Kortisto/Npc?id=" + selectNpcAction.data("npcid"));
+                    }
+                });
+            };
+
+            /**
+             * Deserializes the data
+             * @returns {string} Deserialized item id
+             */
+            Actions.ChooseNpcUseItemAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                var itemId = "";
+                if(data.itemId)
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", data.itemId);
+                    itemId = data.itemId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeSelectItemAction").data("itemid", "");
+                }
+
+                var npcId = "";
+                if(data.npcId)
+                {
+                    this.contentElement.find(".gn-nodeSelectNpcAction").data("npcid", data.npcId);
+                    npcId = data.npcId;
+                }
+                else
+                {
+                    this.contentElement.find(".gn-nodeSelectNpcAction").data("npcid", "");
+                }
+
+                return {
+                    itemId: itemId,
+                    npcId: npcId
+                };
+            }
+
+            /**
+             * Saves the data
+             */
+            Actions.ChooseNpcUseItemAction.prototype.saveData = function() {
+                var npcId = this.contentElement.find(".gn-nodeSelectNpcAction").data("npcid");
+                var itemId = this.contentElement.find(".gn-nodeSelectItemAction").data("itemid");
+
+                var serializeData = {
+                    npcId: npcId,
+                    itemId: itemId
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem);
+                this.nodeModel.set("actionRelatedToObjectId", itemId);
+            }
+
+            GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ChooseNpcUseItemAction());
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -7796,6 +8294,10 @@
                 };
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
+
+                // Set related object data
+                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest);
+                this.nodeModel.set("actionRelatedToObjectId", questId);
             }
 
             /**
@@ -11226,7 +11728,7 @@
                     this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectNpc);
                     this.nodeModel.set("actionRelatedToObjectId", deserializedData.npcId);
 
-                    this.loadNpc(deserializedData.npcId);
+                    this.loadNpc(deserializedData);
                 }
 
                 // Handlers
@@ -11284,9 +11786,9 @@
              * Loads the npc
              * @param {string} npcId Id of the npc
              */
-            Actions.MoveObjectToNpcAction.prototype.loadNpc = function(npcId) {
+            Actions.MoveObjectToNpcAction.prototype.loadNpc = function(npcData) {
                 var self = this;
-                this.loadObjectShared(npcId).then(function(npc) {
+                this.loadObjectShared(npcData).then(function(npc) {
                     if(!npc) 
                     {
                         return;

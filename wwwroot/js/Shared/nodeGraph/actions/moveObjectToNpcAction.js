@@ -61,7 +61,7 @@
                     this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectNpc);
                     this.nodeModel.set("actionRelatedToObjectId", deserializedData.npcId);
 
-                    this.loadNpc(deserializedData.npcId);
+                    this.loadNpc(deserializedData);
                 }
 
                 // Handlers
@@ -119,9 +119,9 @@
              * Loads the npc
              * @param {string} npcId Id of the npc
              */
-            Actions.MoveObjectToNpcAction.prototype.loadNpc = function(npcId) {
+            Actions.MoveObjectToNpcAction.prototype.loadNpc = function(npcData) {
                 var self = this;
-                this.loadObjectShared(npcId).then(function(npc) {
+                this.loadObjectShared(npcData).then(function(npc) {
                     if(!npc) 
                     {
                         return;

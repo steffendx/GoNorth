@@ -20,12 +20,14 @@ using GoNorth.Services.FlexFieldThumbnail;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
+using Microsoft.AspNetCore.Http;
 
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
     /// Styr Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Styr)]
     [Route("/api/[controller]/[action]")]
     public class StyrApiController : FlexFieldBaseApiController<StyrItem>
@@ -184,6 +186,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="template">Template to create</param>
         /// <returns>Result</returns>
         [Produces(typeof(StyrItem))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -198,6 +201,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the template</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -213,6 +217,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="template">Update template data</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(StyrItem))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -227,6 +232,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Template Id</param>
         /// <returns>Task</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -241,6 +247,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the template</param>
         /// <returns>Image Name</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -375,6 +382,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Items</returns>
         [Produces(typeof(FlexFieldObjectQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Styr)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]

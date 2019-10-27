@@ -31,7 +31,7 @@ namespace GoNorth.Extensions
         /// </summary>
         /// <param name="controller">Controller that contains the Request to validate</param>
         /// <returns>Errormessage, null if all is good</returns>
-        public static string ValidateImageUploadData(this Controller controller)
+        public static string ValidateImageUploadData(this ControllerBase controller)
         {
              // Validate Date
             if(controller.Request.Form.Files.Count != 1)
@@ -59,7 +59,7 @@ namespace GoNorth.Extensions
         /// <param name="controller">Controller that contains the Request to validate</param>
         /// <param name="extension">Extension of the file</param>
         /// <returns>Mime Type, "" if mime type is not valid</returns>
-        public static string GetImageMimeTypeForExtension(this Controller controller, string extension)
+        public static string GetImageMimeTypeForExtension(this ControllerBase controller, string extension)
         {
             extension = extension.ToLowerInvariant();
             Dictionary<string, string> mimeMap = BuildImageMimeMap();

@@ -186,9 +186,9 @@ namespace GoNorth.Services.Export.Placeholder
         /// Adds an unknown action type error
         /// </summary>
         /// <param name="actionType">Unknown action type</param>
-        public void AddDialogUnknownActionTypeError(string actionType)
+        public void AddDialogUnknownActionTypeError(int actionType)
         {
-            AddErrorMessage(ExportPlaceholderErrorType.DialogUnknownActionTypeError, _localizer[ExportPlaceholderErrorType.DialogUnknownActionTypeError.ToString(), actionType].Value);
+            AddErrorMessage(ExportPlaceholderErrorType.DialogUnknownActionTypeError, _localizer[ExportPlaceholderErrorType.DialogUnknownActionTypeError.ToString(), actionType.ToString()].Value);
         }
 
         /// <summary>

@@ -50,5 +50,19 @@ namespace GoNorth.Data.Aika
         /// <param name="userId">Id of the user</param>
         /// <returns>Chapter overviews</returns>
         Task<List<AikaChapterOverview>> GetChapterOverviewByModifiedUser(string userId);
+
+        /// <summary>
+        /// Returns all chapter overviews in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Chapter overviews</returns>
+        Task<List<AikaChapterOverview>> GetRecycleBinChapterOverviewByModifiedUser(string userId);
+
+        /// <summary>
+        /// Returns all chapter overviews in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        Task ResetRecycleBinChapterOverviewByModifiedUser(string userId);
     }
 }

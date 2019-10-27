@@ -93,6 +93,9 @@
     "TemplateTypeTaleActionSpawnNpcAtMarker": "Action: Spawn npc at marker",
     "TemplateTypeTaleActionSpawnItemAtMarker": "Action: Spawn item at marker",
     "TemplateTypeTaleActionChangeItemValue": "Action: Change item value",
+    "TemplateTypeTaleActionNpcUseItem": "Action: Npc uses item",
+    "TemplateTypeTaleActionPlayerUseItem": "Action: Player uses item",
+    "TemplateTypeTaleActionChooseNpcUseItem": "Action: Choose npc uses item",
 
     
     "TemplateTypeGeneralLogicGroup": "Logic: Group",

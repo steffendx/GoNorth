@@ -9,16 +9,16 @@
             /// Geometry Types
             var geometryTypes = {
                 /// Polygon
-                polygon: 0,
+                polygon: "Polygon",
 
                 /// Circle
-                circle: 1,
+                circle: "Circle",
 
                 /// Line String
-                lineString: 2,
+                lineString: "LineString",
 
                 /// Rectangle
-                rectangle: 3
+                rectangle: "Rectangle"
             };
 
             /// Geometry Id Range

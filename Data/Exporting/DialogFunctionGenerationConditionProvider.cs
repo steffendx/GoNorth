@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Newtonsoft.Json;
 
 namespace GoNorth.Data.Exporting
 {
@@ -24,7 +24,7 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Hosting Environment
         /// </summary>
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         /// <summary>
         /// Dialog Function Condition Db Access
@@ -36,7 +36,7 @@ namespace GoNorth.Data.Exporting
         /// </summary>
         /// <param name="hostingEnvironment">Hosting Environment</param>
         /// <param name="dialogFunctionConditionDbAccess">Dialog Function Condition Db Access</param>
-        public DialogFunctionGenerationConditionProvider(IHostingEnvironment hostingEnvironment, IDialogFunctionGenerationConditionDbAccess dialogFunctionConditionDbAccess)
+        public DialogFunctionGenerationConditionProvider(IWebHostEnvironment hostingEnvironment, IDialogFunctionGenerationConditionDbAccess dialogFunctionConditionDbAccess)
         {
             _hostingEnvironment = hostingEnvironment;
             _dialogFunctionConditionDbAccess = dialogFunctionConditionDbAccess;
@@ -55,8 +55,11 @@ namespace GoNorth.Data.Exporting
                 return existingCollection;
             }
 
+            JsonSerializerOptions jsonOptions = new JsonSerializerOptions();
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+
             string conditionConfig = await LoadDefaultTemplateCode();
-            DialogFunctionGenerationConditionCollection collection = JsonConvert.DeserializeObject<DialogFunctionGenerationConditionCollection>(conditionConfig);
+            DialogFunctionGenerationConditionCollection collection = JsonSerializer.Deserialize<DialogFunctionGenerationConditionCollection>(conditionConfig, jsonOptions);
             return collection;
         }
 

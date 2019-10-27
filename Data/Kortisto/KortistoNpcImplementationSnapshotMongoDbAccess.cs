@@ -9,7 +9,7 @@ namespace GoNorth.Data.Kortisto
     /// <summary>
     /// Kortisto Npc Implementation Snapshot Mongo Db Access
     /// </summary>
-    public class KortistoNpcImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotMongoDbAccess<KortistoNpc>, IKortistoNpcImplementationSnapshotDbAccess
+    public class KortistoNpcImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotExtendedMongoDbAccess<KortistoNpc>, IKortistoNpcImplementationSnapshotDbAccess
     {
         /// <summary>
         /// Collection Name of the Kortisto Npc Implementation Snapshots

@@ -175,5 +175,27 @@ namespace GoNorth.Data.Exporting
         {
             return await _TemplateCollection.AsQueryable().Where(t => t.ModifiedBy == userId).ToListAsync();
         }
+        
+        /// <summary>
+        /// Returns all recycle bin objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        public async Task<List<ExportTemplate>> GetRecycleBinExportTemplatesByModifiedUser(string userId)
+        {
+            IMongoCollection<ExportTemplate> recyclingBin = _Database.GetCollection<ExportTemplate>(ExportTemplateRecyclingBinCollectionName);
+            return await recyclingBin.AsQueryable().Where(t => t.ModifiedBy == userId).ToListAsync();
+        }
+        
+        /// <summary>
+        /// Resets all recycle bin objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        public async Task ResetRecycleBinExportTemplatesByModifiedUser(string userId)
+        {
+            IMongoCollection<ExportTemplate> recyclingBin = _Database.GetCollection<ExportTemplate>(ExportTemplateRecyclingBinCollectionName);
+            await recyclingBin.UpdateManyAsync(n => n.ModifiedBy == userId, Builders<ExportTemplate>.Update.Set(n => n.ModifiedBy, Guid.Empty.ToString()).Set(n => n.ModifiedOn, DateTimeOffset.UtcNow));
+        }
     }
 }

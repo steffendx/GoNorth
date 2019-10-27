@@ -88,7 +88,7 @@ namespace GoNorth.Services.Karta
         {
             using(Stream imageStream = file.OpenReadStream())
             {
-                Image<Rgba32> rawImage = Image.Load(imageStream);
+                Image<Rgba32> rawImage = Image.Load<Rgba32>(imageStream);
                 return rawImage;
             }
         }

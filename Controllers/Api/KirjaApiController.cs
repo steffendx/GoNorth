@@ -32,9 +32,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Kirja Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Kirja)]
     [Route("/api/[controller]/[action]")]
-    public class KirjaApiController : Controller
+    public class KirjaApiController : ControllerBase
     {
         /// <summary>
         /// Page Request data
@@ -276,6 +277,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the page</param>
         /// <returns>Page</returns>
         [Produces(typeof(KirjaPage))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> Page(string id)
         {
@@ -310,6 +312,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="versionId">Id of the page version</param>
         /// <returns>Page Version</returns>
         [Produces(typeof(SinglePageVersionQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> PageVersion(string versionId)
         {
@@ -332,6 +335,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="excludeId">Id to exclude</param>
         /// <returns>Pages</returns>
         [Produces(typeof(PageQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> SearchPages(string searchPattern, int start, int pageSize, string excludeId)
         {
@@ -361,6 +365,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Page Versions</returns>
         [Produces(typeof(PageVersionQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetPageVersions(string pageId, int start, int pageSize)
         {
@@ -386,6 +391,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageId">Page Id</param>
         /// <returns>Pages</returns>
         [Produces(typeof(List<KirjaPage>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByPage(string pageId)
         {
@@ -399,6 +405,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="questId">Quest Id</param>
         /// <returns>Pages</returns>
         [Produces(typeof(List<KirjaPage>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByQuest(string questId)
         {
@@ -412,6 +419,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="npcId">Npc Id</param>
         /// <returns>Pages</returns>
         [Produces(typeof(List<KirjaPage>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByNpc(string npcId)
         {
@@ -425,6 +433,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="itemId">Item Id</param>
         /// <returns>Pages</returns>
         [Produces(typeof(List<KirjaPage>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByItem(string itemId)
         {
@@ -438,6 +447,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="skillId">Skill Id</param>
         /// <returns>Pages</returns>
         [Produces(typeof(List<KirjaPage>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesBySkill(string skillId)
         {
@@ -451,13 +461,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="page">Create Page data</param>
         /// <returns>Id</returns>
         [Produces(typeof(KirjaPage))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePage([FromBody]PageRequest page)
         {
             if(string.IsNullOrEmpty(page.Name))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             _xssChecker.CheckXss(page.Name);
@@ -496,6 +508,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="page">Update page data</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(KirjaPage))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdatePage(string id, [FromBody]PageRequest page)
@@ -687,6 +701,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the page</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePage(string id)
@@ -695,20 +711,20 @@ namespace GoNorth.Controllers.Api
             if(kirjaPages.Count > 0)
             {
                 string mentionedInPages = string.Join(", ", kirjaPages.Select(p => p.Name));
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeletePageMentionedInOtherPages", mentionedInPages].Value);
+                return BadRequest(_localizer["CanNotDeletePageMentionedInOtherPages", mentionedInPages].Value);
             }
 
             List<KartaMapMarkerQueryResult> kartaMaps = await _kartaMapDbAccess.GetAllMapsKirjaPageIsMarkedIn(id);
             if(kartaMaps.Count > 0)
             {
                 string markedInMaps = string.Join(", ", kartaMaps.Select(p => p.Name));
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeletePageMarkedInKartaMap", markedInMaps].Value);
+                return BadRequest(_localizer["CanNotDeletePageMarkedInKartaMap", markedInMaps].Value);
             }
 
             KirjaPage page = await _pageDbAccess.GetPageById(id);
             if(page.IsDefault)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["CanNotDeleteRootPage"].Value);
+                return BadRequest(_localizer["CanNotDeleteRootPage"].Value);
             }
 
             await _pageDbAccess.DeletePage(page);
@@ -758,6 +774,8 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Image Name</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ImageUpload()
@@ -766,7 +784,7 @@ namespace GoNorth.Controllers.Api
             string validateResult = this.ValidateImageUploadData();
             if(validateResult != null)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer[validateResult]);
+                return BadRequest(_localizer[validateResult]);
             }
 
             // Save Image
@@ -793,12 +811,15 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="imageFile">Image File</param>
         /// <returns>Page Image</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         public IActionResult KirjaImage(string imageFile)
         {
             if(string.IsNullOrEmpty(imageFile))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             string fileExtension = Path.GetExtension(imageFile);
@@ -842,6 +863,9 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the page</param>
         [Produces(typeof(KirjaPageAttachment))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadPageAttachment(string id)
@@ -849,7 +873,7 @@ namespace GoNorth.Controllers.Api
             // Validate Date
              if(Request.Form.Files.Count != 1)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["OnlyOneFileAllowed"]);
+                return BadRequest(_localizer["OnlyOneFileAllowed"]);
             }
     
             IFormFile uploadFile = Request.Form.Files[0];
@@ -866,14 +890,14 @@ namespace GoNorth.Controllers.Api
 
             if(!mimeTypeAllowed)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["FileTypeNotAllowed"]);
+                return BadRequest(_localizer["FileTypeNotAllowed"]);
             }
 
             // Get Page
             KirjaPage page = await _pageDbAccess.GetPageById(id);
             if(page == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Save File
@@ -928,26 +952,29 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageId">Id of the page which contains the attachment</param>
         /// <param name="attachmentFile">Attachment File</param>
         /// <returns>Attachment File</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         public async Task<IActionResult> KirjaAttachment(string pageId, string attachmentFile)
         {
             // Check Data
             if(string.IsNullOrEmpty(pageId) || string.IsNullOrEmpty(attachmentFile))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             KirjaPage page = await _pageDbAccess.GetPageById(pageId);
             if(page == null || page.Attachments == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Get Attachment
             KirjaPageAttachment attachment = FindAttachment(page, attachmentFile);
             if(attachment == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Return File
@@ -969,6 +996,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="attachmentFile">Attachment File</param>
         /// <returns>Attachment File</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAttachment(string pageId, string attachmentFile)
@@ -976,13 +1006,13 @@ namespace GoNorth.Controllers.Api
             // Check Data
             if(string.IsNullOrEmpty(pageId) || string.IsNullOrEmpty(attachmentFile))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             KirjaPage page = await _pageDbAccess.GetPageById(pageId);
             if(page == null || page.Attachments == null)
             {
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Get Attachment
@@ -1040,6 +1070,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="versionId">Version references</param>
         /// <returns>Result of the version reference validation</returns>
         [Produces(typeof(PageVersionReferenceValidationResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         public async Task<IActionResult> ValidateVersionReferences(string versionId)
         {

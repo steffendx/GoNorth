@@ -9,7 +9,7 @@ namespace GoNorth.Data.Styr
     /// <summary>
     /// Styr Item Implementation Snapshot Mongo Db Access
     /// </summary>
-    public class StyrItemImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotMongoDbAccess<StyrItem>, IStyrItemImplementationSnapshotDbAccess
+    public class StyrItemImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotExtendedMongoDbAccess<StyrItem>, IStyrItemImplementationSnapshotDbAccess
     {
         /// <summary>
         /// Collection Name of the Styr Item Implementation Snapshots

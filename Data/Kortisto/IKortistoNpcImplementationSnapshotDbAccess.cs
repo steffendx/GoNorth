@@ -7,7 +7,7 @@ namespace GoNorth.Data.Kortisto
     /// <summary>
     /// Interface for Kortisto Npc Implementation Snapshot Db Access
     /// </summary>
-    public interface IKortistoNpcImplementationSnapshotDbAccess : IObjectImplementationSnapshotDbAccess<KortistoNpc>
+    public interface IKortistoNpcImplementationSnapshotDbAccess : IObjectImplementationSnapshotExtendedDbAccess<KortistoNpc>
     {
     }
 }

@@ -243,8 +243,19 @@
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
 
                 // Set related object data
-                this.nodeModel.set("actionRelatedToObjectType", GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem);
+                this.nodeModel.set("actionRelatedToObjectType", Actions.RelatedToObjectItem);
                 this.nodeModel.set("actionRelatedToObjectId", itemId);
+
+                var additionalRelatedObjects = [];
+                if(npcId)
+                {
+                    additionalRelatedObjects.push({
+                        objectType: Actions.RelatedToObjectNpc,
+                        objectId: npcId
+                    });
+                }
+
+                this.nodeModel.set("actionRelatedToAdditionalObjects", additionalRelatedObjects);
             }
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));

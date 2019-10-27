@@ -8,11 +8,6 @@ namespace GoNorth.Models.ExportViewModels
     public class FunctionGenerationConditionViewModel
     {
         /// <summary>
-        /// Dialog function generation condition types
-        /// </summary>
-        public List<MappedDialogFunctionGenerationConditionType> DialogFunctionGenerationConditionTypes { get; set; }
-
-        /// <summary>
         /// Dialog function generation action types
         /// </summary>
         public List<MappedDialogFunctionGenerationActionType> DialogFunctionGenerationActionTypes { get; set; }

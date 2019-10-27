@@ -154,7 +154,7 @@
     "sourceMap": false
   },
   {
-    "outputFileName": "wwwroot/js/Administration/projectManagement.ViewModel.min.js",
+    "outputFileName": "wwwroot/js/Administration/projectManagement.viewmodel.min.js",
     "inputFiles": [
       "wwwroot/js/Administration/projectManagement.ViewModel.js"
     ],
@@ -270,6 +270,10 @@
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromNpcInventoryAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromPlayerInventoryAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromChooseNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/objectUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/npcUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/chooseNpcUseItemAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changeQuestValueAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/setQuestStateAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/addQuestTextAction.js",
@@ -573,6 +577,8 @@
       "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
       "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
       
+      "wwwroot/js/Shared/dailyRoutines/utilFunctions.js",
+      
       "wwwroot/js/Shared/scriptDialog/codeEditor.bindingHandler.js",
       "wwwroot/js/Shared/scriptDialog/codeScriptDialog.js",
       "wwwroot/js/Shared/scriptDialog/nodeScriptDialog.js",
@@ -764,6 +770,10 @@
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromNpcInventoryAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromPlayerInventoryAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromChooseNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/objectUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/npcUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/chooseNpcUseItemAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changeQuestValueAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/setQuestStateAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/addQuestTextAction.js",
@@ -912,6 +922,10 @@
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromNpcInventoryAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromPlayerInventoryAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/removeItemFromChooseNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/objectUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/npcUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/chooseNpcUseItemAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/changeQuestValueAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/setQuestStateAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/addQuestTextAction.js",

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using GoNorth.Data.FlexFieldDatabase;
-using GoNorth.Services.Export.Json;
+using System.Text.Json.Serialization;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Kortisto
@@ -20,13 +17,13 @@ namespace GoNorth.Data.Kortisto
         /// <summary>
         /// Id which is used in a list compare to detect deleted or new objects
         /// </summary>
-        [JsonExportIgnoreAttribute]
+        [JsonIgnore]
         public string ListComparableId { get { return SkillId; } }
 
         /// <summary>
         /// Value which is used in a list compare for display
         /// </summary>
-        [JsonExportIgnoreAttribute]
+        [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue(SkillId, CompareDifferenceValue.ValueResolveType.ResolveSkillName); } }
     }
 }

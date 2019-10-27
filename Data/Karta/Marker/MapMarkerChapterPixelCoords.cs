@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Karta.Marker

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using GoNorth.Data.NodeGraph;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.NodeGraph
@@ -13,7 +12,7 @@ namespace GoNorth.Data.NodeGraph
         /// Action Type
         /// </summary>
         [ValueCompareAttribute(LabelKey = "", TextKey = "ActionTypeChanged")]
-        public string ActionType { get; set; }
+        public int ActionType { get; set; }
 
         /// <summary>
         /// Action related to object type

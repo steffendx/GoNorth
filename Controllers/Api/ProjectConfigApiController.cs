@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
-using GoNorth.Data.Tale;
 using GoNorth.Data.User;
 using GoNorth.Extensions;
 using GoNorth.Services.ProjectConfig;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,9 +15,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Project Config Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.ProjectConfigManager + "," + RoleNames.Tale + "," + RoleNames.Kortisto)]
     [Route("/api/[controller]/[action]")]
-    public class ProjectConfigApiController : Controller
+    public class ProjectConfigApiController : ControllerBase
     {
         /// <summary>
         /// Trimmed miscellaneous project config
@@ -79,6 +78,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="configKey">Config key</param>
         /// <returns>Config entry</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetJsonConfigByKey(string configKey)
         {
@@ -100,6 +100,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="configKey">Config key</param>
         /// <returns>Save result</returns>
         [Authorize(Roles = RoleNames.ProjectConfigManager)]  
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces(typeof(string))]
         [HttpPost]
         public async Task<IActionResult> SaveJsonConfigByKey(string configKey)
@@ -107,7 +108,7 @@ namespace GoNorth.Controllers.Api
             string configData = string.Empty;
             using (StreamReader reader = new StreamReader(Request.Body))
             {
-                configData = reader.ReadToEnd();
+                configData = await reader.ReadToEndAsync();
             }
 
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
@@ -140,6 +141,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Config entry</returns>
         [Produces(typeof(TrimmedMiscConfig))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetMiscConfig()
         {
@@ -168,6 +170,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="configData">Config data</param>
         /// <returns>Save result</returns>
         [Authorize(Roles = RoleNames.ProjectConfigManager)]  
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Produces(typeof(TrimmedMiscConfig))]
         [HttpPost]
         public async Task<IActionResult> SaveMiscConfig([FromBody]TrimmedMiscConfig configData)

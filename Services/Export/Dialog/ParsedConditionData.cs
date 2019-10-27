@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace GoNorth.Services.Export.Dialog
 {
@@ -15,6 +15,6 @@ namespace GoNorth.Services.Export.Dialog
         /// <summary>
         /// Condition Data
         /// </summary>
-        public JObject ConditionData { get; set; }
+        public JsonElement ConditionData { get; set; }
     }
 }

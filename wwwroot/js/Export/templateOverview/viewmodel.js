@@ -12,8 +12,8 @@
                 this.templateCategories = new ko.observableArray();
                 this.selectedCategoryLabel = new ko.observable("");
                 this.selectedCategory = new ko.observable(-1);
-                var category = parseInt(GoNorth.Util.getParameterFromUrl("category"));
-                if(!isNaN(category))
+                var category = GoNorth.Util.getParameterFromUrl("category");
+                if(category)
                 {
                     this.selectedCategory(category);
                 }
@@ -41,8 +41,8 @@
 
                 var self = this;
                 GoNorth.Util.onUrlParameterChanged(function() {
-                    var category = parseInt(GoNorth.Util.getParameterFromUrl("category"));
-                    if(!isNaN(category) && category != self.selectedCategory()) {
+                    var category = GoNorth.Util.getParameterFromUrl("category");
+                    if(category != self.selectedCategory()) {
                         self.selectTemplateCategoryFromUrl(category);
                     }
                 });

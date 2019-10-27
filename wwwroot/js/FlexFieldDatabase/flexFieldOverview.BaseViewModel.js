@@ -485,6 +485,15 @@
 
 
                 /**
+                 * Opens a folder image
+                 * @param {string} imageUrl Image Url to open
+                 */
+                openFolderImage: function(imageUrl) {
+                    window.open(imageUrl);
+                },
+
+
+                /**
                  * Opens the create folder dialog
                  */
                 openCreateFolderDialog: function() {

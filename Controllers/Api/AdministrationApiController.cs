@@ -1,6 +1,6 @@
-using System.Threading.Tasks;
 using GoNorth.Services.Encryption;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -9,9 +9,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// Administration Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Administrator)]
     [Route("/api/[controller]/[action]")]
-    public class AdministrationApiController : Controller
+    public class AdministrationApiController : ControllerBase
     {
         /// <summary>
         /// Request for encrypting a config value
@@ -52,6 +53,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="value">Encryption request</param>
         /// <returns>Encrypted value</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult EncryptConfigValue([FromBody]EncryptConfigValueRequest value)

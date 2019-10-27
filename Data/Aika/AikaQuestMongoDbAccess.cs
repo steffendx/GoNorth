@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GoNorth.Config;
-using GoNorth.Data.FlexFieldDatabase;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -233,6 +232,28 @@ namespace GoNorth.Data.Aika
         public async Task<List<AikaQuest>> GetQuestsByModifiedUser(string userId)
         {
             return await _QuestCollection.AsQueryable().Where(q => q.ModifiedBy == userId).ToListAsync();
+        }
+                
+        /// <summary>
+        /// Returns all quests in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Quest</returns>
+        public async Task<List<AikaQuest>> GetRecycleBinQuestsByModifiedUser(string userId)
+        {
+            IMongoCollection<AikaQuest> recyclingBin = _Database.GetCollection<AikaQuest>(AikaQuestRecyclingBinCollectionName);
+            return await recyclingBin.AsQueryable().Where(q => q.ModifiedBy == userId).ToListAsync();
+        }
+        
+        /// <summary>
+        /// Returns all quests in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task ResetRecycleBinQuestByModifiedUser(string userId)
+        {
+            IMongoCollection<AikaQuest> recyclingBin = _Database.GetCollection<AikaQuest>(AikaQuestRecyclingBinCollectionName);
+            await recyclingBin.UpdateManyAsync(n => n.ModifiedBy == userId, Builders<AikaQuest>.Update.Set(n => n.ModifiedBy, Guid.Empty.ToString()).Set(n => n.ModifiedOn, DateTimeOffset.UtcNow));
         }
     }
 }

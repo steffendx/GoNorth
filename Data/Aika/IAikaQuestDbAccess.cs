@@ -107,5 +107,19 @@ namespace GoNorth.Data.Aika
         /// <param name="userId">Id of the user</param>
         /// <returns>Quests</returns>
         Task<List<AikaQuest>> GetQuestsByModifiedUser(string userId);
+
+        /// <summary>
+        /// Returns all quests in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Quest</returns>
+        Task<List<AikaQuest>> GetRecycleBinQuestsByModifiedUser(string userId);
+
+        /// <summary>
+        /// Returns all quests in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        Task ResetRecycleBinQuestByModifiedUser(string userId);
     }
 }

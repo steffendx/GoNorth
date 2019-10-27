@@ -7,7 +7,7 @@ namespace GoNorth.Data.Aika
     /// <summary>
     /// Interface for Aika Quest Implementation Snapshot Db Access
     /// </summary>
-    public interface IAikaQuestImplementationSnapshotDbAccess : IObjectImplementationSnapshotDbAccess<AikaQuest>
+    public interface IAikaQuestImplementationSnapshotDbAccess : IObjectImplementationSnapshotExtendedDbAccess<AikaQuest>
     {
     }
 }

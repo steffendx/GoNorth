@@ -267,13 +267,12 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// <returns>true if node is of searched type</returns>
         protected bool IsNodeOfActionType(ExportDialogData dialogData, ActionType actionType, ExportPlaceholderErrorCollection errorCollection)
         {
-            int parsedActionType = 0;
-            if(dialogData.Action == null || !int.TryParse(dialogData.Action.ActionType, out parsedActionType))
+            if(dialogData.Action == null)
             {
                 return false;
             }
 
-            return (int)actionType == parsedActionType;
+            return (int)actionType == dialogData.Action.ActionType;
         }
 
 

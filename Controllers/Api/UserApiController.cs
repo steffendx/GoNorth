@@ -2,28 +2,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using GoNorth.Config;
 using GoNorth.Data.User;
-using GoNorth.Extensions;
-using GoNorth.Services.Email;
 using GoNorth.Services.Timeline;
 using GoNorth.Services.User;
-using GoNorth.Templates;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
     /// User Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Administrator)]
     [Route("/api/[controller]/[action]")]
-    public class UserApiController : Controller
+    public class UserApiController : ControllerBase
     {
         /// <summary>
         /// Trimmed user for response
@@ -162,6 +159,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page size</param>
         /// <returns>User Entries</returns>
         [Produces(typeof(UserQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult Entries(int start, int pageSize)
         {
@@ -182,13 +180,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="userRequest">User request data</param>
         /// <returns>Result</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser([FromBody]UserCreateRequest userRequest)
         {
             if(string.IsNullOrEmpty(userRequest.Email) || string.IsNullOrEmpty(userRequest.DisplayName) || string.IsNullOrEmpty(userRequest.Password))
             {
-                return StatusCode((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             GoNorthUser user = new GoNorthUser { UserName = userRequest.Email, Email = userRequest.Email, DisplayName = userRequest.DisplayName };
@@ -214,6 +214,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUser(string id)
@@ -221,7 +223,7 @@ namespace GoNorth.Controllers.Api
             string currentUserId = _userManager.GetUserId(User);
             if(currentUserId == id)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, _localizer["YouCanNotDeleteYourself"].Value);
+                return BadRequest(_localizer["YouCanNotDeleteYourself"].Value);
             }
 
             GoNorthUser user = await _userDbAccess.GetUserById(id);
@@ -247,6 +249,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="roles">Roles to assign (all other roles will be removed)</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetUserRoles(string id, [FromBody]List<string> roles)
@@ -278,6 +281,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmEmailForUser(string id)
@@ -303,6 +307,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateSecurityStampForUser(string id)

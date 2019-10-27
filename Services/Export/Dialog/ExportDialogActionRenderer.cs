@@ -125,6 +125,9 @@ namespace GoNorth.Services.Export.Dialog
             _actionRenderes.Add(ActionType.ChangeItemValue, new ItemValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
             _actionRenderes.Add(ActionType.SpawnItemInChooseNpcInventory, new InventoryActionChooseNpcRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false));
             _actionRenderes.Add(ActionType.RemoveItemFromChooseNpcInventory, new InventoryActionChooseNpcRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true));
+            _actionRenderes.Add(ActionType.NpcUseItem, new UseItemActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, false));
+            _actionRenderes.Add(ActionType.PlayerUseItem, new UseItemActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, true, false));
+            _actionRenderes.Add(ActionType.ChooseNpcUseItem, new UseItemActionRenderer(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory, false, true));
         }
 
         /// <summary>
@@ -174,14 +177,7 @@ namespace GoNorth.Services.Export.Dialog
         /// <returns>Action renderer</returns>
         private IActionRenderer GetActionRenderForNode(ActionNode actionNode)
         {
-            int parsedActionType = 0;
-            if(!int.TryParse(actionNode.ActionType, out parsedActionType))
-            {
-                _errorCollection.AddDialogUnknownActionTypeError(actionNode.ActionType);
-                return null;
-            }
-
-            ActionType actionType = (ActionType)parsedActionType;
+            ActionType actionType = (ActionType)actionNode.ActionType;
             if(!_actionRenderes.ContainsKey(actionType))
             {
                 _errorCollection.AddDialogUnknownActionTypeError(actionNode.ActionType);

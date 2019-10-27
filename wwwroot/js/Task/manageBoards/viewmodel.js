@@ -33,7 +33,7 @@
                 this.isToogleStatusClosing = new ko.observable(false);
                 this.toogleStatusBoardId = null;
 
-                this.taskBoardCategoryList = new ManageBoards.TaskBoardCategoryList(this.reloadBoards.bind(this), this.errorOccured);
+                this.taskBoardCategoryList = new ManageBoards.TaskBoardCategoryList(this.reloadBoards.bind(this));
 
                 this.taskBoardCategoryList.loadBoardCategories();
                 this.openBoardList.loadBoards();
@@ -122,8 +122,8 @@
                     this.isEditingBoard(true);
                     this.createEditBoardName(board.name);
                     this.createEditBoardCategory(this.getBoardCategoryById(board.categoryId));
-                    this.createEditBoardPlannedStart(board.plannedStart ? board.plannedStart : null);
-                    this.createEditBoardPlannedEnd(board.plannedEnd ? board.plannedEnd : null);
+                    this.createEditBoardPlannedStart(board.plannedStart ? new Date(board.plannedStart) : null);
+                    this.createEditBoardPlannedEnd(board.plannedEnd ? new Date(board.plannedEnd) : null);
                     this.editingBoard = board;
                     
                     this.openBoardDialogShared();

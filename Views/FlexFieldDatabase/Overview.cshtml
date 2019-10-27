@@ -185,7 +185,7 @@
 
 <script type="text/html" id="gn-folderTemplate">
     <div class="gn-flexFieldOverviewObjectButtons">
-        <a data-bind="visible: imageFile, attr: { href: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }" target="_blank" title="@Model.Localizer["OpenImageInFullSize"]"><i class="glyphicon glyphicon-eye-open"></i></a>
+        <a data-bind="visible: imageFile, attr: { href: '/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + imageFile }, click: function(data) { $root.openFolderImage('/api/@Model.ApiControllerName/FlexFieldObjectImage?imageFile=' + data.imageFile) }, clickBubble: false"" target="_blank" title="@Model.Localizer["OpenImageInFullSize"]"><i class="glyphicon glyphicon-eye-open"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openEditFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["EditCategory"]"><i class="glyphicon glyphicon-pencil"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openMoveObjectToCategoryDialog(folder); }, clickBubble: false" title="@Model.Localizer["MoveToCategory"]"><i class="glyphicon glyphicon-share"></i></a>
         <a class="gn-clickable" data-bind="click: function(folder) { $root.openDeleteFolderDialog(folder); }, clickBubble: false" title="@Model.Localizer["DeleteCategory"]"><i class="glyphicon glyphicon-trash"></i></a>

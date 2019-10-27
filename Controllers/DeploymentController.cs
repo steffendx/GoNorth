@@ -67,7 +67,7 @@ namespace GoNorth.Controllers
             if(!displayPage)
             {
                 _logger.LogWarning("User tried to access first time deployment page while not valid.");
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
             
             FirstTimeDeploymentViewModel viewModel = new FirstTimeDeploymentViewModel();
@@ -88,7 +88,7 @@ namespace GoNorth.Controllers
             if(!displayPage)
             {
                 _logger.LogWarning("User tried to post to first time deployment page while not valid.");
-                return StatusCode((int)HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             // Check Password

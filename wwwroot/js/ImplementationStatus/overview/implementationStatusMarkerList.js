@@ -6,17 +6,15 @@
             /**
              * Implementation for implementation status marker list
              * 
-             * @param {object} markerTypes Marker types Lookup Object to marker names for passing to karta
              * @param {ko.observable} loadingObs Observbale for loading display
              * @param {ko.observable} errorOccuredObs Observable if an error occurs
              * @param {GoNorth.ImplementationStatus.CompareDialog.ViewModel} compareDialog Compare Dialog
              * @class
              */
-            Overview.ImplementationStatusMarkerList = function(markerTypes, loadingObs, errorOccuredObs, compareDialog)
+            Overview.ImplementationStatusMarkerList = function(loadingObs, errorOccuredObs, compareDialog)
             {
                 Overview.ImplementationStatusObjectList.apply(this, [ loadingObs, errorOccuredObs, compareDialog ]);
 
-                this.markerTypes = markerTypes;
                 this.hasMarkerTypeRow = true;
             };
 
@@ -62,7 +60,7 @@
              * @returns {string} Url of the object
              */
             Overview.ImplementationStatusMarkerList.prototype.buildObjectUrl = function(obj) {
-                var zoomOnMarkerParam = "&zoomOnMarkerType=" + this.markerTypes[obj.type] + "&zoomOnMarkerId=" + obj.id;
+                var zoomOnMarkerParam = "&zoomOnMarkerType=" + obj.type + "&zoomOnMarkerId=" + obj.id;
                 return "/Karta?id=" + obj.mapId + zoomOnMarkerParam;
             };
 

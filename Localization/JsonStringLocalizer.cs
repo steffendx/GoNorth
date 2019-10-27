@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace GoNorth.Localization
 {
@@ -21,7 +19,7 @@ namespace GoNorth.Localization
         /// <summary>
         /// Object cache
         /// </summary>
-        private readonly ConcurrentDictionary<string, Lazy<JObject>> _resourceObjectCache = new ConcurrentDictionary<string, Lazy<JObject>>();
+        private readonly ConcurrentDictionary<string, Lazy<JsonElement?>> _resourceObjectCache = new ConcurrentDictionary<string, Lazy<JsonElement?>>();
 
         /// <summary>
         /// Base Name
@@ -179,17 +177,17 @@ namespace GoNorth.Localization
             CultureInfo previousCulture = null;
             while (previousCulture != currentCulture)
             {
-                JObject resourceObject = GetResourceObject(currentCulture);
-                if (resourceObject == null)
+                JsonElement? resourceObject = GetResourceObject(currentCulture);
+                if (!resourceObject.HasValue)
                 {
                     _logger.LogInformation($"No resource file found or error occurred for base name {_baseName}, culture {currentCulture} and key '{name}'");
                 }
                 else
                 {
-                    JToken value;
-                    if (resourceObject.TryGetValue(name, out value))
+                    JsonElement value;
+                    if (resourceObject.Value.TryGetProperty(name, out value))
                     {
-                        string localizedString = value.ToString();
+                        string localizedString = value.GetString();
                         return localizedString;
                     }
                 }
@@ -214,7 +212,7 @@ namespace GoNorth.Localization
         /// </summary>
         /// <param name="currentCulture">Current Culture</param>
         /// <returns>Resource object</returns>
-        private JObject GetResourceObject(CultureInfo currentCulture)
+        private JsonElement? GetResourceObject(CultureInfo currentCulture)
         {
             if (currentCulture == null)
             {
@@ -225,7 +223,7 @@ namespace GoNorth.Localization
             string cultureSuffix = "." + currentCulture.Name;
             cultureSuffix = cultureSuffix == "." ? "" : cultureSuffix;
 
-            Lazy<JObject> lazyJObjectGetter = new Lazy<JObject>(() =>
+            Lazy<JsonElement?> lazyJObjectGetter = new Lazy<JsonElement?>(() =>
             {
                 // First attempt to find a resource file location that exists.
                 string resourcePath = null;
@@ -254,10 +252,10 @@ namespace GoNorth.Localization
                 {
                     using (FileStream resourceFileStream = new FileStream(resourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous | FileOptions.SequentialScan))
                     {
-                        JsonTextReader resourceReader = new JsonTextReader(new StreamReader(resourceFileStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true));
-                        using (resourceReader)
+                        JsonDocument jsonDocument = JsonDocument.Parse(resourceFileStream);
+                        using (jsonDocument)
                         {
-                            return JObject.Load(resourceReader);
+                            return jsonDocument.RootElement.Clone();
                         }
                     }
                 }
@@ -270,7 +268,7 @@ namespace GoNorth.Localization
             }, LazyThreadSafetyMode.ExecutionAndPublication);
 
             lazyJObjectGetter = _resourceObjectCache.GetOrAdd(cultureSuffix, lazyJObjectGetter);
-            JObject resourceObject = lazyJObjectGetter.Value;
+            JsonElement? resourceObject = lazyJObjectGetter.Value;
             return resourceObject;
         }
 

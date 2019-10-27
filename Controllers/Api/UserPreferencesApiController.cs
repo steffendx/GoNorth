@@ -1,10 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Project;
 using GoNorth.Data.User;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,9 +13,10 @@ namespace GoNorth.Controllers.Api
     /// <summary>
     /// User Preferences Api controller
     /// </summary>
+    [ApiController]
     [Authorize]
     [Route("/api/[controller]/[action]")]
-    public class UserPreferencesApiController : Controller
+    public class UserPreferencesApiController : ControllerBase
     {
         /// <summary>
         /// User Code Editor preferences
@@ -82,6 +82,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>User Preferences</returns>
         [Produces(typeof(UserPreferences))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetUserPreferences()
         {
@@ -96,6 +97,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="preferences">Preferences to save</param>
         /// <returns>User Preferences</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveUserPreferences([FromBody]UserPreferences preferences)
@@ -112,6 +114,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Code editor Preferences</returns>
         [Produces(typeof(UserCodeEditorPreferences))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetCodeEditorPreferences()
         {

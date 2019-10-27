@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GoNorth.Config;
-using GoNorth.Data.FlexFieldDatabase;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -113,6 +111,28 @@ namespace GoNorth.Data.Aika
         public async Task<List<AikaChapterOverview>> GetChapterOverviewByModifiedUser(string userId)
         {
             return await _ChapterOverviewCollection.AsQueryable().Where(q => q.ModifiedBy == userId).ToListAsync();
+        }
+        
+        /// <summary>
+        /// Returns all chapter overviews in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Chapter overviews</returns>
+        public async Task<List<AikaChapterOverview>> GetRecycleBinChapterOverviewByModifiedUser(string userId)
+        {
+            IMongoCollection<AikaChapterOverview> recyclingBin = _Database.GetCollection<AikaChapterOverview>(AikaChapterOverviewRecyclingBinCollectionName);
+            return await recyclingBin.AsQueryable().Where(q => q.ModifiedBy == userId).ToListAsync();
+        }
+        
+        /// <summary>
+        /// Returns all chapter overviews in the recycle bin that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task ResetRecycleBinChapterOverviewByModifiedUser(string userId)
+        {
+            IMongoCollection<AikaChapterOverview> recyclingBin = _Database.GetCollection<AikaChapterOverview>(AikaChapterOverviewRecyclingBinCollectionName);
+            await recyclingBin.UpdateManyAsync(n => n.ModifiedBy == userId, Builders<AikaChapterOverview>.Update.Set(n => n.ModifiedBy, Guid.Empty.ToString()).Set(n => n.ModifiedOn, DateTimeOffset.UtcNow));
         }
     }
 }

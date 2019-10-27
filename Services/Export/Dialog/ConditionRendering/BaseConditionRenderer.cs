@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
-using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Placeholder;
-using Newtonsoft.Json;
 
 namespace GoNorth.Services.Export.Dialog.ConditionRendering
 {
@@ -25,7 +24,11 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering
         /// <returns>Condition Build Result</returns>
         public string BuildSingleConditionElement(ParsedConditionData condition, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings)
         {
-            T parsedData = condition.ConditionData.ToObject<T>();
+            JsonSerializerOptions jsonOptions = new JsonSerializerOptions();
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+            jsonOptions.PropertyNameCaseInsensitive = true;
+
+            T parsedData = JsonSerializer.Deserialize<T>(condition.ConditionData.GetRawText(), jsonOptions);
             return BuildConditionElementFromParsedData(parsedData, project, errorCollection, flexFieldObject, exportSettings);
         }
 

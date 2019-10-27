@@ -119,7 +119,7 @@
         @foreach(ExportTemplateTypeUrl curTemplateTypeUrl in Model.TemplateTypeUrls)
         {
             <text>
-            GoNorth.Export.ManageTemplate.templateTypeMapping[@((int)@curTemplateTypeUrl.TemplateType)] = "@curTemplateTypeUrl.FormUrl";
+            GoNorth.Export.ManageTemplate.templateTypeMapping["@(@curTemplateTypeUrl.TemplateType.ToString())"] = "@curTemplateTypeUrl.FormUrl";
             </text>
         }
 

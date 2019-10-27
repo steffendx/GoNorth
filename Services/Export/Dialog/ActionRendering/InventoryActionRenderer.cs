@@ -129,7 +129,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
             flexFieldExportData.ExportData.Add(ExportConstants.ExportDataObjectType, ExportConstants.ExportObjectTypeItem);
 
             _flexFieldPlaceholderResolver.SetErrorMessageCollection(errorCollection);
-            actionCode = _flexFieldPlaceholderResolver.FillPlaceholders(actionCode, flexFieldExportData).Result;
+            actionCode = await _flexFieldPlaceholderResolver.FillPlaceholders(actionCode, flexFieldExportData);
 
             return actionCode;
         }

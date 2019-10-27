@@ -23,12 +23,14 @@ using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
 using GoNorth.Services.ProjectConfig;
 using GoNorth.Data.ProjectConfig;
+using Microsoft.AspNetCore.Http;
 
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
     /// Kortisto Api controller
     /// </summary>
+    [ApiController]
     [Authorize(Roles = RoleNames.Kortisto)]
     [Route("/api/[controller]/[action]")]
     public class KortistoApiController : FlexFieldBaseApiController<KortistoNpc>
@@ -187,6 +189,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="template">Template to create</param>
         /// <returns>Result</returns>
         [Produces(typeof(KortistoNpc))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -201,6 +204,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the template</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -216,6 +220,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="template">Update template data</param>
         /// <returns>Result Status Code</returns>
         [Produces(typeof(KortistoNpc))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -230,6 +235,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Template Id</param>
         /// <returns>Task</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -244,6 +250,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the template</param>
         /// <returns>Image Name</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -499,6 +506,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="routineEvent">Event data</param>
         /// <returns>Id of the event</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
         public async Task<IActionResult> SaveDailyRoutineEvent(string id, [FromBody]KortistoNpcDailyRoutineEvent routineEvent)
         {
@@ -542,6 +552,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="eventId">Event id</param>
         /// <returns>Id of the event</returns>
         [Produces(typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete]
         public async Task<IActionResult> DeleteDailyRoutineEvent(string id, string eventId)
         {
@@ -587,6 +599,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Npcs that have a daily routine with events outside of the configured time frame</returns>
         [Produces(typeof(List<KortistoNpc>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsWithDailyRoutineOutsideTimeRange()
         {
@@ -603,6 +616,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="objectId">Object id</param>
         /// <returns>Dialogs</returns>
         [Produces(typeof(List<KortistoNpc>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsObjectIsReferencedInDailyRoutine(string objectId)
         {
@@ -616,6 +630,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Npc</returns>
         [Produces(typeof(KortistoNpc))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> PlayerNpc()
         {
@@ -630,6 +645,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="itemId">Item id</param>
         /// <returns>Npcs</returns>
         [Produces(typeof(List<KortistoNpc>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsByItemInInventory(string itemId)
         {
@@ -643,6 +659,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="skillId">Skill id</param>
         /// <returns>Npcs</returns>
         [Produces(typeof(List<KortistoNpc>))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsByLearnedSkill(string skillId)
         {
@@ -658,6 +675,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <returns>Npcs</returns>
         [Produces(typeof(FlexFieldObjectQueryResult))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Kortisto)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]

@@ -93,6 +93,9 @@
     "TemplateTypeTaleActionSpawnNpcAtMarker": "Aktion: Npc spawnen an Markierung",
     "TemplateTypeTaleActionSpawnItemAtMarker": "Aktion: Item spawnen an Markierung",
     "TemplateTypeTaleActionChangeItemValue": "Aktion: Item Wert ändern",
+    "TemplateTypeTaleActionNpcUseItem": "Aktion: Npc benutzt Item",
+    "TemplateTypeTaleActionPlayerUseItem": "Aktion: Spieler benutzt Item",
+    "TemplateTypeTaleActionChooseNpcUseItem": "Aktion: Beliebiger Npc benutzt Item",
     
     
     "TemplateTypeGeneralLogicGroup": "Logik: Gruppe",

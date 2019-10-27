@@ -30,7 +30,7 @@ namespace GoNorth.Localization
         /// <summary>
         /// Hosting Environment
         /// </summary>        
-        private readonly IHostingEnvironment _applicationEnvironment;
+        private readonly IWebHostEnvironment _applicationEnvironment;
 
         /// <summary>
         /// Logger
@@ -53,7 +53,7 @@ namespace GoNorth.Localization
         /// <param name="applicationEnvironment">Application Environment</param>
         /// <param name="localizationOptions">Localization Options</param>
         /// <param name="logger">Logger</param>
-        public JsonStringLocalizerFactory(IHostingEnvironment applicationEnvironment, IOptions<JsonLocalizationOptions> localizationOptions, ILogger<JsonStringLocalizerFactory> logger)
+        public JsonStringLocalizerFactory(IWebHostEnvironment applicationEnvironment, IOptions<JsonLocalizationOptions> localizationOptions, ILogger<JsonStringLocalizerFactory> logger)
         {
             if (applicationEnvironment == null)
             {

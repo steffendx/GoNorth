@@ -62,7 +62,7 @@
                     <!-- /ko -->
                 </div>
                 <p>
-                    <button type="button" class="btn btn-primary" data-bind="click: function() { exportDownload(@((int)@Model.ExportTemplateType)); }">
+                    <button type="button" class="btn btn-primary" data-bind="click: function() { exportDownload('@(@Model.ExportTemplateType.ToString())'); }">
                         <i class="glyphicon glyphicon-export"></i> @Model.Localizer["Download"]
                     </button>
                     <span class="gn-copyToClipboardToolTipContainer">
@@ -215,7 +215,7 @@
 
 @if(User.IsInRole(RoleNames.ManageExportTemplates))
 {
-    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: function() { openExportTemplate(@((int)@Model.ExportTemplateType)); }, disable: isLoading(), visible: id">
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: function() { openExportTemplate('@(@Model.ExportTemplateType.ToString())'); }, disable: isLoading(), visible: id">
         <i class="glyphicon glyphicon-export"></i> @Model.Localizer["ManageTemplate"]
     </button>
 }
@@ -227,11 +227,11 @@
             <i class="glyphicon glyphicon-export"></i> @Model.Localizer["Export"] <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="gn-exportButton">
-            <li><a class="gn-clickable" data-bind="click: function() { exportObject(@((int)@Model.ExportTemplateType), 'Script'); }">@Model.Localizer["Script"]</a></li>
-            <li><a class="gn-clickable" data-bind="click: function() { exportObject(@((int)@Model.ExportTemplateType), 'JSON'); }">@Model.Localizer["JSON"]</a></li>
-            <li><a class="gn-clickable" data-bind="click: function() { exportObject(@((int)@Model.ExportTemplateType), 'LanguageFile'); }">@Model.Localizer["LanguageFile"]</a></li>
+            <li><a class="gn-clickable" data-bind="click: function() { exportObject('@(@Model.ExportTemplateType.ToString())', 'Script'); }">@Model.Localizer["Script"]</a></li>
+            <li><a class="gn-clickable" data-bind="click: function() { exportObject('@(@Model.ExportTemplateType.ToString())', 'JSON'); }">@Model.Localizer["JSON"]</a></li>
+            <li><a class="gn-clickable" data-bind="click: function() { exportObject('@(@Model.ExportTemplateType.ToString())', 'LanguageFile'); }">@Model.Localizer["LanguageFile"]</a></li>
             <li class="divider"></li>
-            <li><a class="gn-clickable" data-bind="click: function() { openCodeSnippetDialog(@((int)@Model.ExportTemplateType)); }">@Model.Localizer["ExportSnippets"]</a></li>
+            <li><a class="gn-clickable" data-bind="click: function() { openCodeSnippetDialog('@(@Model.ExportTemplateType)'); }">@Model.Localizer["ExportSnippets"]</a></li>
             <li class="divider"></li>
             <li><a class="gn-clickable" data-bind="click: openConfirmRegenerateLanguageKeysDialog">@Model.Localizer["RegenerateLanguageKeys"]</a></li>
         </ul>

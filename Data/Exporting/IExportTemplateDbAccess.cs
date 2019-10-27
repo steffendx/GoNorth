@@ -74,5 +74,19 @@ namespace GoNorth.Data.Exporting
         /// <param name="userId">Id of the user</param>
         /// <returns>Objects</returns>
         Task<List<ExportTemplate>> GetExportTemplatesByModifiedUser(string userId);
+
+        /// <summary>
+        /// Returns all recycle bin objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        Task<List<ExportTemplate>> GetRecycleBinExportTemplatesByModifiedUser(string userId);
+
+        /// <summary>
+        /// Resets all recycle bin objects that were last modified by a given user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Objects</returns>
+        Task ResetRecycleBinExportTemplatesByModifiedUser(string userId);
     }
 }

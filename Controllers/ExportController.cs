@@ -110,10 +110,6 @@ namespace GoNorth.Controllers
         {
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             FunctionGenerationConditionViewModel viewModel = new FunctionGenerationConditionViewModel();
-            viewModel.DialogFunctionGenerationConditionTypes = Enum.GetValues(typeof(DialogFunctionGenerationConditionType)).Cast<DialogFunctionGenerationConditionType>().Select(s => new MappedDialogFunctionGenerationConditionType {
-                Value = (int)s,
-                Name = s.ToString()
-            }).ToList();
             viewModel.DialogFunctionGenerationActionTypes = Enum.GetValues(typeof(ActionType)).Cast<ActionType>().Select(s => new MappedDialogFunctionGenerationActionType {
                 Value = (int)s,
                 Name = s.ToString()

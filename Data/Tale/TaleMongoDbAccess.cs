@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Config;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
@@ -158,6 +157,29 @@ namespace GoNorth.Data.Tale
         public async Task<List<TaleDialog>> GetDialogsByModifiedUser(string userId)
         {
             return await _DialogCollection.AsQueryable().Where(t => t.ModifiedBy == userId).ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns all recyle bin dialogs that were last modified by a user
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <returns>List of Dialogs</returns>
+        public async Task<List<TaleDialog>> GetRecycleBinDialogsByModifiedUser(string userId)
+        {
+            IMongoCollection<TaleDialog> recyclingBin = _Database.GetCollection<TaleDialog>(TaleDialogRecyclingBinCollectionName);
+
+            return await recyclingBin.AsQueryable().Where(t => t.ModifiedBy == userId).ToListAsync();
+        }
+
+        /// <summary>
+        /// Resets all dialogs in the Recycle bin that were modified by a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task ResetRecycleBinFlexFieldObjectsByModifiedUser(string userId)
+        {
+            IMongoCollection<TaleDialog> recyclingBin = _Database.GetCollection<TaleDialog>(TaleDialogRecyclingBinCollectionName);
+            await recyclingBin.UpdateManyAsync(n => n.ModifiedBy == userId, Builders<TaleDialog>.Update.Set(n => n.ModifiedBy, Guid.Empty.ToString()).Set(n => n.ModifiedOn, DateTimeOffset.UtcNow));
         }
     }
 }

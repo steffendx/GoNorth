@@ -9,7 +9,7 @@ namespace GoNorth.Data.Aika
     /// <summary>
     /// Aika Quest Implementation Snapshot Mongo Db Access
     /// </summary>
-    public class AikaQuestImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotMongoDbAccess<AikaQuest>, IAikaQuestImplementationSnapshotDbAccess
+    public class AikaQuestImplementationSnapshotMongoDbAccess : ObjectImplementationSnapshotExtendedMongoDbAccess<AikaQuest>, IAikaQuestImplementationSnapshotDbAccess
     {
         /// <summary>
         /// Collection Name of the Aika Quest Implementation Snapshots

@@ -35,7 +35,7 @@ namespace GoNorth.Data.Karta
         /// Constructor
         /// </summary>
         /// <param name="hostingEnvironment">Hosting Environment</param>
-        public KartaFileSystemImageAccess(IHostingEnvironment hostingEnvironment) : base("MapImages", hostingEnvironment)
+        public KartaFileSystemImageAccess(IWebHostEnvironment hostingEnvironment) : base("MapImages", hostingEnvironment)
         {
         }
 

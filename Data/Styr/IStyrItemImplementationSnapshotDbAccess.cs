@@ -7,7 +7,7 @@ namespace GoNorth.Data.Styr
     /// <summary>
     /// Interface for Styr Item Implementation Snapshot Db Access
     /// </summary>
-    public interface IStyrItemImplementationSnapshotDbAccess : IObjectImplementationSnapshotDbAccess<StyrItem>
+    public interface IStyrItemImplementationSnapshotDbAccess : IObjectImplementationSnapshotExtendedDbAccess<StyrItem>
     {
     }
 }

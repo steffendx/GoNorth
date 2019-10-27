@@ -1,10 +1,11 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
-using Newtonsoft.Json;
 
 namespace GoNorth.Services.Export.Json
 {
@@ -63,11 +64,13 @@ namespace GoNorth.Services.Export.Json
                 exportResult = objectData.ExportData[ExportConstants.ExportDataObject];
             }
 
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
-            serializerSettings.ContractResolver = new JsonExportContractResolver();
-            serializerSettings.Formatting = Formatting.Indented;
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
 
-            result.Code = JsonConvert.SerializeObject(exportResult, serializerSettings);
+            result.Code = JsonSerializer.Serialize(exportResult, options);
             return result;
         }
     }
