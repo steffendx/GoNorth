@@ -22,6 +22,6 @@
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-zip": "^5.0.0",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.2"
   }
 }
