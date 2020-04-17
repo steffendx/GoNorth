@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_InitialFunction": "Initial function of the dialog.",
+    "PlaceholderDesc_AdditionalFunctions": "Additional functions of the dialog. Can be iterated using <i>for</i>.",
+    "PlaceholderDesc_AllFunctions": "All functions of the dialog. Can be iterated using <i>for</i>."
+}

@@ -1,1 +1,1 @@
-BaseNpc_ShowFloatingTextAboveNpc(this, "{{Tale_Action_FloatingText_LangKey}}")
+BaseNpc_ShowFloatingTextAboveNpc(this, "{{ langkey action.text }}") -- {{ action.text_preview }}

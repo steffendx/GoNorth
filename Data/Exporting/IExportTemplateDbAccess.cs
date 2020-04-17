@@ -33,6 +33,23 @@ namespace GoNorth.Data.Exporting
         Task<ExportTemplate> GetTemplateByCustomizedObjectId(string projectId, string customizedObjectId);
 
         /// <summary>
+        /// Returns the export templates that reference an include template
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="includeTemplateId">Id of the include template that is searched</param>
+        /// <returns>List of export templates that reference the include template</returns>
+        Task<List<ExportTemplate>> GetTemplatesByReferencedIncludeTemplate(string projectId, string includeTemplateId);
+
+        /// <summary>
+        /// Returns the export templates that reference a wrong template by name
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="ignoreIncludeTemplateId">Id of the include template that is ignored in the search</param>
+        /// <param name="templateName">Name of the template to search</param>
+        /// <returns>List of export templates that reference the include template name by a wrong name</returns>
+        Task<List<ExportTemplate>> GetTemplatesByWrongReferencedIncludeTemplate(string projectId, string ignoreIncludeTemplateId, string templateName);
+
+        /// <summary>
         /// Returns all export templates for a template type which are associated to an object
         /// </summary>
         /// <param name="templateType">Template Type</param>

@@ -202,7 +202,7 @@
             </div>
             <!-- /ko -->
         </div>
-        <div data-bind="sortable: { data: taskGroups, isEnabled: disableSortables, options: { handle: '.gn-taskGroupCard' }, afterMove: function(sortArg) { $root.reorderTaskGroup(sortArg); } }">
+        <div data-bind="sortable: { data: taskGroups, isEnabled: enableSortables, options: { handle: '.gn-taskGroupCard' }, afterMove: function(sortArg) { $root.reorderTaskGroup(sortArg); } }">
             <div class="row gn-taskGroupRow">
                 <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
                     <div class="gn-taskGroupExpandCollapse gn-clickable" data-bind="click: toogleExpanded"><i class="glyphicon glyphicon-triangle-right" data-bind="visible: !isExpanded()"></i><i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: isExpanded"></i></div>
@@ -210,8 +210,8 @@
                         <div class="gn-taskCardTitle gn-taskGroupTitle">
                             <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a>
                         </div>
-                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disable: $root.isLoading"></select></div>
-                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: status, options: $root.taskStatus, optionsValue: 'value', optionsText: 'displayName', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disable: $root.isLoading"></select></div>
+                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disable: $root.isLoading() || $root.isReadonly()"></select></div>
+                        <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: status, options: $root.taskStatus, optionsValue: 'value', optionsText: 'displayName', event: { change: function(taskGroup) { $root.saveTaskQuickEdit(taskGroup, null, null, -1); } }, disable: $root.isLoading() || $root.isReadonly()"></select></div>
                     </div>
                     <button class="gn-taskCreateTaskButton btn btn-primary" data-bind="visible: isExpanded() && !$root.isReadonly(), click: function(taskGroup) { $root.openCreateNewTaskDialog(taskGroup); }" title="@Localizer["CreateTaskToolTip"]"><i class="glyphicon glyphicon-plus"></i></button>
                     <div class="gn-taskGroupCard gn-taskGroupCardCollapsed" data-bind="visible: !isExpanded(), taskTypeColorBinding: taskTypeId, taskTypes: $root.taskGroupTypes">
@@ -223,12 +223,12 @@
                     <div class="gn-taskGroupBackgroundColor" data-bind="css: { 'gn-taskGroupColumnTaskHover': isHovering }"></div>
                     <div class="gn-taskGroupColumnTaskContainer" data-bind="css: { 'gn-taskGroupColumnTaskHover': isHovering }">
                         <!-- ko if: $parent.isExpanded -->
-                            <div data-bind="sortable: { data: tasks, isEnabled: $root.disableSortables, connectClass: 'taskList', options: { change: function() { $root.resizeColumnBackgroundColor(); }, start: function(event, ui) { ui.item.oldParentTaskGroup = $parent; }, over: activateTaskHovering.bind($data), out: disableTaskHovering.bind($data) }, afterMove: function(sortArg, event, ui) { $root.dropTaskToStatus($parent, sortArg.item, ui.item.oldParentTaskGroup, $data.status, sortArg.targetIndex); } }" class="gn-taskGroupTaskSortable">
+                            <div data-bind="sortable: { data: tasks, isEnabled: $root.enableSortables, connectClass: 'taskList', options: { change: function() { $root.resizeColumnBackgroundColor(); }, start: function(event, ui) { ui.item.oldParentTaskGroup = $parent; }, over: activateTaskHovering.bind($data), out: disableTaskHovering.bind($data) }, afterMove: function(sortArg, event, ui) { $root.dropTaskToStatus($parent, sortArg.item, ui.item.oldParentTaskGroup, $data.status, sortArg.targetIndex); } }" class="gn-taskGroupTaskSortable">
                                 <div class="gn-taskCard" data-bind="taskTypeColorBinding: taskTypeId, taskTypes: $root.taskTypes">
                                     <div class="gn-taskCardTitle gn-taskTitle">
                                         <span class="gn-taskCardNumber" data-bind="text: taskNumber"></span> <a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(task) { $root.openEditTaskDialog($parents[1], task); }"></a>
                                     </div>
-                                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(task) { $root.saveTaskQuickEdit($parents[1], task, null, -1); } }, disable: $root.isLoading"></select></div>
+                                    <div class="gn-taskSelectLine"><select class="form-control gn-taskCardSelect" data-bind="value: assignedTo, options: $root.allUsers, optionsValue: 'id', optionsText: 'displayName', optionsCaption: '@Localizer["Unassigned"]', event: { change: function(task) { $root.saveTaskQuickEdit($parents[1], task, null, -1); } }, disable: $root.isLoading() || $root.isReadonly()"></select></div>
                                 </div>
                             </div>
                         <!-- /ko -->
@@ -247,9 +247,9 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
 
-    <script src="~/lib/knockout-sortable/build/knockout-sortable.js"></script>
+    <script src="~/lib/knockout-sortable/build/knockout-sortable.min.js"></script>
 
     <environment include="Development">
         <script src="~/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js"></script>
@@ -286,7 +286,8 @@
             ToolbarButtonInsertKirjaLinkTitle: "@Localizer["InsertKirjaLink"]",
             ToolbarButtonInsertAikaQuestLinkTitle: "@Localizer["InsertAikaQuestLink"]",
             ToolbarButtonInsertKortistoNpcLinkTitle: "@Localizer["InsertKortistoNpcLink"]",
-            ToolbarButtonInsertStyrItemLinkTitle: "@Localizer["InsertStyrItemLink"]"
+            ToolbarButtonInsertStyrItemLinkTitle: "@Localizer["InsertStyrItemLink"]",
+            ToolbarButtonInsertEvneSkillLinkTitle: "@Localizer["InsertEvneSkillLink"]"
         };
 
         @if(User.IsInRole(RoleNames.Aika))
@@ -351,6 +352,19 @@
         {
             <text>
             GoNorth.Task.TaskBoard.hasKirjaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Evne))
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasEvneRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Task.TaskBoard.hasEvneRights = false;
             </text>
         }
 

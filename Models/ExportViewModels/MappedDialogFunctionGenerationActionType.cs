@@ -1,3 +1,5 @@
+using GoNorth.Services.Export.Dialog.ActionRendering;
+
 namespace GoNorth.Models.ExportViewModels
 {
     /// <summary>
@@ -5,6 +7,11 @@ namespace GoNorth.Models.ExportViewModels
     /// </summary>
     public class MappedDialogFunctionGenerationActionType
     {
+        /// <summary>
+        /// Action Type
+        /// </summary>
+        public ActionType OriginalActionType { get; set; }
+
         /// <summary>
         /// Value of the Action Type
         /// </summary>

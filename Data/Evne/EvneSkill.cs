@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Services.Export.Placeholder;
@@ -9,7 +11,7 @@ namespace GoNorth.Data.Evne
     /// <summary>
     /// Evne Skill
     /// </summary>
-    public class EvneSkill : FlexFieldObject, IExportSnippetExportable
+    public class EvneSkill : FlexFieldObject, IExportSnippetExportable, ICloneable
     {
         
         /// <summary>
@@ -36,5 +38,20 @@ namespace GoNorth.Data.Evne
         [ListCompareAttribute(LabelKey = "NodeLinksChanged")]
         public List<NodeLink> Link { get; set; }
 
+
+        /// <summary>
+        /// Clones the skill
+        /// </summary>
+        /// <returns>Cloned Skill</returns>
+        public object Clone()
+        {
+            EvneSkill clonedSkill = CloneObject<EvneSkill>();
+            clonedSkill.Text = Text.Select(t => t.Clone()).Cast<TextNode>().ToList();
+            clonedSkill.Condition = Condition.Select(t => t.Clone()).Cast<ConditionNode>().ToList();
+            clonedSkill.Action = Action.Select(t => t.Clone()).Cast<ActionNode>().ToList();
+            clonedSkill.Link = Link.Select(t => t.Clone()).Cast<NodeLink>().ToList();
+
+            return clonedSkill;
+        }
     }
 }

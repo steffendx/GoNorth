@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Npc": "Npc dessen Zustand geändert wird.",
+    "PlaceholderDesc_TargetState": "Zielzustand des Npc.",
+    "PlaceholderDesc_UnescapedTargetState": "Zielzustand des Npc ohne Escape Einstellungen zu berücksichtigen."
+}

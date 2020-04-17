@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using GoNorth.Services.TaskManagement;
 using GoNorth.Services.Security;
+using System.Globalization;
 
 namespace GoNorth.Controllers.Api
 {
@@ -164,8 +165,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Board id</param>
         /// <returns>Task Board</returns>
-        [Produces(typeof(TaskBoard))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TaskBoard), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskBoard(string id)
         {
@@ -179,16 +179,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Task Boards</returns>
-        [Produces(typeof(TaskBoardQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TaskBoardQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetOpenTaskBoards(int start, int pageSize)
         {
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             Task<List<TaskBoard>> queryTask;
             Task<int> countTask;
-            queryTask = _taskBoardDbAccess.GetOpenTaskBoards(project.Id, start, pageSize);
-            countTask = _taskBoardDbAccess.GetOpenTaskBoardCount(project.Id);
+            queryTask = _taskBoardDbAccess.GetOpenTaskBoards(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _taskBoardDbAccess.GetOpenTaskBoardCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             TaskBoardQueryResult queryResult = new TaskBoardQueryResult();
@@ -203,16 +202,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Task Boards</returns>
-        [Produces(typeof(TaskBoardQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TaskBoardQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetClosedTaskBoards(int start, int pageSize)
         {
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             Task<List<TaskBoard>> queryTask;
             Task<int> countTask;
-            queryTask = _taskBoardDbAccess.GetClosedTaskBoards(project.Id, start, pageSize);
-            countTask = _taskBoardDbAccess.GetClosedTaskBoardCount(project.Id);
+            queryTask = _taskBoardDbAccess.GetClosedTaskBoards(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _taskBoardDbAccess.GetClosedTaskBoardCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             TaskBoardQueryResult queryResult = new TaskBoardQueryResult();
@@ -226,8 +224,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="board">Board to create</param>
         /// <returns>Id of the board</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
@@ -286,8 +283,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the board</param>
         /// <param name="board">Board to update</param>
         /// <returns>Id of the board</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
@@ -337,8 +333,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the board</param>
         /// <param name="closed">true if the board must be closed, else false</param>
         /// <returns>Id of the board</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
@@ -389,8 +384,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the board</param>
         /// <returns>Id of the board</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
@@ -440,8 +434,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="boardId">Id of the board</param>
         /// <param name="group">Group to create</param>
         /// <returns>Created Task Group</returns>
-        [Produces(typeof(TaskGroup))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -514,8 +507,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <param name="group">Group to create</param>
         /// <returns>Updated Task Group</returns>
-        [Produces(typeof(TaskGroup))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -598,8 +590,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the task group</param>
         /// <param name="targetBoardId">Id of the target board</param>
         /// <returns>Updated Task group</returns>
-        [Produces(typeof(TaskGroup))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -669,8 +660,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <param name="targetIndex">Target index of the group</param>
         /// <returns>Updated Task Group</returns>
-        [Produces(typeof(TaskGroup))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -731,8 +721,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="boardId">Id of the board</param>
         /// <param name="groupId">Id of the group</param>
         /// <returns>Deletes Task Group</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -812,8 +801,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <param name="task">Task to create</param>
         /// <returns>Created Task</returns>
-        [Produces(typeof(GoNorthTask))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GoNorthTask), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -929,8 +917,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="targetIndex">Target index of the task</param>
         /// <param name="task">Task to update</param>
         /// <returns>Updated Task</returns>
-        [Produces(typeof(GoNorthTask))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GoNorthTask), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -1052,8 +1039,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="targetBoardId">Id of the target board</param>
         /// <param name="targetGroupId">If ot the target task group</param>
         /// <returns>Updated Task</returns>
-        [Produces(typeof(GoNorthTask))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GoNorthTask), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -1135,8 +1121,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="groupId">Id of the group</param>
         /// <param name="taskId">Id of the task</param>
         /// <returns>Task Id</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ValidateAntiForgeryToken]
@@ -1214,8 +1199,7 @@ namespace GoNorth.Controllers.Api
         /// Uploads an image
         /// </summary>
         /// <returns>Image Name</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1296,8 +1280,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the last opened task board id for the current user
         /// </summary>
         /// <returns>Id of the last opened task board, "" if no task board was opened before</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetLastOpenedTaskBoard()
         {
@@ -1313,8 +1296,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="boardId">Id of the board</param>
         /// <returns>Task</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SetLastOpenedTaskBoard(string boardId)
@@ -1332,8 +1314,7 @@ namespace GoNorth.Controllers.Api
         /// Returns all task board categories
         /// </summary>
         /// <returns>Task board categories</returns>
-        [Produces(typeof(List<TaskBoardCategory>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<TaskBoardCategory>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskBoardCategories()
         {
@@ -1347,8 +1328,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="category">Category to create</param>
         /// <returns>Id of the board category</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
@@ -1402,8 +1382,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the board category</param>
         /// <param name="category">Board category to update</param>
         /// <returns>Id of the board category</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
@@ -1450,7 +1429,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the board category</param>
         /// <returns>true if any task board is using the category</returns>
-        [Produces(typeof(bool))]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [HttpGet]
         public async Task<bool> IsTaskBoardCategoryUsedByBoard(string id)
@@ -1463,8 +1442,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the board category</param>
         /// <returns>Id of the board category</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
@@ -1535,8 +1513,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the task group types
         /// </summary>
         /// <returns>Task group Types</returns>
-        [Produces(typeof(List<GoNorthTaskType>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GoNorthTaskType>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskGroupTypes()
         {
@@ -1547,8 +1524,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the task types
         /// </summary>
         /// <returns>Task Types</returns>
-        [Produces(typeof(List<GoNorthTaskType>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GoNorthTaskType>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTaskTypes()
         {
@@ -1562,7 +1538,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="dbTarget">Database target</param>
         /// <param name="updatedTaskType">Updated task type</param>
         /// <param name="project">Project, if null it will be loaded</param>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         private async Task ResetDefaultTaskTypeIfChanged(ITaskTypeBaseDbAccess dbTarget, GoNorthTaskType updatedTaskType, GoNorthProject project)
         {
             if(!updatedTaskType.IsDefault)
@@ -1650,8 +1626,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="taskType">Task group type to create</param>
         /// <returns>Id of the task group type</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1665,8 +1640,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="taskType">Task type to create</param>
         /// <returns>Id of the task type</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1737,8 +1711,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the task group type</param>
         /// <param name="taskType">Task group type to update</param>
         /// <returns>Id of the task group type</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1753,8 +1726,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the task type</param>
         /// <param name="taskType">Task type to update</param>
         /// <returns>Id of the task type</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1770,7 +1742,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the task type to delete</param>
         /// <param name="newTaskTypeId">Id of the task type to which the old tasks using this type must be changed</param>
         /// <param name="timelineEvent">Timeline event</param>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         private async Task<IActionResult> DeleteTaskTypeFromDb(ITaskTypeBaseDbAccess dbTarget, string id, string newTaskTypeId, TimelineEvent timelineEvent)
         {
             // Validate Data
@@ -1855,8 +1827,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the type</param>
         /// <param name="newTaskTypeId">Id of the task type to which the old task groups using this type must be changed</param>
         /// <returns>Id of the type</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -1871,8 +1842,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the type</param>
         /// <param name="newTaskTypeId">Id of the task type to which the old tasks using this type must be changed</param>
         /// <returns>Id of the type</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -1885,8 +1855,7 @@ namespace GoNorth.Controllers.Api
         /// Returns true if any task board has a task group without a task type
         /// </summary>
         /// <returns>true if any task board has a task group without a task type</returns>
-        [Produces(typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [HttpGet]
         public async Task<IActionResult> AnyTaskBoardHasTaskGroupsWithoutType()
@@ -1900,8 +1869,7 @@ namespace GoNorth.Controllers.Api
         /// Returns true if any task board has a task without a task type
         /// </summary>
         /// <returns>true if any task board has a task without a task type</returns>
-        [Produces(typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.TaskTypeManager)]
         [HttpGet]
         public async Task<IActionResult> AnyTaskBoardHasTasksWithoutType()

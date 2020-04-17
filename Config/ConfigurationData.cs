@@ -8,7 +8,6 @@ namespace GoNorth.Config
         /// <summary>
         /// Misc Config
         /// </summary>
-        /// <returns></returns>
         public MiscConfig Misc { get; set; }
 
         /// <summary>

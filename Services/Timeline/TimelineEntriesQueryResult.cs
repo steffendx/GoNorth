@@ -20,7 +20,6 @@ namespace GoNorth.Services.Timeline
         /// <summary>
         /// Index at which the next values can be requested
         /// </summary>
-        /// <returns></returns>
         public int ContinueStart { get; set; }
     }
 }

@@ -20,7 +20,7 @@ It offers modules for:
 ## Deployment
 ![Badge](https://leif-dev.visualstudio.com/_apis/public/build/definitions/31ab5f65-48ba-4e5b-a93d-590ba3af9850/2/badge)
 
-Please refer to the [wiki for deployment details](https://github.com/steffendx/GoNorth/wiki/Deployment), [docker deployment details](https://github.com/steffendx/GoNorth/wiki/Docker-Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?tabs=aspnetcore2x).
+Please refer to the [wiki for deployment details](https://github.com/steffendx/GoNorth/wiki/Deployment), [docker deployment details](https://github.com/steffendx/GoNorth/wiki/Docker-Deployment) and the [official documentation on how to host and deploy an ASP.NET Core application](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-3.1).
 
 ## Brief Overview
 
@@ -65,6 +65,7 @@ GoNorth supports exporting Npcs, Dialogs, Skills and Items to JSON and scripts.
 ![Dialog planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/ScriptExporting.png?raw=true)
 
 The scripts can be adjusted using a template system with different placeholders for values, learned skills, inventory and dialogs.  
+To enable a very flexible template system GoNorth uses [Scriban](https://github.com/lunet-io/scriban) to export the different objects.  
 For better localization support strings can be exported as language keys and localizable language files can be exported.  
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Export).  
 
@@ -120,7 +121,7 @@ The next steps which I will implement in the future are:
 ## License
 GoNorth is open source and released under the [MIT LICENSE](LICENSE).
 
-Copyright (c) 2018, 2019 Steffen Noertershaeuser.
+Copyright (c) 2018, 2019, 2020 Steffen Noertershaeuser.
 
 ## Acknowledgement
 GoNorth uses the following libraries:
@@ -148,3 +149,4 @@ GoNorth uses the following libraries:
  * [htmldiff.js](https://github.com/tnwinc/htmldiff.js) licensed under MIT
  * [mocha](https://github.com/mochajs/mocha) licensed under MIT
  * [Puppeteer](https://github.com/GoogleChrome/puppeteer) licensed under Apache License 2.0
+ * [Scriban](https://github.com/lunet-io/scriban) licensed under BSD-2

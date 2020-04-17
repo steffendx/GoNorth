@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using GoNorth.Config;
-using System.Net;
 using GoNorth.Models.DeploymentViewModels;
 using GoNorth.Data.User;
 using Microsoft.Extensions.Logging;

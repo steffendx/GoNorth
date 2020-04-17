@@ -7,6 +7,7 @@ using GoNorth.Data.User;
 using GoNorth.Models.ExportViewModels;
 using GoNorth.Services.Export.Dialog;
 using GoNorth.Services.Export.Dialog.ActionRendering;
+using GoNorth.Services.Export.Dialog.ActionRendering.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +47,11 @@ namespace GoNorth.Controllers
         private readonly IProjectDbAccess _projectDbAccess;
 
         /// <summary>
+        /// Action translator
+        /// </summary>
+        private readonly IActionTranslator _actionTranslator;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="exportDefaultTemplateProvider">Export default template provider</param>
@@ -53,13 +59,16 @@ namespace GoNorth.Controllers
         /// <param name="userManager">User Manager</param>
         /// <param name="exportSettings">Export settings</param>
         /// <param name="projectDbAccess">Project Db Access</param>
-        public ExportController(IExportDefaultTemplateProvider exportDefaultTemplateProvider, IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, IExportSettingsDbAccess exportSettings, IProjectDbAccess projectDbAccess)
+        /// <param name="actionTranslator">Action translator</param>
+        public ExportController(IExportDefaultTemplateProvider exportDefaultTemplateProvider, IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, IExportSettingsDbAccess exportSettings, IProjectDbAccess projectDbAccess,
+                                IActionTranslator actionTranslator)
         {
             _exportDefaultTemplateProvider = exportDefaultTemplateProvider;
             _userPreferencesDbAccess = userPreferencesDbAccess;
             _userManager = userManager;
             _exportSettings = exportSettings;
             _projectDbAccess = projectDbAccess;
+            _actionTranslator = actionTranslator;
         }
 
         /// <summary>
@@ -103,6 +112,31 @@ namespace GoNorth.Controllers
         }
 
         /// <summary>
+        /// Manage include template view
+        /// </summary>
+        /// <returns>View</returns>
+        [HttpGet]
+        public async Task<IActionResult> ManageIncludeTemplate()
+        {
+            GoNorthUser currentUser = await _userManager.GetUserAsync(this.User);
+            UserPreferences userPreferences = await _userPreferencesDbAccess.GetUserPreferences(currentUser.Id);
+            string scriptLanguage = await GetScriptLanguage(false);
+
+            ManageIncludeTemplateViewModel viewModel = new ManageIncludeTemplateViewModel();
+            if(userPreferences != null)
+            {
+                viewModel.CodeEditorTheme = userPreferences.CodeEditorTheme;
+            }
+
+            if(scriptLanguage != null)
+            {
+                viewModel.ScriptLanguage = scriptLanguage;
+            }
+
+            return View(viewModel);
+        }
+
+        /// <summary>
         /// Manage function generation conditions
         /// </summary>
         /// <returns>View</returns>
@@ -111,11 +145,13 @@ namespace GoNorth.Controllers
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             FunctionGenerationConditionViewModel viewModel = new FunctionGenerationConditionViewModel();
             viewModel.DialogFunctionGenerationActionTypes = Enum.GetValues(typeof(ActionType)).Cast<ActionType>().Select(s => new MappedDialogFunctionGenerationActionType {
+                OriginalActionType = s,
                 Value = (int)s,
                 Name = s.ToString()
             }).ToList();
             viewModel.NodeTypes = ExportDialogData.GetAllNodeTypes();
             viewModel.LockId = project.Id;
+            viewModel.ActionTranslator = _actionTranslator;
 
             return View(viewModel);
         }

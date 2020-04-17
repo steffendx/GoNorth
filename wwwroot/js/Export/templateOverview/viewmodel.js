@@ -3,6 +3,9 @@
     (function(Export) {
         (function(TemplateOverview) {
 
+            /// Include template page size
+            var includeTemplatePageSize = 50;
+
             /**
              * Template Overview View Model
              * @class
@@ -19,6 +22,16 @@
                 }
 
                 this.templates = new ko.observableArray();
+
+                var currentIncludeTemplatePage = 0;
+                var pageFromUrl = parseInt(GoNorth.Util.getParameterFromUrl("page"));
+                if(!isNaN(pageFromUrl))
+                {
+                    currentIncludeTemplatePage = pageFromUrl;
+                }
+                this.includeTemplates = new ko.observableArray();
+                this.hasMoreIncludeTemplates = new ko.observable(false);
+                this.currentIncludeTemplatePage = new ko.observable(currentIncludeTemplatePage);
                 
                 this.dialogLoading = new ko.observable(false);
                 this.dialogErrorOccured = new ko.observable(false);
@@ -95,8 +108,16 @@
                     }
 
                     this.selectedCategory(category);
-                    this.selectedCategoryLabel(label);
-                    this.loadTemplatesForSelectedCategory();
+                    if(category != "IncludeTemplates")
+                    {
+                        this.selectedCategoryLabel(label);
+                        this.loadTemplatesForSelectedCategory();
+                    }
+                    else
+                    {
+                        this.selectedCategoryLabel(GoNorth.Export.TemplateOverview.Localization.IncludeTemplates);
+                        this.loadIncludeTemplates();
+                    }
                 },
 
                 /**
@@ -107,6 +128,16 @@
                 selectTemplateCategory: function(category) {
                     // Will load templates because of url change
                     var parameterValue = "category=" + category.category;
+                    if(category.category == "IncludeTemplates")
+                    {
+                        var currentPage = 0;
+                        if(this.selectedCategory() == "IncludeTemplates")
+                        {
+                            currentPage = this.currentIncludeTemplatePage();
+                        }
+                        parameterValue += "&page=" + currentPage;
+                    }
+
                     if(window.location.search)
                     {
                         GoNorth.Util.setUrlParameters(parameterValue);
@@ -236,7 +267,7 @@
                         type: "POST",
                         data: JSON.stringify(exportSettings),
                         contentType: "application/json"
-                    }).done(function(templates) {
+                    }).done(function() {
                         self.dialogLoading(false);
                         self.closeSettingsDialog();
                     }).fail(function() {
@@ -258,7 +289,63 @@
                  */
                 openFunctionGenerationConditions: function() {
                     window.location = "/Export/FunctionGenerationCondition";
-                }
+                },
+
+
+                /**
+                 * Loads the include templates
+                 */
+                loadIncludeTemplates: function() {
+                    this.isLoading(true);
+                    this.errorOccured(false);
+                    var self = this;
+                    jQuery.ajax({
+                        url: "/api/ExportApi/GetIncludeExportTemplates?start=" + (this.currentIncludeTemplatePage() * includeTemplatePageSize) + "&pageSize=" + includeTemplatePageSize,
+                        type: "GET"
+                    }).done(function(result) {
+                        self.isLoading(false);
+                        self.hasMoreIncludeTemplates(result.hasMore);
+                        self.includeTemplates(result.templates);
+                    }).fail(function() {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });    
+                },
+
+                /**
+                 * Loads the previous include template page
+                 */
+                prevIncludeTemplatePage: function() {
+                    this.currentIncludeTemplatePage(this.currentIncludeTemplatePage() - 1);
+                    this.selectTemplateCategory({ category: 'IncludeTemplates' });
+                    this.loadIncludeTemplates();
+                },
+
+                /**
+                 * Loads the previous include template page
+                 */
+                nextIncludeTemplatePage: function() {
+                    this.currentIncludeTemplatePage(this.currentIncludeTemplatePage() + 1);
+                    this.selectTemplateCategory({ category: 'IncludeTemplates' });
+                    this.loadIncludeTemplates();
+                },
+
+                /**
+                 * Opens the form to create a new include template
+                 */
+                createNewIncludeTemplate: function() {
+                    window.location = "/Export/ManageIncludeTemplate";
+                },
+                
+                /**
+                 * Builds an include template url
+                 * 
+                 * @param {object} template Template to build the url for
+                 * @returns {string} Templat Url
+                 */
+                buildIncludeTemplateUrl: function(template) {
+                    return "/Export/ManageIncludeTemplate?id=" + template.id;
+                },
             };
 
         }(Export.TemplateOverview = Export.TemplateOverview || {}));

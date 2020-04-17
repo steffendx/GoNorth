@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_ScribanLanguage": "Scriban offers a large range of features. You can use if expressions, loops, objects, functions and a lot more. Details can be found in the <a href=\"https://github.com/lunet-io/scriban/blob/master/doc/language.md\" target=\"_blank\">Scriban documentation</a>",
+    "PlaceholderDesc_ScribanBuiltins": "Scriban includes a lot of builtin functions to help you transform your values and do other operations. These functions can be found in the <a href=\"https://github.com/lunet-io/scriban/blob/master/doc/builtins.md\" target=\"_blank\">Scriban documentation</a>",
+    "PlaceholderDesc_Include": "Loads the include template with the name &lt;TemplateName&gt; and includes it in the template. The name is case-sensitive. The include template must be created in the <a href=\"/Export?category=IncludeTemplates&page=0\" target=\"_blank\">export area</a>. This can be useful to develop central util functions reuse them in many templates for example."
+}

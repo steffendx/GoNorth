@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using GoNorth.Data.NodeGraph;
+using System.Linq;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.NodeGraph
@@ -19,5 +19,19 @@ namespace GoNorth.Data.NodeGraph
         /// Current Condition Id
         /// </summary>
         public int CurrentConditionId { get; set; }
+
+
+        /// <summary>
+        /// Clones the condition node
+        /// </summary>
+        /// <returns>Cloned object</returns>
+        public object Clone()
+        {
+            ConditionNode clonedObject = CloneObject<ConditionNode>();
+            clonedObject.Conditions = Conditions != null ? Conditions.Select(c => c.Clone()).Cast<Condition>().ToList() : null;
+            clonedObject.CurrentConditionId = CurrentConditionId;
+
+            return clonedObject;
+        }
     }
 }

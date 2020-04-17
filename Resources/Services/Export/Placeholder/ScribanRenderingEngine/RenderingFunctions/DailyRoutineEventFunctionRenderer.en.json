@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_DailyRoutineEventFunction": "Renders a daily routine function based on the shared template for daily routine functions. You must pass a daily routine function object, like an entry from the dail_routine.event_functions array, as &lt;DAILY_ROUTINE_FUNCTION&gt;."
+}

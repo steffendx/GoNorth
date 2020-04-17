@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Npc": "Npc der das Item erhält oder verliert.",
+    "PlaceholderDesc_SelectedItem": "Ausgewähltes Item das gespawnt oder entfernt wird.",
+    "PlaceholderDesc_Quantity": "Anzahl an Items die gespawnt oder entfernt werden."
+}

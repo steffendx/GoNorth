@@ -1,0 +1,24 @@
+{
+    "ManageIncludeTemplate": "Include Template verwalten",
+
+    "Save": "Speichern",
+    "Delete": "Löschen",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Bist du sicher das das Include Template gelöscht werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+
+    "ReferencedInTemplates": "In Templates eingebunden",
+    "MightBeReferencedInMoreTemplates": "Dieses Include Template könnte an weiteren Stellen eingebunden sein. Include Befehle die über Variablen etc. funktionieren werden hier nicht berücksichtigt.",
+    "Name": "Name",
+    "NameMissmatchWarning": "Dieses Template nutzt den alten Namen {{0}} für das Include Template. Der Export wird fehlschlagen. Pass den Namen in der Include Anweisung an oder lösche den Verweis auf das Template.",
+    "ObjectsStillUsingIncludeTemplateWillFail": "Es existieren Templates welche dieses Include Template verwenden. Der Export dieser Templates wird fehlschlagen wenn das Include Template gelöscht wird.",
+    
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+    
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Dieses Include Template wird gerade von ",
+    "LockedPostfix": " bearbeitet."
+}

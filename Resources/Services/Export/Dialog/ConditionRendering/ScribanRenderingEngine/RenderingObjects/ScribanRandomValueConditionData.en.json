@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_Operator": "Operator for the comparison. Will be loaded using the corresponding templates.",
+    "PlaceholderDesc_OriginalOperator": "Original operator for the comparison. This one will not be loaded from the templates, but will always have the value selected in the condition dropdown",
+    "PlaceholderDesc_MinValue": "Minimal value for the random number",
+    "PlaceholderDesc_MaxValue": "Maximum number for the random number",
+    "PlaceholderDesc_CompareValue": "Comparison value for condition"
+}

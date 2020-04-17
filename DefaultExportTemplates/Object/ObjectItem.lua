@@ -8,7 +8,6 @@ include("GameItem")
 
 function OnInit(this)
     -- Values
-    this:add_string_value("Name", "{{FlexField_Name_LangKey}}")
-
-    {{FlexField_UnusedFields}}
+    this:add_localized_string_value("Name", "{{ langkey item.name }}")
+    {{ item.unused_fields | attribute_list }}
 end

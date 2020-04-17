@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Id": "Eindeutige Id der Bedingung. Die Id ist nur eindeutig für die Liste der Bedingung, nicht global eindeutig.",
+    "PlaceholderDesc_Condition": "Bedingungstring wenn des Objekts",
+    "PlaceholderDesc_ChildNode": "Knoten der ausgeführt wird wenn die Bedingung zutrifft"
+}

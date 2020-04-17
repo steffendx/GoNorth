@@ -12,7 +12,12 @@
     "LanguageNewlineCharacter": "Sprachdatei Neue Textzeile Zeichen",
 
     "FunctionGenerationConditions": "Dialog Funktions Generierung",
-
+    
+    "IncludeTemplates": "Include Templates",
+    "CreateIncludeTemplate": "Include Template erstellen",
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+        
     "Name": "Name",
     "Description": "Beschreibung",
     

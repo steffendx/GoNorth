@@ -158,8 +158,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start Index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>User Entries</returns>
-        [Produces(typeof(UserQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult Entries(int start, int pageSize)
         {
@@ -179,8 +178,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="userRequest">User request data</param>
         /// <returns>Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -213,8 +211,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -248,8 +245,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">User Id</param>
         /// <param name="roles">Roles to assign (all other roles will be removed)</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetUserRoles(string id, [FromBody]List<string> roles)
@@ -280,8 +276,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmEmailForUser(string id)
@@ -306,8 +301,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the user</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateSecurityStampForUser(string id)

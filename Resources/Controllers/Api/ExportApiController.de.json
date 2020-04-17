@@ -17,14 +17,13 @@
     "TemplateTypeObjectExportSnippetFunction": "Export Snippet Funktion",
 
 
-    "TemplateTypeTaleDialogStep": "Dialogschritt",
     "TemplateTypeTaleDialogFunction": "Dialogfunktion",
     "TemplateTypeTaleNpcTextLine": "Npc Textzeile",
     "TemplateTypeTalePlayerTextLine": "Spieler Textzeile",
     "TemplateTypeTaleChoice": "Auswahl",
     "TemplateTypeTaleCondition": "Bedingung",
-    "TemplateTypeTaleConditionPlayerValue": "Bedingung: Spieler wert prüfen",
-    "TemplateTypeTaleConditionNpcValue": "Bedingung: Npc wert prüfen",
+    "TemplateTypeTaleConditionPlayerValue": "Bedingung: Spieler Wert prüfen",
+    "TemplateTypeTaleConditionNpcValue": "Bedingung: Npc Wert prüfen",
     "TemplateTypeTaleConditionPlayerInventory": "Bedingung: Item Anzahl in Spieler Inventar prüfen",
     "TemplateTypeTaleConditionNpcInventory": "Bedingung: Item Anzahl in Npc Inventar prüfen",
     "TemplateTypeTaleConditionQuestValue": "Bedingung: Quest Wert prüfen",
@@ -34,10 +33,10 @@
     "TemplateTypeTaleConditionGameTime": "Bedingung: Spielzeit prüfen",
     "TemplateTypeTaleConditionPlayerSkillValue": "Bedingung: Spieler Fähigkeit Wert prüfen",
     "TemplateTypeTaleConditionNpcSkillValue": "Bedingung: Npc Fähigkeit Wert prüfen",
-    "TemplateTypeTaleConditionPlayerLearnedSkill": "Bedingung: Spieler behrrscht Fähigkeit",
-    "TemplateTypeTaleConditionPlayerNotLearnedSkill": "Bedingung: Spieler behrrscht Fähigkeit nicht",
-    "TemplateTypeTaleConditionNpcLearnedSkill": "Bedingung: Npc behrrscht Fähigkeit",
-    "TemplateTypeTaleConditionNpcNotLearnedSkill": "Bedingung: Npc behrrscht Fähigkeit nicht",
+    "TemplateTypeTaleConditionPlayerLearnedSkill": "Bedingung: Spieler beherrscht Fähigkeit",
+    "TemplateTypeTaleConditionPlayerNotLearnedSkill": "Bedingung: Spieler beherrscht Fähigkeit nicht",
+    "TemplateTypeTaleConditionNpcLearnedSkill": "Bedingung: Npc beherrscht Fähigkeit",
+    "TemplateTypeTaleConditionNpcNotLearnedSkill": "Bedingung: Npc beherrscht Fähigkeit nicht",
     "TemplateTypeTaleConditionRandomValue": "Bedingung: Zufallswert prüfen",
     "TemplateTypeTaleConditionDailyRoutineEventDisabled": "Bedingung: Tagesablauf ist deaktiviert prüfen",
     "TemplateTypeTaleConditionDailyRoutineEventEnabled": "Bedingung: Tagesablauf ist aktiv prüfen",
@@ -117,5 +116,8 @@
     "TemplateTypeGeneralChangeOperatorDivide": "Änderung: Dividieren",
 
 
-    "TemplateTypeLanguageFile": "Sprachdatei"
+    "TemplateTypeLanguageFile": "Sprachdatei",
+
+
+    "ErrorIncludeTemplateNameDoesAlreadyExist": "Es existiert bereits ein Include Template mit dem Namen {0}."
 }

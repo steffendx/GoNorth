@@ -1,0 +1,24 @@
+{
+    "ManageIncludeTemplate": "Manage include template",
+
+    "Save": "Save",
+    "Delete": "Delete",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheTemplate": "Are you sure you want to delete the include template?",
+    "Yes": "Yes",
+    "No": "No",
+
+    "ReferencedInTemplates": "Used in templates",
+    "MightBeReferencedInMoreTemplates": "This include template might be used in more templates. Include commands which use variables are not checked here.",
+    "Name": "Name",
+    "NameMissmatchWarning": "This template is still using the old name {{0}} for this include template. The export will fail. Adjust the name in the include command or remove it.",
+    "ObjectsStillUsingIncludeTemplateWillFail": "There are templates which use this include template. The export for those will fail if the include template is deleted.",
+
+    "Error": "Error:",
+    "ErrorOccured": "Error occured.",
+    
+    "Locked": "Locked",
+    "LockedPrefix": "The include template is currently being edited by",
+    "LockedPostfix": "."
+}

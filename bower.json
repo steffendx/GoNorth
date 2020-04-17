@@ -2,13 +2,13 @@
   "name": "asp.net",
   "private": true,
   "dependencies": {
-    "bootstrap": "3.3.7",
+    "bootstrap": "3.4.1",
     "jquery": "3.4.1",
     "jquery-validation": "1.19.1",
     "jquery-validation-unobtrusive": "3.2.10",
-    "knockout": "^3.5.0",
+    "knockout": "^3.5.1",
     "moment": "^2.24.0",
-    "dropzone": "^5.5.0",
+    "dropzone": "^5.7.0",
     "bootstrap3-typeahead": "^4.0.2",
     "bootstrap-tagsinput": "^0.8.0",
     "bootstrap-wysiwyg": "*",
@@ -16,8 +16,8 @@
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "leaflet": "1.4.0",
     "leaflet-draw": "^1.0.4",
-    "ace-builds": "^1.4.7",
-    "knockout-sortable": "1.1.1",
+    "ace-builds": "^1.4.8",
+    "knockout-sortable": "1.2.0",
     "bootstrap-colorpicker": "2.5.3"
   }
 }

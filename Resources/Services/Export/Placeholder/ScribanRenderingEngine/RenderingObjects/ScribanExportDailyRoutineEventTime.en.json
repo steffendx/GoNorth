@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Hours": "Hours of the time",
+    "PlaceholderDesc_Minutes": "Minutes of the time",
+    "PlaceholderDesc_TotalMinutes": "Total minutes of the time. Will be calculated as Hours * MinutesPerHour + Minutes."
+}

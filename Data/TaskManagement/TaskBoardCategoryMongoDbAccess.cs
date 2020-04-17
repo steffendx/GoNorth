@@ -65,7 +65,8 @@ namespace GoNorth.Data.TaskManagement
         /// <returns>All task board categories</returns>
         public async Task<List<TaskBoardCategory>> GetTaskBoardCategories(string projectId)
         {
-            List<TaskBoardCategory> categories = await _TaskBoardCategoryCollection.AsQueryable().Where(c => c.ProjectId == projectId).OrderBy(c => c.Name).ToListAsync();
+            List<TaskBoardCategory> categories = await _TaskBoardCategoryCollection.AsQueryable().Where(c => c.ProjectId == projectId).ToListAsync();
+            categories = categories.OrderBy(c => c.Name).ToList();
             return categories;
         }
 

@@ -6363,7 +6363,9 @@
                     {
                         if(npc.dailyRoutine[curEvent].eventId == existingData.eventId)
                         {
+                            conditionData.selectedDailyRoutineNpcId(npc.id);
                             conditionData.selectedDailyRoutineNpcName(npc.name);
+                            conditionData.selectedDailyRoutineEventId(npc.dailyRoutine[curEvent].eventId);
                             conditionData.selectedDailyRoutineEvent(npc.dailyRoutine[curEvent]);
                             return;
                         }

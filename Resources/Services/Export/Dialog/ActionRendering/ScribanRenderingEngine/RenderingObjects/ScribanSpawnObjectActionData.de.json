@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_Object": "Das Objekt das gespawnt wird.",
+    "PlaceholderDesc_TargetMarkerName": "Der Name des Marker an dem das Objekt gespawnt wird.",
+    "PlaceholderDesc_UnescapedTargetMarkerName": "Der Name des Marker an dem das Objekt gespawnt wird ohne die Escape Einstellungen zu berücksichtigen.",
+    "PlaceholderDesc_Pitch": "Rotation um die X-Achse beim spawnen",
+    "PlaceholderDesc_Yaw": "Rotation um die Y-Achse beim spawnen",
+    "PlaceholderDesc_Roll": "Rotation um die Z-Achse beim spawnen"
+}

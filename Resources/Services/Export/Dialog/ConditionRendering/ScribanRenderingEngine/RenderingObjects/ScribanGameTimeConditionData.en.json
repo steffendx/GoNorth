@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_Hours": "Hours for the comparison",
+    "PlaceholderDesc_Minutes": "Minutes for the comparison",
+    "PlaceholderDesc_TotalMinutes": "Total minutes for the comparison. Will be calculated as Hours * MinutesPerHour + Minutes.",
+    "PlaceholderDesc_Operator": "Operator for the comparison. Will be loaded using the corresponding templates.",
+    "PlaceholderDesc_OriginalOperator": "Original operator for the comparison. This can be <i>Before</i> or <i>After</i>."
+}

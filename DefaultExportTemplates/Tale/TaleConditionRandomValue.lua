@@ -1,1 +1,1 @@
-math.random({{Tale_Condition_RandomValue_MinValue}}, {{Tale_Condition_RandomValue_MaxValue}}) {{Tale_Condition_RandomValue_Operator}} {{Tale_Condition_RandomValue_CompareValue}}
+math.random({{ condition.min_value }}, {{ condition.max_value }}) {{ condition.operator }} {{ condition.compare_value }}

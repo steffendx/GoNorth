@@ -1,0 +1,22 @@
+{
+    "PlaceholderDesc_CodeSnippet_NAME_OF_SNIPPET": "Content of the code snippet with the name \"NAME_OF_SNIPPET\". \"NAME_OF_SNIPPET\" must be replaced with the name of the snippet.",
+    "PlaceholderDesc_CodeSnippetAdditionalFunctions_NAME_OF_SNIPPET": "Content of the additional functions required for the export snippet \"NAME_OF_SNIPPET\". \"NAME_OF_SNIPPET\" must be replaced with the name of the snippet.",
+    "PlaceholderDesc_Has_CodeSnippetAdditionalFunctions_NAME_OF_SNIPPET_Start": "Start of the content that will only be rendered if the export snippet with the name \"NAME_OF_SNIPPET\" requires additional functions. \"NAME_OF_SNIPPET\" must be replaced with the name of the snippet. Must be closed using Has_CodeSnippetAdditionalFunctions_End.",
+    "PlaceholderDesc_Has_CodeSnippetAdditionalFunctions_End": "End of the content that will only be rendered if an export snippet requires additional functions.",
+    "PlaceholderDesc_Has_CodeSnippetNoAdditionalFunctions_NAME_OF_SNIPPET_Start": "Start of the content that will only be rendered if the export snippet with the name \"NAME_OF_SNIPPET\" requires no additional functions. \"NAME_OF_SNIPPET\" must be replaced with the name of the snippet. Must be closed using Has_CodeSnippetNoAdditionalFunctions_End.",
+    "PlaceholderDesc_Has_CodeSnippetNoAdditionalFunctions_End": "End of the content that will only be rendered if an export snippet requires no additional functions.",
+    "PlaceholderDesc_HasCodeSnippet_NAME_OF_SNIPPET_Start": "Start of the content that will only be rendered if the code snippet \"NAME_OF_SNIPPET\" has content. \"NAME_OF_SNIPPET\" must be replaced with the name of the snippet. Must be closed using HasCodeSnippet_End.",
+    "PlaceholderDesc_HasCodeSnippet_End": "End of the content that will only be rendered if a code snippet has content.",
+    "PlaceholderDesc_HasNotCodeSnippet_NAME_OF_SNIPPET_Start": "Start of the content that will only be rendered if the code snippet \"NAME_OF_SNIPPET\" has no content. \"NAME_OF_SNIPPET\" must be replaced with the name of the snippet. Must be closed using HasNotCodeSnippet_End.",
+    "PlaceholderDesc_HasNotCodeSnippet_End": "End of the content that will only be rendered if a code snippet has no content.",
+    "PlaceholderDesc_HasAnyCodeSnippet_Start": "Start of the content that will only be rendered if any code snippet exists. Must be closed using HasAnyCodeSnippet_End.",
+    "PlaceholderDesc_HasAnyCodeSnippet_End": "End of the content that will only be rendered if any code snippet exists.",
+    "PlaceholderDesc_HasNotAnyCodeSnippet_Start": "Start of the content that will only be rendered if no code snippet exist. Must be closed using HasNotAnyCodeSnippet_End.",
+    "PlaceholderDesc_HasNotAnyCodeSnippet_End": "End of the content that will only be rendered if no code snippet exists.",
+
+    "PlaceholderDesc_ExportSnippet_ScriptFunctionName": "Name of the script function",
+    "PlaceholderDesc_ExportSnippet_Function_ParentPreview": "Text preview of the parent nodes that lead to this function. This placeholder is intended to be used in a comment to increase readability.",
+    "PlaceholderDesc_ExportSnippet_ScriptContent": "Content of the script function",
+
+    "ExportSnippetErrorContext": "Export Snippet {0}"
+}

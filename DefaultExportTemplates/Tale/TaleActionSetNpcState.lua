@@ -1,1 +1,1 @@
-this:push_state("{{Tale_Action_State}}")
+this:push_state("{{ action.target_state }}")

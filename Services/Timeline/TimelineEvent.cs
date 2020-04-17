@@ -585,6 +585,22 @@ namespace GoNorth.Services.Timeline
         /// <summary>
         /// Export Dialog Function generation conditions updated
         /// </summary>
-        ExportDialogFunctionGenerationConditionsUpdated = 82
+        ExportDialogFunctionGenerationConditionsUpdated = 82,
+
+        
+        /// <summary>
+        /// An include export template was created
+        /// </summary>
+        IncludeExportTemplateCreated = 112,
+        
+        /// <summary>
+        /// An include export template was updated
+        /// </summary>
+        IncludeExportTemplateUpdated = 113,
+        
+        /// <summary>
+        /// An include export template was deleted
+        /// </summary>
+        IncludeExportTemplateDeleted = 114
     };
 }

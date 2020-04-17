@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_ValueObject": "Objekt zu dem der ausgewählte Wert gehört",
+    "PlaceholderDesc_SelectedField": "Ausgewähltes Feld das für den Vergleich genutzt wird",
+    "PlaceholderDesc_IsOperatorPrimitive": "true wenn der Operator ein primitiver Operator (=, !=, <, <=, ...) ist, sonst false",
+    "PlaceholderDesc_Operator": "Vergleichsoperator. Wird über die entsprechenden Templates geladen.",
+    "PlaceholderDesc_OriginalOperator": "Original Vergleichsoperator. Dieser wird nicht über die Templates geladen sondern hat immer den Wert des Bedingungsdropdown Steuerelements",
+    "PlaceholderDesc_CompareValue": "Vergleichswert für die Bedingung"
+}

@@ -18,6 +18,12 @@ namespace GoNorth.Services.Export.NodeGraphExport
         void SetErrorCollection(ExportPlaceholderErrorCollection errorCollection);
 
         /// <summary>
+        /// Sets the export template placeholder resolver
+        /// </summary>
+        /// <param name="templatePlaceholderResolver">Template placeholder resolver</param>
+        void SetExportTemplatePlaceholderResolver(IExportTemplatePlaceholderResolver templatePlaceholderResolver);
+
+        /// <summary>
         /// Renders a node graph
         /// </summary>
         /// <param name="exportNodeGraph">Node graph snippet to parse</param>

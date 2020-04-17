@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_DailyRoutineEventList": "Rendert eine Liste von Tagesbaluf Ereignissen basierend auf dem geteilten Tagesablauf Ereignis Listen Template. Als &lt;DAILY_ROUTINE_LIST&gt; muss ein Liste von Tagesablauf Ereignissen, wie beispielsweise daily_routine.events, übergeben werden."
+}

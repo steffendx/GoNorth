@@ -95,6 +95,11 @@ namespace GoNorth.Services.User
         private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
 
         /// <summary>
+        /// Include Export Template Db Access
+        /// </summary>
+        private readonly IIncludeExportTemplateDbAccess _includeExportTemplateDbAccess;
+
+        /// <summary>
         /// Object Export Snippet Db Access
         /// </summary>
         private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
@@ -181,6 +186,7 @@ namespace GoNorth.Services.User
         /// <param name="itemTemplateDbAccess">Item Template Db Access</param>
         /// <param name="itemImplementationSnapshotDbAccess">Item Implementation Snapshot Db Access</param>
         /// <param name="exportTemplateDbAccess">Export template Db access</param>
+        /// <param name="includeExportTemplateDbAccess">Include export template Db access</param>
         /// <param name="objectExportSnippetDbAccess">Object Export snippet Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
@@ -197,10 +203,10 @@ namespace GoNorth.Services.User
         /// <param name="userManager">User manager</param>
         public UserDeleter(IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questImplementationSnapshotDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, 
                            IEvneSkillTemplateDbAccess skillTemplateDbAccess, IEvneSkillImplementationSnapshotDbAccess skillImplementationSnapshotDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, 
-                           IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
-                           IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, IProjectConfigDbAccess projectConfigDbAccess, 
-                           ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, ILockServiceDbAccess lockDbService, ITimelineDbAccess timelineDbAccess, 
-                           UserManager<GoNorthUser> userManager)
+                           IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
+                           IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, 
+                           IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, ILockServiceDbAccess lockDbService, 
+                           ITimelineDbAccess timelineDbAccess, UserManager<GoNorthUser> userManager)
         {
             _questDbAccess = questDbAccess;
             _questImplementationSnapshotDbAccess = questImplementationSnapshotDbAccess;
@@ -216,6 +222,7 @@ namespace GoNorth.Services.User
             _itemTemplateDbAccess = itemTemplateDbAccess;
             _itemImplementationSnapshotDbAccess = itemImplementationSnapshotDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
+            _includeExportTemplateDbAccess = includeExportTemplateDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _mapDbAccess = mapDbAccess;
             _pageDbAccess = pageDbAccess;
@@ -363,6 +370,16 @@ namespace GoNorth.Services.User
             }
 
             await _exportTemplateDbAccess.ResetRecycleBinExportTemplatesByModifiedUser(user.Id);
+            
+            List<IncludeExportTemplate> includeExportTemplates = await _includeExportTemplateDbAccess.GetIncludeTemplatesByModifiedUser(user.Id);
+            foreach(IncludeExportTemplate curTemplate in includeExportTemplates)
+            {
+                curTemplate.ModifiedBy = Guid.Empty.ToString();
+                curTemplate.ModifiedOn = DateTimeOffset.UtcNow;
+                await _includeExportTemplateDbAccess.UpdateIncludeTemplate(curTemplate);
+            }
+
+            await _includeExportTemplateDbAccess.ResetIncludeRecycleBinExportTemplatesByModifiedUser(user.Id);
             
             List<ObjectExportSnippet> objectExportSnippets = await _objectExportSnippetDbAccess.GetExportSnippetByModifiedUser(user.Id);
             foreach(ObjectExportSnippet curExportSnippet in objectExportSnippets)

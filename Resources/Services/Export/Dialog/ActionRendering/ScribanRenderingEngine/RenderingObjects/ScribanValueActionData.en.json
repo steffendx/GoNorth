@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_ValueObject": "Object to which the field that is being changed belongs.",
+    "PlaceholderDesc_TargetField": "Field that is being changed.",
+    "PlaceholderDesc_Operator": "Operator for the change. Will be loaded using the corresponding templates.",
+    "PlaceholderDesc_OriginalOperator": "Original operator for the change. This one will not be loaded from the templates, but will always have the value selected in the operator dropdown.",
+    "PlaceholderDesc_ValueChange": "Value for the change."
+}

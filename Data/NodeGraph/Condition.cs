@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using GoNorth.Services.ImplementationStatusCompare;
 
@@ -7,7 +9,7 @@ namespace GoNorth.Data.NodeGraph
     /// <summary>
     /// Condition
     /// </summary>
-    public class Condition : IImplementationListComparable
+    public class Condition : IImplementationListComparable, ICloneable
     {
         /// <summary>
         /// Condition Id
@@ -37,5 +39,19 @@ namespace GoNorth.Data.NodeGraph
         /// </summary>
         [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue("Condition", CompareDifferenceValue.ValueResolveType.LanguageKey); } }
+
+
+        /// <summary>
+        /// Clones the condition
+        /// </summary>
+        /// <returns>Cloned object</returns>
+        public object Clone()
+        {
+            return new Condition {
+                Id = this.Id,
+                DependsOnObjects = this.DependsOnObjects != null ? this.DependsOnObjects.Select(d => d.Clone()).Cast<NodeObjectDependency>().ToList() : null,
+                ConditionElements = this.ConditionElements
+            };
+        }
     }
 }

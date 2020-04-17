@@ -1,1 +1,1 @@
-{{Tale_Action_ScriptCode}}
+{{ action.script_code }} 

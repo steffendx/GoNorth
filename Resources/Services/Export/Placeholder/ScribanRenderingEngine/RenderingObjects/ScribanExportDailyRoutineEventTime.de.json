@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Hours": "Stunden der Uhrzeit",
+    "PlaceholderDesc_Minutes": "Minuten der Uhrzeit",
+    "PlaceholderDesc_TotalMinutes": "Gesamtminuten der Uhrzeit. Wird Berechnet als Stunden * MinutenProStunde + Minuten."
+}

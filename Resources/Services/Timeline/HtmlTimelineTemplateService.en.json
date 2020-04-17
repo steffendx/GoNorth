@@ -132,5 +132,9 @@
     "ExportObjectTemplateUpdated": "An <a href='/Export/ManageTemplate?customizedObjectId={1}&templateType={0}'>object export template</a> was updated.",
     "ExportObjectTemplateDeleted": "An object export template was deleted.",
     "ExportSettingsUpdated": "The object export settings were changed",
-    "ExportDialogFunctionGenerationConditionsUpdated": "The export dialog function generation rules were updated."
+    "ExportDialogFunctionGenerationConditionsUpdated": "The export dialog function generation rules were updated.",
+
+    "IncludeExportTemplateCreated": "The include export template <a href='/Export/ManageIncludeTemplate?id={0}'>{1}</a> was created.",
+    "IncludeExportTemplateUpdated": "The include export template <a href='/Export/ManageIncludeTemplate?id={0}'>{1}</a> was updated.",
+    "IncludeExportTemplateDeleted": "The include export template {0} was deleted."
 }

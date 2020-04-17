@@ -10,10 +10,10 @@
                 <h4 class="modal-title"><span data-bind="visible: !isEditing()">@Localizer["CreateNodeScript"]</span><span data-bind="visible: isEditing">@Localizer["EditNodeScript"]</span></h4>
             </div>
             <div class="modal-body">
-                <form id="gn-nodeScriptEditorForm">
+                <form data-bind="attr: { id: 'gn-nodeScriptEditorForm' + dialogId }">
                     <div class="form-group">
-                        <label for="gn-scriptNodeName">@Localizer["Name"]</label>
-                        <input type="text" class="form-control" id="gn-scriptNodeName" placeholder="@Localizer["Name"]" name="scriptNodeName" data-bind="value: scriptName" required/>
+                        <label data-bind="attr: { for: 'gn-scriptNodeName' + dialogId }">@Localizer["Name"]</label>
+                        <input type="text" class="form-control" placeholder="@Localizer["Name"]" name="scriptNodeName" data-bind="attr: { id: 'gn-scriptNodeName' + dialogId }, value: scriptName, enterPressed: saveNodes" required/>
                     </div>
                 </form>
                 <div>

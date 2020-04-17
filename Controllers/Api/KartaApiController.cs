@@ -204,8 +204,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the map</param>
         /// <returns>Maps for the current project</returns>
-        [Produces(typeof(KartaMap))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KartaMap), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> Map(string id)
         {
@@ -234,8 +233,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the maps for the current project
         /// </summary>
         /// <returns>Maps for the current project</returns>
-        [Produces(typeof(List<KartaMap>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KartaMap>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> Maps()
         {
@@ -249,8 +247,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="npcId">Npc Id</param>
         /// <returns>Maps in which an npc is marked</returns>
-        [Produces(typeof(List<KartaMapMarkerQueryResult>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KartaMapMarkerQueryResult>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetMapsByNpcId(string npcId)
         {
@@ -263,8 +260,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Item Id</param>
         /// <returns>Maps in which an item is marked</returns>
-        [Produces(typeof(List<KartaMapMarkerQueryResult>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KartaMapMarkerQueryResult>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetMapsByItemId(string itemId)
         {
@@ -277,8 +273,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="pageId">Page Id</param>
         /// <returns>Maps in which a kirja page is marked with markers</returns>
-        [Produces(typeof(List<KartaMapMarkerQueryResult>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KartaMapMarkerQueryResult>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetMapsByKirjaPageId(string pageId)
         {
@@ -291,8 +286,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Quest Id</param>
         /// <returns>Maps in which a quest is marked</returns>
-        [Produces(typeof(List<KartaMap>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KartaMap>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetMapsByQuestId(string questId)
         {
@@ -305,8 +299,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Quest Id</param>
         /// <returns>Maps in which a quest is marked</returns>
-        [Produces(typeof(List<MapMarkerQueryResult>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<MapMarkerQueryResult>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetAllQuestMarkers(string questId)
         {
@@ -353,8 +346,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="name">Name of the map</param>
         /// <returns>Created map</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -418,8 +410,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the map</param>
         /// <param name="name">Name of the map</param>
         /// <returns>Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -560,8 +551,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the map</param>
         /// <param name="name">New Name of the map</param>
         /// <returns>Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -614,12 +604,11 @@ namespace GoNorth.Controllers.Api
         }
 
         /// <summary>
-        /// Delets a map
+        /// Deletes a map
         /// </summary>
         /// <param name="id">Map ID</param>
         /// <returns>Task</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -704,8 +693,7 @@ namespace GoNorth.Controllers.Api
         /// Returns a new map marker id
         /// </summary>
         /// <returns>Map Marker Id</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetNewMapMarkerId()
         {
@@ -719,8 +707,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Map Id</param>
         /// <param name="markerRequest">Marker Request</param>
         /// <returns>Task Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -881,8 +868,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="markerId">Marker Id</param>
         /// <param name="markerType">Marker Type</param>
         /// <returns>Task Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpDelete]
@@ -1010,8 +996,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Markers</returns>
-        [Produces(typeof(MarkerImplementationQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MarkerImplementationQueryResult), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Karta)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]
@@ -1038,8 +1023,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Markers</returns>
-        [Produces(typeof(NamedMarkerQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(NamedMarkerQueryResult), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Karta)]
         [Authorize(Roles = RoleNames.Tale)]
         [Authorize(Roles = RoleNames.Kortisto)]
@@ -1062,8 +1046,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="mapId">Map Id</param>
         /// <param name="markerId">Marker Id</param>
         /// <returns>Marker</returns>
-        [Produces(typeof(KartaMapNamedMarkerQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KartaMapNamedMarkerQueryResult), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Karta)]
         [Authorize(Roles = RoleNames.Tale)]
         [Authorize(Roles = RoleNames.Kortisto)]

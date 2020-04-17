@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Npc": "Npc that is being moved.",
+    "PlaceholderDesc_TargetMarkerName": "Target marker to which the npc is moved.",
+    "PlaceholderDesc_UnescapedTargetMarkerName": "Target marker to which the npc is moved without using the escape settings."
+}

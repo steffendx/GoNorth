@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_Object": "The object that is being spawned.",
+    "PlaceholderDesc_TargetMarkerName": "The name of the marker at which the object is being spawned.",
+    "PlaceholderDesc_UnescapedTargetMarkerName": "The name of the marker at which the object is being spawned without using the escape settings.",
+    "PlaceholderDesc_Pitch": "Rotation around the X-Axis when spawning.",
+    "PlaceholderDesc_Yaw": "Rotation around the X-Axis when spawning.",
+    "PlaceholderDesc_Roll": "Rotation around the Z-Axis when spawning."
+}

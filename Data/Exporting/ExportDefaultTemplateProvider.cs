@@ -80,7 +80,6 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectExportSnippetFunction),
 
             // Tale
-            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleDialogStep),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleDialogFunction),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleNpcTextLine),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TalePlayerTextLine),
@@ -216,6 +215,7 @@ namespace GoNorth.Data.Exporting
         {
             List<ExportTemplate> templates = await _templateDbAccess.GetDefaultTemplatesByCategory(projectId, category);
             
+            await FilterAndDeleteInvalidTemplates(templates);
             await AddMissingDefaultTemplates(templates, category);
             
             return templates;
@@ -239,6 +239,23 @@ namespace GoNorth.Data.Exporting
             return template;
         }
 
+
+        /// <summary>
+        /// Filters invalid templates from a list of templates
+        /// </summary>
+        /// <param name="templates">Templates</param>
+        /// <returns>Task</returns>        
+        private async Task FilterAndDeleteInvalidTemplates(List<ExportTemplate> templates)
+        {
+            for(int curTemplate = templates.Count - 1; curTemplate >= 0; --curTemplate)
+            {
+                if(!Enum.IsDefined(typeof(TemplateType), templates[curTemplate].TemplateType))
+                {
+                    await _templateDbAccess.DeleteTemplate(templates[curTemplate]);
+                    templates.RemoveAt(curTemplate);
+                }
+            }
+        }
 
         /// <summary>
         /// Adds missing default templates to a list of templates without loading the code
@@ -275,6 +292,7 @@ namespace GoNorth.Data.Exporting
             defaultTemplate.Code = "";
             defaultTemplate.ModifiedBy = string.Empty;
             defaultTemplate.ModifiedOn = DateTimeOffset.MinValue;
+            defaultTemplate.RenderingEngine = ExportTemplateRenderingEngine.Scriban;
 
             if(loadCode)
             {

@@ -62,15 +62,29 @@ namespace GoNorth.Data.FlexFieldDatabase
         }
 
         /// <summary>
+        /// Builds a flex field object queryable for root folder objects
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Flex Field Object Queryable</returns>
+        private IFindFluent<T, T> BuildFlexFieldObjectInRootFolderQueryable(string projectId, string locale)
+        {
+            return _ObjectCollection.Find(n => n.ProjectId == projectId && string.IsNullOrEmpty(n.ParentFolderId), new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
+        }
+
+        /// <summary>
         /// Returns the Flex Field Objects in the root folder
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        public async Task<List<T>> GetFlexFieldObjectsInRootFolderForProject(string projectId, int start, int pageSize)
+        public async Task<List<T>> GetFlexFieldObjectsInRootFolderForProject(string projectId, int start, int pageSize, string locale)
         {
-            List<T> flexFieldObjects = await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && string.IsNullOrEmpty(n.ParentFolderId)).OrderBy(n => n.Name).Skip(start).Take(pageSize).Select(c => new T() {
+            List<T> flexFieldObjects = await BuildFlexFieldObjectInRootFolderQueryable(projectId, locale).SortBy(n => n.Name).Skip(start).Limit(pageSize).Project(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
                 ImageFile = c.ImageFile,
@@ -83,11 +97,25 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// Returns the count of Flex Field Objects in the root folder
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Object Count</returns>
-        public async Task<int> GetFlexFieldObjectsInRootFolderCount(string projectId)
+        public async Task<int> GetFlexFieldObjectsInRootFolderCount(string projectId, string locale)
         {
-            int count = (int)await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && string.IsNullOrEmpty(n.ParentFolderId)).CountAsync();
+            int count = (int)await BuildFlexFieldObjectInRootFolderQueryable(projectId, locale).CountDocumentsAsync();
             return count;
+        }
+
+        /// <summary>
+        /// Builds a flex field object queryable for objects in a folder
+        /// </summary>
+        /// <param name="folderId">Folder Id</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Flex Field Object Queryable</returns>
+        private IFindFluent<T, T> BuildFlexFieldObjectInFolderQueryable(string folderId, string locale)
+        {
+            return _ObjectCollection.Find(n => n.ParentFolderId == folderId, new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
         }
 
         /// <summary>
@@ -96,10 +124,11 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="folderId">Folder Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        public async Task<List<T>> GetFlexFieldObjectsInFolder(string folderId, int start, int pageSize)
+        public async Task<List<T>> GetFlexFieldObjectsInFolder(string folderId, int start, int pageSize, string locale)
         {
-            List<T> flexFieldObjects = await _ObjectCollection.AsQueryable().Where(n => n.ParentFolderId == folderId).OrderBy(n => n.Name).Skip(start).Take(pageSize).Select(c => new T() {
+            List<T> flexFieldObjects = await BuildFlexFieldObjectInFolderQueryable(folderId, locale).SortBy(n => n.Name).Skip(start).Limit(pageSize).Project(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
                 ImageFile = c.ImageFile,
@@ -112,11 +141,25 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// Returns the count of Flex Field Objects in a folder folder
         /// </summary>
         /// <param name="folderId">Folder Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Object Count</returns>
-        public async Task<int> GetFlexFieldObjectsInFolderCount(string folderId)
+        public async Task<int> GetFlexFieldObjectsInFolderCount(string folderId, string locale)
         {
-            int count = await _ObjectCollection.AsQueryable().Where(n => n.ParentFolderId == folderId).CountAsync();
+            int count = (int)await BuildFlexFieldObjectInFolderQueryable(folderId, locale).CountDocumentsAsync();
             return count;
+        }
+
+        /// <summary>
+        /// Builds a flex field object queryable not implemented objects
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Flex Field Object Queryable</returns>
+        private IFindFluent<T, T> BuildNotImplementedQueryable(string projectId, string locale)
+        {
+            return _ObjectCollection.Find(n => n.ProjectId == projectId && !n.IsImplemented, new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
         }
 
         /// <summary>
@@ -125,10 +168,11 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        public async Task<List<T>> GetNotImplementedFlexFieldObjects(string projectId, int start, int pageSize)
+        public async Task<List<T>> GetNotImplementedFlexFieldObjects(string projectId, int start, int pageSize, string locale)
         {
-            List<T> flexFieldObjects = await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && !n.IsImplemented).OrderBy(n => n.Name).Skip(start).Take(pageSize).Select(c => new T() {
+            List<T> flexFieldObjects = await BuildNotImplementedQueryable(projectId, locale).SortBy(n => n.Name).Skip(start).Limit(pageSize).Project(c => new T() {
                 Id = c.Id,
                 Name = c.Name
             }).ToListAsync();
@@ -139,10 +183,11 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// Returns the count of all Flex Field Objects that are not yet implemented
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Object Count</returns>
-        public async Task<int> GetNotImplementedFlexFieldObjectsCount(string projectId)
+        public async Task<int> GetNotImplementedFlexFieldObjectsCount(string projectId, string locale)
         {
-            int count = await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && !n.IsImplemented).CountAsync();
+            int count = (int)await BuildNotImplementedQueryable(projectId, locale).CountDocumentsAsync();
             return count;
         }
 
@@ -152,16 +197,19 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Object Queryable</returns>
-        private IMongoQueryable<T> BuildFlexFieldObjectSearchQueryable(string projectId, string searchPattern)
+        private IFindFluent<T, T> BuildFlexFieldObjectSearchQueryable(string projectId, string searchPattern, string locale)
         {
             string regexPattern = ".";
             if(!string.IsNullOrEmpty(searchPattern))
             {
-                string[] searchPatternParts = searchPattern.Split(" ");
+                string[] searchPatternParts = searchPattern.Split(" ").Select(s => Regex.Escape(s)).ToArray();
                 regexPattern = "(" + string.Join("|", searchPatternParts) + ")";
             }
-            return _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && (Regex.IsMatch(n.Name, regexPattern, RegexOptions.IgnoreCase) || n.Tags.Any(t => Regex.IsMatch(t, regexPattern, RegexOptions.IgnoreCase))));
+            return _ObjectCollection.Find(n => n.ProjectId == projectId && (Regex.IsMatch(n.Name, regexPattern, RegexOptions.IgnoreCase) || n.Tags.Any(t => Regex.IsMatch(t, regexPattern, RegexOptions.IgnoreCase))), new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
         }
 
         /// <summary>
@@ -171,10 +219,11 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="searchPattern">Search pattern</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        public async Task<List<T>> SearchFlexFieldObjects(string projectId, string searchPattern, int start, int pageSize)
+        public async Task<List<T>> SearchFlexFieldObjects(string projectId, string searchPattern, int start, int pageSize, string locale)
         {
-            return await BuildFlexFieldObjectSearchQueryable(projectId, searchPattern).Skip(start).Take(pageSize).Select(c => new T() {
+            return await BuildFlexFieldObjectSearchQueryable(projectId, searchPattern, locale).SortBy(c => c.Name).Skip(start).Limit(pageSize).Project(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
                 ImageFile = c.ImageFile,
@@ -187,10 +236,11 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Count of results</returns>
-        public async Task<int> SearchFlexFieldObjectsCount(string projectId, string searchPattern)
+        public async Task<int> SearchFlexFieldObjectsCount(string projectId, string searchPattern, string locale)
         {
-            return await BuildFlexFieldObjectSearchQueryable(projectId, searchPattern).CountAsync();
+            return (int)await BuildFlexFieldObjectSearchQueryable(projectId, searchPattern, locale).CountDocumentsAsync();
         }
 
         /// <summary>
@@ -240,6 +290,16 @@ namespace GoNorth.Data.FlexFieldDatabase
                 Id = c.Id,
                 Name = c.Name,
             }).ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns a list of objects by id
+        /// </summary>
+        /// <param name="idsToLoad">Ids of the objects to load</param>
+        /// <returns>List of loaded objects</returns>
+        public async Task<List<T>> GetObjectsById(List<string> idsToLoad)
+        {
+            return await _ObjectCollection.AsQueryable().Where(i => idsToLoad.Contains(i.Id)).ToListAsync();
         }
 
         /// <summary>

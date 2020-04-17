@@ -43,12 +43,24 @@ namespace GoNorth.Services.Export.NodeGraphExport
 
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        public NodeGraphBaseParser()
+        {
+            _errorCollection = null;
+        }
+
+        /// <summary>
         /// Sets the error collection
         /// </summary>
         /// <param name="errorCollection">Error Collection</param>
         public void SetErrorCollection(ExportPlaceholderErrorCollection errorCollection)
         {
-            _errorCollection = errorCollection;
+            // Ensure to use most outer error collection
+            if(_errorCollection == null)
+            {
+                _errorCollection = errorCollection;
+            }
         }
 
         /// <summary>
@@ -84,6 +96,8 @@ namespace GoNorth.Services.Export.NodeGraphExport
         protected void IterateDialogTree(ExportDialogData exportDialog, ParseClass exportable)
         {
             Dictionary<string, ExportDialogData> convertedDialogNodes = new Dictionary<string, ExportDialogData>();
+            HashSet<string> usedDialogNodes = new HashSet<string>();
+            usedDialogNodes.Add(exportDialog.Id);
             convertedDialogNodes.Add(exportDialog.Id, exportDialog);
 
             Queue<ExportDialogData> dialogDataToQueue = new Queue<ExportDialogData>();
@@ -107,10 +121,10 @@ namespace GoNorth.Services.Export.NodeGraphExport
                 foreach(ExportDialogDataChild curChild in children)
                 {
                     curChild.Child.Parents.Add(curData);
-                    if(!convertedDialogNodes.ContainsKey(curChild.Child.Id))
+                    if(!usedDialogNodes.Contains(curChild.Child.Id))
                     {
                         dialogDataToQueue.Enqueue(curChild.Child);
-                        convertedDialogNodes.Add(curChild.Child.Id, curChild.Child);
+                        usedDialogNodes.Add(curChild.Child.Id);
                     }
                 }
             }
@@ -146,15 +160,14 @@ namespace GoNorth.Services.Export.NodeGraphExport
                 return new List<ExportDialogDataChild>();
             }
 
-            List<T> childNodes = nodeList.Where(n => links.Any(l => l.TargetNodeId == n.Id)).ToList();
-            return childNodes.Select(n => { 
+            return links.Where(l => nodeList.Any(n => n.Id == l.TargetNodeId)).Select(l => {
+                T targetNode = nodeList.FirstOrDefault(n => n.Id == l.TargetNodeId);
                 int childId = 0;
-                NodeLink childNode = links.FirstOrDefault(l => l.TargetNodeId == n.Id);
-                if(childNode != null && childNode.SourceNodePort != null)
+                if(l != null && l.SourceNodePort != null)
                 {
-                    if(childNode.SourceNodePort.ToLowerInvariant() != "else")
+                    if(l.SourceNodePort.ToLowerInvariant() != "else")
                     {
-                        string childIdStr = childNode.SourceNodePort.Replace("choice", string.Empty).Replace("condition", string.Empty).Replace("additionalActionOutput", string.Empty);
+                        string childIdStr = l.SourceNodePort.Replace("choice", string.Empty).Replace("condition", string.Empty).Replace("additionalActionOutput", string.Empty);
                         int.TryParse(childIdStr, out childId);
                     }
                     else
@@ -163,22 +176,26 @@ namespace GoNorth.Services.Export.NodeGraphExport
                     }
                 }
 
-                if(convertedDialogNodes.ContainsKey(n.Id))
+                if(convertedDialogNodes.ContainsKey(targetNode.Id))
                 {
                     return new ExportDialogDataChild {
                         NodeChildId = childId,
-                        Child = convertedDialogNodes[n.Id]
+                        Child = convertedDialogNodes[targetNode.Id]
                     };
                 }
+                else 
+                {
+                    ExportDialogData dialogData = GetNewDialogData();
+                    dialogData.Id = targetNode.Id;
+                    assignExportProperty(dialogData, targetNode);
 
-                ExportDialogData dialogData = GetNewDialogData();
-                dialogData.Id = n.Id;
-                assignExportProperty(dialogData, n);
+                    convertedDialogNodes.Add(targetNode.Id, dialogData);
 
-                return new ExportDialogDataChild {
-                    NodeChildId = childId,
-                    Child = dialogData
-                };
+                    return new ExportDialogDataChild {
+                        NodeChildId = childId,
+                        Child = dialogData
+                    };
+                }
             }).ToList();
         }
 

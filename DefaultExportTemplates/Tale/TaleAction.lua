@@ -1,2 +1,2 @@
-{{Tale_Action_Content}}
-{{Tale_ChildNode_HasUnusedFunction_Start}}{{Tale_ChildNode_Unused_Function}}(this){{Tale_ChildNode_HasUnusedFunction_End}}
+{{ action_node.content }}
+{{~ if action_node.child_node && !action_node.child_node.node_step_function_was_used && action_node.child_node.node_step_function_name != "" ~}}{{ action_node.child_node.node_step_function_name }}(this){{~ end ~}}

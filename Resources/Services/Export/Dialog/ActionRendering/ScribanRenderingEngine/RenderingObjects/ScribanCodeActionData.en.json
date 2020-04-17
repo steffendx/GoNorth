@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_ScriptName": "Name of the script",
+    "PlaceholderDesc_UnescapedScriptName": "Name of the script without using the escape settings.",
+    "PlaceholderDesc_ScriptCode": "Code of the script action"
+}

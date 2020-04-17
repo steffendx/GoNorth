@@ -18,6 +18,7 @@ using GoNorth.Services.ImplementationStatusCompare;
 using GoNorth.Services.FlexFieldThumbnail;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
+using System.Globalization;
 
 namespace GoNorth.Controllers.Api
 {
@@ -317,10 +318,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Folders</returns>
-        [Produces(typeof(FlexFieldBaseApiController<Data.Kortisto.KortistoNpc>.FolderQueryResult))] // Same for all controllers, simply use Kortisto here
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<IActionResult> Folders(string parentId, int start, int pageSize)
+        public async Task<ActionResult<FolderQueryResult>> Folders(string parentId, int start, int pageSize)
         {
             string folderName = string.Empty;
             string parentFolderId = string.Empty;
@@ -329,16 +329,16 @@ namespace GoNorth.Controllers.Api
             if(string.IsNullOrEmpty(parentId))
             {
                 GoNorthProject project = await _projectDbAccess.GetDefaultProject();
-                queryTask = _folderDbAccess.GetRootFoldersForProject(project.Id, start, pageSize);
-                countTask = _folderDbAccess.GetRootFolderCount(project.Id);
+                queryTask = _folderDbAccess.GetRootFoldersForProject(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                countTask = _folderDbAccess.GetRootFolderCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
             else
             {
                 FlexFieldFolder folder = await _folderDbAccess.GetFolderById(parentId);
                 parentFolderId = folder.ParentFolderId;
                 folderName = folder.Name;
-                queryTask = _folderDbAccess.GetChildFolders(parentId, start, pageSize);
-                countTask = _folderDbAccess.GetChildFolderCount(parentId);
+                queryTask = _folderDbAccess.GetChildFolders(parentId, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                countTask = _folderDbAccess.GetChildFolderCount(parentId, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
 
             Task.WaitAll(queryTask, countTask);
@@ -356,8 +356,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="folder">Folder to create</param>
         /// <returns>Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFolder([FromBody]FolderRequest folder)
@@ -392,8 +391,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the folder</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFolder(string id)
@@ -430,7 +428,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>True if the folder is empty, else false</returns>
         private async Task<bool> IsFolderEmpty(FlexFieldFolder folder)
         {
-            int childFolderCount = await _folderDbAccess.GetChildFolderCount(folder.Id);
+            int childFolderCount = await _folderDbAccess.GetChildFolderCount(folder.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             if(childFolderCount > 0)
             {
                 return false;
@@ -445,8 +443,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Folder Id</param>
         /// <param name="folder">Update folder data</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateFolder(string id, [FromBody]FolderRequest folder)
@@ -468,8 +465,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the folder to move</param>
         /// <param name="newParentId">Id of the folder to move the object to</param>
         /// <returns>Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
@@ -538,8 +534,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the flex field folder</param>
         /// <returns>Image Name</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -608,7 +603,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Flex Field Template</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<IActionResult> FlexFieldTemplate(string id)
+        public async Task<ActionResult<T>> FlexFieldTemplate(string id)
         {
             T template = await _templateDbAccess.GetFlexFieldObjectById(id);
             return Ok(template);
@@ -622,13 +617,13 @@ namespace GoNorth.Controllers.Api
         /// <returns>EntryTemplates</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<IActionResult> FlexFieldTemplates(int start, int pageSize)
+        public async Task<ActionResult<FlexFieldObjectQueryResult>> FlexFieldTemplates(int start, int pageSize)
         {
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             Task<List<T>> queryTask;
             Task<int> countTask;
-            queryTask = _templateDbAccess.GetFlexFieldObjectsInRootFolderForProject(project.Id, start, pageSize);
-            countTask = _templateDbAccess.GetFlexFieldObjectsInRootFolderCount(project.Id);
+            queryTask = _templateDbAccess.GetFlexFieldObjectsInRootFolderForProject(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _templateDbAccess.GetFlexFieldObjectsInRootFolderCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             FlexFieldObjectQueryResult queryResult = new FlexFieldObjectQueryResult();
@@ -840,7 +835,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Flex field object</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<IActionResult> FlexFieldObject(string id)
+        public async Task<ActionResult<T>> FlexFieldObject(string id)
         {
             T flexFieldObject = await _objectDbAccess.GetFlexFieldObjectById(id);
             flexFieldObject = StripObject(flexFieldObject);
@@ -866,20 +861,20 @@ namespace GoNorth.Controllers.Api
         /// <returns>Flex Field Objects</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<IActionResult> FlexFieldObjects(string parentId, int start, int pageSize)
+        public async Task<ActionResult<FlexFieldObjectQueryResult>> FlexFieldObjects(string parentId, int start, int pageSize)
         {
             Task<List<T>> queryTask;
             Task<int> countTask;
             if(string.IsNullOrEmpty(parentId))
             {
                 GoNorthProject project = await _projectDbAccess.GetDefaultProject();
-                queryTask = _objectDbAccess.GetFlexFieldObjectsInRootFolderForProject(project.Id, start, pageSize);
-                countTask = _objectDbAccess.GetFlexFieldObjectsInRootFolderCount(project.Id);
+                queryTask = _objectDbAccess.GetFlexFieldObjectsInRootFolderForProject(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                countTask = _objectDbAccess.GetFlexFieldObjectsInRootFolderCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
             else
             {
-                queryTask = _objectDbAccess.GetFlexFieldObjectsInFolder(parentId, start, pageSize);
-                countTask = _objectDbAccess.GetFlexFieldObjectsInFolderCount(parentId);
+                queryTask = _objectDbAccess.GetFlexFieldObjectsInFolder(parentId, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                countTask = _objectDbAccess.GetFlexFieldObjectsInFolderCount(parentId, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
 
             Task.WaitAll(queryTask, countTask);
@@ -899,14 +894,14 @@ namespace GoNorth.Controllers.Api
         /// <returns>Flex field objects</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<IActionResult> SearchFlexFieldObjects(string searchPattern, int start, int pageSize)
+        public async Task<ActionResult<FlexFieldObjectQueryResult>> SearchFlexFieldObjects(string searchPattern, int start, int pageSize)
         {
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
 
             Task<List<T>> queryTask;
             Task<int> countTask;
-            queryTask = _objectDbAccess.SearchFlexFieldObjects(project.Id, searchPattern, start, pageSize);
-            countTask = _objectDbAccess.SearchFlexFieldObjectsCount(project.Id, searchPattern);
+            queryTask = _objectDbAccess.SearchFlexFieldObjects(project.Id, searchPattern, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _objectDbAccess.SearchFlexFieldObjectsCount(project.Id, searchPattern, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             FlexFieldObjectQueryResult queryResult = new FlexFieldObjectQueryResult();
@@ -923,7 +918,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResolveFlexFieldObjectNames([FromBody]List<string> objectIds)
+        public async Task<ActionResult<List<T>>> ResolveFlexFieldObjectNames([FromBody]List<string> objectIds)
         {
             List<T> objectNames = await _objectDbAccess.ResolveFlexFieldObjectNames(objectIds);
             return Ok(objectNames);
@@ -938,7 +933,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFlexFieldObject([FromBody]T flexFieldObject)
+        public async Task<ActionResult<T>> CreateFlexFieldObject([FromBody]T flexFieldObject)
         {
             if(string.IsNullOrEmpty(flexFieldObject.Name))
             {
@@ -1000,8 +995,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the flex field object</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFlexFieldObject(string id)
@@ -1101,7 +1095,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateFlexFieldObject(string id, [FromBody]T flexFieldObject)
+        public async Task<ActionResult<T>> UpdateFlexFieldObject(string id, [FromBody]T flexFieldObject)
         {
             CheckXssForObject(flexFieldObject);
 
@@ -1166,8 +1160,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the flex field object</param>
         /// <returns>Image Name</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FlexFieldImageUpload(string id)
@@ -1294,8 +1287,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the folder to move</param>
         /// <param name="newParentId">Id of the folder to move the object to</param>
         /// <returns>Result</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1351,8 +1343,7 @@ namespace GoNorth.Controllers.Api
         /// Returns all flex field object Tags
         /// </summary>
         /// <returns>All flex field object Tags</returns>
-        [Produces(typeof(List<string>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> FlexFieldObjectTags()
         {

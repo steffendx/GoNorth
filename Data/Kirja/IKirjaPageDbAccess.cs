@@ -37,8 +37,9 @@ namespace GoNorth.Data.Kirja
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
         /// <param name="excludeId">Id to exclude</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Pages</returns>
-        Task<List<KirjaPage>> SearchPages(string projectId, string searchPattern, int start, int pageSize, string excludeId);
+        Task<List<KirjaPage>> SearchPages(string projectId, string searchPattern, int start, int pageSize, string excludeId, string locale);
 
         /// <summary>
         /// Returns the count of pages for a search
@@ -46,8 +47,9 @@ namespace GoNorth.Data.Kirja
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search Pattern</param>
         /// <param name="excludeId">Id to exclude</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Page Count</returns>
-        Task<int> SearchPagesCount(string projectId, string searchPattern, string excludeId);
+        Task<int> SearchPagesCount(string projectId, string searchPattern, string excludeId, string locale);
 
         /// <summary>
         /// Updates a page

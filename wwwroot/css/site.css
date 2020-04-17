@@ -1853,22 +1853,22 @@ path.leaflet-interactive {
 }
 
 /** Exporting Template Form **/
-.gn-exportManageTemplateCodeEditorContainer {
+.gn-exportManageTemplateCodeEditorContainer, .gn-exportManageIncludeTemplateContainer {
     margin-top: 20px;
 }
 
-.gn-exportManageTemplateCodeEditor {
+.gn-exportManageTemplateCodeEditor, .gn-exportManageIncludeTemplateCodeEditor {
     width: 100%;
     height: 500px;
 }
 
 @media(min-height:1100px) {
-    .gn-exportManageTemplateCodeEditor {
+    .gn-exportManageTemplateCodeEditor, .gn-exportManageIncludeTemplateCodeEditor {
         height: 700px;
     }
 }
 
-.gn-exportManageTemplateLoading {
+.gn-exportManageTemplateLoading, .gn-exportManageIncludeTemplateLoading {
     font-size: 20px;
 }
 
@@ -1881,16 +1881,16 @@ path.leaflet-interactive {
     overflow: auto;
 }
 
-.gn-exportManageTemplateWarningOnDelete {
+.gn-exportManageTemplateWarningOnDelete, .gn-exportManageIncludeTemplateWarningOnDelete {
     font-weight: bold;
 }
 
-.gn-exportManageTemplatePlaceholderContainer {
+.gn-exportManageTemplatePlaceholderContainer, .gn-exportManageIncludeTemplateReferenceContainer {
     max-height: 250px;
     overflow-y: auto;
 }
 
-.gn-exportManageTemplatePlaceholderTable {
+.gn-exportManageTemplatePlaceholderTable, .gn-exportManageIncludeTemplateReferenceTable {
     margin-bottom: 0px;
 }
 

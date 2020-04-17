@@ -3,6 +3,11 @@
 
     "TemplateBasedOnParent": "No custom template is saved for this object. The parent template will be used. Click here to load the parent template.",
 
+    "LegacyTemplate": "Legacy template",
+    "UpdateLegacyTemplateForNewFeatures": "Update the template to a modern template to use new features and have more flexibel placeholders available to you.",
+    "ConvertToModernTemplate": "Convert to modern template",
+    "Close": "Close",
+
     "Save": "Save",
     "Delete": "Delete",
 

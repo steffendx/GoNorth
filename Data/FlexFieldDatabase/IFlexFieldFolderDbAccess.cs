@@ -28,31 +28,35 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Root Folders</returns>
-        Task<List<FlexFieldFolder>> GetRootFoldersForProject(string projectId, int start, int pageSize);
+        Task<List<FlexFieldFolder>> GetRootFoldersForProject(string projectId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the root folder count
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Root Folder Count</returns>
-        Task<int> GetRootFolderCount(string projectId);
+        Task<int> GetRootFolderCount(string projectId, string locale);
 
         /// <summary>
         /// Returns all Child folders for a folder
         /// </summary>
-        /// <param name="folderId">Folder id which the children should be requested</param>
+        /// <param name="folderId">Folder id for which the children should be requested</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Child Folders</returns>
-        Task<List<FlexFieldFolder>> GetChildFolders(string folderId, int start, int pageSize);
+        Task<List<FlexFieldFolder>> GetChildFolders(string folderId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the child folder count
         /// </summary>
-        /// <param name="folderId">Folder id which the children should be requested</param>
+        /// <param name="folderId">Folder id for which the children should be requested</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Count of child folders</returns>
-        Task<int> GetChildFolderCount(string folderId);
+        Task<int> GetChildFolderCount(string folderId, string locale);
 
         /// <summary>
         /// Updates a folder

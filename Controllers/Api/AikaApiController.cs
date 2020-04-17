@@ -21,6 +21,7 @@ using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Services.ImplementationStatusCompare;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace GoNorth.Controllers.Api
 {
@@ -205,8 +206,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the chapter overview
         /// </summary>
         /// <returns>Chapter Overview</returns>
-        [Produces(typeof(AikaChapterOverview))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaChapterOverview), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapterOverview()
         {
@@ -250,8 +250,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="overview">Overview to save</param>
         /// <returns>Chapter Overview</returns>
-        [Produces(typeof(AikaChapterOverview))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaChapterOverview), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -406,7 +405,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="minChapterNumber">Min Chapter number</param>
         /// <param name="maxChapterNumber">Max Chapter number</param>
         /// <param name="chapters">Chapters</param>
-        /// <returns></returns>
+        /// <returns>Task</returns>
         private async Task AdjustKartaMapMarkersForDeletedChapter(string projectId, int deletedChapter, int minChapterNumber, int maxChapterNumber, List<AikaChapter> chapters)
         {
             List<KartaMap> allMaps = await _kartaMapDbAccess.GetAllProjectMapsWithFullDetail(projectId);
@@ -554,8 +553,7 @@ namespace GoNorth.Controllers.Api
         /// Returns available chapters
         /// </summary>
         /// <returns>Available chapters</returns>
-        [Produces(typeof(List<ChapterResponse>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ChapterResponse>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapters()
         {
@@ -583,8 +581,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Chapter Details</returns>
-        [Produces(typeof(List<ChapterDetailQueryResult>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ChapterDetailQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapterDetails(string searchPattern, int start, int pageSize)
         {
@@ -615,8 +612,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the Chapter Detail</param>
         /// <returns>Chapter detail</returns>
-        [Produces(typeof(AikaChapterDetail))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaChapterDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         public async Task<IActionResult> GetChapterDetail(string id)
@@ -635,8 +631,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Quest Id</param>
         /// <returns>Chapter Details</returns>
-        [Produces(typeof(List<AikaChapterDetail>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AikaChapterDetail>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetChapterDetailsByQuest(string questId)
         {
@@ -649,8 +644,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the Chapter Detail</param>
         /// <returns>Chapter detaildelete validation result</returns>
-        [Produces(typeof(ChapterDetailDeleteValidationResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ChapterDetailDeleteValidationResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         public async Task<IActionResult> ValidateChapterDetailDelete(string id)
@@ -749,8 +743,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="chapterDetail">Chapter Detail</param>
         /// <returns>Created chapter detail</returns>
-        [Produces(typeof(AikaChapterDetail))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaChapterDetail), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChapterDetail([FromBody]AikaChapterDetail chapterDetail)
@@ -786,8 +779,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the chapter detail</param>
         /// <param name="chapterDetail">Chapter Detail</param>
         /// <returns>Updated chapter detail</returns>
-        [Produces(typeof(AikaChapterDetail))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaChapterDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -915,8 +907,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the Chapter Detail</param>
         /// <returns>Deleted chapter detail</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteChapterDetail(string id)
@@ -938,8 +929,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Quests</returns>
-        [Produces(typeof(QuestQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(QuestQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetQuests(string searchPattern, int start, int pageSize)
         {
@@ -949,13 +939,13 @@ namespace GoNorth.Controllers.Api
             Task<int> countTask;
             if(string.IsNullOrEmpty(searchPattern))
             {
-                queryTask = _questDbAccess.GetQuestsByProjectId(project.Id, start, pageSize);
-                countTask = _questDbAccess.GetQuestsByProjectIdCount(project.Id);
+                queryTask = _questDbAccess.GetQuestsByProjectId(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                countTask = _questDbAccess.GetQuestsByProjectIdCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
             else
             {
-                queryTask = _questDbAccess.SearchQuests(project.Id, searchPattern, start, pageSize);
-                countTask = _questDbAccess.SearchQuestsCount(project.Id, searchPattern);
+                queryTask = _questDbAccess.SearchQuests(project.Id, searchPattern, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                countTask = _questDbAccess.SearchQuestsCount(project.Id, searchPattern, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
             Task.WaitAll(queryTask, countTask);
 
@@ -971,8 +961,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Quests</returns>
-        [Produces(typeof(QuestQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(QuestQueryResult), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Aika)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]
@@ -980,8 +969,8 @@ namespace GoNorth.Controllers.Api
         {
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
 
-            Task<List<AikaQuest>> queryTask = _questDbAccess.GetNotImplementedQuests(project.Id, start, pageSize);
-            Task<int> countTask = _questDbAccess.GetNotImplementedQuestsCount(project.Id);
+            Task<List<AikaQuest>> queryTask = _questDbAccess.GetNotImplementedQuests(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            Task<int> countTask = _questDbAccess.GetNotImplementedQuestsCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             QuestQueryResult queryResult = new QuestQueryResult();
@@ -995,8 +984,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Quest id</param>
         /// <returns>Quest</returns>
-        [Produces(typeof(AikaQuest))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaQuest), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetQuest(string id)
         {
@@ -1009,8 +997,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="objectId">Object id</param>
         /// <returns>Quests</returns>
-        [Produces(typeof(List<AikaQuest>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AikaQuest>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetQuestsObjectIsReferenced(string objectId)
         {
@@ -1023,8 +1010,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questIds">Quest Ids</param>
         /// <returns>Resolved names</returns>
-        [Produces(typeof(List<AikaQuest>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AikaQuest>), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResolveQuestNames([FromBody]List<string> questIds)
@@ -1038,8 +1024,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="quest">Quest</param>
         /// <returns>Created quest</returns>
-        [Produces(typeof(AikaQuest))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaQuest), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateQuest([FromBody]AikaQuest quest)
@@ -1066,8 +1051,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the quest</param>
         /// <param name="quest">Quest</param>
         /// <returns>Updated quest</returns>
-        [Produces(typeof(AikaQuest))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AikaQuest), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateQuest(string id, [FromBody]AikaQuest quest)
@@ -1125,8 +1109,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the quest</param>
         /// <returns>Deleted quest</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete]
         [ValidateAntiForgeryToken]

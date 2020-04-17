@@ -251,6 +251,8 @@ namespace GoNorth.Data.Karta
                 result.AddRange(ExtractNotImplementedMarkers(curMap, curMap.NoteMarker, MarkerType.Note));
             }
 
+            result = result.OrderBy(m => m.Name).ToList();
+
             return result;
         }
 
@@ -260,7 +262,7 @@ namespace GoNorth.Data.Karta
         /// <param name="map">Map</param>
         /// <param name="markers">Markers</param>
         /// <param name="type">Type of the marker</param>
-        /// <returns></returns>
+        /// <returns>List of not implemented markers</returns>
         private List<MarkerImplementationQueryResultObject> ExtractNotImplementedMarkers<T>(KartaMap map, List<T> markers, MarkerType type) where T:MapMarker
         {
             if(markers == null)
@@ -304,10 +306,13 @@ namespace GoNorth.Data.Karta
         /// <returns>All Maps for a project without detail information</returns>
         public async Task<List<KartaMap>> GetAllProjectMaps(string projectId)
         {
-            List<KartaMap> maps = await _MapCollection.AsQueryable().Where(p => p.ProjectId == projectId).OrderBy(m => m.Name).Select(m => new KartaMap {
+            List<KartaMap> maps = await _MapCollection.AsQueryable().Where(p => p.ProjectId == projectId).Select(m => new KartaMap {
                 Id = m.Id,
                 Name = m.Name
             }).ToListAsync();
+
+            maps = maps.OrderBy(m => m.Name).ToList();
+
             return maps;
         }
 
@@ -334,6 +339,8 @@ namespace GoNorth.Data.Karta
                 queryResult.MarkerIds = curMap.NpcMarker.Where(m => m.NpcId == npcId).Select(m => m.Id).ToList();
                 result.Add(queryResult);
             }
+
+            result = result.OrderBy(r => r.Name).ToList();
 
             return result;
         }
@@ -362,6 +369,8 @@ namespace GoNorth.Data.Karta
                 result.Add(queryResult);
             }
 
+            result = result.OrderBy(r => r.Name).ToList();
+
             return result;
         }
 
@@ -389,6 +398,8 @@ namespace GoNorth.Data.Karta
                 result.Add(queryResult);
             }
 
+            result = result.OrderBy(r => r.Name).ToList();
+
             return result;
         }
 
@@ -399,10 +410,13 @@ namespace GoNorth.Data.Karta
         /// <returns>All Maps for a Aika Quest without detail information</returns>
         public async Task<List<KartaMap>> GetAllMapsAikaQuestIsMarkedIn(string questId)
         {
-            List<KartaMap> maps = await _MapCollection.AsQueryable().Where(p => p.QuestMarker.Any(n => n.QuestId == questId)).OrderBy(m => m.Name).Select(m => new KartaMap {
+            List<KartaMap> maps = await _MapCollection.AsQueryable().Where(p => p.QuestMarker.Any(n => n.QuestId == questId)).Select(m => new KartaMap {
                 Id = m.Id,
                 Name = m.Name
             }).ToListAsync();
+
+            maps = maps.OrderBy(r => r.Name).ToList();
+
             return maps;
         }
 
@@ -413,10 +427,13 @@ namespace GoNorth.Data.Karta
         /// <returns>All Maps fin which a map is marked without detail information</returns>
         public async Task<List<KartaMap>> GetAllMapsMapIsMarkedIn(string mapId)
         {
-            List<KartaMap> maps = await _MapCollection.AsQueryable().Where(p => p.MapChangeMarker.Any(n => n.MapId == mapId)).OrderBy(m => m.Name).Select(m => new KartaMap {
+            List<KartaMap> maps = await _MapCollection.AsQueryable().Where(p => p.MapChangeMarker.Any(n => n.MapId == mapId)).Select(m => new KartaMap {
                 Id = m.Id,
                 Name = m.Name
             }).ToListAsync();
+            
+            maps = maps.OrderBy(r => r.Name).ToList();
+
             return maps;
         }
 
@@ -484,6 +501,8 @@ namespace GoNorth.Data.Karta
             markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.MapChangeMarker, MarkerType.MapChange));
             markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.NoteMarker, MarkerType.Note));
             markers.AddRange(ExtractMarkersWithExportName(exportName, maps, m => m.QuestMarker, MarkerType.Quest));
+            
+            markers = markers.OrderBy(r => r.MapName).ThenBy(r => r.MarkerName).ToList();
 
             return markers;
         }

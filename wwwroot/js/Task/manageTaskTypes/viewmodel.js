@@ -9,11 +9,11 @@
              */
             ManageTaskTypes.ViewModel = function()
             {
-                this.taskGroupTypeList = new ManageTaskTypes.TaskTypeList(GoNorth.Task.ManageTaskTypes.Localization.TaskGroupTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskGroupType, 
+                this.taskGroupTypeList = new ManageTaskTypes.TaskTypeList("groupType", GoNorth.Task.ManageTaskTypes.Localization.TaskGroupTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskGroupType, 
                                                                           GoNorth.Task.ManageTaskTypes.Localization.EditTaskGroupType, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskGroupType, 
                                                                           GoNorth.Task.ManageTaskTypes.Localization.TaskGroupsWithoutTypeExist, "GetTaskGroupTypes", "AnyTaskBoardHasTaskGroupsWithoutType", 
                                                                           "CreateTaskGroupType", "UpdateTaskGroupType", "DeleteTaskGroupType", "TaskGroupType");
-                this.taskTypeList = new ManageTaskTypes.TaskTypeList(GoNorth.Task.ManageTaskTypes.Localization.TaskTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskType, 
+                this.taskTypeList = new ManageTaskTypes.TaskTypeList("taskType", GoNorth.Task.ManageTaskTypes.Localization.TaskTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskType, 
                                                                      GoNorth.Task.ManageTaskTypes.Localization.EditTaskType, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskType, 
                                                                      GoNorth.Task.ManageTaskTypes.Localization.TasksWithoutTypeExist, "GetTaskTypes", "AnyTaskBoardHasTasksWithoutType", 
                                                                      "CreateTaskType", "UpdateTaskType", "DeleteTaskType", "TaskType");

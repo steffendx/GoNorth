@@ -2,10 +2,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Tale;
+using GoNorth.Services.Export.DailyRoutine;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Dialog;
+using GoNorth.Services.Export.ExportSnippets;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.NodeGraphExport;
+using GoNorth.Services.Export.Placeholder.LegacyRenderingEngine;
+using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine;
+using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKeyGenerator;
 using Microsoft.Extensions.Localization;
 
 namespace GoNorth.Services.Export.Placeholder
@@ -16,15 +21,9 @@ namespace GoNorth.Services.Export.Placeholder
     public class ExportTemplatePlaceholderResolver : IExportTemplatePlaceholderResolver
     {
         /// <summary>
-        /// Localizer Factory
+        /// Rendering Engine
         /// </summary>
-        private readonly IStringLocalizerFactory _localizerFactory;
-
-
-        /// <summary>
-        /// Export Template Placeholder Resolvers
-        /// </summary>
-        private List<IExportTemplateTopicPlaceholderResolver> _exportTemplatePlaceholderResolvers;
+        private readonly Dictionary<ExportTemplateRenderingEngine, IExportTemplatePlaceholderRenderingEngine> _renderingEngine;
 
         /// <summary>
         /// Constructor
@@ -33,35 +32,52 @@ namespace GoNorth.Services.Export.Placeholder
         /// <param name="cachedDbAccess">Cached Db Access</param>
         /// <param name="languageKeyGenerator">Language Key Generator</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
+        /// <param name="scribanLanguageKeyGenerator">Scriban Language key generator</param>
         /// <param name="taleDbAccess">Dialog Db Access</param>
         /// <param name="dialogParser">Dialog Parser</param>
         /// <param name="dialogFunctionGenerator">Dialog Function Generator</param>
         /// <param name="dialogRenderer">Dialog Renderer</param>
-        /// <param name="dailyRoutineEventPlaceholderResolver">Daily routine event placeholder resolver</param>
-        /// <param name="dailyRoutineEventContentPlaceholderResolver">Daily routine event content placeholder resolver</param>
+        /// <param name="legacyDailyRoutineEventPlaceholderResolver">Legacy Daily routine event placeholder resolver</param>
+        /// <param name="legacyDailyRoutineEventContentPlaceholderResolver">Legacy Daily routine event content placeholder resolver</param>
+        /// <param name="dailyRoutineFunctionNameGenerator">Daily routine function name generator</param>
+        /// <param name="dailyRoutineFunctionRenderer">Daily routine function renderer</param>
         /// <param name="nodeGraphExporter">Node Graph Exporter</param>
-        /// <param name="exportSnippetNodeGraphRenderer">Export Snippet Node Graph Renderer</param>
-        /// <param name="exportSnippetFunctionNameGenerator">Export Snippet Function Name Generator</param>
+        /// <param name="exportSnippetFunctionRenderer">Export snippet function renderer</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public ExportTemplatePlaceholderResolver(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator, ILanguageKeyDbAccess languageKeyDbAccess, 
-                                                 ITaleDbAccess taleDbAccess, IExportDialogParser dialogParser, IExportDialogFunctionGenerator dialogFunctionGenerator, IExportDialogRenderer dialogRenderer, 
-                                                 IDailyRoutineEventPlaceholderResolver dailyRoutineEventPlaceholderResolver, IDailyRoutineEventContentPlaceholderResolver dailyRoutineEventContentPlaceholderResolver, 
-                                                 INodeGraphExporter nodeGraphExporter, IExportSnippetNodeGraphRenderer exportSnippetNodeGraphRenderer, IExportSnippetNodeGraphFunctionGenerator exportSnippetFunctionNameGenerator, 
-                                                 IStringLocalizerFactory localizerFactory)
+        public ExportTemplatePlaceholderResolver(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator, IScribanLanguageKeyGenerator scribanLanguageKeyGenerator, 
+                                                 ILanguageKeyDbAccess languageKeyDbAccess, ITaleDbAccess taleDbAccess, IExportDialogParser dialogParser, IExportDialogFunctionGenerator dialogFunctionGenerator, IExportDialogRenderer dialogRenderer, 
+                                                 ILegacyDailyRoutineEventPlaceholderResolver legacyDailyRoutineEventPlaceholderResolver, ILegacyDailyRoutineEventContentPlaceholderResolver legacyDailyRoutineEventContentPlaceholderResolver, 
+                                                 IDailyRoutineFunctionNameGenerator dailyRoutineFunctionNameGenerator, IDailyRoutineFunctionRenderer dailyRoutineFunctionRenderer, INodeGraphExporter nodeGraphExporter, 
+                                                 IExportSnippetFunctionRenderer exportSnippetFunctionRenderer, IStringLocalizerFactory localizerFactory)
         {
-            _localizerFactory = localizerFactory;
+            dialogRenderer.SetExportTemplatePlaceholderResolver(this);
 
+            _renderingEngine = new Dictionary<ExportTemplateRenderingEngine, IExportTemplatePlaceholderRenderingEngine>();
+            _renderingEngine.Add(ExportTemplateRenderingEngine.Legacy, new LegacyExportTemplatePlaceholderRenderingEngine(this, defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, languageKeyDbAccess, taleDbAccess, dialogParser,
+                                                                                                                          dialogFunctionGenerator, dialogRenderer, legacyDailyRoutineEventPlaceholderResolver, legacyDailyRoutineEventContentPlaceholderResolver,
+                                                                                                                          dailyRoutineFunctionRenderer, nodeGraphExporter, exportSnippetFunctionRenderer, localizerFactory));
+            _renderingEngine.Add(ExportTemplateRenderingEngine.Scriban, new ScribanExportTemplatePlaceholderRenderingEngine(this, cachedDbAccess, taleDbAccess, defaultTemplateProvider, scribanLanguageKeyGenerator, dialogParser, dialogFunctionGenerator, 
+                                                                                                                            dialogRenderer, dailyRoutineFunctionNameGenerator, dailyRoutineFunctionRenderer, exportSnippetFunctionRenderer, languageKeyDbAccess,
+                                                                                                                            localizerFactory));
+        }
 
-            _exportTemplatePlaceholderResolvers = new List<IExportTemplateTopicPlaceholderResolver>();
+        /// <summary>
+        /// Validates if a template is valid
+        /// </summary>
+        /// <param name="code">Code to validate</param>
+        /// <param name="renderingEngine">Rendering engine that is used</param>
+        /// <returns>Validated template</returns>
+        public ExportTemplateValidationResult ValidateTemplate(string code, ExportTemplateRenderingEngine renderingEngine)
+        {
+            if(!_renderingEngine.ContainsKey(renderingEngine))
+            {
+                return new ExportTemplateValidationResult 
+                {
+                    IsValid = false
+                };
+            }
 
-            // Order of exporting is determined by the order in which these are  added, thats why the order is important
-            _exportTemplatePlaceholderResolvers.Add(new ExportSnippetTemplatePlaceholderResolver(nodeGraphExporter, exportSnippetFunctionNameGenerator, exportSnippetNodeGraphRenderer, defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
-            _exportTemplatePlaceholderResolvers.Add(new NpcInventoryExportTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
-            _exportTemplatePlaceholderResolvers.Add(new NpcSkillExportTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
-            _exportTemplatePlaceholderResolvers.Add(new NpcDailyRoutineExportPlaceholderResolver(defaultTemplateProvider, cachedDbAccess, dailyRoutineEventPlaceholderResolver, dailyRoutineEventContentPlaceholderResolver, languageKeyGenerator, localizerFactory));
-            _exportTemplatePlaceholderResolvers.Add(new FlexFieldExportTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyGenerator, localizerFactory));
-            _exportTemplatePlaceholderResolvers.Add(new DialogExportTemplatePlaceholderResolver(cachedDbAccess, languageKeyGenerator, taleDbAccess, dialogParser, dialogFunctionGenerator, dialogRenderer, localizerFactory));
-            _exportTemplatePlaceholderResolvers.Add(new LanguageKeyTemplatePlaceholderResolver(defaultTemplateProvider, cachedDbAccess, languageKeyDbAccess, localizerFactory));
+            return _renderingEngine[renderingEngine].ValidateTemplate(code);
         }
 
         /// <summary>
@@ -70,44 +86,32 @@ namespace GoNorth.Services.Export.Placeholder
         /// <param name="templateType">Template Type</param>
         /// <param name="code">Code to fill</param>
         /// <param name="data">Export Data</param>
+        /// <param name="renderingEngine">Rendering Engine</param>
         /// <returns>Filled Code</returns>
-        public async Task<ExportPlaceholderFillResult> FillPlaceholders(TemplateType templateType, string code, ExportObjectData data)
+        public async Task<ExportPlaceholderFillResult> FillPlaceholders(TemplateType templateType, string code, ExportObjectData data, ExportTemplateRenderingEngine renderingEngine)
         {
-            ExportPlaceholderErrorCollection errorCollection = new ExportPlaceholderErrorCollection(_localizerFactory);
-
-            foreach(IExportTemplateTopicPlaceholderResolver curResolver in _exportTemplatePlaceholderResolvers)
+            if(!_renderingEngine.ContainsKey(renderingEngine))
             {
-                if(curResolver.IsValidForTemplateType(templateType))
-                {
-                    curResolver.SetErrorMessageCollection(errorCollection);
-                    code = await curResolver.FillPlaceholders(code, data);
-                }
+                throw new KeyNotFoundException(string.Format("Unknown rendering engine {0}", renderingEngine.ToString()));
             }
 
-            ExportPlaceholderFillResult result = new ExportPlaceholderFillResult();
-            result.Code = code;
-            result.Errors = errorCollection;
-            return result;
+            return await _renderingEngine[renderingEngine].FillPlaceholders(templateType, code, data);
         }
 
         /// <summary>
         /// Returns the Export Template Placeholders for a Template Type
         /// </summary>
         /// <param name="templateType">Template Type</param>
+        /// <param name="renderingEngine">Rendering Engine</param>
         /// <returns>Export Template Placeholder</returns>
-        public List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType)
+        public List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType, ExportTemplateRenderingEngine renderingEngine)
         {
-            List<ExportTemplatePlaceholder> placeholders = new List<ExportTemplatePlaceholder>();
-
-            foreach(IExportTemplateTopicPlaceholderResolver curResolver in _exportTemplatePlaceholderResolvers)
+            if(!_renderingEngine.ContainsKey(renderingEngine))
             {
-                if(curResolver.IsValidForTemplateType(templateType))
-                {
-                    placeholders.AddRange(curResolver.GetExportTemplatePlaceholdersForType(templateType));
-                }
+                throw new KeyNotFoundException(string.Format("Unknown rendering engine {0}", renderingEngine.ToString()));
             }
 
-            return placeholders;
+            return _renderingEngine[renderingEngine].GetExportTemplatePlaceholdersForType(templateType);
         }
     }
 }

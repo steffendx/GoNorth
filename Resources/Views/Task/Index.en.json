@@ -19,6 +19,7 @@
     "InsertAikaQuestLink": "Add link to quest",
     "InsertKortistoNpcLink": "Add link to npc",
     "InsertStyrItemLink": "Add link to item",
+    "InsertEvneSkillLink": "Add link to skill",
 
     "DialogTaskNumberPrefix": "(#",
     "DialogTaskNumberPostfix": ")",

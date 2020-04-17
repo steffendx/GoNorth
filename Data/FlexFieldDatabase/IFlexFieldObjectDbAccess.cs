@@ -28,15 +28,17 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        Task<List<T>> GetFlexFieldObjectsInRootFolderForProject(string projectId, int start, int pageSize);
+        Task<List<T>> GetFlexFieldObjectsInRootFolderForProject(string projectId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of Flex Field Objects in the root folder
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Object Count</returns>
-        Task<int> GetFlexFieldObjectsInRootFolderCount(string projectId);
+        Task<int> GetFlexFieldObjectsInRootFolderCount(string projectId, string locale);
 
         /// <summary>
         /// Returns all Flex Field Objects in a folder
@@ -44,15 +46,17 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="folderId">Folder Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        Task<List<T>> GetFlexFieldObjectsInFolder(string folderId, int start, int pageSize);
+        Task<List<T>> GetFlexFieldObjectsInFolder(string folderId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of Flex Field Objects in a folder folder
         /// </summary>
         /// <param name="folderId">Folder Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Object Count</returns>
-        Task<int> GetFlexFieldObjectsInFolderCount(string folderId);
+        Task<int> GetFlexFieldObjectsInFolderCount(string folderId, string locale);
 
         /// <summary>
         /// Searches Flex Field Objects
@@ -61,16 +65,18 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="searchPattern">Search pattern</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        Task<List<T>> SearchFlexFieldObjects(string projectId, string searchPattern, int start, int pageSize);
+        Task<List<T>> SearchFlexFieldObjects(string projectId, string searchPattern, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of a search result
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Count of results</returns>
-        Task<int> SearchFlexFieldObjectsCount(string projectId, string searchPattern);
+        Task<int> SearchFlexFieldObjectsCount(string projectId, string searchPattern, string locale);
 
         /// <summary>
         /// Returns all Flex Field Objects that are not yet implemented
@@ -78,15 +84,17 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Objects</returns>
-        Task<List<T>> GetNotImplementedFlexFieldObjects(string projectId, int start, int pageSize);
+        Task<List<T>> GetNotImplementedFlexFieldObjects(string projectId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of all Flex Field Objects that are not yet implemented
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Flex Field Object Count</returns>
-        Task<int> GetNotImplementedFlexFieldObjectsCount(string projectId);
+        Task<int> GetNotImplementedFlexFieldObjectsCount(string projectId, string locale);
 
         /// <summary>
         /// Returns the Flex Field Objects which are based on a certain template
@@ -115,6 +123,13 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <param name="flexFieldObjectIds">Flex Field Object Ids</param>
         /// <returns>Resolved Flex Field Objects with names</returns>
         Task<List<T>> ResolveFlexFieldObjectNames(List<string> flexFieldObjectIds);
+
+        /// <summary>
+        /// Returns a list of objects by id
+        /// </summary>
+        /// <param name="idsToLoad">Ids of the objects to load</param>
+        /// <returns>List of loaded objects</returns>
+        Task<List<T>> GetObjectsById(List<string> idsToLoad);
 
         /// <summary>
         /// Updates an Flex Field Object

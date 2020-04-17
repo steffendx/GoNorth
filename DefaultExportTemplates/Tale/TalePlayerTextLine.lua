@@ -1,3 +1,7 @@
-{{Tale_ChildNode_HasFunction_Start}}local textLine{{Tale_Node_Id}} = TextDialogStep:new(playerNpc, "{{Tale_TextLine_LangKey}}") -- {{Tale_TextLine_Preview}}
-textLine{{Tale_Node_Id}}:set_npc_function_trigger("{{Tale_ChildNode_Function}}")
-dialogManager:add_dialog_step(textLine{{Tale_Node_Id}}){{Tale_ChildNode_HasFunction_End}}{{Tale_ChildNode_HasNoFunction_Start}}dialogManager:add_dialog_step(TextDialogStep:new(playerNpc, "{{Tale_TextLine_LangKey}}")) -- {{Tale_TextLine_Preview}}{{Tale_ChildNode_HasNoFunction_End}}
+{{~ if text_line.child_node && text_line.child_node.node_step_function_name != "" ~}}
+local textLine{{ text_line.node_index }} = TextDialogStep:new(playerNpc, "{{ langkey text_line.text_line }}") -- {{ text_line.text_line_preview }}
+textLine{{ text_line.node_index }}:set_npc_function_trigger("{{ text_line.child_node.node_step_function_name }}")
+dialogManager:add_dialog_step(textLine{{ text_line.node_index }})
+{{~ else ~}}
+dialogManager:add_dialog_step(TextDialogStep:new(playerNpc, "{{ langkey text_line.text_line }}")) -- {{ text_line.text_line_preview }}
+{{~ end ~}}

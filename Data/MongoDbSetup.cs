@@ -123,6 +123,8 @@ namespace GoNorth.Data
             
             await CreateCollectionIfNotExists(ExportTemplateMongoDbAccess.ExportTemplateCollectionName, collectionNames);
             await CreateCollectionIfNotExists(ExportTemplateMongoDbAccess.ExportTemplateRecyclingBinCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(IncludeExportTemplateMongoDbAccess.IncludeExportTemplateCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(IncludeExportTemplateMongoDbAccess.IncludeExportTemplateRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(ExportFunctionIdMongoDbAccess.ExportFunctionIdCounterCollectionName, collectionNames);
             await CreateCollectionIfNotExists(ExportFunctionIdMongoDbAccess.ExportFunctionIdCollectionName, collectionNames);
             await CreateCollectionIfNotExists(LanguageKeyMongoDbAccess.LanguageKeyIdCounterCollectionName, collectionNames);

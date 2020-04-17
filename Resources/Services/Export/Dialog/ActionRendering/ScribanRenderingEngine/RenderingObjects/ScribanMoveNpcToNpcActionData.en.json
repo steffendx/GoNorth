@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_MovementState": "Movement state of the npc. null if no movement state is specified.",
+    "PlaceholderDesc_UnescapedMovementState": "Movement state of the npc without using the escape settings. null if no movement state is specified.",
+    "PlaceholderDesc_DirectContinueFunction": "Name of the function that will directly continue the script. null if no function exist."
+}

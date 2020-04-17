@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_Id": "Id of the field. &lt;VALUE_NAME&gt; must be replaced using the name of the field.",
+    "PlaceholderDesc_Name": "Name of the field. &lt;VALUE_NAME&gt; must be replaced using the name of the field.",
+    "PlaceholderDesc_Value": "Value of the field. &lt;VALUE_NAME&gt; must be replaced using the name of the field.",
+    "PlaceholderDesc_UnescapedValue": "Value of the field. &lt;VALUE_NAME&gt; must be replaced using the name of the field. Escape settings will not be used here.",
+    "PlaceholderDesc_Type": "Type of the field. Can be \"string\", \"number\" or \"option\". &lt;VALUE_NAME&gt; must be replaced using the name of the field. If the field does not exist \"MISSING\" will be returned.",
+    "PlaceholderDesc_Exists": "true if the field exists, else false."
+}

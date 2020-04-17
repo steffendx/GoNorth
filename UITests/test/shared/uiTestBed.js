@@ -117,7 +117,7 @@ class uiTestBed {
         this.registerCallbacksOnPage(page);
 
         // Required to prevent race conditions
-        await page.goto(this.config.testBaseUrl, { waitUntil: 'networkidle0' });
+        await this.runCodeWithRetry(() => { return page.goto(this.config.testBaseUrl, { waitUntil: 'networkidle0', timeout: 10000 }) });
 
         await page.waitForSelector("#Email");
         await page.type("#Email", this.config.loginName);
@@ -125,7 +125,7 @@ class uiTestBed {
         await page.type("#Password", this.config.password);
         await Promise.all([
             page.click("button[type='submit']"),
-            page.waitForNavigation({ waitUntil: 'networkidle0' })
+            this.runCodeWithRetry(() => { return page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 }) })
         ]);
         
         var couldNotLogin = false;
@@ -258,7 +258,7 @@ class uiTestBed {
         }
         targetUrl += serverRelativeUrl;
 
-        await this.page.goto(targetUrl, { waitUntil: 'networkidle0' });
+        await this.runCodeWithRetry(() => { return this.page.goto(targetUrl, { waitUntil: 'networkidle0', timeout: 10000 }) });
         await sleep(400);
     }
 
@@ -279,7 +279,7 @@ class uiTestBed {
         await sleep(400);
         await Promise.all([
             this.page.click(selector),
-            this.page.waitForNavigation({ waitUntil: 'networkidle0' })
+            this.runCodeWithRetry(() => { return this.page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 }) })
         ]);
     }
 
@@ -293,7 +293,7 @@ class uiTestBed {
                 this.onPopupCallback = null;
 
                 this.page = page;
-                await this.page.waitForNavigation({ waitUntil: 'networkidle0' });
+                await this.runCodeWithRetry(() => { return this.page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 }) });
                 await sleep(400);
                 resolve();
             };
@@ -322,6 +322,27 @@ class uiTestBed {
             return foundElement != null;
         } catch(e) {
             assert.fail("Could not read disable state of element " + selector);
+        }
+    }
+
+    /**
+     * Runs a code block with a retry
+     * @param {function} codeCallback Codecallback 
+     */
+    async runCodeWithRetry(codeCallback) {
+        try
+        {
+            await codeCallback();
+        }
+        catch(e)
+        {
+            try
+            {
+                await codeCallback();
+            }
+            catch(e)
+            {
+            }
         }
     }
 };

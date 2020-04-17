@@ -1,1 +1,1 @@
-BaseNpc_RemoveItemFromNpc(playerNpc, "{{Tale_Action_SelectedItem_Value_ScriptName}}", {{Tale_Action_Quantity}})
+BaseNpc_RemoveItemFromNpc(playerNpc, "{{ action.selected_item.fields.ScriptName.value }}", {{ action.quantity }})

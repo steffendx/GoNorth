@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using GoNorth.Services.ImplementationStatusCompare;
 
@@ -6,7 +7,7 @@ namespace GoNorth.Data.Kortisto
     /// <summary>
     /// Kortisto Inventory Item
     /// </summary>
-    public class KortistoInventoryItem : IImplementationListComparable
+    public class KortistoInventoryItem : IImplementationListComparable, ICloneable
     {
         /// <summary>
         /// Item Id
@@ -37,5 +38,18 @@ namespace GoNorth.Data.Kortisto
         /// </summary>
         [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue(ItemId, CompareDifferenceValue.ValueResolveType.ResolveItemName); } }
+
+        /// <summary>
+        /// Clones the object
+        /// </summary>
+        /// <returns>Cloned object</returns>
+        public object Clone()
+        {
+            return new KortistoInventoryItem {
+                ItemId = this.ItemId,
+                Quantity = this.Quantity,
+                IsEquipped = this.IsEquipped
+            };
+        }
     }
 }

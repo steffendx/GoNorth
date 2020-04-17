@@ -1,1 +1,11 @@
-BaseDialog_GetQuestState({{Tale_Condition_Quest_Value_Id}}) == {{Tale_Condition_QuestState_Is_NotStarted_Start}}QUEST_STATE_NOT_STARTED{{Tale_Condition_QuestState_Is_NotStarted_End}}{{Tale_Condition_QuestState_Is_InProgress_Start}}QUEST_STATE_IN_PROGRESS{{Tale_Condition_QuestState_Is_InProgress_End}}{{Tale_Condition_QuestState_Is_Success_Start}}QUEST_STATE_SUCCESS{{Tale_Condition_QuestState_Is_Success_End}}{{Tale_Condition_QuestState_Is_Failed_Start}}QUEST_STATE_FAILED{{Tale_Condition_QuestState_Is_Failed_End}}
+{{-
+    $questState = "QUEST_STATE_NOT_STARTED"
+    if condition.quest_state == "InProgress"
+        $questState = "QUEST_STATE_IN_PROGRESS"
+    else if(condition.quest_state == "Success")
+       $questState = "QUEST_STATE_SUCCESS"
+    else if(condition.quest_state == "Failed")
+       $questState = "QUEST_STATE_FAILED"
+    end
+-}}
+BaseDialog_GetQuestState({{ condition.quest.fields.Id.value }}) == {{ $questState }}

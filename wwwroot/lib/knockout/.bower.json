@@ -22,15 +22,14 @@
     "spec",
     "build/output"
   ],
-  "version": "3.5.0",
-  "_release": "3.5.0",
+  "version": "3.5.1",
+  "_release": "3.5.1",
   "_resolution": {
     "type": "version",
-    "tag": "v3.5.0",
-    "commit": "3c7e4a2d64f8145176e65f4eef647544dc909dc0"
+    "tag": "v3.5.1",
+    "commit": "59b286f19576139738982a051c5c7af159fce693"
   },
   "_source": "https://github.com/SteveSanderson/knockout.git",
-  "_target": "^3.5.0",
-  "_originalSource": "knockout",
-  "_direct": true
+  "_target": "^3.5.1",
+  "_originalSource": "knockout"
 }

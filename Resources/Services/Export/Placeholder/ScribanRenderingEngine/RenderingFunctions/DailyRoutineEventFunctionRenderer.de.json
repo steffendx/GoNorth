@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_DailyRoutineEventFunction": "Rendert eine Tagesablauf Ereignis Funktion basierend auf dem geteilten Template für Ereignis Funktionen Template. Als &lt;DAILY_ROUTINE_FUNCTION&gt; muss eine Tagesablaufs Funktion, wie beispielsweise ein Eintrag aus daily_routine.event_functions, übergeben werden."
+}

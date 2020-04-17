@@ -2265,6 +2265,13 @@
                         enableLiveAutocompletion: true
                     });
 
+                    // Ensure autocomplete is triggered on dot
+                    obs._editor.commands.on("afterExec", function (e) {
+                        if ((e.command.name == "insertstring" && /^[\w.]$/.test(e.args)) || e.command.name == "backspace") {
+                            obs._editor.execCommand("startAutocomplete");
+                        }
+                    });
+
                     if(ko.isObservable(obs))
                     {
                         obs._editor.session.on('change', function(delta) {
@@ -2312,6 +2319,8 @@
     "use strict";
     (function(ScriptDialog) {
 
+            ScriptDialog.currentCodeScriptDialogIndex = 0;
+
             /**
              * Viewmodel for a dialog to enter a code script
              * @param {ko.observable} errorOccured Error occured observable
@@ -2319,6 +2328,9 @@
              */
             ScriptDialog.CodeScriptDialog = function(errorOccured)
             {
+                this.dialogId = ScriptDialog.currentCodeScriptDialogIndex;
+                ++ScriptDialog.currentCodeScriptDialogIndex;
+
                 this.errorOccured = errorOccured;
 
                 this.isVisible = new ko.observable(false);
@@ -2396,7 +2408,7 @@
                     this.showConfirmCloseDialog(false);
                     this.confirmedClose = false;
 
-                    GoNorth.Util.setupValidation("#gn-codeScriptEditorForm");
+                    GoNorth.Util.setupValidation("#gn-codeScriptEditorForm" + this.dialogId);
 
                     this.editDeferred = new jQuery.Deferred();
                     return this.editDeferred.promise();
@@ -2406,7 +2418,7 @@
                  * Saves the code
                  */
                 saveCode: function() {
-                    if(!jQuery("#gn-codeScriptEditorForm").valid())
+                    if(!jQuery("#gn-codeScriptEditorForm" + this.dialogId).valid())
                     {
                         return;
                     }
@@ -2480,6 +2492,8 @@
     "use strict";
     (function(ScriptDialog) {
 
+            ScriptDialog.currentNodeDialogIndex = 0;
+
             /**
              * Viewmodel for a dialog to enter a script using a node system
              * @param {ko.observable} npcId Npc id to which the node system is related
@@ -2491,6 +2505,9 @@
             ScriptDialog.NodeScriptDialog = function(npcId, objectDialog, codeEditor, errorOccured)
             {
                 GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
+
+                this.dialogId = ScriptDialog.currentNodeDialogIndex;
+                ++ScriptDialog.currentNodeDialogIndex;
 
                 this.npcId = npcId;
 
@@ -2619,7 +2636,7 @@
                     this.showConfirmCloseDialog(false);
                     this.confirmedClose = false;
                     
-                    GoNorth.Util.setupValidation("#gn-nodeScriptEditorForm");
+                    GoNorth.Util.setupValidation("#gn-nodeScriptEditorForm" + this.dialogId);
 
                     this.editDeferred = new jQuery.Deferred();
                     return this.editDeferred.promise();
@@ -2629,7 +2646,7 @@
                  * Saves the nodes
                  */
                 saveNodes: function() {
-                    if(!jQuery("#gn-nodeScriptEditorForm").valid())
+                    if(!jQuery("#gn-nodeScriptEditorForm" + this.dialogId).valid())
                     {
                         return;
                     }
@@ -13875,7 +13892,9 @@
                     {
                         if(npc.dailyRoutine[curEvent].eventId == existingData.eventId)
                         {
+                            conditionData.selectedDailyRoutineNpcId(npc.id);
                             conditionData.selectedDailyRoutineNpcName(npc.name);
+                            conditionData.selectedDailyRoutineEventId(npc.dailyRoutine[curEvent].eventId);
                             conditionData.selectedDailyRoutineEvent(npc.dailyRoutine[curEvent]);
                             return;
                         }
@@ -20032,6 +20051,13 @@
                         url: "/api/KartaApi/Map?id=" + encodeURIComponent(id),
                         method: "GET"
                     }).done(function(map) {
+                        if(!map)
+                        {
+                            self.errorOccured(true);
+                            self.isLoading(false);
+                            return;
+                        }
+
                         self.currentMapName(map.name);
 
                         self.mapMaxZoom(map.maxZoom);

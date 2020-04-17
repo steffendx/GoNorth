@@ -28,15 +28,17 @@ namespace GoNorth.Data.TaskManagement
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Boards</returns>
-        Task<List<TaskBoard>> GetOpenTaskBoards(string projectId, int start, int pageSize);
+        Task<List<TaskBoard>> GetOpenTaskBoards(string projectId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of open Task Boards for a project
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Board Count</returns>
-        Task<int> GetOpenTaskBoardCount(string projectId);
+        Task<int> GetOpenTaskBoardCount(string projectId, string locale);
 
         /// <summary>
         /// Returns the closed Task Boards for a project
@@ -44,15 +46,17 @@ namespace GoNorth.Data.TaskManagement
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Boards</returns>
-        Task<List<TaskBoard>> GetClosedTaskBoards(string projectId, int start, int pageSize);
+        Task<List<TaskBoard>> GetClosedTaskBoards(string projectId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of closed Task Boards for a project
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Board Count</returns>
-        Task<int> GetClosedTaskBoardCount(string projectId);
+        Task<int> GetClosedTaskBoardCount(string projectId, string locale);
 
         /// <summary>
         /// Returns all task boards

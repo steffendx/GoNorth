@@ -1,0 +1,16 @@
+{
+    "PlaceholderDesc_EventId": "Id of the event",
+    "PlaceholderDesc_EarliestTime": "Earliest time the event at which the event might happen.",
+    "PlaceholderDesc_LatestTime": "Latest time the event at which the event might happen.",
+    "PlaceholderDesc_MovementTarget": "Name of the movement target. null if none exist.",
+    "PlaceholderDesc_UnescapedMovementTarget": "Name of the movement target. null if none exist. Escape setting will not be used here.",
+    "PlaceholderDesc_MovementTargetExportName": "Export Name of the movement target",
+    "PlaceholderDesc_UnescapedMovementTargetExportName": "Export Name of the movement target. null if none exist. Escape setting will not be used here.",
+    "PlaceholderDesc_MovementTargetExportNameOrName": "Will be replaced with the export name of the movement target. If it has no export name the default name will be used. If both do not exist, this will be null.",
+    "PlaceholderDesc_UnescapedMovementTargetExportNameOrName": "Will be replaced with the export name of the movement target. If it has no export name the default name will be used. If both do not exist, this will be null. Escape setting will not be used here.",
+    "PlaceholderDesc_ScriptType": "Type of the script. Can be <i>None</i>, <i>Code</i> or <i>NodeGraph</i> sein.",
+    "PlaceholderDesc_ScriptFunctionName": "Name of the script function",
+    "PlaceholderDesc_ScriptName": "Name of the script",
+    "PlaceholderDesc_TargetState": "Target state of the npc upon arriving at the event target. null if no target state exists",
+    "PlaceholderDesc_IsEnabledByDefault": "true if the event is enabled by default, else false."
+}

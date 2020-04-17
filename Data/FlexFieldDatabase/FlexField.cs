@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using GoNorth.Services.ImplementationStatusCompare;
 
@@ -6,7 +7,7 @@ namespace GoNorth.Data.FlexFieldDatabase
     /// <summary>
     /// Flex Field
     /// </summary>
-    public class FlexField : IImplementationListComparable
+    public class FlexField : IImplementationListComparable, ICloneable
     {
         /// <summary>
         /// Id of the field
@@ -58,5 +59,22 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// </summary>
         [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue(Name, CompareDifferenceValue.ValueResolveType.None); } }
+
+        /// <summary>
+        /// Clones the field
+        /// </summary>
+        /// <returns>Cloned field</returns>
+        public object Clone()
+        {
+            return new FlexField {
+                Id = this.Id,
+                FieldType = this.FieldType,
+                CreatedFromTemplate = this.CreatedFromTemplate,
+                Name = this.Name,
+                Value = this.Value,
+                AdditionalConfiguration = this.AdditionalConfiguration,
+                ScriptSettings = this.ScriptSettings != null ? (FlexFieldScriptSettings)this.ScriptSettings.Clone() : null
+            };
+        }
     }
 }

@@ -18,19 +18,26 @@ namespace GoNorth.Services.Export.Dialog
         void SetErrorCollection(ExportPlaceholderErrorCollection errorCollection);
 
         /// <summary>
-        /// Renders a dialog
+        /// Sets the export template placeholder resolver
+        /// </summary>
+        /// <param name="templatePlaceholderResolver">Template placeholder resolver</param>
+        void SetExportTemplatePlaceholderResolver(IExportTemplatePlaceholderResolver templatePlaceholderResolver);
+        
+        /// <summary>
+        /// Renders the dialog steps
         /// </summary>
         /// <param name="exportDialog">Dialog to render</param>
-        /// <param name="npc">Npc to which the dialog belongs</param>
-        /// <returns>Result of rendering the dialog</returns>
-        Task<ExportDialogRenderResult> RenderDialog(ExportDialogData exportDialog, KortistoNpc npc);
-        
+        /// <param name="npc">Npc</param>
+        /// <returns>Function code</returns>
+        Task<List<ExportDialogFunctionCode>> RenderDialogSteps(ExportDialogData exportDialog, KortistoNpc npc);
+
         /// <summary>
         /// Returns the Export Template Placeholders for a Template Type
         /// </summary>
         /// <param name="templateType">Template Type</param>
+        /// <param name="renderingEngine">Rendering engine</param>
         /// <returns>Export Template Placeholder</returns>
-        List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType);
+        List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType, ExportTemplateRenderingEngine renderingEngine);
 
         /// <summary>
         /// Returns if the dialog renderer has placeholders for a template type

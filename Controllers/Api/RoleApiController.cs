@@ -17,8 +17,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the available roles
         /// </summary>
         /// <returns>Available Roles</returns>
-        [Produces(typeof(List<string>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult AvailableRoles()
         {

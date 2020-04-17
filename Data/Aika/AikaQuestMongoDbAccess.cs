@@ -51,15 +51,29 @@ namespace GoNorth.Data.Aika
         }
 
         /// <summary>
+        /// Builds a quest search  by project id queryable
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Quest Queryable</returns>
+        private IFindFluent<AikaQuest, AikaQuest> BuildQuestByProjectIdQueryable(string projectId, string locale)
+        {
+            return _QuestCollection.Find(q => q.ProjectId == projectId, new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
+        }
+
+        /// <summary>
         /// Returns the quests for a project with reduced informations
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quests</returns>
-        public async Task<List<AikaQuest>> GetQuestsByProjectId(string projectId, int start, int pageSize)
+        public async Task<List<AikaQuest>> GetQuestsByProjectId(string projectId, int start, int pageSize, string locale)
         {
-            List<AikaQuest> quests = await _QuestCollection.AsQueryable().Where(q => q.ProjectId == projectId).OrderBy(q => q.Name).Skip(start).Take(pageSize).Select(q => new AikaQuest() {
+            List<AikaQuest> quests = await BuildQuestByProjectIdQueryable(projectId, locale).SortBy(q => q.Name).Skip(start).Limit(pageSize).Project(q => new AikaQuest() {
                 Id = q.Id,
                 Name = q.Name,
                 IsMainQuest = q.IsMainQuest
@@ -71,10 +85,11 @@ namespace GoNorth.Data.Aika
         /// Returns the count of quests for a project
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quest Count</returns>
-        public async Task<int> GetQuestsByProjectIdCount(string projectId)
+        public async Task<int> GetQuestsByProjectIdCount(string projectId, string locale)
         {
-            int count = (int)await _QuestCollection.AsQueryable().Where(q => q.ProjectId == projectId).CountAsync();
+            int count = (int)await BuildQuestByProjectIdQueryable(projectId, locale).CountDocumentsAsync();
             return count;
         }
 
@@ -83,16 +98,19 @@ namespace GoNorth.Data.Aika
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quest Queryable</returns>
-        private IMongoQueryable<AikaQuest> BuildQuestSearchQueryable(string projectId, string searchPattern)
+        private IFindFluent<AikaQuest, AikaQuest> BuildQuestSearchQueryable(string projectId, string searchPattern, string locale)
         {
             string regexPattern = ".";
             if(!string.IsNullOrEmpty(searchPattern))
             {
-                string[] searchPatternParts = searchPattern.Split(" ");
+                string[] searchPatternParts = searchPattern.Split(" ").Select(s => Regex.Escape(s)).ToArray();
                 regexPattern = "(" + string.Join("|", searchPatternParts) + ")";
             }
-            return _QuestCollection.AsQueryable().Where(q => q.ProjectId == projectId && (Regex.IsMatch(q.Name, regexPattern, RegexOptions.IgnoreCase) || Regex.IsMatch(q.Description, regexPattern, RegexOptions.IgnoreCase)));
+            return _QuestCollection.Find(q => q.ProjectId == projectId && (Regex.IsMatch(q.Name, regexPattern, RegexOptions.IgnoreCase) || Regex.IsMatch(q.Description, regexPattern, RegexOptions.IgnoreCase)), new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
         }
 
         /// <summary>
@@ -102,10 +120,11 @@ namespace GoNorth.Data.Aika
         /// <param name="searchPattern">Search pattern</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quests</returns>
-        public async Task<List<AikaQuest>> SearchQuests(string projectId, string searchPattern, int start, int pageSize)
+        public async Task<List<AikaQuest>> SearchQuests(string projectId, string searchPattern, int start, int pageSize, string locale)
         {
-            List<AikaQuest> quests = await BuildQuestSearchQueryable(projectId, searchPattern).OrderBy(q => q.Name).Skip(start).Take(pageSize).Select(q => new AikaQuest() {
+            List<AikaQuest> quests = await BuildQuestSearchQueryable(projectId, searchPattern, locale).SortBy(q => q.Name).Skip(start).Limit(pageSize).Project(q => new AikaQuest() {
                 Id = q.Id,
                 Name = q.Name,
                 IsMainQuest = q.IsMainQuest
@@ -118,12 +137,27 @@ namespace GoNorth.Data.Aika
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Count of results</returns>
-        public async Task<int> SearchQuestsCount(string projectId, string searchPattern)
+        public async Task<int> SearchQuestsCount(string projectId, string searchPattern, string locale)
         {
-            int count = await BuildQuestSearchQueryable(projectId, searchPattern).CountAsync();
+            int count = (int)await BuildQuestSearchQueryable(projectId, searchPattern, locale).CountDocumentsAsync();
             return count;
         }
+
+        /// <summary>
+        /// Builds a quest searchable for not implemented quests
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Quest Queryable</returns>
+        private IFindFluent<AikaQuest, AikaQuest> BuildNotImplementedQueryable(string projectId, string locale)
+        {
+            return _QuestCollection.Find(q => q.ProjectId == projectId && !q.IsImplemented, new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
+        }
+
 
         /// <summary>
         /// Returns all quests that are not yet implemented
@@ -131,10 +165,11 @@ namespace GoNorth.Data.Aika
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quest Objects</returns>
-        public async Task<List<AikaQuest>> GetNotImplementedQuests(string projectId, int start, int pageSize)
+        public async Task<List<AikaQuest>> GetNotImplementedQuests(string projectId, int start, int pageSize, string locale)
         {
-            List<AikaQuest> quests = await _QuestCollection.AsQueryable().Where(q => q.ProjectId == projectId && !q.IsImplemented).OrderBy(q => q.Name).Skip(start).Take(pageSize).Select(q => new AikaQuest() {
+            List<AikaQuest> quests = await BuildNotImplementedQueryable(projectId, locale).SortBy(q => q.Name).Skip(start).Limit(pageSize).Project(q => new AikaQuest() {
                 Id = q.Id,
                 Name = q.Name,
                 IsMainQuest = q.IsMainQuest
@@ -146,10 +181,11 @@ namespace GoNorth.Data.Aika
         /// Returns the count of all quests that are not yet implemented
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quest Count</returns>
-        public async Task<int> GetNotImplementedQuestsCount(string projectId)
+        public async Task<int> GetNotImplementedQuestsCount(string projectId, string locale)
         {
-            int count = await _QuestCollection.AsQueryable().Where(q => q.ProjectId == projectId && !q.IsImplemented).CountAsync();
+            int count = (int)await BuildNotImplementedQueryable(projectId, locale).CountDocumentsAsync();
             return count; 
         }
 
@@ -165,6 +201,8 @@ namespace GoNorth.Data.Aika
                 Name = q.Name,
                 IsMainQuest = q.IsMainQuest
             }).ToListAsync();
+
+            quests = quests.OrderBy(q => q.Name).ToList();
             return quests;
         }
         

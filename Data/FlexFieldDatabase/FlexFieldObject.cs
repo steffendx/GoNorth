@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GoNorth.Data.ImplementationSnapshot;
 using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.ImplementationStatusCompare;
@@ -75,5 +76,45 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// Id of the user who last modified the object
         /// </summary>
         public string ModifiedBy { get; set; }
+
+
+        /// <summary>
+        /// Clones the flex field object
+        /// </summary>
+        /// <returns>Cloned</returns>
+        protected T CloneObject<T>() where T : FlexFieldObject, new()
+        {
+            T clonedObject = new T {
+                Id = this.Id,
+                ProjectId = this.ProjectId,
+                TemplateId = this.TemplateId,
+                Name = this.Name,
+                ParentFolderId = this.ParentFolderId,
+                ImageFile = this.ImageFile,
+                ThumbnailImageFile = this.ThumbnailImageFile,
+                Fields = CloneFields(this.Fields),
+                Tags = new List<string>(this.Tags),
+                IsImplemented = this.IsImplemented,
+                ModifiedOn = this.ModifiedOn,
+                ModifiedBy = this.ModifiedBy
+            };
+
+            return clonedObject;
+        }
+
+        /// <summary>
+        /// Clones a list of field
+        /// </summary>
+        /// <param name="fields">List of fields to clone</param>
+        /// <returns>Cloned list of field</returns>
+        private List<FlexField> CloneFields(List<FlexField> fields)
+        {
+            if(fields == null)
+            {
+                return null;
+            }
+            
+            return fields.Select(f => f.Clone()).Cast<FlexField>().ToList();
+        }
     }
 }

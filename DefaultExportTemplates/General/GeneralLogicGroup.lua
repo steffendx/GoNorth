@@ -1,1 +1,1 @@
-({{Logic_Group_Content}})
+({{ logic_group.content }})

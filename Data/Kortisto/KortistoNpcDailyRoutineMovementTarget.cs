@@ -1,3 +1,4 @@
+using System;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Kortisto
@@ -5,7 +6,7 @@ namespace GoNorth.Data.Kortisto
     /// <summary>
     /// Kortisto Npc Daily Routine movement target
     /// </summary>
-    public class KortistoNpcDailyRoutineMovementTarget : IImplementationComparable
+    public class KortistoNpcDailyRoutineMovementTarget : IImplementationComparable, ICloneable
     {
         /// <summary>
         /// Id of the map to which the movement target belongs
@@ -35,5 +36,20 @@ namespace GoNorth.Data.Kortisto
         /// </summary>
         [ValueCompareAttribute]
         public string ExportName { get; set; }
+
+        /// <summary>
+        /// Clones the movement target
+        /// </summary>
+        /// <returns>Cloned movement target</returns>
+        public object Clone()
+        {
+            return new KortistoNpcDailyRoutineMovementTarget {
+                MapId = this.MapId,
+                Lat = this.Lat,
+                Lng = this.Lng,
+                Name = this.Name,
+                ExportName = this.ExportName
+            };
+        }
     }
 }

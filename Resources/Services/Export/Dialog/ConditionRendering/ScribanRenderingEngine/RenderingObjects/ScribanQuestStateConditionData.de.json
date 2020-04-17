@@ -1,0 +1,4 @@
+{
+    "PlaceholderDesc_Quest": "Quest dessen Zustand geprüft wird",
+    "PlaceholderDesc_QuestState": "Zustand auf den geprüft wird. Kann <i>NotStarted</i>, <i>InProgress</i>, <i>Success</i> oder <i>Failed</i> sein."
+}

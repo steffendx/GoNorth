@@ -1,1 +1,1 @@
-targetNpc:push_state("{{Tale_Action_State}}")
+targetNpc:push_state("{{ action.target_state }}")

@@ -1,1 +1,1 @@
-BaseDialog_SpawnNpcAtMarker("{{Tale_Action_Npc_Value_ScriptName}}", "{{Tale_Action_TargetMarker_Name}}", {{Tale_Action_Rotation_Pitch}}, {{Tale_Action_Rotation_Yaw}}, {{Tale_Action_Rotation_Roll}})
+BaseDialog_SpawnNpcAtMarker("{{ action.object.fields.ScriptName.value }}", "{{ action.target_marker_name }}", {{ action.pitch }}, {{ action.yaw }}, {{ action.roll }})

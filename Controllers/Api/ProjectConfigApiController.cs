@@ -77,8 +77,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="configKey">Config key</param>
         /// <returns>Config entry</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetJsonConfigByKey(string configKey)
         {
@@ -100,8 +99,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="configKey">Config key</param>
         /// <returns>Save result</returns>
         [Authorize(Roles = RoleNames.ProjectConfigManager)]  
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [Produces(typeof(string))]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [HttpPost]
         public async Task<IActionResult> SaveJsonConfigByKey(string configKey)
         {
@@ -140,8 +138,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the miscellaneous config entries for the current project
         /// </summary>
         /// <returns>Config entry</returns>
-        [Produces(typeof(TrimmedMiscConfig))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TrimmedMiscConfig), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetMiscConfig()
         {
@@ -170,9 +167,8 @@ namespace GoNorth.Controllers.Api
         /// <param name="configData">Config data</param>
         /// <returns>Save result</returns>
         [Authorize(Roles = RoleNames.ProjectConfigManager)]  
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TrimmedMiscConfig), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Produces(typeof(TrimmedMiscConfig))]
         [HttpPost]
         public async Task<IActionResult> SaveMiscConfig([FromBody]TrimmedMiscConfig configData)
         {

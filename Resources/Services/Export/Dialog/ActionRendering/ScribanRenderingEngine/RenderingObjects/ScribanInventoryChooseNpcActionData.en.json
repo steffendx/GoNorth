@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Npc": "Npc that receives or loses the item.",
+    "PlaceholderDesc_SelectedItem": "Selected item that is spanwed or transferred.",
+    "PlaceholderDesc_Quantity": "Quantity of items to be spawned or removed."
+}

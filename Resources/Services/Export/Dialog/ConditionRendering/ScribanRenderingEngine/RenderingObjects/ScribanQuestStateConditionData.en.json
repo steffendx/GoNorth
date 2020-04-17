@@ -1,0 +1,4 @@
+{
+    "PlaceholderDesc_Quest": "Quest which state is checked",
+    "PlaceholderDesc_QuestState": "State that the quest is compared against. Can be <i>NotStarted</i>, <i>InProgress</i>, <i>Success</i> or <i>Failed</i>."
+}

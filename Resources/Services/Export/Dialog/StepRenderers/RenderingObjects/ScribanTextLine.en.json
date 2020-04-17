@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_TextLine": "Content of the text line",
+    "PlaceholderDesc_UnescapedTextLine": "Content of the text line without using the escape settings",
+    "PlaceholderDesc_TextLinePreview": "Preview of the text line",
+    "PlaceholderDesc_DialogNpc": "Npc to which the current dialog belongs"
+}

@@ -69,7 +69,9 @@ namespace GoNorth.Data.TaskManagement
         /// <returns>Task types</returns>
         public async Task<List<GoNorthTaskType>> GetTaskTypes(string projectId)
         {
-            return await _TaskTypeCollection.AsQueryable().Where(t => t.ProjectId == projectId).ToListAsync();
+            List<GoNorthTaskType> taskTypes = await _TaskTypeCollection.AsQueryable().Where(t => t.ProjectId == projectId).ToListAsync();
+            taskTypes = taskTypes.OrderBy(t => t.Name).ToList();
+            return taskTypes;
         }
 
         /// <summary>

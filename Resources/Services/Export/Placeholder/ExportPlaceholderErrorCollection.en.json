@@ -23,5 +23,11 @@
 
     "NoPlayerNpcExistsError": "No player npc exists.",
 
-    "ExportSnippetMissing": "The export snippet is missing a placeholder in the template. The content of the export snippet could not be rendered."
+    "ExportSnippetMissing": "The export snippet is missing a placeholder in the template. The content of the export snippet could not be rendered.",
+
+    "TemplateHasErrors": "The template has errors. Please check it in the export template editor.",
+    "ExceptionOccured": "An error occured during export: {0}",
+    "CanNotGenerateLanguageKey": "{0}: A language key could not be generated.",
+    "InvalidParameter": "{0}: An invalid parameter was provided.",
+    "IncludeTemplateNotFound": "{1}: Could not find include template {0}."
 }

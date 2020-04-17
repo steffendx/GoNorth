@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_MovementState": "Bewegungszustand für den Npc. null wenn kein Bewegungszustand definiert ist.",
+    "PlaceholderDesc_UnescapedMovementState": "Bewegungszustand für den Npc ohne die Escape Einstellungen zu berücksichtigen. null wenn kein Bewegungszustand definiert ist.",
+    "PlaceholderDesc_DirectContinueFunction": "Name der Funktion die das Skript sofort fortsetzt. null wenn keine Funktion vorliegt"
+}

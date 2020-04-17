@@ -1,1 +1,1 @@
-BaseNpc_TeleportNpcToMarker(playerNpc, "{{Tale_Action_TargetMarker_Name}}")
+BaseNpc_TeleportNpcToMarker(playerNpc, "{{ action.target_marker_name }}")

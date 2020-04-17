@@ -1,0 +1,22 @@
+{
+    "PlaceholderDesc_CodeSnippet_NAME_OF_SNIPPET": "Inhalt des Code Snippets mit dem Namen \"NAME_OF_SNIPPET\". \"NAME_OF_SNIPPET\" muss dabei mit dem Namen des Snippets ersetzt werden.",
+    "PlaceholderDesc_CodeSnippetAdditionalFunctions_NAME_OF_SNIPPET": "Zusätzliche Funktionen die für das Export Snippet \"NAME_OF_SNIPPET\" benötigt werden. \"NAME_OF_SNIPPET\" muss mit dem Namen des Export Snippets ersetzt werden.",
+    "PlaceholderDesc_Has_CodeSnippetAdditionalFunctions_NAME_OF_SNIPPET_Start": "Start des Inhalts der nur gerendert wird wenn das Export Snippet \"NAME_OF_SNIPPET\" zusätzliche Funktionen benötigt. \"NAME_OF_SNIPPET\" muss mit dem Namen des Export Snippets ersetzt werden. Muss mit Has_CodeSnippetAdditionalFunctions_End abgeschlossen werden.",
+    "PlaceholderDesc_Has_CodeSnippetAdditionalFunctions_End": "Ende des Inhalts der nur gerendert wird wenn ein Export Snippet zusätzliche Funktionen benötigt.",
+    "PlaceholderDesc_Has_CodeSnippetNoAdditionalFunctions_NAME_OF_SNIPPET_Start": "Start des Inhalts der nur gerendert wird wenn das Export Snippet \"NAME_OF_SNIPPET\" keine zusätzliche Funktionen benötigt. \"NAME_OF_SNIPPET\" muss mit dem Namen des Export Snippets ersetzt werden. Muss mit Has_CodeSnippetNoAdditionalFunctions_End abgeschlossen werden.",
+    "PlaceholderDesc_Has_CodeSnippetNoAdditionalFunctions_End": "Ende des Inhalts der nur gerendert wird wenn ein Export Snippet keine zusätzliche Funktionen benötigt.",
+    "PlaceholderDesc_HasCodeSnippet_NAME_OF_SNIPPET_Start": "Start des Inhalts der nur gerendert wird wenn das Snippet \"NAME_OF_SNIPPET\" Inhalt hat. \"NAME_OF_SNIPPET\" muss dabei mit dem Namen des Snippets ersetzt werden. Muss mit HasCodeSnippet_End abgeschlossen werden.",
+    "PlaceholderDesc_HasCodeSnippet_End": "Ende des Inhalts der nur gerendert wird wenn ein Snippet Inhalt hat.",
+    "PlaceholderDesc_HasNotCodeSnippet_NAME_OF_SNIPPET_Start": "Start des Inhalts der nur gerendert wird wenn das Snippet \"NAME_OF_SNIPPET\" keinen Inhalt hat. \"NAME_OF_SNIPPET\" muss dabei mit dem Namen des Snippets ersetzt werden. Must mit HasNotCodeSnippet_End abgeschlossen werden.",
+    "PlaceholderDesc_HasNotCodeSnippet_End": "Ende des Inhalts der nur gerendert wird wenn ein Snippet keinen Inhalt hat.",
+    "PlaceholderDesc_HasAnyCodeSnippet_Start": "Start des Inhalts der nur gerendert wird wenn mindestens ein Snippet vorhanden ist. Muss mit HasAnyCodeSnippet_End abgeschlossen werden.",
+    "PlaceholderDesc_HasAnyCodeSnippet_End": "Ende des Inhalts der nur gerendert wird wenn mindestens ein Snippet vorhanden ist.",
+    "PlaceholderDesc_HasNotAnyCodeSnippet_Start": "Start des Inhalts der nur gerendert wird wenn kein Snippet vorhanden ist. Muss mit HasNotAnyCodeSnippet_End abgeschlossen werden.",
+    "PlaceholderDesc_HasNotAnyCodeSnippet_End": "Ende des Inhalts der nur gerendert wird wenn kein Snippet vorhanden ist.",
+
+    "PlaceholderDesc_ExportSnippet_ScriptFunctionName": "Name der Skript Funktion",
+    "PlaceholderDesc_ExportSnippet_Function_ParentPreview": "Text Vorschau der übergeordneten Knoten die zu dieser neuen Funktion führen. Dieser Platzhalter ist gedacht um in einem Kommentar gerendert zu werden um die Lesbarkeit zu erhöhen.",
+    "PlaceholderDesc_ExportSnippet_ScriptContent": "Inhalt der Skript Funktion",
+
+    "ExportSnippetErrorContext": "Export Snippet {0}"
+}

@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using GoNorth.Services.ImplementationStatusCompare;
 
@@ -6,7 +7,7 @@ namespace GoNorth.Data.Kortisto
     /// <summary>
     /// Kortisto Npc Skill
     /// </summary>
-    public class KortistoNpcSkill : IImplementationListComparable
+    public class KortistoNpcSkill : IImplementationListComparable, ICloneable
     {
         /// <summary>
         /// Skill Id
@@ -25,5 +26,16 @@ namespace GoNorth.Data.Kortisto
         /// </summary>
         [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue(SkillId, CompareDifferenceValue.ValueResolveType.ResolveSkillName); } }
+
+        /// <summary>
+        /// Clones the object
+        /// </summary>
+        /// <returns>Cloned object</returns>
+        public object Clone()
+        {
+            return new KortistoNpcSkill {
+                SkillId = this.SkillId
+            };
+        }
     }
 }

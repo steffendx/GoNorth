@@ -1,0 +1,4 @@
+{
+    "PlaceholderDesc_Npc": "Npc der geprüft wird",
+    "PlaceholderDesc_NpcAliveState": "Überlebensstatus des Npcs der geprüft wird. Kann <i>Alive</i> oder <i>Dead</i> sein."
+}

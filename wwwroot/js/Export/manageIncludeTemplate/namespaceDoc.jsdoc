@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Export) {
+
+        /**
+         * Manage Include Template Form Namespace
+         * @namespace ManageIncludeTemplate
+         */
+        (function(ManageIncludeTemplate) {
+        }(Export.ManageIncludeTemplate = Export.ManageIncludeTemplate || {}));
+        
+    }(GoNorth.Export = GoNorth.Export || {}));
+}(window.GoNorth = window.GoNorth || {}));

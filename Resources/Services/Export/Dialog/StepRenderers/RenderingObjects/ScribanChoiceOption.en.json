@@ -1,0 +1,9 @@
+{
+    "PlaceholderDesc_Id": "Unique Id of the choice. This is only unique for this list not globally.",
+    "PlaceholderDesc_Condition": "Condition string if a condition is associated with the choice. If no choice is associated this will be null",
+    "PlaceholderDesc_Text": "Text of the choice",
+    "PlaceholderDesc_UnescapedText": "Text of the choice without using the escape settings",
+    "PlaceholderDesc_TextPreview": "Preview of the choice text",
+    "PlaceholderDesc_IsRepeatable": "true if the choice can be selected multiple times, else false",
+    "PlaceholderDesc_ChildNode": "Node that will be run if the choice is selected"
+}

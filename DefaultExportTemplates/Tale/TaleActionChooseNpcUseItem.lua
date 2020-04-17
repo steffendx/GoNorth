@@ -1,1 +1,1 @@
-BaseDialog_NpcUseItem(BaseNpc_GetNpcById({{Tale_Action_Npc_Value_Id}}), "{{Tale_Action_SelectedItem_Value_ScriptName}}")
+BaseNpc_UseItem(BaseNpc_GetNpcById({{ action.npc.fields.Id.value }}), "{{ action.selected_item.fields.ScriptName.value }}")

@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_DailyRoutineEventList": "Renders a list of daily routine events based on the shared daily routine event list template. You must pass a list of daily routine events, like daily_routine.events, for &lt;DAILY_ROUTINE_LIST&gt;."
+}

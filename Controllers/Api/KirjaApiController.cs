@@ -26,6 +26,7 @@ using GoNorth.Data.Kortisto;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Aika;
+using System.Globalization;
 
 namespace GoNorth.Controllers.Api
 {
@@ -276,8 +277,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the page</param>
         /// <returns>Page</returns>
-        [Produces(typeof(KirjaPage))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KirjaPage), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> Page(string id)
         {
@@ -311,8 +311,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="versionId">Id of the page version</param>
         /// <returns>Page Version</returns>
-        [Produces(typeof(SinglePageVersionQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SinglePageVersionQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> PageVersion(string versionId)
         {
@@ -334,8 +333,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageSize">Page Size</param>
         /// <param name="excludeId">Id to exclude</param>
         /// <returns>Pages</returns>
-        [Produces(typeof(PageQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PageQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> SearchPages(string searchPattern, int start, int pageSize, string excludeId)
         {
@@ -347,8 +345,8 @@ namespace GoNorth.Controllers.Api
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             Task<List<KirjaPage>> queryTask;
             Task<int> countTask;
-            queryTask = _pageDbAccess.SearchPages(project.Id, searchPattern, start, pageSize, excludeId);
-            countTask = _pageDbAccess.SearchPagesCount(project.Id, searchPattern, excludeId);
+            queryTask = _pageDbAccess.SearchPages(project.Id, searchPattern, start, pageSize, excludeId, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _pageDbAccess.SearchPagesCount(project.Id, searchPattern, excludeId, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             PageQueryResult queryResult = new PageQueryResult();
@@ -364,8 +362,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Page Versions</returns>
-        [Produces(typeof(PageVersionQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PageVersionQueryResult), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult GetPageVersions(string pageId, int start, int pageSize)
         {
@@ -390,8 +387,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="pageId">Page Id</param>
         /// <returns>Pages</returns>
-        [Produces(typeof(List<KirjaPage>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KirjaPage>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByPage(string pageId)
         {
@@ -404,8 +400,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="questId">Quest Id</param>
         /// <returns>Pages</returns>
-        [Produces(typeof(List<KirjaPage>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KirjaPage>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByQuest(string questId)
         {
@@ -418,8 +413,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="npcId">Npc Id</param>
         /// <returns>Pages</returns>
-        [Produces(typeof(List<KirjaPage>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KirjaPage>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByNpc(string npcId)
         {
@@ -432,8 +426,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Item Id</param>
         /// <returns>Pages</returns>
-        [Produces(typeof(List<KirjaPage>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KirjaPage>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesByItem(string itemId)
         {
@@ -446,8 +439,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="skillId">Skill Id</param>
         /// <returns>Pages</returns>
-        [Produces(typeof(List<KirjaPage>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KirjaPage>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetPagesBySkill(string skillId)
         {
@@ -460,8 +452,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="page">Create Page data</param>
         /// <returns>Id</returns>
-        [Produces(typeof(KirjaPage))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KirjaPage), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -507,8 +498,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Page Id</param>
         /// <param name="page">Update page data</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(KirjaPage))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KirjaPage), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -700,8 +690,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the page</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -773,8 +762,7 @@ namespace GoNorth.Controllers.Api
         /// Uploads an image for kirja
         /// </summary>
         /// <returns>Image Name</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -862,8 +850,7 @@ namespace GoNorth.Controllers.Api
         /// Uploads a page attachment
         /// </summary>
         /// <param name="id">Id of the page</param>
-        [Produces(typeof(KirjaPageAttachment))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KirjaPageAttachment), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
@@ -995,8 +982,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageId">Id of the page which contains the attachment</param>
         /// <param name="attachmentFile">Attachment File</param>
         /// <returns>Attachment File</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete]
@@ -1069,8 +1055,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="versionId">Version references</param>
         /// <returns>Result of the version reference validation</returns>
-        [Produces(typeof(PageVersionReferenceValidationResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PageVersionReferenceValidationResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         public async Task<IActionResult> ValidateVersionReferences(string versionId)

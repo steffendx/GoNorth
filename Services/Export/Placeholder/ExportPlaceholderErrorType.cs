@@ -116,6 +116,32 @@ namespace GoNorth.Services.Export.Placeholder
         /// <summary>
         /// Export snippet is missing its placeholder
         /// </summary>
-        ExportSnippetMissing = 500
+        ExportSnippetMissing = 500,
+
+
+        /// <summary>
+        /// A template has errors
+        /// </summary>
+        TemplateHasErrors = 1000,
+
+        /// <summary>
+        /// An exception occured
+        /// </summary>
+        ExceptionOccured = 1001,
+
+        /// <summary>
+        /// An invalid parameter was provided
+        /// </summary>
+        InvalidParameter = 1002,
+
+        /// <summary>
+        /// An include template was not found
+        /// </summary>
+        IncludeTemplateNotFound = 1010,
+
+        /// <summary>
+        /// A language key could not be generated
+        /// </summary>
+        CanNotGenerateLanguageKey = 1050
     }
 }

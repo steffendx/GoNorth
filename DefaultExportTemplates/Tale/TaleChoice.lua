@@ -1,6 +1,10 @@
-local choice{{Tale_Node_Id}} = ChoiceDialogStep:new()
-{{Tale_Choices_Start}}
-{{Tale_Choice_HasCondition_Start}}if({{Tale_Choice_Condition}}) then
-    {{Tale_Choice_HasCondition_End}}choice{{Tale_Node_Id}}:add_choice("{{Tale_ChildNode_HasFunction_Start}}{{Tale_ChildNode_Function}}{{Tale_ChildNode_HasFunction_End}}", "{{Tale_Choice_Text_LangKey}}"{{Tale_Choice_IsNotRepeatable_Start}}, {{Tale_Node_Id}}, {{Tale_Choice_Id}}{{Tale_Choice_IsNotRepeatable_End}})  -- {{Tale_Choice_Text_Preview}}{{Tale_Choice_HasCondition_Start}}
-end{{Tale_Choice_HasCondition_End}}{{Tale_Choices_End}}
-dialogManager:add_dialog_step(choice{{Tale_Node_Id}})
+local choice{{ choice.node_index }} = ChoiceDialogStep:new()
+{{~ for curChoice in choice.choices }}
+{{- if curChoice.condition -}}
+if({{ curChoice.condition }}) then
+    {{ end ~}}choice{{ choice.node_index }}:add_choice("{{ if curChoice.child_node && curChoice.child_node.node_step_function_name }}{{ curChoice.child_node.node_step_function_name }}{{ end }}", "{{ langkey curChoice.text }}"{{ if !curChoice.is_repeatable }}, {{ choice.node_index }}, {{ curChoice.id }}{{ end }})  -- {{ curChoice.text_preview }}
+{{~ if curChoice.condition -}}
+end
+{{~ end ~}}
+{{~ end ~}}
+dialogManager:add_dialog_step(choice{{ choice.node_index }})

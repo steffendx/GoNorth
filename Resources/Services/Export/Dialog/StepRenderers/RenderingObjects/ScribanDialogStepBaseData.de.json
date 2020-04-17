@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_NodeIndex": "Eindeutige Id des Knoten",
+    "PlaceholderDesc_NodeType": "Art des Knoten",
+    "PlaceholderDesc_NodeStepFunctionName": "Name der Funktion die zu diesem Knoten gehört. Wenn der Knoten keine Funktion generiert \"\"",
+    "PlaceholderDesc_NodeStepFunctionNameNoFlagSet": "Name der Funktion die zu diesem Knoten gehört. Wenn der Knoten keine Funktion generiert \"\". Setzt nicht das Flag das die Funktion verwendet wurdet.",
+    "PlaceholderDesc_NodeStepFunctionWasUsed": "true wenn die Funktion bereits ausgelesen wurde, sonst false",
+    "PlaceholderDesc_NodeObject": "Objekt zu dem der aktuelle Knoten gehört" 
+}

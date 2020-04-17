@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 
 namespace GoNorth.Services.Export.TemplateParsing
@@ -13,21 +14,38 @@ namespace GoNorth.Services.Export.TemplateParsing
         private readonly IExportSnippetParser _exportSnippetParser;
 
         /// <summary>
+        /// Scriban export snippet parser
+        /// </summary>
+        private readonly IScribanExportSnippetParser _scribanExportSnippetParser;
+
+        /// <summary>
+        /// Template parser to check for referenced include templates
+        /// </summary>
+        private readonly IScribanIncludeTemplateRefParser _scribanIncludeTemplateRefParser;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="exportSnippetParser">Export snippet parser to use</param>
-        public ExportTemplateParser(IExportSnippetParser exportSnippetParser)
+        /// <param name="scribanExportSnippetParser">Export snippet parser for scriban templates</param>
+        /// <param name="scribanIncludeTemplateRefParser">Template parser to check for referenced include templates</param>
+        public ExportTemplateParser(IExportSnippetParser exportSnippetParser, IScribanExportSnippetParser scribanExportSnippetParser, IScribanIncludeTemplateRefParser scribanIncludeTemplateRefParser)
         {
             _exportSnippetParser = exportSnippetParser;
+            _scribanExportSnippetParser = scribanExportSnippetParser;
+            _scribanIncludeTemplateRefParser = scribanIncludeTemplateRefParser;
         }
 
         /// <summary>
         /// Parses an export template
         /// </summary>
         /// <param name="template">Template to parse</param>
-        public void ParseExportTemplate(ExportTemplate template)
+        /// <returns>Task</returns>
+        public async Task ParseExportTemplate(ExportTemplate template)
         {
-            _exportSnippetParser.ParseExportTemplate(template);
+            await _exportSnippetParser.ParseExportTemplate(template);
+            await _scribanExportSnippetParser.ParseExportTemplate(template);
+            await _scribanIncludeTemplateRefParser.ParseExportTemplate(template);
         }
     }
 }

@@ -24,6 +24,7 @@ using GoNorth.Services.Security;
 using GoNorth.Services.ProjectConfig;
 using GoNorth.Data.ProjectConfig;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace GoNorth.Controllers.Api
 {
@@ -188,8 +189,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="template">Template to create</param>
         /// <returns>Result</returns>
-        [Produces(typeof(KortistoNpc))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KortistoNpc), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -203,8 +203,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -219,8 +218,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Template Id</param>
         /// <param name="template">Update template data</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(KortistoNpc))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KortistoNpc), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -234,8 +232,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Template Id</param>
         /// <returns>Task</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -249,8 +246,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Image Name</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.KortistoTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -505,8 +501,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the npc to update the daily routine for</param>
         /// <param name="routineEvent">Event data</param>
         /// <returns>Id of the event</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpPost]
@@ -551,8 +546,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Id of the npc to delete the daily routine for</param>
         /// <param name="eventId">Event id</param>
         /// <returns>Id of the event</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete]
         public async Task<IActionResult> DeleteDailyRoutineEvent(string id, string eventId)
@@ -598,8 +592,7 @@ namespace GoNorth.Controllers.Api
         /// Returns all npcs that have a daily routine with events outside of the configured time frame
         /// </summary>
         /// <returns>Npcs that have a daily routine with events outside of the configured time frame</returns>
-        [Produces(typeof(List<KortistoNpc>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KortistoNpc>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsWithDailyRoutineOutsideTimeRange()
         {
@@ -615,8 +608,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="objectId">Object id</param>
         /// <returns>Dialogs</returns>
-        [Produces(typeof(List<KortistoNpc>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KortistoNpc>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsObjectIsReferencedInDailyRoutine(string objectId)
         {
@@ -629,8 +621,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the player npc
         /// </summary>
         /// <returns>Npc</returns>
-        [Produces(typeof(KortistoNpc))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(KortistoNpc), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> PlayerNpc()
         {
@@ -644,8 +635,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="itemId">Item id</param>
         /// <returns>Npcs</returns>
-        [Produces(typeof(List<KortistoNpc>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KortistoNpc>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsByItemInInventory(string itemId)
         {
@@ -658,8 +648,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="skillId">Skill id</param>
         /// <returns>Npcs</returns>
-        [Produces(typeof(List<KortistoNpc>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<KortistoNpc>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetNpcsByLearnedSkill(string skillId)
         {
@@ -674,8 +663,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Npcs</returns>
-        [Produces(typeof(FlexFieldObjectQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FlexFieldObjectQueryResult), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Kortisto)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]
@@ -684,8 +672,8 @@ namespace GoNorth.Controllers.Api
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             Task<List<KortistoNpc>> queryTask;
             Task<int> countTask;
-            queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize);
-            countTask = _objectDbAccess.GetNotImplementedFlexFieldObjectsCount(project.Id);
+            queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _objectDbAccess.GetNotImplementedFlexFieldObjectsCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             FlexFieldObjectQueryResult queryResult = new FlexFieldObjectQueryResult();

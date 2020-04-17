@@ -39,9 +39,19 @@ namespace GoNorth.Data.Exporting
         public List<ExportTemplateSnippet> ExportSnippets { get; set; }
 
         /// <summary>
+        /// References to include export templates
+        /// </summary>
+        public List<IncludeExportTemplateReference> UsedIncludeTemplates { get; set; }
+
+        /// <summary>
         /// Code of the template
         /// </summary>
         public string Code { get; set; }
+
+        /// <summary>
+        /// Rendering engine
+        /// </summary>
+        public ExportTemplateRenderingEngine RenderingEngine { get; set; }
 
 
         /// <summary>
@@ -53,5 +63,15 @@ namespace GoNorth.Data.Exporting
         /// Id of the user who last modified the template
         /// </summary>
         public string ModifiedBy { get; set; }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public ExportTemplate()
+        {
+            // Support for old templates
+            RenderingEngine = ExportTemplateRenderingEngine.Legacy;
+        }
     };
 }

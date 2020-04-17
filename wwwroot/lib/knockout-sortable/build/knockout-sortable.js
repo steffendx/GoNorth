@@ -1,4 +1,4 @@
-// knockout-sortable 1.1.1 | (c) 2019 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
+// knockout-sortable 1.2.0 | (c) 2019 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD anonymous module
@@ -41,13 +41,16 @@
     //prepare the proper options for the template binding
     var prepareTemplateOptions = function(valueAccessor, dataName) {
         var result = {},
-            options = unwrap(valueAccessor()) || {},
+            options = {},
             actualAfterRender;
 
         //build our options to pass to the template engine
-        if (options.data) {
+        if (ko.utils.peekObservable(valueAccessor()).data) {
+            options = unwrap(valueAccessor() || {});
             result[dataName] = options.data;
-            result.name = options.template;
+            if (options.hasOwnProperty("template")) {
+                result.name = options.template;
+            }
         } else {
             result[dataName] = valueAccessor();
         }

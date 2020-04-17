@@ -55,6 +55,11 @@ using GoNorth.Services.DataMigration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using GoNorth.Services.Export.Placeholder.LegacyRenderingEngine;
+using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKeyGenerator;
+using GoNorth.Services.Export.Dialog.ActionRendering.Localization;
+using GoNorth.Services.Export.Dialog.ConditionRendering.Localization;
+using GoNorth.Services.Export.DailyRoutine;
 
 namespace GoNorth
 {
@@ -197,22 +202,27 @@ namespace GoNorth
             services.AddTransient<IExportDialogRenderer, ExportDialogRenderer>();
             services.AddScoped<ILanguageKeyGenerator, LanguageKeyGenerator>();
             services.AddScoped<ILanguageKeyReferenceCollector, LanguageKeyReferenceCollector>();
+            services.AddTransient<IScribanLanguageKeyGenerator, ScribanLanguageKeyGenerator>();
             services.AddScoped<IExportDialogFunctionNameGenerator, ExportDialogFunctionNameGenerator>();
             services.AddScoped<IDailyRoutineFunctionNameGenerator, DailyRoutineFunctionNameGenerator>();
             services.AddTransient<IConditionRenderer, ConditionRenderer>();
-            services.AddTransient<IDailyRoutineEventPlaceholderResolver, DailyRoutineEventPlaceholderResolver>();
-            services.AddTransient<IDailyRoutineEventContentPlaceholderResolver, DailyRoutineEventContentPlaceholderResolver>();
-            services.AddTransient<IDailyRoutineNodeGraphRenderer, DailyRoutineNodeGraphRenderer>();
+            services.AddTransient<ILegacyDailyRoutineEventPlaceholderResolver, LegacyDailyRoutineEventPlaceholderResolver>();
+            services.AddTransient<ILegacyDailyRoutineEventContentPlaceholderResolver, LegacyDailyRoutineEventContentPlaceholderResolver>();
             services.AddTransient<IDailyRoutineNodeGraphFunctionGenerator, DailyRoutineNodeGraphFunctionGenerator>();
+            services.AddTransient<IDailyRoutineFunctionRenderer, DailyRoutineFunctionRenderer>();
             services.AddScoped<IExportCachedDbAccess, ExportCachedDbAccess>();
             services.AddTransient<INodeGraphExporter, NodeGraphExporter>();
             services.AddTransient<INodeGraphParser, NodeGraphParser>();
             services.AddTransient<IExportSnippetParser, ExportSnippetParser>();
+            services.AddTransient<IScribanExportSnippetParser, ScribanExportSnippetParser>();
+            services.AddTransient<IScribanIncludeTemplateRefParser, ScribanIncludeTemplateRefParser>();
             services.AddTransient<IExportTemplateParser, ExportTemplateParser>();
             services.AddTransient<IExportSnippetFunctionNameGenerator, ExportSnippetFunctionNameGenerator>();
             services.AddTransient<IExportSnippetNodeGraphFunctionGenerator, ExportSnippetNodeGraphFunctionGenerator>();
-            services.AddTransient<IExportSnippetNodeGraphRenderer, ExportSnippetNodeGraphRenderer>();
             services.AddTransient<IExportSnippetRelatedObjectUpdater, ExportSnippetRelatedObjectUpdater>();
+            services.AddTransient<IExportSnippetFunctionRenderer, ExportSnippetFunctionRenderer>();
+            services.AddScoped<IActionTranslator, ActionTranslator>();
+            services.AddScoped<IConditionTranslator, ConditionTranslator>();
 
             services.AddScoped<GoNorthUserManager>();
 
@@ -261,6 +271,7 @@ namespace GoNorth
             services.AddScoped<IAikaQuestImplementationSnapshotDbAccess, AikaQuestImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<IExportTemplateDbAccess, ExportTemplateMongoDbAccess>();
+            services.AddScoped<IIncludeExportTemplateDbAccess, IncludeExportTemplateMongoDbAccess>();
             services.AddScoped<IExportDefaultTemplateProvider, ExportDefaultTemplateProvider>();
             services.AddScoped<ICachedExportDefaultTemplateProvider, CachedExportDefaultTemplateProvider>();
             services.AddScoped<IExportSettingsDbAccess, ExportSettingsMongoDbAccess>();

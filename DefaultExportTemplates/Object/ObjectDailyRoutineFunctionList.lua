@@ -1,1 +1,3 @@
-{{DailyRoutine_Functions_Start}}{{DailyRoutine_HasScript_Start}}{{DailyRoutine_Function}}{{DailyRoutine_AdditionalScriptFunctions}}{{DailyRoutine_HasScript_End}}{{DailyRoutine_Functions_End}}
+{{ for cur_function in daily_routine_functions }}
+{{ cur_function | daily_routine_event_function }}
+{{ end }}

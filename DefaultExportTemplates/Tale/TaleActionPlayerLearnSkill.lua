@@ -1,1 +1,1 @@
-BaseNpc_LearnSkill(playerNpc, "{{Tale_Action_Skill_Value_ScriptName}}")
+BaseNpc_LearnSkill(playerNpc, "{{ action.skill.fields.ScriptName.value }}")

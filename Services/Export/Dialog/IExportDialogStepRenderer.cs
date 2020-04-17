@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
-using GoNorth.Data.Kortisto;
 using GoNorth.Services.Export.Placeholder;
 
 namespace GoNorth.Services.Export.Dialog
@@ -12,6 +11,12 @@ namespace GoNorth.Services.Export.Dialog
     /// </summary>
     public interface IExportDialogStepRenderer
     {
+        /// <summary>
+        /// Sets the export template placeholder resolver
+        /// </summary>
+        /// <param name="templatePlaceholderResolver">Template placeholder resolver</param>
+        void SetExportTemplatePlaceholderResolver(IExportTemplatePlaceholderResolver templatePlaceholderResolver);
+
         /// <summary>
         /// Renders a dialog step
         /// </summary>
@@ -41,7 +46,8 @@ namespace GoNorth.Services.Export.Dialog
         /// Returns the placeholders for a template
         /// </summary>
         /// <param name="templateType">Template Type</param>
+        /// <param name="renderingEngine">Rendering engine</param>
         /// <returns>List of template placeholders</returns>
-        List<ExportTemplatePlaceholder> GetPlaceholdersForTemplate(TemplateType templateType);
+        List<ExportTemplatePlaceholder> GetPlaceholdersForTemplate(TemplateType templateType, ExportTemplateRenderingEngine renderingEngine);
     }
 }

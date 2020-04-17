@@ -39,6 +39,7 @@
             /**
              * Task type list
              * 
+             * @param {string} idPostfix Postfix for all ids to have unique ids
              * @param {string} title Title of the list
              * @param {string} createDialogTitle Title of the create dialog
              * @param {string} editDialogTitle Title of the edit dialog
@@ -52,8 +53,9 @@
              * @param {string} lockCategory Name of the lock category
              * @class
              */
-            ManageTaskTypes.TaskTypeList = function(title, createDialogTitle, editDialogTitle, createNewButtonLabel, taskWithoutTypeExistsText, loadingApiFunction, anyTaskWithOutTypeApiFunction, createApiFunction, updateApiFunction, deleteApiFunction, lockCategory)
+            ManageTaskTypes.TaskTypeList = function(idPostfix, title, createDialogTitle, editDialogTitle, createNewButtonLabel, taskWithoutTypeExistsText, loadingApiFunction, anyTaskWithOutTypeApiFunction, createApiFunction, updateApiFunction, deleteApiFunction, lockCategory)
             {
+                this.idPostfix = idPostfix;
                 this.title = title;
                 this.createDialogTitle = createDialogTitle;
                 this.editDialogTitle = editDialogTitle;
@@ -195,6 +197,7 @@
                     this.createEditTaskTypeName("");
                     this.createEditTaskTypeColor("#FFFFFF");
                     this.createEditTaskTypeIsDefault(false);
+                    this.createEditTaskShowColorValidationError(false);
                     this.taskTypeToEdit = null;
 
                     this.openSharedCreateEditTaskTypeDialog();
@@ -212,6 +215,7 @@
                     this.createEditTaskTypeName(taskType.name);
                     this.createEditTaskTypeColor(taskType.color);
                     this.createEditTaskTypeIsDefault(taskType.isDefault);
+                    this.createEditTaskShowColorValidationError(!hexColorRegex.test(taskType.color));
                     this.taskTypeToEdit = taskType;
 
                     this.openSharedCreateEditTaskTypeDialog();
@@ -224,7 +228,7 @@
                  */
                 openSharedCreateEditTaskTypeDialog: function() {
                     this.showCreateEditTaskTypeDialog(true);
-                    GoNorth.Util.setupValidation("#gn-taskTypeCreateEditForm");
+                    GoNorth.Util.setupValidation("#gn-taskTypeCreateEditForm" + this.idPostfix);
                 },
 
                 /**
@@ -239,7 +243,7 @@
                     }
 
                     this.createEditTaskShowColorValidationError(colorIsInvalid);
-                    if(!jQuery("#gn-taskTypeCreateEditForm").valid() || colorIsInvalid)
+                    if(!jQuery("#gn-taskTypeCreateEditForm" + this.idPostfix).valid() || colorIsInvalid)
                     {
                         return;
                     }
@@ -374,11 +378,11 @@
              */
             ManageTaskTypes.ViewModel = function()
             {
-                this.taskGroupTypeList = new ManageTaskTypes.TaskTypeList(GoNorth.Task.ManageTaskTypes.Localization.TaskGroupTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskGroupType, 
+                this.taskGroupTypeList = new ManageTaskTypes.TaskTypeList("groupType", GoNorth.Task.ManageTaskTypes.Localization.TaskGroupTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskGroupType, 
                                                                           GoNorth.Task.ManageTaskTypes.Localization.EditTaskGroupType, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskGroupType, 
                                                                           GoNorth.Task.ManageTaskTypes.Localization.TaskGroupsWithoutTypeExist, "GetTaskGroupTypes", "AnyTaskBoardHasTaskGroupsWithoutType", 
                                                                           "CreateTaskGroupType", "UpdateTaskGroupType", "DeleteTaskGroupType", "TaskGroupType");
-                this.taskTypeList = new ManageTaskTypes.TaskTypeList(GoNorth.Task.ManageTaskTypes.Localization.TaskTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskType, 
+                this.taskTypeList = new ManageTaskTypes.TaskTypeList("taskType", GoNorth.Task.ManageTaskTypes.Localization.TaskTypes, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskType, 
                                                                      GoNorth.Task.ManageTaskTypes.Localization.EditTaskType, GoNorth.Task.ManageTaskTypes.Localization.CreateNewTaskType, 
                                                                      GoNorth.Task.ManageTaskTypes.Localization.TasksWithoutTypeExist, "GetTaskTypes", "AnyTaskBoardHasTasksWithoutType", 
                                                                      "CreateTaskType", "UpdateTaskType", "DeleteTaskType", "TaskType");

@@ -11,10 +11,5 @@ namespace GoNorth.Services.Export.Dialog
         /// Code for the start step
         /// </summary>
         public string StepCode { get; set; }
-
-        /// <summary>
-        /// New Step Data
-        /// </summary>
-        public List<ExportDialogData> NewStepData { get; set; }
     }
 }

@@ -79,6 +79,31 @@ namespace GoNorth.Data.Exporting
         }
 
         /// <summary>
+        /// Returns the export templates that reference an include template
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="includeTemplateId">Id of the include template that is searched</param>
+        /// <returns>List of export templates that reference the include template</returns>
+        public async Task<List<ExportTemplate>> GetTemplatesByReferencedIncludeTemplate(string projectId, string includeTemplateId)
+        {
+            List<ExportTemplate> templates = await _TemplateCollection.Find(t => t.ProjectId == projectId && t.UsedIncludeTemplates != null && t.UsedIncludeTemplates.Any(ui => ui.IncludeTemplateId == includeTemplateId)).ToListAsync();
+            return templates;
+        }
+
+        /// <summary>
+        /// Returns the export templates that reference a wrong template by name
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="ignoreIncludeTemplateId">Id of the include template that is ignored in the search</param>
+        /// <param name="templateName">Name of the template to search</param>
+        /// <returns>List of export templates that reference the include template name by a wrong name</returns>
+        public async Task<List<ExportTemplate>> GetTemplatesByWrongReferencedIncludeTemplate(string projectId, string ignoreIncludeTemplateId, string templateName)
+        {
+            List<ExportTemplate> templates = await _TemplateCollection.Find(t => t.ProjectId == projectId && t.UsedIncludeTemplates != null && t.UsedIncludeTemplates.Any(ui => ui.Name == templateName && ui.IncludeTemplateId != ignoreIncludeTemplateId)).ToListAsync();
+            return templates;
+        }
+
+        /// <summary>
         /// Returns the customized export template by the object id
         /// </summary>
         /// <param name="projectId">Project Id</param>

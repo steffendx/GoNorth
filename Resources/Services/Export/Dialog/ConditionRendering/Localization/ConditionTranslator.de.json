@@ -1,0 +1,23 @@
+{
+    "ConditionTypeGroup": "Logik Gruppe",
+    "ConditionTypePlayerValueCondition": "Spieler Wert prüfen",
+    "ConditionTypeNpcValueCondition": "Npc Wert prüfen",
+    "ConditionTypePlayerInventoryCondition": "Item Anzahl in Spieler Inventar prüfen",
+    "ConditionTypeNpcInventoryCondition": "Item Anzahl in Npc Inventar prüfen",
+    "ConditionTypeChooseQuestValueCondition": "Quest Wert prüfen",
+    "ConditionTypeQuestStateCondition": "Quest Status prüfen",
+    "ConditionTypeNpcAliveStateCondition": "Npc Überlebensstatus prüfen",
+    "ConditionTypeCurrentSkillValueCondition": "Fähigkeits Wert prüfen",
+    "ConditionTypeGameTimeCondition": "Spielzeit prüfen",
+    "ConditionTypePlayerSkillValueCondition": "Spieler Fähigkeit Wert prüfen",
+    "ConditionTypeNpcSkillValueCondition": "Npc Fähigkeit Wert prüfen",
+    "ConditionTypePlayerLearnedSkillCondition": "Spieler beherrscht Fähigkeit",
+    "ConditionTypePlayerNotLearnedSkillCondition": "Spieler beherrscht Fähigkeit nicht",
+    "ConditionTypeNpcLearnedSkillCondition": "Npc beherrscht Fähigkeit",
+    "ConditionTypeNpcNotLearnedSkillCondition": "Npc beherrscht Fähigkeit nicht",
+    "ConditionTypeRandomValueCondition": "Zufallswert prüfen",
+    "ConditionTypeDailyRoutineEventIsEnabledCondition": "Tagesablauf ist aktiv prüfen",
+    "ConditionTypeDailyRoutineEventIsDisabledCondition": "Tagesablauf ist deaktiviert prüfen",
+    "ConditionTypeCodeCondition": "Script Bedingung",
+    "ConditionTypeItemValueCondition": "Item Wert prüfen"
+}

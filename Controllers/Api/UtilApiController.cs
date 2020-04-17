@@ -58,8 +58,7 @@ namespace GoNorth.Controllers.Api
         /// Returns all users
         /// </summary>
         /// <returns>Users</returns>
-        [Produces(typeof(IList<TrimmedUtilResponseUser>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IList<TrimmedUtilResponseUser>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {

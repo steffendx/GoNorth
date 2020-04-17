@@ -1,0 +1,9 @@
+{
+    "PlaceholderDesc_Id": "Eindeutige Id der Auswahl. Die Id ist nur eindeutig für die Liste der Auswahl, nicht global eindeutig.",
+    "PlaceholderDesc_Condition": "Bedingungstring wenn die Auswahl eine Bedingung hat. Wenn keine Bedingung mit der Auswahl verknüpft ist null",
+    "PlaceholderDesc_Text": "Text der Auswahl",
+    "PlaceholderDesc_UnescapedText": "Text der Auswahl ohne Escape Einstellungen zu berücksichtigen",
+    "PlaceholderDesc_TextPreview": "Vorschau des Inhalts des Auswahltext",
+    "PlaceholderDesc_IsRepeatable": "true wenn die Auswahlmöglichkeit mehrfach ausgewählt werden kann, sonst false",
+    "PlaceholderDesc_ChildNode": "Knoten der ausgeführt wird wenn die Auswahl gewählt wird"
+}

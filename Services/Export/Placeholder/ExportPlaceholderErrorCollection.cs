@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
@@ -226,6 +227,51 @@ namespace GoNorth.Services.Export.Placeholder
             AddErrorMessage(ExportPlaceholderErrorType.ExportSnippetMissing, _localizer[ExportPlaceholderErrorType.ExportSnippetMissing.ToString()].Value);
         }
 
+        
+        /// <summary>
+        /// Adds an error that a template has errors
+        /// </summary>
+        public void AddTemplateHasErrors() 
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.TemplateHasErrors, _localizer[ExportPlaceholderErrorType.TemplateHasErrors.ToString()].Value);
+        }
+
+        /// <summary>
+        /// Adds an error that a template has errors
+        /// </summary>
+        /// <param name="ex">Exception that occured</param>
+        public void AddException(Exception ex) 
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.ExceptionOccured, _localizer[ExportPlaceholderErrorType.ExceptionOccured.ToString(), ex.Message].Value);
+        }
+
+        /// <summary>
+        /// Adds an error that a language key can not be generated
+        /// </summary>
+        /// <param name="spanLocation">Location of the error that occured</param>
+        public void AddCanNotGenerateLanguageKey(string spanLocation) 
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.CanNotGenerateLanguageKey, _localizer[ExportPlaceholderErrorType.CanNotGenerateLanguageKey.ToString(), spanLocation].Value);
+        }
+
+        /// <summary>
+        /// Adds an error that an invalid parameter was provided
+        /// </summary>
+        /// <param name="spanLocation">Location of the error that occured</param>
+        public void AddInvalidParameter(string spanLocation)
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.InvalidParameter, _localizer[ExportPlaceholderErrorType.InvalidParameter.ToString(), spanLocation].Value);
+        }
+
+        /// <summary>
+        /// Adds an error that an invalid parameter was provided
+        /// </summary>
+        /// <param name="templateName">Name of the missing template</param>
+        /// <param name="spanLocation">Location of the error that occured</param>
+        public void AddIncludeTemplateNotFoundError(string templateName, string spanLocation)
+        {
+            AddErrorMessage(ExportPlaceholderErrorType.IncludeTemplateNotFound, _localizer[ExportPlaceholderErrorType.IncludeTemplateNotFound.ToString(), templateName, spanLocation].Value);
+        }
 
         /// <summary>
         /// Adds an error message
@@ -247,6 +293,23 @@ namespace GoNorth.Services.Export.Placeholder
                 Message = message,
                 Count = 1
             });
+        }
+
+        /// <summary>
+        /// Merges an error list into this error list
+        /// </summary>
+        /// <param name="errors">Error list</param>
+        public void Merge(ExportPlaceholderErrorCollection errors)
+        {
+            if(errors == null)
+            {
+                return;
+            }
+
+            foreach(ExportPlaceholderError curError in errors._errorMessages)
+            {
+                AddErrorMessage(curError.ErrorType, curError.Message);
+            }
         }
 
         

@@ -69,6 +69,7 @@ namespace GoNorth.Data.Project
         public async Task<List<GoNorthProject>> GetProjects()
         {
             List<GoNorthProject> projects = await _ProjectCollection.AsQueryable().ToListAsync();
+            projects = projects.OrderBy(p => p.Name).ToList();
             return projects;
         }
 

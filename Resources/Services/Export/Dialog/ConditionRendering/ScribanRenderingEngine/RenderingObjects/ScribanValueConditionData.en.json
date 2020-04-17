@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_ValueObject": "Objekt to which the chosen value belongs",
+    "PlaceholderDesc_SelectedField": "Selected field that will be used for the comparison",
+    "PlaceholderDesc_IsOperatorPrimitive": "true if the operator is a primitive operator (=, !=, <, <=, ...), else false",
+    "PlaceholderDesc_Operator": "Operator for the comparison. Will be loaded using the corresponding templates.",
+    "PlaceholderDesc_OriginalOperator": "Original operator for the comparison. This one will not be loaded from the templates, but will always have the value selected in the condition dropdown.",
+    "PlaceholderDesc_CompareValue": "Comparison value for the condition"
+}

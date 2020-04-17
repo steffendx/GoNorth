@@ -14,14 +14,14 @@
   "author": "Steffen Nörtershäuser",
   "license": "MIT",
   "dependencies": {
-    "mocha": "^6.1.4",
-    "mocha-junit-reporter": "^1.23.0",
+    "mocha": "^7.1.1",
+    "mocha-junit-reporter": "^1.23.3",
     "mocha-multi-reporters": "^1.1.7",
-    "puppeteer": "^1.18.1"
+    "puppeteer": "^2.1.1"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
-    "gulp-zip": "^5.0.0",
-    "minimist": "^1.2.2"
+    "gulp-zip": "^5.0.1",
+    "minimist": "^1.2.5"
   }
 }

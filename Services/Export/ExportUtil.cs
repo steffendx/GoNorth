@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using GoNorth.Extensions;
 using GoNorth.Services.Export.Placeholder;
 using Microsoft.Extensions.Localization;
 
@@ -89,6 +91,26 @@ namespace GoNorth.Services.Export
         }
 
         /// <summary>
+        /// Renders a placeholder if a condition is true
+        /// </summary>
+        /// <param name="code">Code</param>
+        /// <param name="placeholderStart">Start of the placeholder</param>
+        /// <param name="placeholderEnd">End of the placeholder</param>
+        /// <param name="render">Function to evaluate </param>
+        /// <returns>Updated Code</returns>
+        public static async Task<string> RenderPlaceholderIfFuncTrueAsync(string code, string placeholderStart, string placeholderEnd, Func<Match, Task<bool>> render) 
+        {
+            return await ExportUtil.BuildRangePlaceholderRegex(placeholderStart, placeholderEnd).ReplaceAsync(code, async m => {
+                if(await render(m))
+                {
+                    return m.Groups[m.Groups.Count - 1].Value;
+                }
+
+                return string.Empty;
+            });
+        }
+
+        /// <summary>
         /// Indents a list template
         /// </summary>
         /// <param name="code">Template code</param>
@@ -96,7 +118,7 @@ namespace GoNorth.Services.Export
         /// <returns>Indented code</returns>
         public static string IndentListTemplate(string code, string indent)
         {
-            return indent + code.Replace(Environment.NewLine, Environment.NewLine + indent);
+            return indent + code.Replace("\n", "\n" + indent);
         }
 
         /// <summary>

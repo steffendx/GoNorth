@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_NodeIndex": "Unique Id of the node",
+    "PlaceholderDesc_NodeType": "Type of the node",
+    "PlaceholderDesc_NodeStepFunctionName": "Name of the function that belongs to this node. If no node is generated this will be \"\"",
+    "PlaceholderDesc_NodeStepFunctionNameNoFlagSet": "Name of the function that belongs to this node. If no node is generated this will be \"\". Does not set the flag that the function was used.",
+    "PlaceholderDesc_NodeStepFunctionWasUsed": "true if the function was already read, else false",
+    "PlaceholderDesc_NodeObject": "Object to which the node belongs" 
+}

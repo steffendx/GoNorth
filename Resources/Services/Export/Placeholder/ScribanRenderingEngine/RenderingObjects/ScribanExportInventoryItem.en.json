@@ -1,0 +1,4 @@
+{
+    "PlaceholderDesc_Quantity": "Quantity of the item inside of the inventory",
+    "PlaceholderDesc_IsEquipped": "true if the item is equipped, else false"
+}

@@ -2084,7 +2084,7 @@
                         self.isLoading(false);
                         self.errorOccured(true);
 
-                        // If npc is related to anything that prevents deleting a bad request (400) will be returned
+                        // If page is related to anything that prevents deleting a bad request (400) will be returned
                         if(xhr.status == 400 && xhr.responseText)
                         {
                             self.additionalErrorDetails(xhr.responseText);

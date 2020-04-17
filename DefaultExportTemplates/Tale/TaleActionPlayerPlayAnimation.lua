@@ -1,1 +1,1 @@
-playerNpc:play_animation("{{Tale_Action_Animation}}")
+playerNpc:play_animation("{{ action.animation }}")

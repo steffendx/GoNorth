@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_ExportSnippetFunction": "Renders an export snippet function based on the shared template for export snippet functions. You must pass an export snippet function object, like an entry from export_snippet.snippet.&lt;SNIPPET_NAME&gt;.all_functions array, as &lt;EXPORT_SNIPPET_FUNCTION&gt;."
+}

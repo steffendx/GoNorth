@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_DailyRoutineEventFunctionList": "Rendert eine Liste Tagesablauf Funktionen basierend auf dem geteilten Template für Tagesabluaf Funktionslisten Template. Als &lt;DAILY_ROUTINE_FUNCTION_LIST&gt; muss ein Array mit Tagesablauf Funktionen, wie beispielsweise daily_routine.event_functions, übergeben werden."
+}

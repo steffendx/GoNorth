@@ -1,1 +1,1 @@
-FadeToBlack({{Tale_Action_FadeTime}})
+BaseDialog_FadeToBlack({{ action.fade_time }})

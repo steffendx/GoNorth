@@ -21,6 +21,7 @@ using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace GoNorth.Controllers.Api
 {
@@ -185,8 +186,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="template">Template to create</param>
         /// <returns>Result</returns>
-        [Produces(typeof(StyrItem))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(StyrItem), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -200,8 +200,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -216,8 +215,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Template Id</param>
         /// <param name="template">Update template data</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(StyrItem))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(StyrItem), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -231,8 +229,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Template Id</param>
         /// <returns>Task</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -246,8 +243,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Image Name</returns>
-        [Produces(typeof(string))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.StyrTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -381,8 +377,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Items</returns>
-        [Produces(typeof(FlexFieldObjectQueryResult))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FlexFieldObjectQueryResult), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Styr)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]
@@ -391,8 +386,8 @@ namespace GoNorth.Controllers.Api
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             Task<List<StyrItem>> queryTask;
             Task<int> countTask;
-            queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize);
-            countTask = _objectDbAccess.GetNotImplementedFlexFieldObjectsCount(project.Id);
+            queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _objectDbAccess.GetNotImplementedFlexFieldObjectsCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             FlexFieldObjectQueryResult queryResult = new FlexFieldObjectQueryResult();

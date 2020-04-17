@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_TargetNpc": "Npc above which the text will be shown",
+    "PlaceholderDesc_Text": "Text that will be displayed above the npc.",
+    "PlaceholderDesc_UnescapedText": "Text that will be displayed above the npc without using the escape settings.",
+    "PlaceholderDesc_TextPreview": "Preview for the text that is shown. All line breaks will be removed and the text will be cut if it is to long. This placeholder is intended to be used in comments to increase the readability of the dialog if language keys are used."
+}

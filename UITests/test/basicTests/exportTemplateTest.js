@@ -28,6 +28,19 @@ describe("Export Template", function () {
         testBed.assertNoErrorsOccured();
     });
 
+    it("should not throw errors on include templates section", async function() {
+        var testBed = this.test.testBed;
+        
+        await testBed.clickAndFollowLink("#gn-homeTileLinkExportSettings");
+
+        await testBed.checkElementExistsOnPage("#gn-exportTemplateOverviewContainer");
+
+        await testBed.clickElement("#gn-exportTemplateIncludeTemplatesSections");
+        await testBed.checkElementVisibleOnPage("#gn-exportTemplateOverviewCreateIncludeTemplateButton");
+
+        testBed.assertNoErrorsOccured();
+    });
+
     it("should not throw errors on function generation condition page", async function() {
         var testBed = this.test.testBed;
         
@@ -50,6 +63,19 @@ describe("Export Template", function () {
 
         await testBed.clickElement("#gn-exportManageTemplatePlaceholderToggleButton");
         await testBed.checkElementVisibleOnPage(".gn-exportManageTemplatePlaceholderContainer");
+
+        testBed.assertNoErrorsOccured();
+    });
+
+    it("should not throw errors on include export template page", async function() {
+        var testBed = this.test.testBed;
+        
+        await testBed.navigateByUrl("/Export/ManageIncludeTemplate");
+
+        await testBed.checkElementExistsOnPage("#gn-exportManageIncludeTemplateContainer");
+
+        await testBed.clickElement("#gn-exportManageIncludeReferenceToggleButton");
+        await testBed.checkElementVisibleOnPage(".gn-exportManageIncludeTemplateReferenceContainer");
 
         testBed.assertNoErrorsOccured();
     });

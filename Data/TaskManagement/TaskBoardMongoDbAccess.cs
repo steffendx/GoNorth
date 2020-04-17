@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Config;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
@@ -59,16 +58,31 @@ namespace GoNorth.Data.TaskManagement
         }
 
         /// <summary>
+        /// Builds an page search queryable
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="searchClosed">true if closed task boards should be returned, else false</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Page Queryable</returns>
+        private IFindFluent<TaskBoard, TaskBoard> BuildTaskBoardQueryable(string projectId, bool searchClosed, string locale)
+        {
+            return _TaskBoardCollection.Find(b => b.ProjectId == projectId && b.IsClosed == searchClosed, new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
+        }
+
+        /// <summary>
         /// Returns task boards
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
         /// <param name="searchClosed">true if closed task boards should be returned, else false</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Boards</returns>
-        private async Task<List<TaskBoard>> GetTaskBoards(string projectId, int start, int pageSize, bool searchClosed)
+        private async Task<List<TaskBoard>> GetTaskBoards(string projectId, int start, int pageSize, bool searchClosed, string locale)
         {
-            List<TaskBoard> taskBoards = await _TaskBoardCollection.AsQueryable().Where(b => b.ProjectId == projectId && b.IsClosed == searchClosed).OrderBy(b => b.PlannedStart).ThenBy(b => b.Name).Skip(start).Take(pageSize).Select(b => new TaskBoard {
+            List<TaskBoard> taskBoards = await BuildTaskBoardQueryable(projectId, searchClosed, locale).SortBy(b => b.PlannedStart).ThenBy(b => b.Name).Skip(start).Limit(pageSize).Project(b => new TaskBoard {
                 Id = b.Id,
                 Name = b.Name,
                 CategoryId = b.CategoryId,
@@ -84,8 +98,9 @@ namespace GoNorth.Data.TaskManagement
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="searchClosed">true if closed task boards should be returned, else false</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Boards</returns>
-        private async Task<int> GetTaskBoardCount(string projectId, bool searchClosed)
+        private async Task<int> GetTaskBoardCount(string projectId, bool searchClosed, string locale)
         {
             int count = await _TaskBoardCollection.AsQueryable().Where(b => b.ProjectId == projectId && b.IsClosed == searchClosed).CountAsync();
             return count;
@@ -97,20 +112,22 @@ namespace GoNorth.Data.TaskManagement
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Boards</returns>
-        public async Task<List<TaskBoard>> GetOpenTaskBoards(string projectId, int start, int pageSize)
+        public async Task<List<TaskBoard>> GetOpenTaskBoards(string projectId, int start, int pageSize, string locale)
         {
-            return await GetTaskBoards(projectId, start, pageSize, false);
+            return await GetTaskBoards(projectId, start, pageSize, false, locale);
         }
 
         /// <summary>
         /// Returns the count of open Task Boards for a project
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Board Count</returns>
-        public async Task<int> GetOpenTaskBoardCount(string projectId)
+        public async Task<int> GetOpenTaskBoardCount(string projectId, string locale)
         {
-            return await GetTaskBoardCount(projectId, false);
+            return await GetTaskBoardCount(projectId, false, locale);
         }
 
         /// <summary>
@@ -119,20 +136,22 @@ namespace GoNorth.Data.TaskManagement
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Boards</returns>
-        public async Task<List<TaskBoard>> GetClosedTaskBoards(string projectId, int start, int pageSize)
+        public async Task<List<TaskBoard>> GetClosedTaskBoards(string projectId, int start, int pageSize, string locale)
         {
-            return await GetTaskBoards(projectId, start, pageSize, true);
+            return await GetTaskBoards(projectId, start, pageSize, true, locale);
         }
 
         /// <summary>
         /// Returns the count of closed Task Boards for a project
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Task Board Count</returns>
-        public async Task<int> GetClosedTaskBoardCount(string projectId)
+        public async Task<int> GetClosedTaskBoardCount(string projectId, string locale)
         {
-            return await GetTaskBoardCount(projectId, true);
+            return await GetTaskBoardCount(projectId, true, locale);
         }
 
         /// <summary>

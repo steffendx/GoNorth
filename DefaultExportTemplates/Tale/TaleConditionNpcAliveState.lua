@@ -1,1 +1,6 @@
-{{Tale_Condition_State_Alive_Start}}BaseNpc_IsAlive({{Tale_Condition_Npc_Value_Id}}){{Tale_Condition_State_Alive_End}}{{Tale_Condition_State_Dead_Start}}BaseNpc_IsDead({{Tale_Condition_Npc_Value_Id}}){{Tale_Condition_State_Dead_End}}
+{{- if condition.npc_alive_state == "Alive" -}}
+BaseNpc_IsAlive({{ condition.npc.fields.Id.value }})
+{{- end -}}
+{{- if condition.npc_alive_state == "Dead" -}}
+BaseNpc_IsDead({{ condition.npc.fields.Id.value }})
+{{- end -}}

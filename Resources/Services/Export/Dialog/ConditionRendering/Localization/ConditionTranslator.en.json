@@ -1,0 +1,23 @@
+{
+    "ConditionTypeGroup": "Logic Group",
+    "ConditionTypePlayerValueCondition": "Check player value",
+    "ConditionTypeNpcValueCondition": "Check npc value",
+    "ConditionTypePlayerInventoryCondition": "Check item quantity in player inventory",
+    "ConditionTypeNpcInventoryCondition": "Check item quantity in npc inventory",
+    "ConditionTypeChooseQuestValueCondition": "Check quest value",
+    "ConditionTypeQuestStateCondition": "Check quest state",
+    "ConditionTypeNpcAliveStateCondition": "Check npc alive state",
+    "ConditionTypeCurrentSkillValueCondition": "Check skill value",
+    "ConditionTypeGameTimeCondition": "Check game time",
+    "ConditionTypePlayerSkillValueCondition": "Check player skill value",
+    "ConditionTypeNpcSkillValueCondition": "Check npc skill value",
+    "ConditionTypePlayerLearnedSkillCondition": "Player can use skill",
+    "ConditionTypePlayerNotLearnedSkillCondition": "Player can not use skill",
+    "ConditionTypeNpcLearnedSkillCondition": "Npc can use skill",
+    "ConditionTypeNpcNotLearnedSkillCondition": "Npc can not use skill",
+    "ConditionTypeRandomValueCondition": "Check random value",
+    "ConditionTypeDailyRoutineEventIsEnabledCondition": "Check daily routine event is active",
+    "ConditionTypeDailyRoutineEventIsDisabledCondition": "Check daily routine event is disabled",
+    "ConditionTypeCodeCondition": "Script code",
+    "ConditionTypeItemValueCondition": "Check item value"
+}

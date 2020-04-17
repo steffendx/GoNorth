@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Npc": "Npc für den die Animation abgespielt wird.",
+    "PlaceholderDesc_Animation": "Name der Animation die abgespielt wird.",
+    "PlaceholderDesc_UnescapedAnimation": "Name der Animation die abgespielt wird ohne Escape Einstellungen zu berücksichtigen."
+}

@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Rendering
 @using GoNorth.Models.ExportViewModels
 
 @inject IViewLocalizer Localizer
@@ -90,7 +91,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX" crossorigin="anonymous" asp-fallback-test="jQuery.ui" asp-fallback-src="~/lib/jquery-ui/jquery-ui.min.js"></script>
 
     <environment include="Development">
         <script src="~/js/Shared/nodeGraph/nodeLang.@(Localizer["NodeLang"].Value).js" asp-append-version="true"></script>
@@ -122,10 +123,10 @@
         @foreach(MappedDialogFunctionGenerationActionType curActionType in Model.DialogFunctionGenerationActionTypes)
         {
             <text>
-            GoNorth.Export.FunctionGenerationCondition.localizedActionTypes["@curActionType.Name"] = "@Localizer["ActionType" + @curActionType.Name]";
+            GoNorth.Export.FunctionGenerationCondition.localizedActionTypes["@curActionType.Name"] = "@Html.Raw(Model.ActionTranslator.TranslateActionType(curActionType.OriginalActionType))";
             GoNorth.Export.FunctionGenerationCondition.actionTypes.push({
                 actionType: "@curActionType.Name",
-                displayName: "@Localizer["ActionType" + @curActionType.Name]"
+                displayName: "@Html.Raw(Model.ActionTranslator.TranslateActionType(curActionType.OriginalActionType))"
             });
             </text>
         }

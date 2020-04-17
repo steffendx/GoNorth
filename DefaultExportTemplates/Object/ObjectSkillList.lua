@@ -1,2 +1,3 @@
-{{Skills_Start}}this:learn_skill("{{CurSkill_Value_ScriptName}}")
-{{Skills_End}}
+{{~ for skill in skills ~}}
+this:learn_skill("{{ skill.fields.ScriptName.value }}")
+{{~ end ~}}

@@ -1,1 +1,1 @@
-BaseNpc_OpenShop(this)
+BaseDialog_OpenShop(this)

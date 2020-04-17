@@ -8,35 +8,42 @@ include("Npc")
 
 function OnInit(this)
     -- Values
-    this:add_localized_string_value("Name", "{{FlexField_Name_LangKey}}")
+    this:add_localized_string_value("Name", "{{ langkey npc.name }}")
+    {{ npc.unused_fields | attribute_list }}
+    {{~ if !inventory.empty? ~}}
+    
+    -- Inventory
+    {{ inventory | inventory_list }}
+    {{~ end ~}}
+    {{~ if !skills.empty? ~}}
+    
+    -- Skills
+    {{ skills | skill_list }}
+    {{~ end ~}}
+    {{~ if !daily_routine.events.empty? ~}}
+    
+    -- Daily routine
+    {{ daily_routine.events | daily_routine_event_list }}
+    {{~ end ~}}
 
-    {{FlexField_UnusedFields}}
-
-    {{Npc_HasItems_Start}}-- Inventory
-    {{Npc_Inventory}}
-    {{Npc_HasItems_End}}
-    {{Npc_HasSkills_Start}}-- Skills
-    {{Npc_Skills}}
-    {{Npc_HasSkills_End}}
-    {{Npc_HasDailyRoutine_Start}}-- Daily Routine Events
-    {{Npc_DailyRoutine_Events}}{{Npc_HasDailyRoutine_End}}
-
-    {{Dialog_HasDialog_Start}}this:register_message_function("OnTalk", "DialogStart"){{Dialog_HasDialog_End}}
+    this:push_state("Idle")
+    {{~ if dialog ~}}
+    this:set_dialog_entry_function("{{ dialog.initial_function.function_name }}")
+    {{~ end ~}}
 end
 
------- States -----------
-
-{{Dialog_HasDialog_Start}}
+{{~ if dialog ~}}
 ------ Dialog -----------
 
-function DialogStart(this)
-    {{Dialog_Start}}
-end
+{{~ for curFunction in dialog.all_functions ~}}
 
-{{Dialog_Additional_Functions}}
-{{Dialog_HasDialog_End}}
+{{ curFunction | dialog_function }}
 
-{{Npc_HasDailyRoutine_Start}}
------- Daily Routine ----
-{{Npc_DailyRoutine_Functions}}
-{{Npc_HasDailyRoutine_End}}
+{{~ end ~}}
+{{~ end ~}}
+
+{{~ if !daily_routine.event_functions.empty? ~}}
+------ Daily routine -----------
+
+{{ daily_routine.event_functions | daily_routine_event_function_list }}
+{{~ end ~}}

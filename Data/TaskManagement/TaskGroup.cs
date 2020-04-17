@@ -41,7 +41,6 @@ namespace GoNorth.Data.TaskManagement
         /// <summary>
         /// Id of the user the task group is assigned to
         /// </summary>
-        /// <returns></returns>
         public string AssignedTo { get; set; }
 
         /// <summary>

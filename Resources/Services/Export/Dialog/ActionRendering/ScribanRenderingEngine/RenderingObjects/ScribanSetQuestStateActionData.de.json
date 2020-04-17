@@ -1,0 +1,4 @@
+{
+    "PlaceholderDesc_Quest": "Quest Objekt dessen Zustand festgelegt wird",
+    "PlaceholderDesc_TargetState": "Zielzustand des Quests. Kann <i>NotStarted</i>, <i>InProgress</i>, <i>Success</i> oder <i>Failed</i> sein."
+}

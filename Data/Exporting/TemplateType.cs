@@ -57,11 +57,6 @@ namespace GoNorth.Data.Exporting
 
 
         /// <summary>
-        /// Tale dialog step
-        /// </summary>
-        TaleDialogStep = 200,
-
-        /// <summary>
         /// Tale dialog function
         /// </summary>
         TaleDialogFunction = 201,

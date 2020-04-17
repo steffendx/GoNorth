@@ -1,1 +1,1 @@
-{{Tale_Condition_ScriptCode}}
+{{ condition.script_code }}

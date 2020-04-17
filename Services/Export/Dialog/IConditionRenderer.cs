@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
-using GoNorth.Data.Kortisto;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Placeholder;
@@ -14,6 +13,12 @@ namespace GoNorth.Services.Export.Dialog
     /// </summary>
     public interface IConditionRenderer
     {
+        /// <summary>
+        /// Sets the export template placeholder resolver
+        /// </summary>
+        /// <param name="templatePlaceholderResolver">Template placeholder resolver</param>
+        void SetExportTemplatePlaceholderResolver(IExportTemplatePlaceholderResolver templatePlaceholderResolver);
+        
         /// <summary>
         /// Renders a condition
         /// </summary>
@@ -35,7 +40,7 @@ namespace GoNorth.Services.Export.Dialog
         /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
         /// <returns>Result of rendering the condition</returns>
-        string RenderConditionElements(GoNorthProject project, List<ParsedConditionData> conditionElements, string groupOperator, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings);
+        Task<string> RenderConditionElements(GoNorthProject project, List<ParsedConditionData> conditionElements, string groupOperator, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings);
 
         /// <summary>
         /// Returns true if the condition renderer has placeholders for a template type
@@ -48,7 +53,8 @@ namespace GoNorth.Services.Export.Dialog
         /// Returns the Export Template Placeholders for a Template Type
         /// </summary>
         /// <param name="templateType">Template Type</param>
+        /// <param name="renderingEngine">Rendering engine</param>
         /// <returns>Export Template Placeholder</returns>
-        List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType);
+        List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType, ExportTemplateRenderingEngine renderingEngine);
     }
 }

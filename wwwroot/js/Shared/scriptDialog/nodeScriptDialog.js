@@ -2,6 +2,8 @@
     "use strict";
     (function(ScriptDialog) {
 
+            ScriptDialog.currentNodeDialogIndex = 0;
+
             /**
              * Viewmodel for a dialog to enter a script using a node system
              * @param {ko.observable} npcId Npc id to which the node system is related
@@ -13,6 +15,9 @@
             ScriptDialog.NodeScriptDialog = function(npcId, objectDialog, codeEditor, errorOccured)
             {
                 GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
+
+                this.dialogId = ScriptDialog.currentNodeDialogIndex;
+                ++ScriptDialog.currentNodeDialogIndex;
 
                 this.npcId = npcId;
 
@@ -141,7 +146,7 @@
                     this.showConfirmCloseDialog(false);
                     this.confirmedClose = false;
                     
-                    GoNorth.Util.setupValidation("#gn-nodeScriptEditorForm");
+                    GoNorth.Util.setupValidation("#gn-nodeScriptEditorForm" + this.dialogId);
 
                     this.editDeferred = new jQuery.Deferred();
                     return this.editDeferred.promise();
@@ -151,7 +156,7 @@
                  * Saves the nodes
                  */
                 saveNodes: function() {
-                    if(!jQuery("#gn-nodeScriptEditorForm").valid())
+                    if(!jQuery("#gn-nodeScriptEditorForm" + this.dialogId).valid())
                     {
                         return;
                     }

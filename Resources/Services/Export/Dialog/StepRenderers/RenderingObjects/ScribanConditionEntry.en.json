@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Id": "Unique Id of the condition. This is only unique for this list not globally.",
+    "PlaceholderDesc_Condition": "Condition string of the object",
+    "PlaceholderDesc_ChildNode": "Node that will be run if the condition is true"
+}

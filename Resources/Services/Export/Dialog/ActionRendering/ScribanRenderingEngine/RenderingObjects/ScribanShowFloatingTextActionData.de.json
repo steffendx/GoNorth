@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_TargetNpc": "Npc über dem der Text angezeigt wird",
+    "PlaceholderDesc_Text": "Text der über dem Npc angezeigt wird.",
+    "PlaceholderDesc_UnescapedText": "Text der über dem Npc angezeigt wird ohne Escape Einstellungen zu berücksichtigen.",
+    "PlaceholderDesc_TextPreview": "Vorschau für den Text der angezeigt wird. Dabei werden Zeilenumbrüche entfernt und zu langer Text abgeschnitten. Dieser Platzhalter ist gedacht um in Kommentaren eine Vorschau hinzuzufügen um die Lesbarkeit zu erhöhen wenn Sprachschlüssel genutzt werden."
+}

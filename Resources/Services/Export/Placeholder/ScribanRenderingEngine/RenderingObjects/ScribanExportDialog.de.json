@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_InitialFunction": "Erste Funktion des Dialog",
+    "PlaceholderDesc_AdditionalFunctions": "Weitere Funktionen des Dialogs. Können mit <i>for</i> durchlaufen werden.",
+    "PlaceholderDesc_AllFunctions": "Alle Funktionen des Dialog. Können mit <i>for</i> durchlaufen werden."
+}

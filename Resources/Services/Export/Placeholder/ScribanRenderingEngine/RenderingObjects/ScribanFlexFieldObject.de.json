@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Id": "Id des Objekt",
+    "PlaceholderDesc_Name": "Name des Objekt",
+    "PlaceholderDesc_AllFields": "Alle Felder des Objekts. Können per <i>for</i> durchlaufen. Die Properties der Felder sind die selben wie beim Zugriff auf ein Feld per Name.",
+    "PlaceholderDesc_UnusedFields": "Alle Felder des Objekts welche nicht direkt per Namen referenziert wurden. Können per <i>for</i> durchlaufen. Die Properties der Felder sind die selben wie beim Zugriff auf ein Feld per Name."
+}

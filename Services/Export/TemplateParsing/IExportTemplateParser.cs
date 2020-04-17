@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 
 namespace GoNorth.Services.Export.TemplateParsing
@@ -11,6 +12,7 @@ namespace GoNorth.Services.Export.TemplateParsing
         /// Parses an export template
         /// </summary>
         /// <param name="template">Template to parse</param>
-        void ParseExportTemplate(ExportTemplate template);
+        /// <returns>Task</returns>
+        Task ParseExportTemplate(ExportTemplate template);
     }
 }

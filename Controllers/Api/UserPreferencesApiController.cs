@@ -81,8 +81,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the User Preferences
         /// </summary>
         /// <returns>User Preferences</returns>
-        [Produces(typeof(UserPreferences))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserPreferences), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetUserPreferences()
         {
@@ -113,8 +112,7 @@ namespace GoNorth.Controllers.Api
         /// Returns the code editor preferences
         /// </summary>
         /// <returns>Code editor Preferences</returns>
-        [Produces(typeof(UserCodeEditorPreferences))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserCodeEditorPreferences), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetCodeEditorPreferences()
         {

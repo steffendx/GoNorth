@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_ValueObject": "Objekt zu dem das Feld das geändert wird gehört.",
+    "PlaceholderDesc_TargetField": "Feld das geändert wird.",
+    "PlaceholderDesc_Operator": "Operator für die Änderung. Wird über die entsprechenden Templates geladen.",
+    "PlaceholderDesc_OriginalOperator": "Original Operator. Dieser wird nicht über die Templates geladen sondern hat immer den Wert des Operator Dropdown Steuerelements.",
+    "PlaceholderDesc_ValueChange": "Wert der Änderung."
+}

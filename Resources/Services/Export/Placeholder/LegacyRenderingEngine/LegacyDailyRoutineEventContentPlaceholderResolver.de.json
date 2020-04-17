@@ -1,0 +1,10 @@
+{
+    "PlaceholderDesc_DailyRoutine_ScriptFunctionName": "Name der Funktion",
+    "PlaceholderDesc_DailyRoutine_ScriptContent": "Inhalt des Skripts",
+    "PlaceholderDesc_DailyRoutine_Function_ParentPreview": "Text Vorschau der übergeordneten Knoten die zu dieser neuen Funktion führen. Dieser Platzhalter ist gedacht um in einem Kommentar gerendert zu werden um die Lesbarkeit zu erhöhen.",
+    "PlaceholderDesc_DailyRoutine_HasAdditionalScriptFunctions_Start": "OBSOLET. Start des Inhalts der nur gerendert wird wenn es zusätzlichen Tagesablauf Funktionen gibt. Muss mit DailyRoutine_HasAdditionalScriptFunctions_End geschlossen werden.",
+    "PlaceholderDesc_DailyRoutine_HasAdditionalScriptFunctions_End": "OBSOLET. Ende des Inhalts der nur gerendert wird wenn es zusätzlichen Tagesablauf Funktionen gibt.",
+    "PlaceholderDesc_DailyRoutine_HasNoAdditionalScriptFunctions_Start": "OBSOLET. Start des Inhalts der nur gerendert wird wenn es keine zusätzlichen Tagesablauf Funktionen gibt. Muss mit DailyRoutine_HasNoAdditionalScriptFunctions_End geschlossen werden.",
+    "PlaceholderDesc_DailyRoutine_HasNoAdditionalScriptFunctions_End": "OBSOLET. Ende des Inhalts der nur gerendert wird wenn es keine zusätzlichen Tagesablauf Funktionen gibt.",
+    "PlaceholderDesc_DailyRoutine_AdditionalScriptFunctions": "OBSOLET. Wird durch zusätzliche Tagesablauf Funktionen ersetzt oder entfernt wenn keine weiteren Funktionen nötig sind."
+}

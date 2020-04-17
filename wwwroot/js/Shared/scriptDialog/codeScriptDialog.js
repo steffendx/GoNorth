@@ -2,6 +2,8 @@
     "use strict";
     (function(ScriptDialog) {
 
+            ScriptDialog.currentCodeScriptDialogIndex = 0;
+
             /**
              * Viewmodel for a dialog to enter a code script
              * @param {ko.observable} errorOccured Error occured observable
@@ -9,6 +11,9 @@
              */
             ScriptDialog.CodeScriptDialog = function(errorOccured)
             {
+                this.dialogId = ScriptDialog.currentCodeScriptDialogIndex;
+                ++ScriptDialog.currentCodeScriptDialogIndex;
+
                 this.errorOccured = errorOccured;
 
                 this.isVisible = new ko.observable(false);
@@ -86,7 +91,7 @@
                     this.showConfirmCloseDialog(false);
                     this.confirmedClose = false;
 
-                    GoNorth.Util.setupValidation("#gn-codeScriptEditorForm");
+                    GoNorth.Util.setupValidation("#gn-codeScriptEditorForm" + this.dialogId);
 
                     this.editDeferred = new jQuery.Deferred();
                     return this.editDeferred.promise();
@@ -96,7 +101,7 @@
                  * Saves the code
                  */
                 saveCode: function() {
-                    if(!jQuery("#gn-codeScriptEditorForm").valid())
+                    if(!jQuery("#gn-codeScriptEditorForm" + this.dialogId).valid())
                     {
                         return;
                     }

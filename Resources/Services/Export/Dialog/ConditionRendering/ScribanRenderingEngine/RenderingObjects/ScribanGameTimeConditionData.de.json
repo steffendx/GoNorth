@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_Hours": "Stunden für den Vergleich",
+    "PlaceholderDesc_Minutes": "Minuten für den Vergleich",
+    "PlaceholderDesc_TotalMinutes": "Gesamtminuten für den Vergleich. Wird Berechnet als Stunden * MinutenProStunde + Minuten.",
+    "PlaceholderDesc_Operator": "Vergleichsoperator. Wird über die entsprechenden Templates geladen.",
+    "PlaceholderDesc_OriginalOperator": "Original Vergleichsoperator. Dieser kann <i>Before</i> oder <i>After</i> sein."
+}

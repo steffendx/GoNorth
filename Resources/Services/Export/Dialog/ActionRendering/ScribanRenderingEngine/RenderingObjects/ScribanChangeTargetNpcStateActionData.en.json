@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Skill": "Skill that is being casted.",
+    "PlaceholderDesc_TargetState": "Target state of the npc.",
+    "PlaceholderDesc_UnescapedTargetState": "Target state of the npc without using the escape settings."
+}

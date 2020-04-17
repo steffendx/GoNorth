@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Npc": "Npc which state will be changed.",
+    "PlaceholderDesc_TargetState": "Target state of the npc.",
+    "PlaceholderDesc_UnescapedTargetState": "Target state of the npc without using the escape settings."
+}

@@ -1,6 +1,9 @@
-{{Tale_Conditions_Start}}
-{{Tale_Condition_IsNotFirst_Start}}else{{Tale_Condition_IsNotFirst_End}}if({{Tale_Condition}}) then
-    {{Tale_ChildNode_HasFunction_Start}}{{Tale_ChildNode_Function}}(this){{Tale_ChildNode_HasFunction_End}}{{Tale_Conditions_End}}{{Tale_Conditions_Else_Start}}
+{{~ for cur_condition in condition.conditions ~}}
+{{ if for.index > 0 }}else{{ end }}if({{ cur_condition.condition }}) then
+    {{if cur_condition.child_node && cur_condition.child_node.node_step_function_name }}{{ cur_condition.child_node.node_step_function_name }}(this){{ end }}
+{{~ end ~}}
+{{~ if condition.else && condition.else.node_step_function_name ~}}
 else
-    {{Tale_ChildNode_HasFunction_Start}}{{Tale_ChildNode_Function}}(this){{Tale_ChildNode_HasFunction_End}}{{Tale_Conditions_Else_End}}
+    {{if condition.else.node_step_function_name }}{{ condition.else.node_step_function_name }}(this){{ end }}
+{{~ end ~}}
 end

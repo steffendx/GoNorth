@@ -70,8 +70,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="category">Category of the lock</param>
         /// <param name="id">Id of the resource</param>
         /// <returns>Lock Result</returns>
-        [Produces(typeof(LockResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LockResponse), StatusCodes.Status200OK)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcquireLock(string category, string id)
@@ -85,8 +84,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="category">Category of the lock</param>
         /// <param name="id">Id of the resource</param>
         /// <returns>Lock Result</returns>
-        [Produces(typeof(LockResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LockResponse), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> CheckLock(string category, string id)
         {

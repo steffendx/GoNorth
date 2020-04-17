@@ -4,10 +4,14 @@ using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Project;
+using GoNorth.Services.Export.DailyRoutine;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Dialog;
+using GoNorth.Services.Export.Dialog.ActionRendering.Localization;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;
+using GoNorth.Services.Export.Placeholder.LegacyRenderingEngine;
+using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKeyGenerator;
 using Microsoft.Extensions.Localization;
 
 namespace GoNorth.Services.Export.NodeGraphExport
@@ -38,6 +42,11 @@ namespace GoNorth.Services.Export.NodeGraphExport
         protected readonly ILanguageKeyGenerator _languageKeyGenerator;
 
         /// <summary>
+        /// Scriban language key generator
+        /// </summary>
+        protected readonly IScribanLanguageKeyGenerator _scribanLanguageKeyGenerator;
+
+        /// <summary>
         /// Condition Renderer
         /// </summary>
         protected readonly IConditionRenderer _conditionRenderer;
@@ -45,12 +54,27 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// <summary>
         /// Daily routine event placeholder resolver
         /// </summary>
-        protected readonly IDailyRoutineEventPlaceholderResolver _dailyRoutineEventPlaceholderResolver;
+        protected readonly ILegacyDailyRoutineEventPlaceholderResolver _legacyDailyRoutineEventPlaceholderResolver;
+
+        /// <summary>
+        /// Daily routine function name generator
+        /// </summary>
+        protected readonly IDailyRoutineFunctionNameGenerator _dailyRoutineFunctionNameGenerator;
 
         /// <summary>
         /// String Localizer Factory
         /// </summary>
         protected readonly IStringLocalizerFactory _stringLocalizerFactory;
+
+        /// <summary>
+        /// Action Translator
+        /// </summary>
+        protected readonly IActionTranslator _actionTranslator;
+
+        /// <summary>
+        /// Template placeholder resolver
+        /// </summary>
+        protected IExportTemplatePlaceholderResolver _templatePlaceholderResolver;
 
         /// <summary>
         /// Step Rendereres
@@ -73,18 +97,26 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// <param name="defaultTemplateProvider">Default Template Provider</param>
         /// <param name="cachedDbAccess">Cached Db Access</param>
         /// <param name="languageKeyGenerator">Language Key Generator</param>
+        /// <param name="scribanLanguageKeyGenerator">Scriban language key generator</param>
         /// <param name="conditionRenderer">Condition Renderer</param>
-        /// <param name="dailyRoutineEventPlaceholderResolver">Daily routine event placeholder resolver</param>
+        /// <param name="legacyDailyRoutineEventPlaceholderResolver">Daily routine event placeholder resolver</param>
+        /// <param name="dailyRoutineFunctionNameGenerator">Daily routine function name generator</param>
+        /// <param name="actionTranslator">Action translator</param>
         /// <param name="stringLocalizerFactory">String Localizer Factor</param>
-        public NodeGraphBaseRenderer(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator,
-                                     IConditionRenderer conditionRenderer, IDailyRoutineEventPlaceholderResolver dailyRoutineEventPlaceholderResolver, IStringLocalizerFactory stringLocalizerFactory)
+        public NodeGraphBaseRenderer(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator, IScribanLanguageKeyGenerator scribanLanguageKeyGenerator,
+                                     IConditionRenderer conditionRenderer, ILegacyDailyRoutineEventPlaceholderResolver legacyDailyRoutineEventPlaceholderResolver, IDailyRoutineFunctionNameGenerator dailyRoutineFunctionNameGenerator, 
+                                     IActionTranslator actionTranslator, IStringLocalizerFactory stringLocalizerFactory)
         {
             _defaultTemplateProvider = defaultTemplateProvider;
             _cachedDbAccess = cachedDbAccess;
             _languageKeyGenerator = languageKeyGenerator;
+            _scribanLanguageKeyGenerator = scribanLanguageKeyGenerator;
             _conditionRenderer = conditionRenderer;
-            _dailyRoutineEventPlaceholderResolver = dailyRoutineEventPlaceholderResolver;
+            _legacyDailyRoutineEventPlaceholderResolver = legacyDailyRoutineEventPlaceholderResolver;
+            _dailyRoutineFunctionNameGenerator = dailyRoutineFunctionNameGenerator;
+            _actionTranslator = actionTranslator;
             _stringLocalizerFactory = stringLocalizerFactory;
+            _errorCollection = null;
             _stepRenderers = new List<IExportDialogStepRenderer>();
         }
 
@@ -94,7 +126,32 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// <param name="errorCollection">Error Collection</param>
         public void SetErrorCollection(ExportPlaceholderErrorCollection errorCollection)
         {
-            _errorCollection = errorCollection;
+            // Ensure to use most outer error collection
+            if(_errorCollection == null)
+            {
+                _errorCollection = errorCollection;
+            }
+        }
+
+        /// <summary>
+        /// Sets the export template placeholder resolver
+        /// </summary>
+        /// <param name="templatePlaceholderResolver">Template placeholder resolver</param>
+        public void SetExportTemplatePlaceholderResolver(IExportTemplatePlaceholderResolver templatePlaceholderResolver)
+        {
+            _templatePlaceholderResolver = templatePlaceholderResolver;
+            _conditionRenderer.SetExportTemplatePlaceholderResolver(templatePlaceholderResolver);
+        }
+
+        /// <summary>
+        /// Sets the export template placeholder resolver for all step renderers
+        /// </summary>
+        protected void SetExportTemplatePlaceholderResolverToStepRenderers()
+        {
+            foreach(IExportDialogStepRenderer curStepRenderer in _stepRenderers)
+            {
+                curStepRenderer.SetExportTemplatePlaceholderResolver(_templatePlaceholderResolver);
+            }
         }
 
         /// <summary>
@@ -109,8 +166,11 @@ namespace GoNorth.Services.Export.NodeGraphExport
             Queue<ExportDialogData> dataForFunctions = new Queue<ExportDialogData>();
             foreach (ExportDialogDataChild curChild in exportDialog.Children)
             {
-                dataForFunctions.Enqueue(curChild.Child);
-                usedNodesForFunctions.Add(curChild.Child);
+                if(!usedNodesForFunctions.Contains(curChild.Child))
+                {
+                    dataForFunctions.Enqueue(curChild.Child);
+                    usedNodesForFunctions.Add(curChild.Child);
+                }
             }
 
             while (dataForFunctions.Any())
@@ -159,18 +219,6 @@ namespace GoNorth.Services.Export.NodeGraphExport
         }
 
         /// <summary>
-        /// Renders a dialog function
-        /// </summary>
-        /// <param name="additionalFunction">additionalFunction</param>
-        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
-        /// <returns>Dialog function code</returns>
-        protected async Task<string> RenderDialogFunction(ExportDialogFunction additionalFunction, FlexFieldObject flexFieldObject)
-        {
-            string functionCode = await RenderDialogStepList(additionalFunction.FunctionSteps, flexFieldObject);
-            return await BuildDialogFunctionCode(additionalFunction, functionCode, flexFieldObject);
-        }
-
-        /// <summary>
         /// Renders a list of dialog steps
         /// </summary>
         /// <param name="functionSteps">Steps to render</param>
@@ -209,15 +257,6 @@ namespace GoNorth.Services.Export.NodeGraphExport
         }
 
         /// <summary>
-        /// Builds the dialog function code
-        /// </summary>
-        /// <param name="additionalFunction">Function</param>
-        /// <param name="additionalFunctionsCode">Additional Function Code to wrap</param>
-        /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
-        /// <returns>Function Code</returns>
-        protected abstract Task<string> BuildDialogFunctionCode(ExportDialogFunction additionalFunction, string additionalFunctionsCode, FlexFieldObject flexFieldObject);
-
-        /// <summary>
         /// Builds a preview for the parents of a function
         /// </summary>
         /// <param name="additionalFunction">Function</param>
@@ -230,9 +269,16 @@ namespace GoNorth.Services.Export.NodeGraphExport
                 return string.Empty;
             }
 
+            HashSet<string> usedParents = new HashSet<string>();
             List<string> previewLines = new List<string>();
             foreach (ExportDialogData curParent in additionalFunction.RootNode.Parents)
             {
+                if(usedParents.Contains(curParent.Id))
+                {
+                    continue;
+                }
+                usedParents.Add(curParent.Id);
+                
                 foreach (IExportDialogStepRenderer curRenderer in _stepRenderers)
                 {
                     string stepPreview = await curRenderer.BuildParentTextPreview(additionalFunction.RootNode, curParent, flexFieldObject, _errorCollection);
@@ -243,6 +289,7 @@ namespace GoNorth.Services.Export.NodeGraphExport
                     }
                 }
             }
+
             return string.Join(", ", previewLines);
         }
 

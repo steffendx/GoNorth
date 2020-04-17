@@ -540,6 +540,13 @@
                         url: "/api/KartaApi/Map?id=" + encodeURIComponent(id),
                         method: "GET"
                     }).done(function(map) {
+                        if(!map)
+                        {
+                            self.errorOccured(true);
+                            self.isLoading(false);
+                            return;
+                        }
+
                         self.currentMapName(map.name);
 
                         self.mapMaxZoom(map.maxZoom);

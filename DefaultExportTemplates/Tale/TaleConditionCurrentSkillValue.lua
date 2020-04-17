@@ -1,1 +1,6 @@
-{{Tale_Condition_ValueOperator_IsPrimitive_Start}}this:get_value("{{Tale_Condition_ValueName}}") {{Tale_Condition_ValueOperator}} {{Tale_Condition_ValueIsString_Start}}"{{Tale_Condition_ValueIsString_End}}{{Tale_Condition_CompareValue}}{{Tale_Condition_ValueIsString_Start}}"{{Tale_Condition_ValueIsString_End}}{{Tale_Condition_ValueOperator_IsPrimitive_End}}{{Tale_Condition_ValueOperator_IsNonPrimitive_Start}}{{Tale_Condition_ValueOperator}}(this:get_value("{{Tale_Condition_ValueName}}"), "{{Tale_Condition_CompareValue}}"){{Tale_Condition_ValueOperator_IsNonPrimitive_End}}
+{{- if condition.is_operator_primitive -}}
+this:get_value("{{ condition.selected_field.name }}") {{ condition.operator }} {{ if condition.selected_field.type != "number"}}"{{ end }}{{ condition.compare_value }}{{ if condition.selected_field.type != "number"}}"{{ end }}
+{{- end -}}
+{{- if !condition.is_operator_primitive -}}
+{{ condition.operator }}(this:get_value("{{ condition.selected_field.name }}"), "{{ condition.compare_value }}")
+{{- end -}}

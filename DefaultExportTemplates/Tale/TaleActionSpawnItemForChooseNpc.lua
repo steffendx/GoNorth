@@ -1,1 +1,1 @@
-BaseNpc_AddItemToPlayer(BaseNpc_GetNpcById({{Tale_Action_SelectedNpc_Value_Id}}), "{{Tale_Action_SelectedItem_Value_ScriptName}}", {{Tale_Action_Quantity}})
+BaseNpc_AddItemToNpc(BaseNpc_GetNpcById({{ action.npc.fields.Id.value }}), "{{ action.selected_item.fields.ScriptName.value }}", {{ action.quantity }})

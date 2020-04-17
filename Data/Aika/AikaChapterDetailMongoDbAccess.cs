@@ -77,7 +77,7 @@ namespace GoNorth.Data.Aika
             string regexPattern = ".";
             if(!string.IsNullOrEmpty(searchPattern))
             {
-                string[] searchPatternParts = searchPattern.Split(" ");
+                string[] searchPatternParts = searchPattern.Split(" ").Select(s => Regex.Escape(s)).ToArray();
                 regexPattern = "(" + string.Join("|", searchPatternParts) + ")";
             }
             return _ChapterDetailCollection.AsQueryable().Where(c => string.IsNullOrEmpty(c.ChapterId) && c.ProjectId == projectId && Regex.IsMatch(c.Name, regexPattern, RegexOptions.IgnoreCase));

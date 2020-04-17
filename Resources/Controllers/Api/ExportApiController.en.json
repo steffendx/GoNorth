@@ -17,7 +17,6 @@
     "TemplateTypeObjectExportSnippetFunction": "Export Snippet function",
 
 
-    "TemplateTypeTaleDialogStep": "Dialog step",
     "TemplateTypeTaleDialogFunction": "Dialog function",
     "TemplateTypeTaleNpcTextLine": "Npc text line",
     "TemplateTypeTalePlayerTextLine": "Player text line",
@@ -117,5 +116,8 @@
     "TemplateTypeGeneralChangeOperatorDivide": "Change: Divide",
 
 
-    "TemplateTypeLanguageFile": "Language file"
+    "TemplateTypeLanguageFile": "Language file",
+
+
+    "ErrorIncludeTemplateNameDoesAlreadyExist": "An include template with the name {0} already exists."
 }

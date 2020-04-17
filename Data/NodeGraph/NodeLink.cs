@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using GoNorth.Services.ImplementationStatusCompare;
 
@@ -7,7 +9,7 @@ namespace GoNorth.Data.NodeGraph
     /// <summary>
     /// Node Graph Link
     /// </summary>
-    public class NodeLink : IImplementationListComparable
+    public class NodeLink : IImplementationListComparable, ICloneable
     {
         /// <summary>
         /// Id of the source node
@@ -46,5 +48,20 @@ namespace GoNorth.Data.NodeGraph
         /// </summary>
         [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue("NodeConnection", CompareDifferenceValue.ValueResolveType.LanguageKey); } }
+
+        /// <summary>
+        /// Clones the object
+        /// </summary>
+        /// <returns>Cloned object</returns>
+        public object Clone()
+        {
+            return new NodeLink {
+                SourceNodeId = this.SourceNodeId,
+                SourceNodePort = this.SourceNodePort,
+                TargetNodeId = this.TargetNodeId,
+                TargetNodePort = this.TargetNodePort,
+                Vertices = this.Vertices != null ? this.Vertices.Select(v => v.Clone()).Cast<NodeLinkVertex>().ToList() : null
+            };
+        }
     }
 }

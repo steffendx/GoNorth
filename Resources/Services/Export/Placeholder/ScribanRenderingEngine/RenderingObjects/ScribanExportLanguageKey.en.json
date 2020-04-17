@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Key": "Key of the language key",
+    "PlaceholderDesc_Text": "Text of the language key",
+    "PlaceholderDesc_UnescapedText": "Text of the language key without using the escape settings"
+}

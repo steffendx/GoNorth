@@ -4,7 +4,6 @@ using GoNorth.Data.Project;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.Export.Script;
-using Microsoft.Extensions.Localization;
 
 namespace GoNorth.Services.Export.LanguageExport
 {
@@ -99,7 +98,7 @@ namespace GoNorth.Services.Export.LanguageExport
             ExportObjectResult result = new ExportObjectResult();
             result.FileExtension = exportSettings.LanguageFileExtension;
 
-            ExportPlaceholderFillResult filledResult = await _placeholderResolver.FillPlaceholders(TemplateType.LanguageFile, exportTemplate.Code, objectData);
+            ExportPlaceholderFillResult filledResult = await _placeholderResolver.FillPlaceholders(TemplateType.LanguageFile, exportTemplate.Code, objectData, exportTemplate.RenderingEngine);
             result.Code = filledResult.Code;
             result.Errors = filledResult.Errors.ToErrorList();
 

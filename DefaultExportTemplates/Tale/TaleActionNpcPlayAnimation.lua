@@ -1,1 +1,1 @@
-this:play_animation("{{Tale_Action_Animation}}")
+this:play_animation("{{ action.animation }}")

@@ -3,6 +3,11 @@
 
     "TemplateBasedOnParent": "Für dieses Objekt ist noch kein eigenes Template gespeichert. Es wird das übergeordnete Template verwendet. Hier klicken um das übergeordnete Template zu laden.",
 
+    "LegacyTemplate": "Legacy Template",
+    "UpdateLegacyTemplateForNewFeatures": "Aktualisiere dieses Template zu einem modernen Template um neue Features verwenden zu können und Zugriff auf flexiblere Platzhalter zu erhalten.",
+    "ConvertToModernTemplate": "Zu modernem Template konvertieren",
+    "Close": "Schließen",
+
     "Save": "Speichern",
     "Delete": "Löschen",
 

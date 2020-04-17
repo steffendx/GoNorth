@@ -41,6 +41,7 @@ namespace GoNorth.Services.Export.NodeGraphExport
             _nodeGraphParser = nodeGraphParser;
             _nodeGraphFunctionGenerator = null;
             _nodeGraphRenderer = null;
+            _errorCollection = null;
         }
 
         /// <summary>
@@ -49,7 +50,11 @@ namespace GoNorth.Services.Export.NodeGraphExport
         /// <param name="errorCollection">Error Collection</param>
         public void SetErrorCollection(ExportPlaceholderErrorCollection errorCollection)
         {
-            _errorCollection = errorCollection;
+            // Ensure to use most outer error collection
+            if(_errorCollection == null)
+            {
+                _errorCollection = errorCollection;
+            }
         }
 
         /// <summary>

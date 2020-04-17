@@ -1,0 +1,8 @@
+{
+    "PlaceholderDesc_Id": "Id des Feldes. &lt;VALUE_NAME&gt; muss dabei mit dem Namen des Feldes ersetzt werden.",
+    "PlaceholderDesc_Name": "Name des Feldes. &lt;VALUE_NAME&gt; muss dabei mit dem Namen des Feldes ersetzt werden.",
+    "PlaceholderDesc_Value": "Wert des Feldes. &lt;VALUE_NAME&gt; muss dabei mit dem Namen des Feldes ersetzt werden.",
+    "PlaceholderDesc_UnescapedValue": "Wert des Feldes. &lt;VALUE_NAME&gt; muss dabei mit dem Namen des Feldes ersetzt werden. Hier werden die Escape Einstellungen nicht berücksichtigt.",
+    "PlaceholderDesc_Type": "Typ des Feldes. Kann \"string\", \"number\" oder \"option\" sein. &lt;VALUE_NAME&gt; muss dabei mit dem Namen des Feldes ersetzt werden. Wenn das Feld nicht existiert wird \"MISSING\" zurückgegeben.",
+    "PlaceholderDesc_Exists": "True wenn das Feld existiert, sonst false."
+}

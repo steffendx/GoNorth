@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_WaitAmount": "Amount to wait",
+    "PlaceholderDesc_WaitType": "Type of the wait. Can be <i>RealTime</i> or <i>GameTime</i>.",
+    "PlaceholderDesc_WaitUnit": "Unit of the wait time. Can be <i>Milliseconds</i>, <i>Seconds</i>, <i>Minutes</i>, <i>Hours</i> or <i>Days</i>.",
+    "PlaceholderDesc_DirectContinueFunction": "Name of the function that will directly continue the script. null if no function exist."
+}

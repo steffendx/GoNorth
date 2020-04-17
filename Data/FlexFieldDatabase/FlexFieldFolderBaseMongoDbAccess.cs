@@ -52,15 +52,29 @@ namespace GoNorth.Data.FlexFieldDatabase
         }
 
         /// <summary>
+        /// Builds a flex field folder query for root folders
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Flex Field folder Queryable</returns>
+        private IFindFluent<FlexFieldFolder, FlexFieldFolder> BuildRootFolderQueryable(string projectId, string locale)
+        {
+            return _FolderCollection.Find(f => f.ProjectId == projectId && string.IsNullOrEmpty(f.ParentFolderId), new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
+        }
+
+        /// <summary>
         /// Returns all root folders for a project
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Root Folders</returns>
-        public async Task<List<FlexFieldFolder>> GetRootFoldersForProject(string projectId, int start, int pageSize)
+        public async Task<List<FlexFieldFolder>> GetRootFoldersForProject(string projectId, int start, int pageSize, string locale)
         {
-            List<FlexFieldFolder> folders = await _FolderCollection.Find(f => f.ProjectId == projectId && string.IsNullOrEmpty(f.ParentFolderId)).SortBy(f => f.Name).Skip(start).Limit(pageSize).ToListAsync();
+            List<FlexFieldFolder> folders = await BuildRootFolderQueryable(projectId, locale).SortBy(f => f.Name).Skip(start).Limit(pageSize).ToListAsync();
             return folders;
         }
 
@@ -68,34 +82,50 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// Returns the root folder count
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Root Folder Count</returns>
-        public async Task<int> GetRootFolderCount(string projectId)
+        public async Task<int> GetRootFolderCount(string projectId, string locale)
         {
-            int count = (int)await _FolderCollection.Find(f => f.ProjectId == projectId && string.IsNullOrEmpty(f.ParentFolderId)).CountDocumentsAsync();
+            int count = (int)await BuildRootFolderQueryable(projectId, locale).CountDocumentsAsync();
             return count;
+        }
+
+        /// <summary>
+        /// Builds a flex field folder query for child folders
+        /// </summary>
+        /// <param name="folderId">Folder id for which the children should be requested</param>
+        /// <param name="locale">Locale used for the collation</param>
+        /// <returns>Flex Field folder Queryable</returns>
+        private IFindFluent<FlexFieldFolder, FlexFieldFolder> BuildChildFolderQueryable(string folderId, string locale)
+        {
+            return _FolderCollection.Find(f => f.ParentFolderId == folderId, new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
         }
 
         /// <summary>
         /// Returns all Child folders for a folder
         /// </summary>
-        /// <param name="folderId">Folder id which the children should be requested</param>
+        /// <param name="folderId">Folder id for which the children should be requested</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Child Folders</returns>
-        public async Task<List<FlexFieldFolder>> GetChildFolders(string folderId, int start, int pageSize)
+        public async Task<List<FlexFieldFolder>> GetChildFolders(string folderId, int start, int pageSize, string locale)
         {
-            List<FlexFieldFolder> folders = await _FolderCollection.Find(f => f.ParentFolderId == folderId).SortBy(f => f.Name).Skip(start).Limit(pageSize).ToListAsync();
+            List<FlexFieldFolder> folders = await BuildChildFolderQueryable(folderId, locale).SortBy(f => f.Name).Skip(start).Limit(pageSize).ToListAsync();
             return folders;
         }
 
         /// <summary>
         /// Returns the child folder count
         /// </summary>
-        /// <param name="folderId">Folder id which the children should be requested</param>
+        /// <param name="folderId">Folder id for which the children should be requested</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Count of child folders</returns>
-        public async Task<int> GetChildFolderCount(string folderId)
+        public async Task<int> GetChildFolderCount(string folderId, string locale)
         {
-            int count = (int)await _FolderCollection.Find(f => f.ParentFolderId == folderId).CountDocumentsAsync();
+            int count = (int)await BuildChildFolderQueryable(folderId, locale).CountDocumentsAsync();
             return count;
         }
 

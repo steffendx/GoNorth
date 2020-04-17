@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_Npc": "Npc zu dem das Item gehört",
+    "PlaceholderDesc_SelectedItem": "Ausgewähltes Item das geprüft wird",
+    "PlaceholderDesc_Operator": "Vergleichsoperator. Wird über die entsprechenden Templates geladen.",
+    "PlaceholderDesc_OriginalOperator": "Vergleichsoperator der nicht über die Templates aufgelöst wird. Kann <i>AtLeast</i> oder <i>AtMaximum</i> sein.",
+    "PlaceholderDesc_Quantity": "Anzahl die als Vergleichswert genutzt wird."
+}

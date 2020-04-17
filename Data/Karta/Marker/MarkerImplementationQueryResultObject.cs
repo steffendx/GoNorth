@@ -18,7 +18,6 @@ namespace GoNorth.Data.Karta.Marker
         /// <summary>
         /// Map Name to which the marker belongs
         /// </summary>
-        /// <returns></returns>
         public string Name { get; set; }
 
         /// <summary>

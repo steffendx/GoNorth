@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Quest": "Quest Objekt dessen Zustand festgelegt wird",
+    "PlaceholderDesc_Text": "Text der zum Quest hinzugefügt wird.",
+    "PlaceholderDesc_UnescapedText": "Text der zum Quest hinzugefügt wird ohne Escape Einstellungen zu berücksichtigen.",
+    "PlaceholderDesc_TextPreview": "Vorschau für den Text der hinzugefügt wird. Dabei werden Zeilenumbrüche entfernt und zu langer Text abgeschnitten. Dieser Platzhalter ist gedacht um in Kommentaren eine Vorschau hinzuzufügen um die Lesbarkeit zu erhöhen wenn Sprachschlüssel genutzt werden."
+}

@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_InventoryList": "Rendert eine Liste von Items als Inventar. Als &lt;ITEM_LIST&gt; kann inventory übergeben werden. Die Liste wird basierend auf dem Inventar Template gerendert."
+}

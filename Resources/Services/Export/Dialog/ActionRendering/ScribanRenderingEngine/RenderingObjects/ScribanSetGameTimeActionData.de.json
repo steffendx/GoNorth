@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Hours": "Stunden auf die die Uhrzeit festgelegt werden muss.",
+    "PlaceholderDesc_Minutes": "Minuten auf die die Uhrzeit festgelegt werden muss.",
+    "PlaceholderDesc_TotalMinutes": "Gesamtminuten auf die die Uhrzeit festgelegt werden muss. Wird Berechnet als Stunden * MinutenProStunde + Minuten."
+}

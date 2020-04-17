@@ -80,6 +80,21 @@ namespace GoNorth.Services.Export
         public const int FlexFieldType_Option = 3;
 
         /// <summary>
+        /// Scriban String Flex Field Type
+        /// </summary>
+        public const string Scriban_FlexFieldType_String = "string";
+
+        /// <summary>
+        /// Scriban Number Flex Field Type
+        /// </summary>
+        public const string Scriban_FlexFieldType_Number = "number";
+
+        /// <summary>
+        /// Scriban Option Flex Field Type
+        /// </summary>
+        public const string Scriban_FlexFieldType_Option = "option";
+
+        /// <summary>
         /// Flex Field Additional Script Names Seperator
         /// </summary>
         public const string FlexFieldAdditionalScriptNamesSeperator = ",";
@@ -102,9 +117,106 @@ namespace GoNorth.Services.Export
         public const string LanguageKeyTypePlayer = "player";
 
         /// <summary>
+        /// Language key for a choice
+        /// </summary>
+        public const string LanguageKeyTypeChoice = "choice";
+
+        /// <summary>
         /// Language key for quest
         /// </summary>
         public const string LanguageKeyTypeQuest = "quest";
+
+
+        /// <summary>
+        /// Name of the language key function in Scriban
+        /// </summary>
+        public const string ScribanLanguageKeyName = "langkey";
+
+
+        /// <summary>
+        /// Scriban Npc object key
+        /// </summary>
+        public const string ScribanNpcObjectKey = "npc";
+
+        /// <summary>
+        /// Scriban Npc inventory object key
+        /// </summary>
+        public const string ScribanNpcInventoryObjectKey = "inventory";
+        
+        /// <summary>
+        /// Scriban Npc skill object key
+        /// </summary>
+        public const string ScribanNpcSkillsObjectKey = "skills";
+
+        /// <summary>
+        /// Scriban Dialog key
+        /// </summary>
+        public const string ScribanDialogKey = "dialog";
+
+        /// <summary>
+        /// Scriban Dialog function key
+        /// </summary>
+        public const string ScribanDialogFunctionKey = "dialog_function";
+
+        /// <summary>
+        /// Object key for choice options
+        /// </summary>
+        public const string ScribanChoiceOptionObjectKey = "cur_choice";
+
+        /// <summary>
+        /// Object key for condition entries
+        /// </summary>
+        public const string ScribanConditionEntryObjectKey = "cur_condition";
+
+        /// <summary>
+        /// Scriban Npc daily routine object key
+        /// </summary>
+        public const string ScribanDailyRoutineObjectKey = "daily_routine";
+        
+        /// <summary>
+        /// Scriban Npc daily routine events object key
+        /// </summary>
+        public const string ScribanDailyRoutineEventsObjectKey = "daily_routine_events";
+                
+        /// <summary>
+        /// Scriban Npc daily routine function object key
+        /// </summary>
+        public const string ScribanDailyRoutineFunctionObjectKey = "daily_routine_function";
+
+        /// <summary>
+        /// Scriban Npc daily routine functions object key
+        /// </summary>
+        public const string ScribanDailyRoutineFunctionListObjectKey = "daily_routine_functions";
+
+        /// <summary>
+        /// Current event object key for placeholders
+        /// </summary>
+        public const string DailyRoutineEventObjectKey = "cur_event";
+
+        /// <summary>
+        /// Scriban export snippets object key
+        /// </summary>
+        public const string ScribanExportSnippetsObjectKey = "export_snippets";
+        
+        /// <summary>
+        /// Scriban export snippet function object key
+        /// </summary>
+        public const string ScribanExportSnippetFunctionObjectKey = "snippet_function";
+        
+        /// <summary>
+        /// Scriban item object key
+        /// </summary>
+        public const string ScribanItemObjectKey = "item";
+
+        /// <summary>
+        /// Scriban Skill object key
+        /// </summary>
+        public const string ScribanSkillObjectKey = "skill";
+
+        /// <summary>
+        /// Scriban action object key
+        /// </summary>
+        public const string ScribanActionObjectKey = "action";
 
 
         /// <summary>
@@ -127,5 +239,16 @@ namespace GoNorth.Services.Export
         /// Script Type code
         /// </summary>
         public const int ScriptType_Code = 1;
+
+        
+        /// <summary>
+        /// Group Operator for and
+        /// </summary>
+        public const int GroupOperator_And = 0;
+
+        /// <summary>
+        /// Group Operator for or
+        /// </summary>
+        public const int GroupOperator_Or = 1;
     }
 }        

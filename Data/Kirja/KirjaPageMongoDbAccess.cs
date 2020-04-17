@@ -80,11 +80,19 @@ namespace GoNorth.Data.Kirja
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
         /// <param name="excludeId">Id to exclude</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Page Queryable</returns>
-        private IMongoQueryable<KirjaPage> BuildPageSearchQueryable(string projectId, string searchPattern, string excludeId)
+        private IFindFluent<KirjaPage, KirjaPage> BuildPageSearchQueryable(string projectId, string searchPattern, string excludeId, string locale)
         {
-            searchPattern = searchPattern.ToLowerInvariant();
-            return _PageCollection.AsQueryable().Where(p => p.ProjectId == projectId && p.Name.ToLowerInvariant().Contains(searchPattern) && p.Id != excludeId);
+            string regexPattern = ".";
+            if(!string.IsNullOrEmpty(searchPattern))
+            {
+                string[] searchPatternParts = searchPattern.Split(" ").Select(s => Regex.Escape(s)).ToArray();
+                regexPattern = "(" + string.Join("|", searchPatternParts) + ")";
+            }
+            return _PageCollection.Find(p => p.ProjectId == projectId && Regex.IsMatch(p.Name, regexPattern, RegexOptions.IgnoreCase) && p.Id != excludeId, new FindOptions {
+                Collation = new Collation(locale, null, CollationCaseFirst.Off, CollationStrength.Primary)
+            });
         }
 
         /// <summary>
@@ -95,14 +103,14 @@ namespace GoNorth.Data.Kirja
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
         /// <param name="excludeId">Id to exclude</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Pages</returns>
-        public async Task<List<KirjaPage>> SearchPages(string projectId, string searchPattern, int start, int pageSize, string excludeId)
+        public async Task<List<KirjaPage>> SearchPages(string projectId, string searchPattern, int start, int pageSize, string excludeId, string locale)
         {
-            List<KirjaPage> pages = await BuildPageSearchQueryable(projectId, searchPattern, excludeId).OrderBy(p => p.Name).Skip(start).Take(pageSize).Select(p => new KirjaPage() {
+            return await BuildPageSearchQueryable(projectId, searchPattern, excludeId, locale).SortBy(p => p.Name).Skip(start).Limit(pageSize).Project(p => new KirjaPage() {
                 Id = p.Id,
                 Name = p.Name
             }).ToListAsync();
-            return pages;
         }
 
         /// <summary>
@@ -111,10 +119,11 @@ namespace GoNorth.Data.Kirja
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search Pattern</param>
         /// <param name="excludeId">Id to exclude</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Page Count</returns>
-        public async Task<int> SearchPagesCount(string projectId, string searchPattern, string excludeId)
+        public async Task<int> SearchPagesCount(string projectId, string searchPattern, string excludeId, string locale)
         {
-            int count = (int)await BuildPageSearchQueryable(projectId, searchPattern, excludeId).CountAsync();
+            int count = (int)await BuildPageSearchQueryable(projectId, searchPattern, excludeId, locale).CountDocumentsAsync();
             return count;
         }
 
@@ -164,10 +173,12 @@ namespace GoNorth.Data.Kirja
         /// <returns>List of Kirja page</returns>
         public async Task<List<KirjaPage>> GetPagesByPage(string pageId)
         {
-            return await _PageCollection.AsQueryable().Where(p => p.MentionedKirjaPages.Any(mp => mp == pageId)).Select(p => new KirjaPage() {
+            List<KirjaPage> pages = await _PageCollection.AsQueryable().Where(p => p.MentionedKirjaPages.Any(mp => mp == pageId)).Select(p => new KirjaPage() {
                 Id = p.Id,
                 Name = p.Name
             }).ToListAsync();
+            
+            return pages.OrderBy(p => p.Name).ToList();
         }
 
         /// <summary>
@@ -177,10 +188,12 @@ namespace GoNorth.Data.Kirja
         /// <returns>List of Kirja page</returns>
         public async Task<List<KirjaPage>> GetPagesByQuest(string questId)
         {
-            return await _PageCollection.AsQueryable().Where(p => p.MentionedQuests.Any(q => q == questId)).Select(p => new KirjaPage() {
+            List<KirjaPage> pages = await _PageCollection.AsQueryable().Where(p => p.MentionedQuests.Any(q => q == questId)).Select(p => new KirjaPage() {
                 Id = p.Id,
                 Name = p.Name
             }).ToListAsync();
+            
+            return pages.OrderBy(p => p.Name).ToList();
         }
 
         /// <summary>
@@ -190,10 +203,12 @@ namespace GoNorth.Data.Kirja
         /// <returns>List of Kirja page</returns>
         public async Task<List<KirjaPage>> GetPagesByNpc(string npcId)
         {
-            return await _PageCollection.AsQueryable().Where(p => p.MentionedNpcs.Any(n => n == npcId)).Select(p => new KirjaPage() {
+            List<KirjaPage> pages = await _PageCollection.AsQueryable().Where(p => p.MentionedNpcs.Any(n => n == npcId)).Select(p => new KirjaPage() {
                 Id = p.Id,
                 Name = p.Name
             }).ToListAsync();
+            
+            return pages.OrderBy(p => p.Name).ToList();
         }
 
         /// <summary>
@@ -203,10 +218,12 @@ namespace GoNorth.Data.Kirja
         /// <returns>List of Kirja page</returns>
         public async Task<List<KirjaPage>> GetPagesByItem(string itemId)
         {
-            return await _PageCollection.AsQueryable().Where(p => p.MentionedItems.Any(i => i == itemId)).Select(p => new KirjaPage() {
+            List<KirjaPage> pages = await _PageCollection.AsQueryable().Where(p => p.MentionedItems.Any(i => i == itemId)).Select(p => new KirjaPage() {
                 Id = p.Id,
                 Name = p.Name
             }).ToListAsync();
+
+            return pages.OrderBy(p => p.Name).ToList();
         }
 
         /// <summary>
@@ -216,10 +233,12 @@ namespace GoNorth.Data.Kirja
         /// <returns>List of Kirja page</returns>
         public async Task<List<KirjaPage>> GetPagesBySkill(string skillId)
         {
-            return await _PageCollection.AsQueryable().Where(p => p.MentionedSkills.Any(i => i == skillId)).Select(p => new KirjaPage() {
+            List<KirjaPage> pages = await _PageCollection.AsQueryable().Where(p => p.MentionedSkills.Any(i => i == skillId)).Select(p => new KirjaPage() {
                 Id = p.Id,
                 Name = p.Name
             }).ToListAsync();
+            
+            return pages.OrderBy(p => p.Name).ToList();
         }
 
         /// <summary>

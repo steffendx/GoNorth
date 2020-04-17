@@ -35,5 +35,21 @@ namespace GoNorth.Data.NodeGraph
         /// </summary>
         [JsonIgnore]
         public CompareDifferenceValue ListComparableValue { get { return new CompareDifferenceValue("Node", CompareDifferenceValue.ValueResolveType.LanguageKey); } }
+
+
+        /// <summary>
+        /// Clones the node
+        /// </summary>
+        /// <returns>Cloned</returns>
+        protected T CloneObject<T>() where T : BaseNode, new()
+        {
+            T clonedObject = new T {
+                Id = this.Id,
+                X = this.X,
+                Y = this.Y
+            };
+
+            return clonedObject;
+        } 
     }
 }

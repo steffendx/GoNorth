@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using GoNorth.Data.NodeGraph;
@@ -8,7 +9,7 @@ namespace GoNorth.Data.Kortisto
     /// <summary>
     /// Kortisto Npc Daily Routine Event
     /// </summary>
-    public class KortistoNpcDailyRoutineEvent : IImplementationListComparable
+    public class KortistoNpcDailyRoutineEvent : IImplementationListComparable, ICloneable
     {
         /// <summary>
         /// Event Id
@@ -108,6 +109,27 @@ namespace GoNorth.Data.Kortisto
             }
 
             return new CompareDifferenceValue(languageKeyToUse, CompareDifferenceValue.ValueResolveType.LanguageKey, argumentValues); } 
+        }
+
+        /// <summary>
+        /// Clones the event
+        /// </summary>
+        /// <returns>Cloned object</returns>
+        public object Clone()
+        {
+            return new KortistoNpcDailyRoutineEvent {
+                EventId = this.EventId,
+                EventType = this.EventType,
+                EarliestTime = this.EarliestTime != null ? (KortistoNpcDailyRoutineTime)this.EarliestTime.Clone() : null,
+                LatestTime = this.LatestTime != null ? (KortistoNpcDailyRoutineTime)this.LatestTime.Clone() : null,
+                MovementTarget = this.MovementTarget != null ? (KortistoNpcDailyRoutineMovementTarget)this.MovementTarget.Clone() : null,
+                TargetState = this.TargetState,
+                ScriptType = this.ScriptType,
+                ScriptName = this.ScriptName,
+                ScriptNodeGraph = this.ScriptNodeGraph != null ? (NodeGraphSnippet)this.ScriptNodeGraph.Clone() : null,
+                ScriptCode = this.ScriptCode,
+                EnabledByDefault = this.EnabledByDefault
+            };
         }
     }
 }

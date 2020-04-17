@@ -1,0 +1,16 @@
+{
+    "PlaceholderDesc_EventId": "Id des Ereignis",
+    "PlaceholderDesc_EarliestTime": "Frühste Uhrzeit zu dem das Ereignis eintreten kann.",
+    "PlaceholderDesc_LatestTime": "Späteste Uhrzeit zu dem das Ereignis eintreten kann.",
+    "PlaceholderDesc_MovementTarget": "Name des Bewegungsziel. null wenn keines vorliegt.",
+    "PlaceholderDesc_UnescapedMovementTarget": "Name des Bewegungsziel. null wenn keines vorliegt. Escape Einstellung werden hier nicht berücksichtigt.",
+    "PlaceholderDesc_MovementTargetExportName": "Export Name des Bewegungsziel. null wenn keines vorliegt",
+    "PlaceholderDesc_UnescapedMovementTargetExportName": "Export Name des Bewegungsziel. null wenn keines vorliegt. Escape Einstellung werden hier nicht berücksichtigt.",
+    "PlaceholderDesc_MovementTargetExportNameOrName": "Wenn das Ereignis einen Export Namen besitzt wird dieser in die Variable geschrieben, ansonsten der Name. Liegt weder ein Export Name noch ein Name vor hat dies den Wert null.",
+    "PlaceholderDesc_UnescapedMovementTargetExportNameOrName": "Wenn das Ereignis einen Export Namen besitzt wird dieser in die Variable geschrieben, ansonsten der Name. Liegt weder ein Export Name noch ein Name vor hat dies den Wert null. Escape Einstellung werden hier nicht berücksichtigt.",
+    "PlaceholderDesc_ScriptType": "Art des Skripts. Kann <i>None</i>, <i>Code</i> oder <i>NodeGraph</i> sein.",
+    "PlaceholderDesc_ScriptFunctionName": "Name der Skript Funktion",
+    "PlaceholderDesc_ScriptName": "Name des Skript",
+    "PlaceholderDesc_TargetState": "Zielzustand des Npc beim Erreichen seines Ereignis Ziels. null wenn kein Zielzustand vorliegt",
+    "PlaceholderDesc_IsEnabledByDefault": "true wenn das Ereignis Standardmäßig aktiv ist, sonst false"
+}

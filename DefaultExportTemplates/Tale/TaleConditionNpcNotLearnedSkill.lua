@@ -1,1 +1,1 @@
-BaseNpc_FindSkill(this, "{{Tale_Condition_Skill_Value_ScriptName}}") == nil
+BaseNpc_FindSkill(this, "{{ condition.selected_skill.fields.ScriptName.value }}") == nil

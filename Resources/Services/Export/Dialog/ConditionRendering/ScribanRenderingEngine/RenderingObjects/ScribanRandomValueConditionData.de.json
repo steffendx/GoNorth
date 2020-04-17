@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_Operator": "Vergleichsoperator. Wird über die entsprechenden Templates geladen.",
+    "PlaceholderDesc_OriginalOperator": "Original Vergleichsoperator. Dieser wird nicht über die Templates geladen sondern hat immer den Wert des Bedingungsdropdown Steuerelements",
+    "PlaceholderDesc_MinValue": "Minimaler Wert für die Zufallszahl",
+    "PlaceholderDesc_MaxValue": "Maximaler Wert für die Zufallszahl",
+    "PlaceholderDesc_CompareValue": "Vergleichswert für die Bedingung"
+}

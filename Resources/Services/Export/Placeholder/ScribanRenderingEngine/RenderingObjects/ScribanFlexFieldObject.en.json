@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Id": "Id of the object",
+    "PlaceholderDesc_Name": "Name of the object",
+    "PlaceholderDesc_AllFields": "All fields of the object. Can be iterated using <i>for</i>. The properties of each field are the same as the ones of a field access by name.",
+    "PlaceholderDesc_UnusedFields": "All fields of the object that were not referenced by name. Can be iterated using <i>for</i>. The properties of each field are the same as the ones of a field access by name."
+}

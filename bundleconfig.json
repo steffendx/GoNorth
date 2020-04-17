@@ -1312,6 +1312,18 @@
     "sourceMap": false
   },
   {
+    "outputFileName": "wwwroot/js/Export/manageIncludeTemplate.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/scriptDialog/codeEditor.bindingHandler.js",
+      "wwwroot/js/Export/manageIncludeTemplate/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
     "outputFileName": "wwwroot/js/Export/templateOverview.viewmodel.js",
     "inputFiles": [
       "wwwroot/js/Export/templateOverview/viewmodel.js"

@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 
 namespace GoNorth.Services.Export.TemplateParsing
@@ -16,15 +16,17 @@ namespace GoNorth.Services.Export.TemplateParsing
         /// Parses an export template for export snippets
         /// </summary>
         /// <param name="template">Template to parse</param>
-        public void ParseExportTemplate(ExportTemplate template)
+        public Task ParseExportTemplate(ExportTemplate template)
         {
-            if(template == null || string.IsNullOrEmpty(template.Code) || (template.TemplateType != TemplateType.ObjectNpc && template.TemplateType != TemplateType.ObjectItem && template.TemplateType != TemplateType.ObjectSkill))
+            if(template == null || template.RenderingEngine != ExportTemplateRenderingEngine.Legacy || string.IsNullOrEmpty(template.Code) || (template.TemplateType != TemplateType.ObjectNpc && template.TemplateType != TemplateType.ObjectItem && template.TemplateType != TemplateType.ObjectSkill))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             MatchCollection foundSnippets = ExportUtil.BuildPlaceholderRegex(ExportConstants.ExportSnippetRegex).Matches(template.Code);
             template.ExportSnippets = MapSnippets(foundSnippets);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>

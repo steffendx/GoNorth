@@ -23,5 +23,11 @@
 
     "NoPlayerNpcExistsError": "Es existiert kein Spieler Npc.",
 
-    "ExportSnippetMissing": "Das Export Snippet hat keinen Platzhalter im verwendeten Template. Der Inhalt des Export Snippets konnte nicht gerendert werden."
+    "ExportSnippetMissing": "Das Export Snippet hat keinen Platzhalter im verwendeten Template. Der Inhalt des Export Snippets konnte nicht gerendert werden.",
+
+    "TemplateHasErrors": "Das Template hat Fehler. Bitte prüfe es im Template Editor.",
+    "ExceptionOccured": "Es ist ein Fehler aufgetreten: {0}",
+    "CanNotGenerateLanguageKey": "{0}: Ein Sprachschlüssel konnte nicht generiert werden.",
+    "InvalidParameter": "{0}: Ein ungültiger Parameter wurde übergeben.",
+    "IncludeTemplateNotFound": "{1}: Konnte include template {0} nicht finden."
 }

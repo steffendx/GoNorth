@@ -23,6 +23,7 @@ using GoNorth.Data.User;
 using GoNorth.Services.Timeline;
 using GoNorth.Services.User;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -279,6 +280,11 @@ namespace GoNorth.Controllers.Api
         private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
 
         /// <summary>
+        /// Include export template Db Access
+        /// </summary>
+        private readonly IIncludeExportTemplateDbAccess _includeExportTemplateDbAccess;
+
+        /// <summary>
         /// Object Export snippet Db Access
         /// </summary>
         private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
@@ -380,6 +386,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="itemTemplateDbAccess">Item Template Db Access</param>
         /// <param name="itemImplementationSnapshotDbAccess">Item Implementation Snapshot Db Access</param>
         /// <param name="exportTemplateDbAccess">Export template Db access</param>
+        /// <param name="includeExportTemplateDbAccess">Include export template Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object Export snippet Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
@@ -399,10 +406,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="userDeleter">User Deleter</param>
         public PersonalDataApiController(IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questImplementationSnapshotDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, 
                                          IEvneSkillTemplateDbAccess skillTemplateDbAccess, IEvneSkillImplementationSnapshotDbAccess skillImplementationSnapshotDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, 
-                                         IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
-                                         IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, IProjectConfigDbAccess projectConfigDbAccess, 
-                                         ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, 
-                                         ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
+                                         IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
+                                         IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, 
+                                         IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, 
+                                         ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
         {
             _questDbAccess = questDbAccess;
             _questImplementationSnapshotDbAccess = questImplementationSnapshotDbAccess;
@@ -418,6 +425,7 @@ namespace GoNorth.Controllers.Api
             _itemTemplateDbAccess = itemTemplateDbAccess;
             _itemImplementationSnapshotDbAccess = itemImplementationSnapshotDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
+            _includeExportTemplateDbAccess = includeExportTemplateDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _mapDbAccess = mapDbAccess;
             _pageDbAccess = pageDbAccess;
@@ -441,6 +449,7 @@ namespace GoNorth.Controllers.Api
         /// Downloads the personal data of the current user
         /// </summary>
         /// <returns>Personal Data</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> DownloadPersonalData()
         {
@@ -667,6 +676,22 @@ namespace GoNorth.Controllers.Api
                 Name = "Template " + p.TemplateType.ToString() + " " + p.Category.ToString(),
                 ModifiedDate = p.ModifiedOn
             }));
+
+
+            List<IncludeExportTemplate> includeExportTemplates = await _includeExportTemplateDbAccess.GetIncludeTemplatesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(includeExportTemplates.Select(p => new TrimmedModifiedData {
+                ObjectType = "IncludeExportTemplate",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<IncludeExportTemplate> includeExportTemplatesRecycleBin = await _includeExportTemplateDbAccess.GetRecycleBinIncludeTemplatesByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(includeExportTemplatesRecycleBin.Select(p => new TrimmedModifiedData {
+                ObjectType = "IncludeExportTemplateRecycleBin",
+                Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
 
             List<ObjectExportSnippet> objectExportSnippets = await _objectExportSnippetDbAccess.GetExportSnippetByModifiedUser(currentUser.Id);
             response.ModifiedData.AddRange(objectExportSnippets.Select(p => new TrimmedModifiedData {
@@ -896,6 +921,7 @@ namespace GoNorth.Controllers.Api
         /// Deletes the user data
         /// </summary>
         /// <returns>Result</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> DeleteUserData()

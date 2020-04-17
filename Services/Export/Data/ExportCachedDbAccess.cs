@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
@@ -62,6 +63,11 @@ namespace GoNorth.Services.Export.Data
         /// </summary>
         private readonly IProjectConfigProvider _projectConfigProvider;
 
+        /// <summary>
+        /// Include export template Db Access
+        /// </summary>
+        private readonly IIncludeExportTemplateDbAccess _includeExportTemplateDbAccess;
+
 
         /// <summary>
         /// Project
@@ -114,6 +120,11 @@ namespace GoNorth.Services.Export.Data
         private Dictionary<string, List<ObjectExportSnippet>> _cachedExportSnippets;
 
         /// <summary>
+        /// Cached include export template
+        /// </summary>
+        private Dictionary<string, IncludeExportTemplate> _cachedIncludeExportTemplates;
+
+        /// <summary>
         /// Export Cached Db Access
         /// </summary>
         /// <param name="projectDbAccess">Project Db Access</param>
@@ -125,8 +136,10 @@ namespace GoNorth.Services.Export.Data
         /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="projectConfigProvider">Project config provider</param>
+        /// <param name="includeExportTemplateDbAccess">Include export template Db access</param>
         public ExportCachedDbAccess(IProjectDbAccess projectDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKortistoNpcDbAccess npcDbAccess, 
-                                    IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, IProjectConfigProvider projectConfigProvider)
+                                    IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, IProjectConfigProvider projectConfigProvider,
+                                    IIncludeExportTemplateDbAccess includeExportTemplateDbAccess)
         {
             _projectDbAccess = projectDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
@@ -137,6 +150,7 @@ namespace GoNorth.Services.Export.Data
             _questDbAccess = questDbAccess;
             _mapDbAccess = mapDbAccess;
             _projectConfigProvider = projectConfigProvider;
+            _includeExportTemplateDbAccess = includeExportTemplateDbAccess;
 
             _cachedExportSettings = new Dictionary<string, ExportSettings>();
             _cachedPlayerNpcs = new Dictionary<string, KortistoNpc>();
@@ -146,6 +160,7 @@ namespace GoNorth.Services.Export.Data
             _cachedQuest = new Dictionary<string, AikaQuest>();
             _cachedMarkers = new Dictionary<string, KartaMapNamedMarkerQueryResult>();
             _cachedExportSnippets = new Dictionary<string, List<ObjectExportSnippet>>();
+            _cachedIncludeExportTemplates = new Dictionary<string, IncludeExportTemplate>();
         }
 
         /// <summary>
@@ -271,6 +286,43 @@ namespace GoNorth.Services.Export.Data
         }
 
         /// <summary>
+        /// Returns a list of item by a list of ids
+        /// </summary>
+        /// <param name="itemIds">Item ids</param>
+        /// <returns>List of items</returns>
+        public async Task<List<StyrItem>> GetItemsById(List<string> itemIds)
+        {
+            List<StyrItem> loadedItems = new List<StyrItem>();
+            List<string> idsToLoad = new List<string>();
+            foreach(string curItemId in itemIds)
+            {
+                if(_cachedItems.ContainsKey(curItemId))
+                {
+                    loadedItems.Add(_cachedItems[curItemId]);
+                }
+                else
+                {
+                    idsToLoad.Add(curItemId);
+                }
+            }
+
+            if(idsToLoad.Any())
+            {
+                List<StyrItem> newLoadedItems = await _itemDbAccess.GetObjectsById(idsToLoad);
+                foreach(StyrItem curItem in newLoadedItems)
+                {
+                    loadedItems.Add(curItem);
+                    if(!_cachedItems.ContainsKey(curItem.Id))
+                    {
+                        _cachedItems.Add(curItem.Id, curItem);
+                    }
+                }
+            }
+
+            return loadedItems;
+        }
+
+        /// <summary>
         /// Returns a skill by its id
         /// </summary>
         /// <param name="skillId">Skill id</param>
@@ -290,6 +342,43 @@ namespace GoNorth.Services.Export.Data
             EvneSkill skill = await _skillDbAccess.GetFlexFieldObjectById(skillId);
             _cachedSkills.Add(skillId, skill);
             return skill;   
+        }
+
+        /// <summary>
+        /// Returns a list of skill by a list of ids
+        /// </summary>
+        /// <param name="skillIds">Skill ids</param>
+        /// <returns>Skills</returns>
+        public async Task<List<EvneSkill>> GetSkillsById(List<string> skillIds)
+        {
+            List<EvneSkill> loadedSkills = new List<EvneSkill>();
+            List<string> idsToLoad = new List<string>();
+            foreach(string curSkillId in skillIds)
+            {
+                if(_cachedSkills.ContainsKey(curSkillId))
+                {
+                    loadedSkills.Add(_cachedSkills[curSkillId]);
+                }
+                else
+                {
+                    idsToLoad.Add(curSkillId);
+                }
+            }
+
+            if(idsToLoad.Any())
+            {
+                List<EvneSkill> newLoadedSkills = await _skillDbAccess.GetObjectsById(idsToLoad);
+                foreach(EvneSkill curSkill in newLoadedSkills)
+                {
+                    loadedSkills.Add(curSkill);
+                    if(!_cachedSkills.ContainsKey(curSkill.Id))
+                    {
+                        _cachedSkills.Add(curSkill.Id, curSkill);
+                    }
+                }
+            }
+
+            return loadedSkills;
         }
 
         /// <summary>
@@ -360,5 +449,23 @@ namespace GoNorth.Services.Export.Data
             return exportSnippets;
         }
 
+        /// <summary>
+        /// Loads an include template by name
+        /// </summary>
+        /// <param name="projectId">Id of the project to which the template belongs</param>
+        /// <param name="templateName">Name of the template to load</param>
+        /// <returns>Include template</returns>
+        public async Task<IncludeExportTemplate> GetIncludeTemplateByName(string projectId, string templateName)
+        {
+            string cacheKey = projectId + "|" + templateName;
+            if(_cachedIncludeExportTemplates.ContainsKey(cacheKey))
+            {
+                return _cachedIncludeExportTemplates[cacheKey];
+            }
+
+            IncludeExportTemplate exportTemplate = await _includeExportTemplateDbAccess.GetIncludeTemplateByName(projectId, templateName);
+            _cachedIncludeExportTemplates.Add(cacheKey, exportTemplate);
+            return exportTemplate;
+        }
     }
 }

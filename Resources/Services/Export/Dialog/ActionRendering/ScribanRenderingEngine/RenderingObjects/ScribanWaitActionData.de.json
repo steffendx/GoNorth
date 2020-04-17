@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_WaitAmount": "Wartedauer",
+    "PlaceholderDesc_WaitType": "Art der Wartezeit. Kann <i>RealTime</i> oder <i>GameTime</i> sein.",
+    "PlaceholderDesc_WaitUnit": "Art der Zeiteinheit. Kann <i>Milliseconds</i>, <i>Seconds</i>, <i>Minutes</i>, <i>Hours</i> oder <i>Days</i> sein.",
+    "PlaceholderDesc_DirectContinueFunction": "Name der Funktion die das Skript sofort fortsetzt. null wenn keine Funktion vorliegt"
+}

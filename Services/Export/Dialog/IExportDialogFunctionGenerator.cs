@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using GoNorth.Data.Tale;
 using GoNorth.Services.Export.Placeholder;
 
 namespace GoNorth.Services.Export.Dialog

@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Conditions": "Array of conditions. Conditions without a child node will be filtered. Can be iterated using <i>for</i>. The properties of the conditions can be found below.",
+    "PlaceholderDesc_AllConditions": "Array of conditions. Conditions without a child node will be included in this array. Can be iterated using <i>for</i>. The properties of the conditions can be found below.",
+    "PlaceholderDesc_Else": "Data for the else condition. The properties of the conditions can be found below."
+}

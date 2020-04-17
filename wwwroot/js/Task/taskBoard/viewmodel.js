@@ -29,8 +29,8 @@
                 this.taskColumnClass = "col-sm-" + taskColumnWidth + " col-md-" + taskColumnWidth + " col-lg-" + taskColumnWidth;
 
                 this.isLoading = new ko.observable(false);
-                this.disableSortables = new ko.pureComputed(function() {
-                    return !this.isLoading();
+                this.enableSortables = new ko.pureComputed(function() {
+                    return !this.isLoading() && !this.isReadonly();
                 }, this);
                 this.isReadonly = new ko.observable(false);
 
@@ -727,7 +727,12 @@
                     this.taskDialogName("");
                     this.taskDialogDescription("");
                     this.taskDialogAssignedTo(null);
-                    this.taskDialogStatus(null);
+                    let targetStatus = null;
+                    if(this.taskStatus && this.taskStatus.length > 0)
+                    {
+                        targetStatus = this.taskStatus[0].value;
+                    }
+                    this.taskDialogStatus(targetStatus);
                 },
 
                 /**
@@ -1004,6 +1009,20 @@
                                 self.linkDialogInsertHtmlCallback = htmlInsert;
                                 self.linkDialog.openItemSearch(GoNorth.Task.TaskBoard.Localization.ToolbarButtonInsertStyrItemLinkTitle).then(function(selectedObject) {
                                     self.addLinkFromLinkDialog(selectedObject);
+                                });
+                            }
+                        };
+                    }
+
+                    if(GoNorth.Task.TaskBoard.hasEvneRights)
+                    {
+                        allButtons.insertSkillLink = {
+                            title: GoNorth.Task.TaskBoard.Localization.ToolbarButtonInsertEvneSkillLinkTitle,
+                            icon: "glyphicon-flash",
+                            callback: function(htmlInsert) {
+                                self.linkDialogInsertHtmlCallback = htmlInsert;
+                                self.linkDialog.openSkillSearch(GoNorth.Task.TaskBoard.Localization.ToolbarButtonInsertEvneSkillLinkTitle).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, false);
                                 });
                             }
                         };

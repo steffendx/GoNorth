@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
-using GoNorth.Data.Kortisto;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
+using GoNorth.Services.Export.Dialog.StepRenderers.ActionRenderer;
 using GoNorth.Services.Export.Placeholder;
 
 namespace GoNorth.Services.Export.Dialog.ActionRendering
@@ -15,16 +15,25 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
     public interface IActionRenderer
     {
         /// <summary>
+        /// Sets the export template placeholder resolver
+        /// </summary>
+        /// <param name="templatePlaceholderResolver">Template placeholder resolver</param>
+        void SetExportTemplatePlaceholderResolver(IExportTemplatePlaceholderResolver templatePlaceholderResolver);
+
+        /// <summary>
         /// Builds an action
         /// </summary>
+        /// <param name="template">Export template</param>
         /// <param name="action">Current action</param>
         /// <param name="data">Dialog data</param>
         /// <param name="project">Project</param>
         /// <param name="errorCollection">Error Collection</param>
         /// <param name="flexFieldObject">Flex field object to which the dialog belongs</param>
         /// <param name="exportSettings">Export Settings</param>
+        /// <param name="stepRenderer">Action Step renderer</param>
         /// <returns>Action Build Result</returns>
-        Task<string> BuildActionElement(ActionNode action, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, ExportSettings exportSettings);
+        Task<string> BuildActionElement(ExportTemplate template, ActionNode action, ExportDialogData data, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, FlexFieldObject flexFieldObject, 
+                                        ExportSettings exportSettings, IActionStepRenderer stepRenderer);
 
         /// <summary>
         /// Builds the preview text for an action
@@ -36,13 +45,6 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering
         /// <param name="parent">Parent</param>
         /// <returns>Preview Text</returns>
         Task<string> BuildPreviewText(ActionNode action, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent);
-
-        /// <summary>
-        /// Returns true if the action renderer has placeholders for a template type
-        /// </summary>
-        /// <param name="templateType">Tempalte Type to check</param>
-        /// <returns>true if the action renderer has placeholders for the template type</returns>
-        bool HasPlaceholdersForTemplateType(TemplateType templateType);
 
         /// <summary>
         /// Returns the Export Template Placeholders for a Template Type

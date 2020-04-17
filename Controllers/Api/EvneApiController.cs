@@ -19,6 +19,8 @@ using GoNorth.Data.Tale;
 using GoNorth.Services.FlexFieldThumbnail;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
 
 namespace GoNorth.Controllers.Api
 {
@@ -177,7 +179,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="template">Template to create</param>
         /// <returns>Result</returns>
-        [Produces(typeof(EvneSkill))]
+        [ProducesResponseType(typeof(EvneSkill), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.EvneTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -191,7 +193,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(string))]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.EvneTemplateManager)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
@@ -206,7 +208,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Template Id</param>
         /// <param name="template">Update template data</param>
         /// <returns>Result Status Code</returns>
-        [Produces(typeof(EvneSkill))]
+        [ProducesResponseType(typeof(EvneSkill), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.EvneTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -220,7 +222,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Template Id</param>
         /// <returns>Task</returns>
-        [Produces(typeof(string))]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.EvneTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -234,7 +236,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the template</param>
         /// <returns>Image Name</returns>
-        [Produces(typeof(string))]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.EvneTemplateManager)]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -343,7 +345,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="start">Start of the page</param>
         /// <param name="pageSize">Page Size</param>
         /// <returns>Skills</returns>
-        [Produces(typeof(FlexFieldObjectQueryResult))]
+        [ProducesResponseType(typeof(FlexFieldObjectQueryResult), StatusCodes.Status200OK)]
         [Authorize(Roles = RoleNames.Evne)]
         [Authorize(Roles = RoleNames.ImplementationStatusTracker)]
         [HttpGet]
@@ -352,8 +354,8 @@ namespace GoNorth.Controllers.Api
             GoNorthProject project = await _projectDbAccess.GetDefaultProject();
             Task<List<EvneSkill>> queryTask;
             Task<int> countTask;
-            queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize);
-            countTask = _objectDbAccess.GetNotImplementedFlexFieldObjectsCount(project.Id);
+            queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            countTask = _objectDbAccess.GetNotImplementedFlexFieldObjectsCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task.WaitAll(queryTask, countTask);
 
             FlexFieldObjectQueryResult queryResult = new FlexFieldObjectQueryResult();

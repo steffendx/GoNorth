@@ -38,11 +38,24 @@
     </h2>
 
     <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
-        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] 
+        <span data-bind="visible: additionalError() && additionalError().length > 0">
+            <ul data-bind="foreach: additionalError">
+                <li data-bind="text: $data"></li>
+            </ul>
+        </span>
     </div>
 
     <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
         <strong>@Localizer["Locked"]</strong> @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+    </div>
+
+    <div class="alert alert-info alert-dismissible gn-defaultContentTopMargin" style="display: none" data-bind="visible: templateRenderingEngine() == legacyRenderingEngine">
+        <strong>@Localizer["LegacyTemplate"]</strong> @Localizer["UpdateLegacyTemplateForNewFeatures"]<br/>
+        <button type="button" class="btn btn-primary" data-bind="click: convertToModernTemplate">@Localizer["ConvertToModernTemplate"]</button>
+        <button type="button" class="close" data-dismiss="alert" aria-label="@Localizer["Close"]">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 
     <div class="alert alert-info gn-defaultContentTopMargin gn-exportManageTemplateChildObjectsList" style="display: none" data-bind="visible: customizedChildTemplates().length > 0">
@@ -88,7 +101,7 @@
                     <tbody data-bind="foreach: templatePlaceholders">
                         <tr>
                             <td data-bind="text: name, attr: { title: name }"></td>
-                            <td data-bind="text: description, attr: { title: description }"></td>
+                            <td data-bind="html: description, attr: { title: description }"></td>
                         </tr>
                     </tbody>
                 </table>

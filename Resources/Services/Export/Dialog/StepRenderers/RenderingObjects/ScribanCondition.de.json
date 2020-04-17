@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Conditions": "Array der Bedingungen. In diesem Array werden Bedingungen ohne Folgeknoten raus gefiltert. Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der Bedingungen sind unten zu finden.",
+    "PlaceholderDesc_AllConditions": "Array der Bedingungen. In diesem Array werden sind auch Bedingungen ohne Folgeknoten enthalten. Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der Bedingungen sind unten zu finden.",
+    "PlaceholderDesc_Else": "Daten für den Else Fall. Die Eigenschaften der Bedingungen sind unten zu finden."
+}

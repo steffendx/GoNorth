@@ -225,6 +225,10 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.ExportObjectTemplateDeleted, new List<string>() { RoleNames.ManageExportTemplates });
             _entryRoleFilter.Add(TimelineEvent.ExportSettingsUpdated, new List<string>() { RoleNames.ManageExportTemplates });
             _entryRoleFilter.Add(TimelineEvent.ExportDialogFunctionGenerationConditionsUpdated, new List<string>() { RoleNames.ManageExportTemplates });
+
+            _entryRoleFilter.Add(TimelineEvent.IncludeExportTemplateCreated, new List<string>() { RoleNames.ManageExportTemplates });
+            _entryRoleFilter.Add(TimelineEvent.IncludeExportTemplateUpdated, new List<string>() { RoleNames.ManageExportTemplates });
+            _entryRoleFilter.Add(TimelineEvent.IncludeExportTemplateDeleted, new List<string>() { RoleNames.ManageExportTemplates });
         }
 
         /// <summary>

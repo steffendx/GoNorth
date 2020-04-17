@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_AttributeList": "Rendert eine Liste an Feldern. Als &lt;ATTRIBUTE_LIST&gt; kann all_fields oder unused_fields übergeben werden. Die Liste wird basierend auf dem Attribute List Template gerendert."
+}

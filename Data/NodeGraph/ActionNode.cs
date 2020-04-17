@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.NodeGraph
@@ -34,5 +35,22 @@ namespace GoNorth.Data.NodeGraph
         /// </summary>
         [ValueCompareAttribute(LabelKey = "", TextKey = "ActionDataChanged")]
         public string ActionData { get; set; }
+
+        
+        /// <summary>
+        /// Clones the action node
+        /// </summary>
+        /// <returns>Cloned object</returns>
+        public object Clone()
+        {
+            ActionNode clonedObject = CloneObject<ActionNode>();
+            clonedObject.ActionType = ActionType;
+            clonedObject.ActionRelatedToObjectType = ActionRelatedToObjectType;
+            clonedObject.ActionRelatedToObjectId = ActionRelatedToObjectId;
+            clonedObject.ActionRelatedToAdditionalObjects = ActionRelatedToAdditionalObjects != null ? ActionRelatedToAdditionalObjects.Select(a => a.Clone()).Cast<NodeObjectDependency>().ToList() : null;
+            clonedObject.ActionData = ActionData;
+
+            return clonedObject;
+        }
     }
 }

@@ -21,15 +21,17 @@ namespace GoNorth.Data.Aika
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quests</returns>
-        Task<List<AikaQuest>> GetQuestsByProjectId(string projectId, int start, int pageSize);
+        Task<List<AikaQuest>> GetQuestsByProjectId(string projectId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of quests for a project
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quest Count</returns>
-        Task<int> GetQuestsByProjectIdCount(string projectId);
+        Task<int> GetQuestsByProjectIdCount(string projectId, string locale);
 
         /// <summary>
         /// Searches Quests with reduced informations
@@ -38,16 +40,18 @@ namespace GoNorth.Data.Aika
         /// <param name="searchPattern">Search pattern</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quests</returns>
-        Task<List<AikaQuest>> SearchQuests(string projectId, string searchPattern, int start, int pageSize);
+        Task<List<AikaQuest>> SearchQuests(string projectId, string searchPattern, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of a search result
         /// </summary>
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Count of results</returns>
-        Task<int> SearchQuestsCount(string projectId, string searchPattern);
+        Task<int> SearchQuestsCount(string projectId, string searchPattern, string locale);
 
         /// <summary>
         /// Returns all quests that are not yet implemented
@@ -55,15 +59,17 @@ namespace GoNorth.Data.Aika
         /// <param name="projectId">Project Id</param>
         /// <param name="start">Start of the query</param>
         /// <param name="pageSize">Page Size</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quest Objects</returns>
-        Task<List<AikaQuest>> GetNotImplementedQuests(string projectId, int start, int pageSize);
+        Task<List<AikaQuest>> GetNotImplementedQuests(string projectId, int start, int pageSize, string locale);
 
         /// <summary>
         /// Returns the count of all quests that are not yet implemented
         /// </summary>
         /// <param name="projectId">Project Id</param>
+        /// <param name="locale">Locale used for the collation</param>
         /// <returns>Quest Count</returns>
-        Task<int> GetNotImplementedQuestsCount(string projectId);
+        Task<int> GetNotImplementedQuestsCount(string projectId, string locale);
 
         /// <summary>
         /// Returns all quests an object is referenced in

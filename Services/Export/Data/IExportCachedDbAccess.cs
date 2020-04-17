@@ -51,11 +51,25 @@ namespace GoNorth.Services.Export.Data
         Task<StyrItem> GetItemById(string itemId);
 
         /// <summary>
+        /// Returns a list of item by a list of ids
+        /// </summary>
+        /// <param name="itemIds">Item ids</param>
+        /// <returns>List of items</returns>
+        Task<List<StyrItem>> GetItemsById(List<string> itemIds);
+
+        /// <summary>
         /// Returns a skill by its id
         /// </summary>
         /// <param name="skillId">Skill id</param>
         /// <returns>Skill</returns>
         Task<EvneSkill> GetSkillById(string skillId);
+
+        /// <summary>
+        /// Returns a list of skill by a list of ids
+        /// </summary>
+        /// <param name="skillIds">Skill ids</param>
+        /// <returns>Skills</returns>
+        Task<List<EvneSkill>> GetSkillsById(List<string> skillIds);
 
         /// <summary>
         /// Returns a quest by its id
@@ -84,5 +98,13 @@ namespace GoNorth.Services.Export.Data
         /// <param name="exportObjectId">Id of the Object for which the snippets must be loaded</param>
         /// <returns>Object export snippets</returns>
         Task<List<ObjectExportSnippet>> GetObjectExportSnippetsByObject(string exportObjectId);
+
+        /// <summary>
+        /// Loads an include template by name
+        /// </summary>
+        /// <param name="projectId">Id of the project to which the template belongs</param>
+        /// <param name="templateName">Name of the template to load</param>
+        /// <returns>Include template</returns>
+        Task<IncludeExportTemplate> GetIncludeTemplateByName(string projectId, string templateName);
     }
 }

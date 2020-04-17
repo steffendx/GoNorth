@@ -45,6 +45,13 @@
                         enableLiveAutocompletion: true
                     });
 
+                    // Ensure autocomplete is triggered on dot
+                    obs._editor.commands.on("afterExec", function (e) {
+                        if ((e.command.name == "insertstring" && /^[\w.]$/.test(e.args)) || e.command.name == "backspace") {
+                            obs._editor.execCommand("startAutocomplete");
+                        }
+                    });
+
                     if(ko.isObservable(obs))
                     {
                         obs._editor.session.on('change', function(delta) {

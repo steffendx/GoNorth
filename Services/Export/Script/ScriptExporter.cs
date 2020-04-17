@@ -52,7 +52,7 @@ namespace GoNorth.Services.Export.Script
             ExportObjectResult result = new ExportObjectResult();
             result.FileExtension = exportSettings.ScriptExtension;
 
-            ExportPlaceholderFillResult filledResult = await _placeholderResolver.FillPlaceholders(template.TemplateType, template.Code, objectData);
+            ExportPlaceholderFillResult filledResult = await _placeholderResolver.FillPlaceholders(template.TemplateType, template.Code, objectData, template.RenderingEngine);
 
             result.Code = filledResult.Code;
             result.Errors = filledResult.Errors.ToErrorList();

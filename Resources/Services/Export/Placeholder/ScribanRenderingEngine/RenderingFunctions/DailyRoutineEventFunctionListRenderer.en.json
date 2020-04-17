@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_DailyRoutineEventFunctionList": "Renders a list of daily routine event functions. You must pass an array of daily routine event functions, like daily_routine.event_functions, as &lt;DAILY_ROUTINE_FUNCTION_LIST&gt;."
+}

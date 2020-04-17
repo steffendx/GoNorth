@@ -13,6 +13,11 @@
     
     "FunctionGenerationConditions": "Dialog function generation",
 
+    "IncludeTemplates": "Include Templates",
+    "CreateIncludeTemplate": "Create include template",
+    "PreviousPage": "Previous page",
+    "NextPage": "Next page",
+
     "Name": "Name",
     "Description": "Description",
 

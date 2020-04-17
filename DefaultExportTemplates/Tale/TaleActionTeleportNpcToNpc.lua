@@ -1,1 +1,1 @@
-BaseNpc_TeleportNpcToNpc(this, BaseNpc_GetNpcById({{Tale_Action_TargetNpc_Value_Id}}))
+BaseNpc_TeleportNpcToNpc(this, BaseNpc_GetNpcById({{ action.target_npc.fields.Id.value }}))

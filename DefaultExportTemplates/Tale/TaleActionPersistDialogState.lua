@@ -1,1 +1,1 @@
-BaseNpc_PersistDialogState(this, "{{Tale_ChildNode_Unused_Function}}")
+BaseDialog_PersistDialogState(this, "{{ if action_node.child_node && action_node.child_node.node_step_function_name_no_flag_set }}{{ action_node.child_node.node_step_function_name_no_flag_set }}{{ end }}")

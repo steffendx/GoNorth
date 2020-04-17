@@ -83,6 +83,10 @@
     </div>
 
     <!-- Command Buttons -->
+    <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" id="gn-exportTemplateOverviewCreateIncludeTemplateButton" data-bind="visible: selectedCategory() == 'IncludeTemplates', click: createNewIncludeTemplate">
+        <i class="glyphicon glyphicon-plus"></i> @Localizer["CreateIncludeTemplate"]
+    </button>
+
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openFunctionGenerationConditions">
         <i class="glyphicon glyphicon-question-sign"></i> @Localizer["FunctionGenerationConditions"]
     </button>
@@ -93,8 +97,11 @@
 
     <div class="row gn-exportTemplateOverviewContent">
         <div class="col-md-3 col-lg-2">
-            <ul class="nav nav-pills nav-stacked" data-bind="foreach: templateCategories">
+            <ul class="nav nav-pills nav-stacked">
+                <!-- ko foreach: templateCategories -->
                 <li data-bind="css: { 'active': $root.selectedCategory() == category }"><a class="gn-clickable" data-bind="click: function(category) { $root.selectTemplateCategory(category); }, text: label"></a></li>
+                <!-- /ko -->
+                <li data-bind="css: { 'active': $root.selectedCategory() == 'IncludeTemplates' }"><a class="gn-clickable" id="gn-exportTemplateIncludeTemplatesSections" data-bind="click: function() { selectTemplateCategory({ category: 'IncludeTemplates' }); }">@Localizer["IncludeTemplates"]</a></li>
             </ul>
         </div>
         <div class="col-md-9 col-lg-10">
@@ -106,11 +113,34 @@
                         @Localizer["Name"]
                     </div>
                 </div>
+                <!-- ko if: selectedCategory() != 'IncludeTemplates' -->
                 <!-- ko foreach: templates -->
                 <div class="row gn-gridTableRow">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableCell">
                         <a class="gn-clickable" data-bind="text: label, href: $root.buildTemplateUrl"></a>
                     </div>
+                </div>
+                <!-- /ko -->
+                <!-- /ko -->
+
+                <!-- ko if: selectedCategory() == 'IncludeTemplates' -->
+                <!-- ko foreach: includeTemplates -->
+                <div class="row gn-gridTableRow">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-gridTableCell">
+                        <a class="gn-clickable" data-bind="text: name, href: $root.buildIncludeTemplateUrl"></a>
+                    </div>
+                </div>
+                <!-- /ko -->
+                
+                <div class="container row col-xs-12 col-sm-12 col-md-12 col-lg-12 gn-buttonContainer">
+                    <button class="btn btn-default" data-bind="enable: currentIncludeTemplatePage() > 0 && !isLoading(), click: prevIncludeTemplatePage" title="@Localizer["PreviousPage"]">
+                        <i class="glyphicon glyphicon-chevron-left" data-bind="visible: !isLoading()"></i>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+                    </button>
+                    <button class="btn btn-default" data-bind="enable: hasMoreIncludeTemplates() && !isLoading(), click: nextIncludeTemplatePage" title="@Localizer["NextPage"]">
+                        <i class="glyphicon glyphicon-chevron-right" data-bind="visible: !isLoading()"></i>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i>
+                    </button>
                 </div>
                 <!-- /ko -->
             </div>
@@ -133,6 +163,10 @@
     </environment>
 
     <script type="text/javascript">
+        GoNorth.Export.TemplateOverview.Localization = {
+            IncludeTemplates: "@Localizer["IncludeTemplates"]"
+        }
+
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Export.TemplateOverview.ViewModel(), jQuery("#gn-exportTemplateOverviewContainer")[0]);
         });

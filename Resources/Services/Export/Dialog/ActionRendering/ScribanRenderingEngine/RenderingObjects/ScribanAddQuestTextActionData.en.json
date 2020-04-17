@@ -1,0 +1,6 @@
+{
+    "PlaceholderDesc_Quest": "Quest Object which state is being set",
+    "PlaceholderDesc_Text": "Text that is added to the quest.",
+    "PlaceholderDesc_UnescapedText": "Text that is added to the quest without using the escape settings.",
+    "PlaceholderDesc_TextPreview": "Preview for the textline that is added. All line breaks will be removed and the text will be cut if it is to long. This placeholder is intended to be used in comments to increase the readability of the dialog if language keys are used."
+}
