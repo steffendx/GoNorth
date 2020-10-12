@@ -28,6 +28,8 @@
     "KortistoNpcExportSnippetChanged": "Das Export Snippet {0} des Npc <a href='/Kortisto/Npc?id={2}'>{1}</a> wurde geändert.",
     "KortistoNpcExportSnippetDeleted": "Das Export Snippet {0} des Npc <a href='/Kortisto/Npc?id={2}'>{1}</a> wurde gelöscht.",
 
+    "KortistoValueFileImport": "Eine Npc Wertedatei wurde importiert. Es wurden {0} Npcs aktualisiert und {1} Npcs neu angelegt.",
+
     "StyrFolderCreated": "Ein neue Kategorie <a href='/Styr?folderId={1}'>{0}</a> wurde in Styr angelegt.",
     "StyrFolderDeleted": "Die Kategorie {0} wurde in Styr gelöscht.",
     "StyrFolderUpdated": "Die Kategorie <a href='/Styr?folderId={1}'>{0}</a> wurde in Styr aktualisiert.",
@@ -49,6 +51,8 @@
     "StyrItemExportSnippetChanged": "Das Export Snippet {0} des Item <a href='/Styr/Item?id={2}'>{1}</a> wurde geändert.",
     "StyrItemExportSnippetDeleted": "Das Export Snippet {0} des Item <a href='/Styr/Item?id={2}'>{1}</a> wurde gelöscht.",
 
+    "StyrValueFileImport": "Eine Item Wertedatei wurde importiert. Es wurden {0} Items aktualisiert und {1} Items neu angelegt.",
+
     "EvneFolderCreated": "Ein neue Kategorie <a href='/Evne?folderId={1}'>{0}</a> wurde in Evne angelegt.",
     "EvneFolderDeleted": "Die Kategorie {0} wurde in Evne gelöscht.",
     "EvneFolderUpdated": "Die Kategorie <a href='/Evne?folderId={1}'>{0}</a> wurde in Evne aktualisiert.",
@@ -69,6 +73,8 @@
     "EvneSkillMovedToRoot": "Die Fähigkeit {0} wurde auf die <a href='/Evne'>oberste Ebene</a> in Evne verschoben.",
     "EvneSkillExportSnippetChanged": "Das Export Snippet {0} der Fähigkeit <a href='/Evne/Skill?id={2}'>{1}</a> wurde geändert.",
     "EvneSkillExportSnippetDeleted": "Das Export Snippet {0} der Fähigkeit <a href='/Evne/Skill?id={2}'>{1}</a> wurde gelöscht.",
+
+    "EvneValueFileImport": "Eine Fähigkeiten Wertedatei wurde importiert. Es wurden {0} Fähigkeiten aktualisiert und {1} Fähigkeiten neu angelegt.",
 
     "KirjaPageCreated": "Eine neue Seite <a href='/Kirja?id={1}'>{0}</a> wurde in Kirja angelegt.",
     "KirjaPageDeleted": "Die Seite {0} wurde in Kirja gelöscht.",

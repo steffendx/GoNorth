@@ -59,6 +59,13 @@ namespace GoNorth.Data.FlexFieldDatabase
         Task<int> GetChildFolderCount(string folderId, string locale);
 
         /// <summary>
+        /// Returns all folders to build a hierarchy of folders
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Folders with simple information</returns>
+        Task<List<FlexFieldFolder>> GetFoldersForHierarchy(string projectId);
+
+        /// <summary>
         /// Updates a folder
         /// </summary>
         /// <param name="folder">Folder</param>

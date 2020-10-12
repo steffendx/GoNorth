@@ -44,5 +44,11 @@ namespace GoNorth.Config
         /// true if Legal Notice Support should be active
         /// </summary>
         public bool UseLegalNotice { get; set; }
+
+        /// <summary>
+        /// CSV Delimiter
+        /// </summary>
+        /// <value></value>
+        public string CsvDelimiter { get; set; }
     }
 }

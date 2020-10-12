@@ -122,6 +122,14 @@
     </script>
 <!-- /ko -->
 
+<!-- ko with: exportValueDialog -->
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ValueExportDialog.cshtml")
+<!-- /ko -->
+
+<!-- ko with: importValueDialog -->
+    @await Html.PartialAsync("~/Views/FlexFieldDatabase/ValueImportDialog.cshtml")
+<!-- /ko -->
+
 
 <!-- Overview -->
 <div class="alert alert-danger" style="display: none" data-bind="visible: errorOccured">
@@ -147,6 +155,9 @@
 <button class="btn btn-primary gn-commandWidgetTopMargin" type="button" data-bind="click: openCreateFolderDialog" id="gn-flexFieldCreateFolderButton"><i class="glyphicon glyphicon-plus"></i> @Model.Localizer["CreateCategory"]</button>
 
 <button class="btn btn-default gn-commandWidgetTopMargin" type="button" style="display: none" data-bind="click: navigateLevelBack, visible: parentFolderId() || currentFolderId()"><i class="glyphicon glyphicon-level-up"></i> @Model.Localizer["LevelBack"]</button>
+
+<button class="btn btn-default gn-commandWidgetTopMargin gn-flexFieldOverviewExportButton" type="button" data-bind="click: openExportValueDialog" id="gn-flexFieldValueExportButton"><i class="glyphicon glyphicon-export"></i> @Model.Localizer["FieldValueExport"]</button>
+<button class="btn btn-default gn-commandWidgetTopMargin" type="button" data-bind="click: openImportValueDialog" id="gn-flexFieldValueImportButton"><i class="glyphicon glyphicon-import"></i> @Model.Localizer["FieldValueImport"]</button>
 
 <div class="gn-flexFieldOverviewTileDropToParent" style="display: none" data-bind="visible: isDraggingObject() && currentFolderId(), droppableElement: function(draggable, leftPos, topPos, objectToMove) { $root.moveObjectToCategory(objectToMove, parentFolderId()); }, droppableHoverClass: 'gn-flexFieldOverviewTileObjectHovering'">
     <i class="glyphicon glyphicon-level-up" title="@Model.Localizer["DropHereToMoveToParent"]"></i>

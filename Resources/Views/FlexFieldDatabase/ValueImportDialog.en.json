@@ -1,0 +1,35 @@
+{
+    "ImportFieldValues": "Import field values",
+
+    "DropValueFileHere": "Drop value file here...",
+
+    "ExistingRows": "Existing rows:",
+    "NewRows": "New rows:",
+    "ObjectsWillBeImportedToRoot": "Objects will be imported at root level.",
+    "ObjectsWillBeImportedIntoFolderPrefix": "Objects will be imported into the folder ",
+    "ObjectsWillBeImportedIntoFolderPostfix": ".",
+
+    "ShowPreviousImports": "Show previous imports",
+    "BackToImport": "Back to import",
+    "ShowImportLogList": "Show import log list",
+    
+    "PreviousImports": "Previous imports",
+    "ImportedOn": "Imported on",
+    "Filename": "Filename",
+
+    "PreviousPage": "Previous page",
+    "NextPage": "Next page",
+
+    "Import": "Import",
+    "ExportResults": "Export results",
+    "Close": "Close",
+    "Cancel": "Cancel",
+
+    "ImportResultSuccess": "The values were successfully imported.",
+    "ImportResultFailed": "An error occured during the import of the row.",
+    "ImportResultNoChange": "No changes exist. The row was ignored.",
+    "DetailHeader": "Details",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured."
+}

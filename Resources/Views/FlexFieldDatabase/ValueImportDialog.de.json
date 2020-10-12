@@ -1,0 +1,35 @@
+{
+    "ImportFieldValues": "Feldwerte importieren",
+
+    "DropValueFileHere": "Wertedatei hier ablegen...",
+
+    "ExistingRows": "Bestehende Zeilen:",
+    "NewRows": "Neue Zeilen:",
+    "ObjectsWillBeImportedToRoot": "Objekte werden auf oberster Ebene importiert.",
+    "ObjectsWillBeImportedIntoFolderPrefix": "Objekte werden in den Ordner ",
+    "ObjectsWillBeImportedIntoFolderPostfix": " importiert.",
+
+    "ShowPreviousImports": "Vorherige Imports anzeigen",
+    "BackToImport": "Zurück zum Import",
+    "ShowImportLogList": "Log Liste anzeigen",
+    
+    "PreviousImports": "Vorherige Imports",
+    "ImportedOn": "Importiert am",
+    "Filename": "Dateiname",
+
+    "PreviousPage": "Vorherige Seite",
+    "NextPage": "Nächste Seite",
+
+    "Import": "Importieren",
+    "ExportResults": "Ergebnisse exportieren",
+    "Close": "Schließen",
+    "Cancel": "Abbrechen",
+
+    "ImportResultSuccess": "Die Werte wurden erfolgreich importiert.",
+    "ImportResultFailed": "Es ist ein Fehler beim Import aufgetreten.",
+    "ImportResultNoChange": "Es liegen keine Änderungen vor. Die Zeile wurde nicht importiert.",
+    "DetailHeader": "Details",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}

@@ -9,12 +9,12 @@
     "Yes": "Ja",
     "No": "Nein",
     
-    "Kirja": "Kirja",
+    "Kirja": "Wiki",
     "NewKirjaPage": "<Neue Seite>",
-    "ShowKirjaMarker": "Kirja Markierungen anzeigen",
+    "ShowKirjaMarker": "Wiki Markierungen anzeigen",
 
-    "Kortisto": "Kortisto",
-    "ShowKortistoMarker": "Kortisto Markierungen anzeigen",
+    "Kortisto": "Npcs",
+    "ShowKortistoMarker": "Npc Markierungen anzeigen",
 
     "KortistoEditDailyRoutineTooltip": "Tagesablauf bearbeiten",
     "EditingDailyRoutinePrefix": "Du bearbeitest den Tagesablauf von ",
@@ -48,13 +48,13 @@
     "ChapterAreNotSupportedForDailyRoutines": "Kapiteländerungen für Tagesabläufe werden nicht unterstützt. Änderungen am Tagesablauf wirken sich auf alle Kapitel aus. Bitte benutze einen Aktionsknoten in einem Dialog oder Quest um den Tagesablauf anzupassen.",
     "Ok": "Ok",
 
-    "Styr": "Styr",
-    "ShowStyrMarker": "Styr Markierungen anzeigen",
+    "Styr": "Items",
+    "ShowStyrMarker": "Item Markierungen anzeigen",
 
-    "Aika": "Aika",
-    "ShowAikaMarker": "Aika Markierungen anzeigen",
+    "Aika": "Quests",
+    "ShowAikaMarker": "Quest Markierungen anzeigen",
 
-    "ShowKartaMarker": "Karta Markierungen anzeigen",
+    "ShowKartaMarker": "Karten Markierungen anzeigen",
 
     "Notes": "Notizen",
     "NoteMarkerNewNote": "<Neue Notiz>",

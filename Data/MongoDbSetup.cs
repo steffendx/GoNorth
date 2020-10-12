@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Config;
@@ -82,6 +81,7 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(KortistoNpcMongoDbAccess.KortistoNpcRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KortistoNpcTagMongoDbAccess.KortistoNpcTagCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KortistoNpcImplementationSnapshotMongoDbAccess.KortistoNpcImplementationSnapshotCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(KortistoImportFieldValuesLogMongoDbAccess.KortistoImportFieldValuesLogCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(StyrFolderMongoDbAccess.StyrFolderCollectionName, collectionNames);
             await CreateCollectionIfNotExists(StyrItemTemplateMongoDbAccess.StyrItemTemplateCollectionName, collectionNames);
@@ -90,6 +90,7 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(StyrItemMongoDbAccess.StyrItemRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(StyrItemTagMongoDbAccess.StyrItemTagCollectionName, collectionNames);
             await CreateCollectionIfNotExists(StyrItemImplementationSnapshotMongoDbAccess.StyrItemImplementationSnapshotCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(StyrImportFieldValuesLogMongoDbAccess.StyrImportFieldValuesLogCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(EvneFolderMongoDbAccess.EvneFolderCollectionName, collectionNames);
             await CreateCollectionIfNotExists(EvneSkillTemplateMongoDbAccess.EvneSkillTemplateCollectionName, collectionNames);
@@ -98,6 +99,7 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(EvneSkillMongoDbAccess.EvneSkillRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(EvneSkillTagMongoDbAccess.EvneSkillTagCollectionName, collectionNames);
             await CreateCollectionIfNotExists(EvneSkillImplementationSnapshotMongoDbAccess.EvneSkillImplementationSnapshotCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(EvneImportFieldValuesLogMongoDbAccess.EvneImportFieldValuesLogCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageRecyclingBinCollectionName, collectionNames);

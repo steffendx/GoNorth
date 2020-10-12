@@ -202,6 +202,16 @@
   {
     "outputFileName": "wwwroot/js/Kortisto/overview.viewmodel.js",
     "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
+
+      "wwwroot/js/Shared/downloadSubmitter.js",
+      "wwwroot/js/FlexFieldDatabase/exportForms/valueExportDialog.js",
+      "wwwroot/js/FlexFieldDatabase/exportForms/valueImportDialog.js",
       "wwwroot/js/FlexFieldDatabase/flexFieldFolderTreeViewDialog.js",
       "wwwroot/js/FlexFieldDatabase/flexFieldOverview.BaseViewModel.js",
       "wwwroot/js/Kortisto/overview/viewmodel.js"
@@ -364,6 +374,16 @@
   {
     "outputFileName": "wwwroot/js/Styr/overview.viewmodel.js",
     "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
+
+      "wwwroot/js/Shared/downloadSubmitter.js",
+      "wwwroot/js/FlexFieldDatabase/exportForms/valueExportDialog.js",
+      "wwwroot/js/FlexFieldDatabase/exportForms/valueImportDialog.js",
       "wwwroot/js/FlexFieldDatabase/flexFieldFolderTreeViewDialog.js",
       "wwwroot/js/FlexFieldDatabase/flexFieldOverview.BaseViewModel.js",
       "wwwroot/js/Styr/overview/viewmodel.js"
@@ -525,6 +545,16 @@
   {
     "outputFileName": "wwwroot/js/Evne/overview.viewmodel.js",
     "inputFiles": [
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/singleLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
+      
+      "wwwroot/js/Shared/downloadSubmitter.js",
+      "wwwroot/js/FlexFieldDatabase/exportForms/valueExportDialog.js",
+      "wwwroot/js/FlexFieldDatabase/exportForms/valueImportDialog.js",
       "wwwroot/js/FlexFieldDatabase/flexFieldFolderTreeViewDialog.js",
       "wwwroot/js/FlexFieldDatabase/flexFieldOverview.BaseViewModel.js",
       "wwwroot/js/Evne/overview/viewmodel.js"

@@ -267,9 +267,24 @@ namespace GoNorth.Controllers.Api
             _xssChecker = xssChecker;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(KirjaApiController));
-            _allowedAttachmentMimeTypes = configuration.Value.Misc.KirjaAllowedAttachmentMimeTypes.Split(",").Select(s => "^" + Regex.Escape(s).Replace("\\*", ".*") + "$").ToList();
+            _allowedAttachmentMimeTypes = configuration.Value.Misc.KirjaAllowedAttachmentMimeTypes.Split(",").Select(s => ConvertMimeTypeToRegex(s)).ToList();
             _versionMergeTimeSpan = configuration.Value.Misc.KirjaVersionMergeTimeSpan;
             _maxVersionCount = configuration.Value.Misc.KirjaMaxVersionCount;
+        }
+
+        /// <summary>
+        /// Converts a mime type to a regex. Does not change file endings
+        /// </summary>
+        /// <param name="mimeType">Mime type</param>
+        /// <returns>Converted mime type</returns>
+        private string ConvertMimeTypeToRegex(string mimeType)
+        {
+            if (!mimeType.StartsWith("."))
+            {
+                return "^" + Regex.Escape(mimeType).Replace("\\*", ".*") + "$";
+            }
+
+            return mimeType;
         }
 
         /// <summary>
@@ -864,11 +879,12 @@ namespace GoNorth.Controllers.Api
             }
     
             IFormFile uploadFile = Request.Form.Files[0];
+            string fileEnding = Path.GetExtension(uploadFile.FileName).ToLowerInvariant();
             string fileContentType = uploadFile.ContentType;
             bool mimeTypeAllowed = false;
             foreach(string curAllowedMimeType in _allowedAttachmentMimeTypes)
             {
-                if(Regex.IsMatch(fileContentType, curAllowedMimeType))
+                if(Regex.IsMatch(fileContentType, curAllowedMimeType) || (curAllowedMimeType.StartsWith(".") && curAllowedMimeType.ToLowerInvariant() == fileEnding))
                 {
                     mimeTypeAllowed = true;
                     break;

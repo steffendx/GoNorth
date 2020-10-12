@@ -1,0 +1,25 @@
+{
+    "ExportFieldValues": "Export field values",
+
+    "AllObjectsWillBeExported": "All objects of the selected template will be exported.",
+    "OnlyObjectsUnderneathFolderPrefix": "Alle objects of the selected template insde and underneath of the folder ",
+    "OnlyObjectsUnderneathFolderPostfix": " will be exported.",
+
+    "Template": "Template",
+
+    "Fields": "Fields",
+
+    "NoFieldsFound": "No fields were found.",
+
+    "SingleLineField": " (Text field)",
+    "MultiLineField": " (Multiline text field)",
+    "NumberField": " (Number field)",
+    "OptionField": " (Option field)",
+
+    "YouHaveToSelectATemplate": "You must select a template.",
+
+    "Export": "Export",
+    "Cancel": "Cancel",
+    
+    "ErrorOccured": "An error occured."
+}

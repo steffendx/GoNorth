@@ -6,22 +6,22 @@
     "Tasks": "Tasks",
     "TaskManagement": "Task management",
 
-    "Aika": "Aika",
+    "Aika": "Quests",
     "AikaQuestDatabase": "Quest database",
 
-    "Kortisto": "Kortisto",
+    "Kortisto": "Npcs",
     "KortistoNpcDatabase": "Npc database",
     
-    "Styr": "Styr",
+    "Styr": "Items",
     "StyrItemDatabase": "Item database",
 
-    "Evne": "Evne",
+    "Evne": "Skills",
     "EvneSkillDatabase": "Skill database",
 
-    "Kirja": "Kirja",
+    "Kirja": "Wiki",
     "KirjaWiki": "Wiki component",
 
-    "Karta": "Karta",
+    "Karta": "Maps",
     "KartaMap": "Map component",
 
     "ImplementationStatus": "Implementation",

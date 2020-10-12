@@ -1,6 +1,1169 @@
 (function(GoNorth) {
     "use strict";
     (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
+             * Interface for flex field fields
+             * 
+             * @class
+             */
+            ObjectForm.FlexFieldBase = function() {
+                this.id = new ko.observable("");
+                this.createdFromTemplate = new ko.observable(false);
+                this.name = new ko.observable();
+                this.scriptSettings = new ObjectForm.FlexFieldScriptSettings();
+            }
+
+            ObjectForm.FlexFieldBase.prototype = {
+                /**
+                 * Returns the type of the field
+                 * 
+                 * @returns {int} Type of the field
+                 */
+                getType: function() { },
+
+                /**
+                 * Returns the template name
+                 * 
+                 * @returns {string} Template Name
+                 */
+                getTemplateName: function() { },
+
+                /**
+                 * Returns if the field can be exported to a script
+                 * 
+                 * @returns {bool} true if the value can be exported to a script, else false
+                 */
+                canExportToScript: function() { },
+
+                /**
+                 * Serializes the value to a string
+                 * 
+                 * @param {number} fieldIndex Index of the field in the final serialization
+                 * @returns {string} Value of the field as a string
+                 */
+                serializeValue: function(fieldIndex) { },
+
+                /**
+                 * Deserializes a value from a string
+                 * 
+                 * @param {string} value Value to Deserialize
+                 */
+                deserializeValue: function(value) { },
+
+                /**
+                 * Returns all child fields
+                 * 
+                 * @returns {FlexFieldBase[]} Children of the field, null if no children exist
+                 */
+                getChildFields: function() { return null; },
+
+                /**
+                 * Returns true if the field has additional configuration, else false
+                 * 
+                 * @returns {bool} true if the field has additional configuration, else false
+                 */
+                hasAdditionalConfiguration: function() { return false; },
+
+                /**
+                 * Returns the label for additional configuration
+                 * 
+                 * @returns {string} Additional Configuration
+                 */
+                getAdditionalConfigurationLabel: function() { return ""; },
+
+                /**
+                 * Returns true if the additional configuration can be edited for fields that were created based on template fields, else false
+                 * 
+                 * @returns {bool} true if the additional configuration can be edited for fields that were created based on template fields, else false
+                 */
+                allowEditingAdditionalConfigForTemplateFields: function() { return false; },
+
+                /**
+                 * Sets additional configuration
+                 * 
+                 * @param {string} configuration Additional Configuration
+                 */
+                setAdditionalConfiguration: function(configuration) { },
+
+                /**
+                 * Returns additional configuration
+                 * 
+                 * @returns {string} Additional Configuration
+                 */
+                getAdditionalConfiguration: function() { return ""; },
+
+                /**
+                 * Serializes the additional configuration
+                 * 
+                 * @returns {string} Serialized additional configuration
+                 */
+                serializeAdditionalConfiguration: function() { return ""; },
+
+                /**
+                 * Deserializes the additional configuration
+                 * 
+                 * @param {string} additionalConfiguration Serialized additional configuration
+                 */
+                deserializeAdditionalConfiguration: function(additionalConfiguration) { },
+
+
+                /**
+                 * Groups fields into the field
+                 * 
+                 * @param {FlexFieldBase[]} fields Root List of fields
+                 * @param {object} fieldsToRemoveFromRootList Object to track fields that must be removed from the root list
+                 */
+                groupFields: function(fields, fieldsToRemoveFromRootList) { }
+            }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
+             * Type of the single text line field
+             */
+            ObjectForm.FlexFieldTypeSingleLine = 0;
+
+            /**
+             * Class for a single text line field
+             * 
+             * @class
+             */
+            ObjectForm.SingleLineFlexField = function() {
+                ObjectForm.FlexFieldBase.apply(this);
+
+                this.value = new ko.observable("");
+            }
+
+            ObjectForm.SingleLineFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
+
+            /**
+             * Returns the type of the field
+             * 
+             * @returns {int} Type of the field
+             */
+            ObjectForm.SingleLineFlexField.prototype.getType = function() { return ObjectForm.FlexFieldTypeSingleLine; }
+
+            /**
+             * Returns the template name
+             * 
+             * @returns {string} Template Name
+             */
+            ObjectForm.SingleLineFlexField.prototype.getTemplateName = function() { return "gn-singleLineField"; }
+
+            /**
+             * Returns if the field can be exported to a script
+             * 
+             * @returns {bool} true if the value can be exported to a script, else false
+             */
+            ObjectForm.SingleLineFlexField.prototype.canExportToScript = function() { return true; }
+
+            /**
+             * Serializes the value to a string
+             * 
+             * @returns {string} Value of the field as a string
+             */
+            ObjectForm.SingleLineFlexField.prototype.serializeValue = function() { return this.value(); }
+
+            /**
+             * Deserializes a value from a string
+             * 
+             * @param {string} value Value to Deserialize
+             */
+            ObjectForm.SingleLineFlexField.prototype.deserializeValue = function(value) { this.value(value); }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
+             * Type of the multi text line field
+             */
+            ObjectForm.FlexFieldTypeMultiLine = 1;
+
+            /**
+             * Class for a multi text line field
+             * 
+             * @class
+             */
+            ObjectForm.MultiLineFlexField = function() {
+                ObjectForm.FlexFieldBase.apply(this);
+
+                this.value = new ko.observable("");
+            }
+
+            ObjectForm.MultiLineFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
+
+            /**
+             * Returns the type of the field
+             * 
+             * @returns {int} Type of the field
+             */
+            ObjectForm.MultiLineFlexField.prototype.getType = function() { return ObjectForm.FlexFieldTypeMultiLine; }
+
+            /**
+             * Returns the template name
+             * 
+             * @returns {string} Template Name
+             */
+            ObjectForm.MultiLineFlexField.prototype.getTemplateName = function() { return "gn-multiLineField"; }
+
+            /**
+             * Returns if the field can be exported to a script
+             * 
+             * @returns {bool} true if the value can be exported to a script, else false
+             */
+            ObjectForm.MultiLineFlexField.prototype.canExportToScript = function() { return false; }
+
+            /**
+             * Serializes the value to a string
+             * 
+             * @returns {string} Value of the field as a string
+             */
+            ObjectForm.MultiLineFlexField.prototype.serializeValue = function() { return this.value(); }
+
+            /**
+             * Deserializes a value from a string
+             * 
+             * @param {string} value Value to Deserialize
+             */
+            ObjectForm.MultiLineFlexField.prototype.deserializeValue = function(value) { this.value(value); }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
+             * Type of the number field
+             */
+            ObjectForm.FlexFieldTypeNumber = 2;
+
+            /**
+             * Class for a number field
+             * 
+             * @class
+             */
+            ObjectForm.NumberFlexField = function() {
+                ObjectForm.FlexFieldBase.apply(this);
+
+                this.value = new ko.observable(0.0);
+            }
+
+            ObjectForm.NumberFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
+
+            /**
+             * Returns the type of the field
+             * 
+             * @returns {int} Type of the field
+             */
+            ObjectForm.NumberFlexField.prototype.getType = function() { return ObjectForm.FlexFieldTypeNumber; }
+
+            /**
+             * Returns the template name
+             * 
+             * @returns {string} Template Name
+             */
+            ObjectForm.NumberFlexField.prototype.getTemplateName = function() { return "gn-numberField"; }
+
+            /**
+             * Returns if the field can be exported to a script
+             * 
+             * @returns {bool} true if the value can be exported to a script, else false
+             */
+            ObjectForm.NumberFlexField.prototype.canExportToScript = function() { return true; }
+
+            /**
+             * Serializes the value to a string
+             * 
+             * @returns {string} Value of the field as a string
+             */
+            ObjectForm.NumberFlexField.prototype.serializeValue = function() { return this.value() ? this.value().toString() : "0.0"; }
+
+            /**
+             * Deserializes a value from a string
+             * 
+             * @param {string} value Value to Deserialize
+             */
+            ObjectForm.NumberFlexField.prototype.deserializeValue = function(value) { 
+                var parsedValue = parseFloat(value);
+                if(!isNaN(parsedValue))
+                {
+                    this.value(parsedValue); 
+                }
+                else
+                {
+                    this.value(0.0);
+                }
+            }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
+             * Type of the object field
+             */
+            ObjectForm.FlexFieldTypeOption = 3;
+
+            /**
+             * Class for an option field
+             * 
+             * @class
+             */
+            ObjectForm.OptionFlexField = function() {
+                ObjectForm.FlexFieldBase.apply(this);
+
+                this.value = new ko.observable(null);
+                this.options = new ko.observableArray();
+            }
+
+            ObjectForm.OptionFlexField.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
+
+            /**
+             * Returns the type of the field
+             * 
+             * @returns {int} Type of the field
+             */
+            ObjectForm.OptionFlexField.prototype.getType = function() { return ObjectForm.FlexFieldTypeOption; }
+
+            /**
+             * Returns the template name
+             * 
+             * @returns {string} Template Name
+             */
+            ObjectForm.OptionFlexField.prototype.getTemplateName = function() { return "gn-optionField"; }
+
+            /**
+             * Returns if the field can be exported to a script
+             * 
+             * @returns {bool} true if the value can be exported to a script, else false
+             */
+            ObjectForm.OptionFlexField.prototype.canExportToScript = function() { return true; }
+
+            /**
+             * Serializes the value to a string
+             * 
+             * @returns {string} Value of the field as a string
+             */
+            ObjectForm.OptionFlexField.prototype.serializeValue = function() { return this.value(); }
+
+            /**
+             * Deserializes a value from a string
+             * 
+             * @param {string} value Value to Deserialize
+             */
+            ObjectForm.OptionFlexField.prototype.deserializeValue = function(value) { this.value(value); }
+
+
+            /**
+             * Returns true if the field has additional configuration, else false
+             * 
+             * @returns {bool} true if the field has additional configuration, else false
+             */
+            ObjectForm.OptionFlexField.prototype.hasAdditionalConfiguration = function() { return true; }
+
+            /**
+             * Returns the label for additional configuration
+             * 
+             * @returns {string} Additional Configuration
+             */
+            ObjectForm.OptionFlexField.prototype.getAdditionalConfigurationLabel = function() { return GoNorth.FlexFieldDatabase.Localization.OptionFieldAdditionalConfigurationLabel; }
+
+            /**
+             * Returns true if the additional configuration can be edited for fields that were created based on template fields, else false
+             * 
+             * @returns {bool} true if the additional configuration can be edited for fields that were created based on template fields, else false
+             */
+            ObjectForm.OptionFlexField.prototype.allowEditingAdditionalConfigForTemplateFields = function() { return false; }
+
+            /**
+             * Sets additional configuration
+             * 
+             * @param {string} configuration Additional Configuration
+             */
+            ObjectForm.OptionFlexField.prototype.setAdditionalConfiguration = function(configuration) { 
+                var availableOptions = [];
+                if(configuration)
+                {
+                    availableOptions = configuration.split("\n");
+                }
+                
+                this.options(availableOptions)
+            }
+
+            /**
+             * Returns additional configuration
+             * 
+             * @returns {string} Additional Configuration
+             */
+            ObjectForm.OptionFlexField.prototype.getAdditionalConfiguration = function() { return this.options().join("\n"); }
+        
+            /**
+             * Serializes the additional configuration
+             * 
+             * @returns {string} Serialized additional configuration
+             */
+            ObjectForm.OptionFlexField.prototype.serializeAdditionalConfiguration = function() { return JSON.stringify(this.options()); },
+
+            /**
+             * Deserializes the additional configuration
+             * 
+             * @param {string} additionalConfiguration Serialized additional configuration
+             */
+            ObjectForm.OptionFlexField.prototype.deserializeAdditionalConfiguration = function(additionalConfiguration) { 
+                var options = [];
+                if(additionalConfiguration)
+                {
+                    options = JSON.parse(additionalConfiguration);
+                }
+
+                this.options(options);
+            }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ObjectForm) {
+
+            /**
+             * Type of the field group
+             */
+            ObjectForm.FlexFieldGroup = 100;
+
+            /**
+             * Class for a field group
+             * 
+             * @class
+             */
+            ObjectForm.FieldGroup = function() {
+                ObjectForm.FlexFieldBase.apply(this);
+
+                this.fields = new ko.observableArray();
+                this.deserializingFieldIds = null;
+
+                this.isExpandedByDefault = true;
+                this.areFieldsExpanded = new ko.observable(true);
+            }
+
+            ObjectForm.FieldGroup.prototype = jQuery.extend(true, {}, ObjectForm.FlexFieldBase.prototype);
+
+            /**
+             * Returns the type of the field
+             * 
+             * @returns {int} Type of the field
+             */
+            ObjectForm.FieldGroup.prototype.getType = function() { return ObjectForm.FlexFieldGroup; }
+
+            /**
+             * Returns the template name
+             * 
+             * @returns {string} Template Name
+             */
+            ObjectForm.FieldGroup.prototype.getTemplateName = function() { return "gn-fieldGroup"; }
+
+            /**
+             * Returns if the field can be exported to a script
+             * 
+             * @returns {bool} true if the value can be exported to a script, else false
+             */
+            ObjectForm.FieldGroup.prototype.canExportToScript = function() { return false; }
+
+            /**
+             * Serializes the value to a string
+             * 
+             * @param {number} fieldIndex Index of the field in the final serialization
+             * @returns {string} Value of the field as a string
+             */
+            ObjectForm.FieldGroup.prototype.serializeValue = function(fieldIndex) { 
+                var fieldIds = [];
+                var fields = this.fields();
+                for(var curField = 0; curField < fields.length; ++curField)
+                {
+                    // If field id is not yet filled it will be filled on the server side
+                    if(fields[curField].id())
+                    {
+                        fieldIds.push(fields[curField].id());
+                    }
+                    else
+                    {
+                        fieldIds.push((fieldIndex + curField + 1).toString());
+                    }
+                }
+
+                return JSON.stringify(fieldIds); 
+            }
+            
+            /**
+             * Returns all child fields
+             * 
+             * @returns {FlexFieldBase[]} Children of the field, null if no children exist
+             */
+            ObjectForm.FieldGroup.prototype.getChildFields = function() { 
+                return this.fields(); 
+            }
+
+            /**
+             * Deserializes a value from a string
+             * 
+             * @param {string} value Value to Deserialize
+             */
+            ObjectForm.FieldGroup.prototype.deserializeValue = function(value) { 
+                this.deserializingFieldIds = [];
+                if(value) 
+                {
+                    this.deserializingFieldIds = JSON.parse(value);
+                }
+            }
+
+            /**
+             * Serializes the additional configuration
+             * 
+             * @returns {string} Serialized additional configuration
+             */
+            ObjectForm.FieldGroup.prototype.serializeAdditionalConfiguration = function() { 
+                return JSON.stringify({
+                    isExpandedByDefault: this.isExpandedByDefault
+                }); 
+            },
+
+            /**
+             * Deserializes the additional configuration
+             * 
+             * @param {string} additionalConfiguration Serialized additional configuration
+             */
+            ObjectForm.FieldGroup.prototype.deserializeAdditionalConfiguration = function(additionalConfiguration) { 
+                if(additionalConfiguration)
+                {
+                    var deserializedConfig = JSON.parse(additionalConfiguration);
+                    this.isExpandedByDefault = deserializedConfig.isExpandedByDefault;
+                    this.areFieldsExpanded(this.isExpandedByDefault);
+                }
+            }
+            
+            /**
+             * Groups fields into the field
+             * 
+             * @param {FlexFieldBase[]} fields Root List of fields
+             * @param {object} fieldsToRemoveFromRootList Object to track fields that must be removed from the root list
+             */
+            ObjectForm.FieldGroup.prototype.groupFields = function(fields, fieldsToRemoveFromRootList) { 
+                if(!this.deserializingFieldIds)
+                {
+                    return;
+                }
+
+                for(var curGroupFieldId = 0; curGroupFieldId < this.deserializingFieldIds.length; ++curGroupFieldId)
+                {
+                    var fieldFound = false;
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        if(fields[curField].id() == this.deserializingFieldIds[curGroupFieldId])
+                        {
+                            // Check fieldsToRemoveFromRootList here to prevent duplicated fields if a new group was distributed from template 
+                            // using a field which a group in the current object includes
+                            if(!fieldsToRemoveFromRootList[curField])
+                            {
+                                this.fields.push(fields[curField]);
+                                fieldsToRemoveFromRootList[curField] = true;
+                            }
+                            fieldFound = true;
+                            break;
+                        }
+                    }
+
+                    // If a user creates a folder from template the index must be used
+                    if(!fieldFound && this.deserializingFieldIds[curGroupFieldId] && this.deserializingFieldIds[curGroupFieldId].indexOf("-") < 0)
+                    {
+                        var targetIndex = parseInt(this.deserializingFieldIds[curGroupFieldId]);
+                        if(!isNaN(targetIndex) && targetIndex >= 0 && targetIndex < fields.length)
+                        {
+                            this.fields.push(fields[targetIndex]);
+                            fieldsToRemoveFromRootList[targetIndex] = true;
+                        }
+                    }
+                }
+                this.deserializingFieldIds = null;
+            }
+
+
+            /**
+             * Toggles the field visibility
+             */
+            ObjectForm.FieldGroup.prototype.toogleFieldVisibility = function() {
+                this.areFieldsExpanded(!this.areFieldsExpanded());
+            }
+
+            /**
+             * Deletes a field
+             * 
+             * @param {FlexFieldBase} field Field to delete
+             */
+            ObjectForm.FieldGroup.prototype.deleteField = function(field) {
+                this.fields.remove(field);
+            }
+
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Shared) {
+
+        /**
+         * Class to trigger a download
+         * @class
+         */
+        Shared.DownloadSubmitter = function()
+        {
+            this.creationDeferred = null;
+        };
+
+        Shared.DownloadSubmitter.prototype = {
+            /**
+             * Triggers a download
+             * @param url Url to download
+             * @param paramValues Parameter
+             */
+            triggerDownload: function(url, paramValues) {
+                var antiforgeryHeader = GoNorth.Util.generateAntiForgeryHeader();
+                var submitForm = jQuery("<form style='display: none'></form>");
+                submitForm.prop("action", url);
+                submitForm.prop("method", "POST");
+
+                var antiforgeryHeaderControl = jQuery("<input type='hidden' name='__RequestVerificationToken'/>");
+                antiforgeryHeaderControl.val(antiforgeryHeader["RequestVerificationToken"]);
+                submitForm.append(antiforgeryHeaderControl);
+
+                for(var curParam in paramValues) 
+                {
+                    if(!Array.isArray(paramValues[curParam]))
+                    {
+                        var paramInput = jQuery("<input type='hidden'/>");
+                        paramInput.prop("name", curParam);
+                        paramInput.val(paramValues[curParam]);
+                        submitForm.append(paramInput);
+                    }
+                    else
+                    {
+                        var paramArray = paramValues[curParam];
+                        for(var curValue = 0; curValue < paramArray.length; ++curValue)
+                        {
+                            var paramInput = jQuery("<input type='hidden'/>");
+                            paramInput.prop("name", curParam + "[]");
+                            paramInput.val(paramArray[curValue]);
+                            submitForm.append(paramInput);
+                        }
+                    }
+                }
+                
+                submitForm.appendTo("body");
+                submitForm.submit();
+                submitForm.remove();
+            }
+        };
+
+    }(GoNorth.Shared = GoNorth.Shared || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ExportForms) {
+
+            /**
+             * Dialog to export values
+             * @param {string} apiControllerName Api Controller name
+             * @param {ko.observable} currentFolderId Observable for the current folder id
+             * @param {ko.observable} currentFolderName Name of the current folder
+             * @param {ko.observableArray} availableTemplates Available templates
+             * @class
+             */
+            ExportForms.ValueExportDialog = function(apiControllerName, currentFolderId, currentFolderName, availableTemplates)
+            {
+                this.apiControllerName = apiControllerName;
+
+                this.currentFolderId = currentFolderId;
+                this.currentFolderName = currentFolderName;
+
+                var self = this;
+                this.availableTemplates = availableTemplates;
+                this.selectedTemplate = new ko.observable(null);
+                this.selectedTemplate.subscribe(function() {
+                    self.loadTemplateFields();
+                });
+
+                this.isVisible = new ko.observable(false);
+
+                this.fields = new ko.observableArray();
+                this.selectedFields = new ko.pureComputed(function() {
+                    var fields = this.fields();
+                    var selectedFields = [];
+                    for(var curField = 0; curField < fields.length; ++curField)
+                    {
+                        if(fields[curField].isSelected()) 
+                        {
+                            selectedFields.push(fields[curField]);
+                        }
+                    }
+                    return selectedFields;
+                }, this);
+
+                this.isLoading = new ko.observable(false);
+                this.errorOccured = new ko.observable(false);
+            };
+
+            
+            ExportForms.ValueExportDialog.prototype = {
+                /**
+                 * Loads the template fields
+                 */
+                loadTemplateFields: function() {
+                    if(!this.selectedTemplate() || !this.isVisible()) {
+                        this.fields([]);
+                        return;
+                    }
+
+                    var url = "/api/" + this.apiControllerName + "/FlexFieldTemplate?id=" + this.selectedTemplate().id;
+
+                    this.isLoading(true);
+
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: url, 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.isLoading(false);
+
+                        var fields = [];
+                        for(var curField = 0; curField < data.fields.length; ++curField)
+                        {
+                            if(data.fields[curField].fieldType == FlexFieldDatabase.ObjectForm.FlexFieldGroup)
+                            {
+                                continue;
+                            }
+
+                            var convertedField = data.fields[curField];
+                            convertedField.isSelected = new ko.observable(false);
+                            fields.push(convertedField);
+                        }
+                        
+                        self.fields(fields);
+                    }).fail(function() {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Exports values
+                 */
+                exportValues: function() {
+                    var selectedFields = this.selectedFields();
+                    if(!this.selectedTemplate()) {
+                        return;
+                    }
+
+                    var downloadSubmitter = new GoNorth.Shared.DownloadSubmitter();
+                    var selectedFieldNames = [];
+                    for(var curField = 0; curField < selectedFields.length; ++curField)
+                    {
+                        selectedFieldNames.push(selectedFields[curField].name)
+                    }
+                    downloadSubmitter.triggerDownload("/api/" + this.apiControllerName + "/ExportFieldValues", {
+                        SelectedTemplate: this.selectedTemplate().id,
+                        SelectedFields: selectedFieldNames,
+                        FolderId: this.currentFolderId()
+                    });
+                },
+
+                /**
+                 * Opens the dialog
+                 */
+                openDialog: function() {
+                    this.isLoading(false);
+                    this.errorOccured(false);
+                    this.isVisible(true);
+                    this.loadTemplateFields();
+                },
+
+                /**
+                 * Closes the dialog
+                 */
+                closeDialog: function() {
+                    this.isVisible(false);
+                }
+            };
+
+        }(FlexFieldDatabase.ExportForms = FlexFieldDatabase.ExportForms || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
+        (function(ExportForms) {
+
+            // Import log pagesize
+            var importLogPageSize = 25;
+
+            /**
+             * Dialog to import values
+             * @param {string} apiControllerName Api Controller name
+             * @param {ko.observable} currentFolderId Observable for the current folder id
+             * @param {ko.observable} currentFolderName Name of the current folder
+             * @class
+             */
+            ExportForms.ValueImportDialog = function(apiControllerName, currentFolderId, currentFolderName)
+            {
+                this.apiControllerName = apiControllerName;
+
+                this.currentFolderId = currentFolderId;
+                this.currentFolderName = currentFolderName;
+                
+                this.createPreCheckUrl = new ko.computed(function() {
+                    return "/api/" + this.apiControllerName + "/ImportFieldValuesPreCheck";
+                }, this); 
+
+                this.preCheckWasRun = new ko.observable(false);
+                this.importWasRun = new ko.observable(false);
+                this.filename = new ko.observable("");
+                this.templateId = new ko.observable("");
+                this.columns = new ko.observableArray();
+                this.existingRows = new ko.observableArray();
+                this.newRows = new ko.observableArray();
+                this.importedId = new ko.observable("");
+                this.importedExistingRows = new ko.observableArray();
+                this.importedNewRows = new ko.observableArray();
+
+                this.showPreviousImportsList = new ko.observable(false);
+                this.previousImports = new ko.observableArray();
+                this.previousImportsHasMore = new ko.observable(false);
+                this.currentImportsListPage = new ko.observable(0);
+                this.previousImportsLoading = new ko.observable(false);
+                this.previousImportsPrevLoading = new ko.observable(false);
+                this.previousImportsNextLoading = new ko.observable(false);
+                this.previousImportedId = new ko.observable("");
+                this.previousImportedColumns = new ko.observableArray();
+                this.previousImportedExistingRows = new ko.observableArray();
+                this.previousImportedNewRows = new ko.observableArray();
+
+                this.isVisible = new ko.observable(false);
+
+                this.isLoading = new ko.observable(false);
+                this.errorOccured = new ko.observable(false);
+                this.additionalErrorMessage = new ko.observable("");
+            };
+
+            
+            ExportForms.ValueImportDialog.prototype = {
+                /**
+                 * Gets called if a file is added
+                 */
+                onValueFileAdded: function() {
+                    this.isLoading(true);
+                    this.errorOccured(false);
+                    this.additionalErrorMessage("");
+                },
+
+                /**
+                 * Gets called on scucess of the precheck
+                 * @param data Result data
+                 */
+                onPreCheckSuccess: function(data) {
+                    this.preCheckWasRun(true);
+                    this.filename(data.filename);
+                    this.templateId(data.templateId);
+                    this.columns(data.columns);
+                    this.existingRows(this.addSelectedObservable(data.existingRows));
+                    this.newRows(this.addSelectedObservable(data.newRows));
+
+                    this.isLoading(false);
+                },
+
+                /**
+                 * Adds the selected observables for an array
+                 * @param {object[]} rowArray Array with rows to manipulate
+                 * @returns Updated array
+                 */
+                addSelectedObservable: function(rowArray) {
+                    for(var curRow = 0; curRow < rowArray.length; ++curRow)
+                    {
+                        rowArray[curRow] = {
+                            isSelected: new ko.observable(true),
+                            rowData: rowArray[curRow]
+                        };
+                    }
+
+                    return rowArray;
+                },
+
+                /**
+                 * Gets called if an error occures during 
+                 * @param err Error data
+                 * @param xhr Xhr Object
+                 */
+                onPreCheckError: function(err, xhr) {
+                    this.isLoading(false);
+                    this.errorOccured(true);
+
+                    if(xhr && xhr.status == 400 && err && err.value)
+                    {
+                        this.additionalErrorMessage(err.value);
+                    }
+                    else
+                    {
+                        this.additionalErrorMessage("");
+                    }
+                },
+
+                /**
+                 * Runs the import
+                 */
+                runImport: function() {
+                    var requestObject = {
+                        filename: this.filename(),
+                        templateId: this.templateId(),
+                        targetFolderId: this.currentFolderId(),
+                        columns: this.columns(),
+                        existingRows: this.extractRows(this.existingRows, true),
+                        newRows: this.extractRows(this.newRows, true)
+                    };
+                    
+                    this.isLoading(true);
+                    this.errorOccured(false);
+
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/" + this.apiControllerName + "/ImportFieldValues", 
+                        headers: GoNorth.Util.generateAntiForgeryHeader(),
+                        data: JSON.stringify(requestObject), 
+                        type: "POST",
+                        contentType: "application/json"
+                    }).done(function(data) {
+                        self.importWasRun(true);
+                        self.isLoading(false);
+
+                        self.importedId(data.id);
+                        self.importedExistingRows(self.addSelectedObservable(data.existingRows));
+                        self.importedNewRows(self.addSelectedObservable(data.newRows));
+                    }).fail(function(xhr) {
+                        self.isLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Extracts the selected rows from an array
+                 * @param {ko.observableArray} rowArray Row array
+                 * @param {bool} onlySelected true if only selected rows must be returned, else false
+                 * @returns {object} Extracted rows
+                 */
+                extractRows: function(rowArray, onlySelected) {
+                    var rows = rowArray();
+                    var selectedRows = [];
+
+                    for(var curRow = 0; curRow < rows.length; ++curRow)
+                    {
+                        if(rows[curRow].isSelected() || !onlySelected)
+                        {
+                            selectedRows.push(rows[curRow].rowData);
+                        }
+                    }
+
+                    return selectedRows;
+                },
+
+                /**
+                 * Exports the results of the import
+                 */
+                runResultExport: function() {
+                    var targetId = this.importedId();
+                    if(this.showPreviousImportsList()) {
+                        targetId = this.previousImportedId();
+                    }
+
+                    window.location = "/api/" + this.apiControllerName + "/ExportFieldValueImportResult?id=" + encodeURIComponent(targetId);
+                },
+
+                /**
+                 * Stringifies the entries of an array
+                 * @param {object[]} arr Array to stringify
+                 * @returns {string[]} Stringified array
+                 */
+                stringifyArray: function(arr) {
+                    var result = [];
+                    for(var curEntry = 0; curEntry < arr.length; ++curEntry)
+                    {
+                        result.push(JSON.stringify(arr[curEntry]));
+                    }
+                    return result;
+                },
+
+                /**
+                 * Shows previous imports
+                 */
+                showPreviousImports: function() {
+                    this.showPreviousImportsList(true);
+                    this.previousImportsPrevLoading(false);
+                    this.previousImportsNextLoading(true);
+                    this.previousImportedId("");
+
+                    this.loadPreviousImportsPage();
+                },
+
+                /**
+                 * Loads the previous imports page
+                 */
+                prevPreviousImportsPage: function() {
+                    this.previousImportsPrevLoading(true);
+                    this.currentImportsListPage(this.currentImportsListPage() - 1);
+
+                    this.loadPreviousImportsPage();
+                },
+
+                /**
+                 * Loads the next imports page
+                 */
+                nextPreviousImportsPage: function() {
+                    this.previousImportsNextLoading(true);
+                    this.currentImportsListPage(this.currentImportsListPage() + 1);
+
+                    this.loadPreviousImportsPage();
+                },
+
+                /**
+                 * Loads a page of previous imports
+                 */
+                loadPreviousImportsPage: function() {
+                    this.previousImportsLoading(true);
+                    this.errorOccured(false);
+
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/" + this.apiControllerName + "/GetFlexFieldValueImportLogs?start=" + (this.currentImportsListPage() * importLogPageSize) + "&pageSize=" + importLogPageSize, 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.previousImportsLoading(false);
+                        self.previousImportsPrevLoading(false);
+                        self.previousImportsNextLoading(false);
+
+                        self.previousImportsHasMore(data.hasMore);
+                        self.previousImports(data.logs);
+                    }).fail(function(xhr) {
+                        self.previousImportsLoading(false);
+                        self.previousImportsPrevLoading(false);
+                        self.previousImportsNextLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Shows the log of a previous import
+                 * @param {object} importLog Import log
+                 */
+                showPreviousImportLog: function(importLog) {
+                    this.previousImportsLoading(true);
+                    this.previousImportsPrevLoading(true);
+                    this.previousImportsNextLoading(true);
+
+                    var self = this;
+                    jQuery.ajax({ 
+                        url: "/api/" + this.apiControllerName + "/GetFlexFieldValueImportLog?id=" + encodeURIComponent(importLog.id), 
+                        type: "GET"
+                    }).done(function(data) {
+                        self.previousImportsLoading(false);
+                        self.previousImportsPrevLoading(false);
+                        self.previousImportsNextLoading(false);
+
+                        self.previousImportedId(data.id);
+                        self.previousImportedColumns(data.columns);
+                        self.previousImportedExistingRows(self.addSelectedObservable(data.existingRows));
+                        self.previousImportedNewRows(self.addSelectedObservable(data.newRows));
+                    }).fail(function(xhr) {
+                        self.previousImportsLoading(false);
+                        self.previousImportsPrevLoading(false);
+                        self.previousImportsNextLoading(false);
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Shows the import content
+                 */
+                showImportsContent: function() {
+                    this.showPreviousImportsList(false);
+                },
+
+                /**
+                 * Shows the imports log list
+                 */
+                showImportsLogList: function() {
+                    this.previousImportedId("");
+                    this.previousImportedExistingRows.removeAll();
+                    this.previousImportedNewRows.removeAll();
+                    this.previousImportedColumns.removeAll();
+                },
+                
+                /**
+                 * Opens the dialog
+                 */
+                openDialog: function() {
+                    this.preCheckWasRun(false);
+                    this.importWasRun(false);
+                    this.filename("");
+                    this.columns.removeAll();
+                    this.existingRows.removeAll();
+                    this.newRows.removeAll();
+                    this.importedId("");
+                    this.importedExistingRows.removeAll();
+                    this.importedNewRows.removeAll();
+                    this.showPreviousImportsList(false);
+                    this.previousImports.removeAll();
+                    this.previousImportsHasMore(false);
+                    this.currentImportsListPage(0);
+                    this.previousImportedId("");
+                    this.previousImportedExistingRows.removeAll();
+                    this.previousImportedNewRows.removeAll();
+                    this.previousImportedColumns.removeAll();
+                    this.isLoading(false);
+                    this.errorOccured(false);
+                    this.isVisible(true);
+                },
+
+                /**
+                 * Closes the dialog
+                 */
+                closeDialog: function() {
+                    this.isVisible(false);
+                }
+            };
+
+        }(FlexFieldDatabase.ExportForms = FlexFieldDatabase.ExportForms || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(FlexFieldDatabase) {
         (function(Overview) {
 
             /**
@@ -286,6 +1449,9 @@
 
                 this.isDraggingObject = new ko.observable(false);
                 this.flexFieldFolderTreeViewDialog = new Overview.FlexFieldFolderTreeViewDialog(apiControllerName);
+
+                this.exportValueDialog = new FlexFieldDatabase.ExportForms.ValueExportDialog(apiControllerName, this.currentFolderId, this.currentFolderName, this.availableTemplates);
+                this.importValueDialog = new FlexFieldDatabase.ExportForms.ValueImportDialog(apiControllerName, this.currentFolderId, this.currentFolderName);
                 
                 this.dialogLoading = new ko.observable(false);
 
@@ -903,6 +2069,21 @@
                     this.flexFieldFolderTreeViewDialog.openDialog(objectToMove.isFolder ? objectToMove.id : null).done(function(targetFolderId) {
                         self.moveObjectToCategory(objectToMove, targetFolderId);
                     });
+                },
+
+
+                /**
+                 * Opens the export value dialog
+                 */
+                openExportValueDialog: function() {
+                    this.exportValueDialog.openDialog();
+                },
+
+                /**
+                 * Opens the import value dialog
+                 */
+                openImportValueDialog: function() {
+                    this.importValueDialog.openDialog();
                 },
 
 

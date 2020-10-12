@@ -60,6 +60,7 @@ using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKeyGene
 using GoNorth.Services.Export.Dialog.ActionRendering.Localization;
 using GoNorth.Services.Export.Dialog.ConditionRendering.Localization;
 using GoNorth.Services.Export.DailyRoutine;
+using GoNorth.Services.CsvHandling;
 
 namespace GoNorth
 {
@@ -227,6 +228,9 @@ namespace GoNorth
             services.AddScoped<GoNorthUserManager>();
 
             services.AddScoped<IUserClaimsPrincipalFactory<GoNorthUser>, GoNorthUserClaimsPrincipalFactory>();
+
+            services.AddTransient<ICsvGenerator, CsvGenerator>();
+            services.AddTransient<ICsvParser, CsvParser>();
             
             // Database
             services.AddScoped<ILockServiceDbAccess, LockServiceMongoDbAccess>();
@@ -243,19 +247,22 @@ namespace GoNorth
             services.AddScoped<IKortistoNpcDbAccess, KortistoNpcMongoDbAccess>();
             services.AddScoped<IKortistoNpcTagDbAccess, KortistoNpcTagMongoDbAccess>();
             services.AddScoped<IKortistoNpcImplementationSnapshotDbAccess, KortistoNpcImplementationSnapshotMongoDbAccess>();
+            services.AddScoped<IKortistoImportFieldValuesLogDbAccess, KortistoImportFieldValuesLogMongoDbAccess>();
 
             services.AddScoped<IStyrFolderDbAccess, StyrFolderMongoDbAccess>();
             services.AddScoped<IStyrItemTemplateDbAccess, StyrItemTemplateMongoDbAccess>();
             services.AddScoped<IStyrItemDbAccess, StyrItemMongoDbAccess>();
             services.AddScoped<IStyrItemTagDbAccess, StyrItemTagMongoDbAccess>(); 
             services.AddScoped<IStyrItemImplementationSnapshotDbAccess, StyrItemImplementationSnapshotMongoDbAccess>();
+            services.AddScoped<IStyrImportFieldValuesLogDbAccess, StyrImportFieldValuesLogMongoDbAccess>();
 
             services.AddScoped<IEvneFolderDbAccess, EvneFolderMongoDbAccess>();
             services.AddScoped<IEvneSkillTemplateDbAccess, EvneSkillTemplateMongoDbAccess>();
             services.AddScoped<IEvneSkillDbAccess, EvneSkillMongoDbAccess>();
             services.AddScoped<IEvneSkillTagDbAccess, EvneSkillTagMongoDbAccess>();
             services.AddScoped<IEvneSkillImplementationSnapshotDbAccess, EvneSkillImplementationSnapshotMongoDbAccess>();
-
+            services.AddScoped<IEvneImportFieldValuesLogDbAccess, EvneImportFieldValuesLogMongoDbAccess>();
+            
             services.AddScoped<IKirjaPageDbAccess, KirjaPageMongoDbAccess>();
             services.AddScoped<IKirjaPageVersionDbAccess, KirjaPageVersionMongoDbAccess>();
 

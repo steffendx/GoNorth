@@ -104,6 +104,9 @@
 
                 this.isDraggingObject = new ko.observable(false);
                 this.flexFieldFolderTreeViewDialog = new Overview.FlexFieldFolderTreeViewDialog(apiControllerName);
+
+                this.exportValueDialog = new FlexFieldDatabase.ExportForms.ValueExportDialog(apiControllerName, this.currentFolderId, this.currentFolderName, this.availableTemplates);
+                this.importValueDialog = new FlexFieldDatabase.ExportForms.ValueImportDialog(apiControllerName, this.currentFolderId, this.currentFolderName);
                 
                 this.dialogLoading = new ko.observable(false);
 
@@ -721,6 +724,21 @@
                     this.flexFieldFolderTreeViewDialog.openDialog(objectToMove.isFolder ? objectToMove.id : null).done(function(targetFolderId) {
                         self.moveObjectToCategory(objectToMove, targetFolderId);
                     });
+                },
+
+
+                /**
+                 * Opens the export value dialog
+                 */
+                openExportValueDialog: function() {
+                    this.exportValueDialog.openDialog();
+                },
+
+                /**
+                 * Opens the import value dialog
+                 */
+                openImportValueDialog: function() {
+                    this.importValueDialog.openDialog();
                 },
 
 

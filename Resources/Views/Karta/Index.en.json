@@ -9,12 +9,12 @@
     "Yes": "Yes",
     "No": "No",
     
-    "Kirja": "Kirja",
+    "Kirja": "Wiki",
     "NewKirjaPage": "<New page>",
-    "ShowKirjaMarker": "Show Kirja markers",
+    "ShowKirjaMarker": "Show wiki markers",
 
-    "Kortisto": "Kortisto",
-    "ShowKortistoMarker": "Show Kortisto markers",
+    "Kortisto": "Npcs",
+    "ShowKortistoMarker": "Show npc markers",
 
     "KortistoEditDailyRoutineTooltip": "Edit daily routine",
     "EditingDailyRoutinePrefix": "You are editing the daily routine of ",
@@ -48,13 +48,13 @@
     "ChapterAreNotSupportedForDailyRoutines": "Chapter editing for daily routines is not supported. Changes to the daily routine will affect all chapters. Instead you should use one of an action node in a dialog or quest to manipulate the daily routine of npcs.",
     "Ok": "Ok",
 
-    "Styr": "Styr",
-    "ShowStyrMarker": "Show Styr markers",
+    "Styr": "Items",
+    "ShowStyrMarker": "Show item markers",
 
-    "Aika": "Aika",
-    "ShowAikaMarker": "Show Aika markers",
+    "Aika": "Quests",
+    "ShowAikaMarker": "Show quest markers",
 
-    "ShowKartaMarker": "Show Karta markers",
+    "ShowKartaMarker": "Show map markers",
 
     "Notes": "Notes",
     "NoteMarkerNewNote": "<New note>",

@@ -11,6 +11,7 @@ It offers modules for:
  * Planning Items and their different values
  * Planning Skills and their different values
  * Exporting of Npcs, Dialogs, Items and skills
+ * Bulk exporting / importing of Npc, Item and skill values
  * Wiki component with versioning and tight integration into the other modules
  * Map component to position Quest marker, Npcs, Items, Wiki pages and map changes
  * Tracking your implementation status and showing changed values after change to already implemented object
@@ -40,6 +41,7 @@ The web application provides functionality for planning Npcs, Items and Skills w
 ![Npc planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Kortisto.PNG?raw=true)
 
 Each object will display the different maps in which the Npc or Item is marked, the Wiki Pages in which its mentioned and all other connections. This way the user has a good overview what he or she has to consider when building the character or item.  
+To help with balancing and moving data, GoNorth supports bulk exporting and importing of values and objects.  
 More details can be found in the wiki for [npcs](https://github.com/steffendx/GoNorth/wiki/Kortisto), [items](https://github.com/steffendx/GoNorth/wiki/Styr) and [skills](https://github.com/steffendx/GoNorth/wiki/Evne).
 
 ### Dialog Planning (Tale)
@@ -150,3 +152,4 @@ GoNorth uses the following libraries:
  * [mocha](https://github.com/mochajs/mocha) licensed under MIT
  * [Puppeteer](https://github.com/GoogleChrome/puppeteer) licensed under Apache License 2.0
  * [Scriban](https://github.com/lunet-io/scriban) licensed under BSD-2
+ * [CsvHelper](https://github.com/JoshClose/CsvHelper) licensed under Microsoft Public License (Ms-PL)

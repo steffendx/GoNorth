@@ -1,4 +1,7 @@
 {
     "PlaceholderDesc_Name": "Name of the snippet",
-    "PlaceholderDesc_Exists": "true if the snippet exists, else false"
+    "PlaceholderDesc_Exists": "true if the snippet exists, else false",
+    "PlaceholderDesc_AdditionalFunctions": "All functions of the snippet without the initial one.",
+    "PlaceholderDesc_AllFunctions": "All functions of the snippet",
+    "PlaceholderDesc_InitialFunction": "Initial function of the snippet."
 }

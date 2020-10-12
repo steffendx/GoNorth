@@ -62,6 +62,17 @@ namespace GoNorth.Data.FlexFieldDatabase
         }
 
         /// <summary>
+        /// Returns a list Flex Field Objects by id with full data
+        /// </summary>
+        /// <param name="id">Id</param>
+        /// <returns>Flex Field Objects</returns>
+        public async Task<List<T>> GetFlexFieldObjectsByIds(List<string> id)
+        {
+            List<T> flexFieldObjects = await _ObjectCollection.Find(n => id.Contains(n.Id)).ToListAsync();
+            return flexFieldObjects;
+        }
+
+        /// <summary>
         /// Builds a flex field object queryable for root folder objects
         /// </summary>
         /// <param name="projectId">Project Id</param>

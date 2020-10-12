@@ -25,7 +25,7 @@ describe("Styr", function () {
         testBed.assertNoErrorsOccured();
     });
 
-    it("should be able to use command buttons", async function() {
+    it("should be able to use paging buttons", async function() {
         var testBed = this.test.testBed;
         
         await testBed.navigateByUrl("/Styr");
@@ -42,6 +42,14 @@ describe("Styr", function () {
             assert.notStrictEqual(oldContent, newContent, "Content not changed after loading next overview page");
         }
 
+        testBed.assertNoErrorsOccured();
+    });
+
+    it("should be able to use command buttons", async function() {
+        var testBed = this.test.testBed;
+        
+        await testBed.navigateByUrl("/Styr");
+
         await testBed.clickElement("#gn-flexFieldOverviewCreateObjectButton");
         await testBed.checkElementVisibleOnPage("#gn-flexFieldOverviewCreateObjectDropdown");
 
@@ -49,6 +57,16 @@ describe("Styr", function () {
         await testBed.checkElementVisibleOnPage("#gn-flexFieldFolderCreateEditDialog");
         await testBed.clickElement("#gn-flexFieldFolderCreateEditDialogCancel");
         await testBed.checkElementHiddenOnPage("#gn-flexFieldFolderCreateEditDialog");
+
+        await testBed.clickElement("#gn-flexFieldValueExportButton");
+        await testBed.checkElementVisibleOnPage("#gn-flexFieldValueExportDialog");
+        await testBed.clickElement("#gn-flexFieldValueExportDialogCancelButton");
+        await testBed.checkElementHiddenOnPage("#gn-flexFieldValueExportDialog");
+        
+        await testBed.clickElement("#gn-flexFieldValueImportButton");
+        await testBed.checkElementVisibleOnPage("#gn-flexFieldValueImportDialog");
+        await testBed.clickElement("#gn-flexFieldValueImportDialogCancelButton");
+        await testBed.checkElementHiddenOnPage("#gn-flexFieldValueImportDialog");
 
         testBed.assertNoErrorsOccured();
     });

@@ -23,6 +23,13 @@ namespace GoNorth.Data.FlexFieldDatabase
         Task<T> GetFlexFieldObjectById(string id);
 
         /// <summary>
+        /// Returns a list Flex Field Objects by id with full data
+        /// </summary>
+        /// <param name="id">Id</param>
+        /// <returns>Flex Field Objects</returns>
+        Task<List<T>> GetFlexFieldObjectsByIds(List<string> id);
+
+        /// <summary>
         /// Returns the Flex Field Objects in the root folder
         /// </summary>
         /// <param name="projectId">Project Id</param>

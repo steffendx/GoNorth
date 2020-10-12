@@ -6,22 +6,22 @@
     "Tasks": "Aufgaben",
     "TaskManagement": "Aufgaben Verwaltung",
 
-    "Aika": "Aika",
+    "Aika": "Quests",
     "AikaQuestDatabase": "Quest Datenbank",
 
-    "Kortisto": "Kortisto",
+    "Kortisto": "Npcs",
     "KortistoNpcDatabase": "Npc Datenbank",
     
-    "Styr": "Styr",
+    "Styr": "Items",
     "StyrItemDatabase": "Item Datenbank",
 
-    "Evne": "Evne",
-    "EvneSkillDatabase": "Skill Datenbank",
+    "Evne": "Fähigkeiten",
+    "EvneSkillDatabase": "Fähigkeiten Datenbank",
 
-    "Kirja": "Kirja",
+    "Kirja": "Wiki",
     "KirjaWiki": "Wiki Komponente",
 
-    "Karta": "Karta",
+    "Karta": "Karten",
     "KartaMap": "Karten Komponente",
 
     "ImplementationStatus": "Implementierung",

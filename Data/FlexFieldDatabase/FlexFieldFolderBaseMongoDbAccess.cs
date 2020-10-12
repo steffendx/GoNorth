@@ -130,6 +130,19 @@ namespace GoNorth.Data.FlexFieldDatabase
         }
 
         /// <summary>
+        /// Returns all folders to build a hierarchy of folders
+        /// </summary>
+        /// <param name="projectId">Project Id</param>
+        /// <returns>Folders with simple information</returns>
+        public async Task<List<FlexFieldFolder>> GetFoldersForHierarchy(string projectId)
+        {
+            return await _FolderCollection.Find(f => f.ProjectId == projectId).Project(f => new FlexFieldFolder {
+                Id = f.Id,
+                ParentFolderId = f.ParentFolderId
+            }).ToListAsync();
+        }
+
+        /// <summary>
         /// Updates a folder 
         /// </summary>
         /// <param name="folder">Folder</param>

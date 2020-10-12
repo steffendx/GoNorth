@@ -19,6 +19,9 @@
 
     "ManageTemplates": "Templates verwalten",
 
+    "FieldValueExport": "Feldwerte exportieren",
+    "FieldValueImport": "Feldwerte importieren",
+
     "DropHereToMoveToParent": "Objekt hier ablegen um es nach oben zu bewegen",
     "SelectTargetCategory": "Kategorie auswählen",
     "RootLevel": "Oberste Ebene",

@@ -111,6 +111,8 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.KortistoNpcExportSnippetChanged, new List<string>() { RoleNames.Kortisto, RoleNames.ExportObjects }); 
             _entryRoleFilter.Add(TimelineEvent.KortistoNpcExportSnippetDeleted, new List<string>() { RoleNames.Kortisto, RoleNames.ExportObjects }); 
 
+            _entryRoleFilter.Add(TimelineEvent.KortistoValueFileImport, new List<string>() { RoleNames.Kortisto }); 
+
             // Styr
             _entryRoleFilter.Add(TimelineEvent.StyrFolderCreated, new List<string>() { RoleNames.Styr });
             _entryRoleFilter.Add(TimelineEvent.StyrFolderDeleted, new List<string>() { RoleNames.Styr });
@@ -132,6 +134,8 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.StyrItemMovedToRoot, new List<string>() { RoleNames.Styr }); 
             _entryRoleFilter.Add(TimelineEvent.StyrItemExportSnippetChanged, new List<string>() { RoleNames.Styr, RoleNames.ExportObjects }); 
             _entryRoleFilter.Add(TimelineEvent.StyrItemExportSnippetDeleted, new List<string>() { RoleNames.Styr, RoleNames.ExportObjects }); 
+
+            _entryRoleFilter.Add(TimelineEvent.StyrValueFileImport, new List<string>() { RoleNames.Styr }); 
             
             // Evne
             _entryRoleFilter.Add(TimelineEvent.EvneFolderCreated, new List<string>() { RoleNames.Evne });
@@ -154,6 +158,8 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.EvneSkillMovedToRoot, new List<string>() { RoleNames.Evne }); 
             _entryRoleFilter.Add(TimelineEvent.EvneSkillExportSnippetChanged, new List<string>() { RoleNames.Evne, RoleNames.ExportObjects }); 
             _entryRoleFilter.Add(TimelineEvent.EvneSkillExportSnippetDeleted, new List<string>() { RoleNames.Evne, RoleNames.ExportObjects }); 
+            
+            _entryRoleFilter.Add(TimelineEvent.EvneValueFileImport, new List<string>() { RoleNames.Evne }); 
             
             // Kirja
             _entryRoleFilter.Add(TimelineEvent.KirjaPageCreated, new List<string>() { RoleNames.Kirja });

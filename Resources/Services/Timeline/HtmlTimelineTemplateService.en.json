@@ -28,6 +28,8 @@
     "KortistoNpcExportSnippetChanged": "The export snippet {0} of the npc <a href='/Kortisto/Npc?id={2}'>{1}</a> was updated.",
     "KortistoNpcExportSnippetDeleted": "The export snippet {0} of the npc <a href='/Kortisto/Npc?id={2}'>{1}</a> was deleted.",
 
+    "KortistoValueFileImport": "A npc value file was imported. {0} npcs were updated and {1} new npcs were created.",
+
     "StyrFolderCreated": "A new category <a href='/Styr?folderId={1}'>{0}</a> was created in Styr.",
     "StyrFolderDeleted": "The category {0} was deleted in Styr.",
     "StyrFolderUpdated": "The category <a href='/Styr?folderId={1}'>{0}</a> was updated in Styr.",
@@ -49,6 +51,8 @@
     "StyrItemExportSnippetChanged": "The export snippet {0} of the item <a href='/Styr/Item?id={2}'>{1}</a> was updated.",
     "StyrItemExportSnippetDeleted": "The export snippet {0} of the item <a href='/Styr/Item?id={2}'>{1}</a> was deleted.",
 
+    "StyrValueFileImport": "An item value file was imported. {0} items were updated and {1} new items were created.",
+
     "EvneFolderCreated": "A new category <a href='/Evne?folderId={1}'>{0}</a> was created in Evne.",
     "EvneFolderDeleted": "The category {0} was deleted in Evne.",
     "EvneFolderUpdated": "The category <a href='/Evne?folderId={1}'>{0}</a> was updated in Evne.",
@@ -69,6 +73,8 @@
     "EvneSkillMovedToRoot": "The skill {0} was moved to <a href='/Evne'>root level</a> in Evne.",
     "EvneSkillExportSnippetChanged": "The export snippet {0} of the skill <a href='/Evne/Skill?id={2}'>{1}</a> was updated.",
     "EvneSkillExportSnippetDeleted": "The export snippet {0} of the skill <a href='/Evne/Skill?id={2}'>{1}</a> was deleted.",
+
+    "EvneValueFileImport": "A skill value file was imported. {0} skills were updated and {1} new skills were created.",
 
     "KirjaPageCreated": "A new page <a href='/Kirja?id={1}'>{0}</a> was created in Kirja.",
     "KirjaPageDeleted": "The page {0} was deleted in Kirja.",

@@ -1,0 +1,25 @@
+{
+    "ExportFieldValues": "Feldwerte  exportieren",
+    
+    "AllObjectsWillBeExported": "Alle Objekte des ausgewählten Templates werden exportiert.",
+    "OnlyObjectsUnderneathFolderPrefix": "Alle Objekte des ausgewählten Templates inner- und unterhalb des Ordners ",
+    "OnlyObjectsUnderneathFolderPostfix": " werden exportiert.",
+
+    "Template": "Template",
+
+    "Fields": "Felder",
+
+    "NoFieldsFound": "Es wurden keine Felder gefunden.",
+
+    "SingleLineField": " (Textfeld)",
+    "MultiLineField": " (Mehrzeiliges Textfeld)",
+    "NumberField": " (Zahlenfeld)",
+    "OptionField": " (Auswahlfeld)",
+
+    "YouHaveToSelectATemplate": "Du musst ein Template auswählen.",
+
+    "Export": "Exportieren",
+    "Cancel": "Abbrechen",
+    
+    "ErrorOccured": "Ein Fehler ist aufgetreten."
+}

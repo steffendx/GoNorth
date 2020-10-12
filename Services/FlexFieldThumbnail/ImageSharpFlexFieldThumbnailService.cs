@@ -81,7 +81,7 @@ namespace GoNorth.Services.FlexFieldThumbnail
             ResizeOptions fillOptions = new ResizeOptions();
             fillOptions.Mode = ResizeMode.Max;
             fillOptions.Position = AnchorPositionMode.TopLeft;
-            fillOptions.Size = new SixLabors.Primitives.Size(ThumbnailSize, ThumbnailSize);
+            fillOptions.Size = new Size(ThumbnailSize, ThumbnailSize);
 
             image.Mutate(i => i.Resize(fillOptions));
         }

@@ -7,7 +7,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 
 namespace GoNorth.Services.Karta
 {
@@ -125,7 +124,7 @@ namespace GoNorth.Services.Karta
             ResizeOptions fillOptions = new ResizeOptions();
             fillOptions.Mode = ResizeMode.BoxPad;
             fillOptions.Position = AnchorPositionMode.TopLeft;
-            fillOptions.Size = new SixLabors.Primitives.Size(targetSize, targetSize);
+            fillOptions.Size = new Size(targetSize, targetSize);
 
             image.Mutate(i => i.Resize(fillOptions));
         }

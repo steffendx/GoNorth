@@ -129,6 +129,11 @@ namespace GoNorth.Services.Timeline
         /// </summary>
         KortistoNpcExportSnippetDeleted = 109,
 
+        /// <summary>
+        /// A Kortisto value file was imported
+        /// </summary>
+        KortistoValueFileImport = 115,
+
 
         /// <summary>
         /// A new Styr Folder was created
@@ -222,6 +227,11 @@ namespace GoNorth.Services.Timeline
         /// </summary>
         StyrItemExportSnippetDeleted = 110,
 
+        /// <summary>
+        /// A Styr value file was imported
+        /// </summary>
+        StyrValueFileImport = 116,
+
 
         /// <summary>
         /// A new Evne Folder was created
@@ -314,6 +324,11 @@ namespace GoNorth.Services.Timeline
         /// An Evne Skill Export Snippet was deleted
         /// </summary>
         EvneSkillExportSnippetDeleted = 111,
+
+        /// <summary>
+        /// An evne value file was imported
+        /// </summary>
+        EvneValueFileImport = 117,
 
 
         /// <summary>

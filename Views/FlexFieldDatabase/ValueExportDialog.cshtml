@@ -1,0 +1,49 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<div class="modal fade" role="dialog" data-bind="modal: isVisible" id="gn-flexFieldValueExportDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Localizer["ExportFieldValues"]</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <span data-bind="visible: !currentFolderId()">@Localizer["AllObjectsWillBeExported"]</span>
+                    <span data-bind="visible: currentFolderId">@Localizer["OnlyObjectsUnderneathFolderPrefix"]<span data-bind="text: currentFolderName"></span>@Localizer["OnlyObjectsUnderneathFolderPostfix"]</span>
+                </p>
+                <div class="form-group">
+                    <label for="gn-selectedTemplate">@Localizer["Template"]</label>
+                    <select class="form-control" id="gn-selectedTemplate" name="selectedTemplate" data-bind="value: selectedTemplate, options: availableTemplates, optionsText: 'name'"></select>
+                </div>
+                <div>
+                    <div data-bind="visible: isLoading() || errorOccured()" style="display: none" class="gn-flexFieldOverviewExportDialogLoadingContent">
+                        <i class="glyphicon glyphicon-refresh spinning" data-bind="visible: isLoading"></i>
+                        <i class="glyphicon glyphicon-warning-sign text-danger" data-bind="visible: errorOccured" title="@Localizer["ErrorOccured"]"></i>
+                    </div>
+                    <div data-bind="visible: !isLoading() && !errorOccured()">
+                        <label for="gn-selectedTemplate">@Localizer["Fields"]</label>
+                        <div data-bind="visible: fields().length == 0">@Localizer["NoFieldsFound"]</div>
+                        <div data-bind="foreach: fields" class="gn-flexFieldOverviewExportDialogFieldList">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-bind="checked: isSelected, attr: { name: name }"/> <span data-bind="text: name"></span>
+                                    <span data-bind="visible: fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldTypeSingleLine">@Localizer["SingleLineField"]</span>
+                                    <span data-bind="visible: fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldTypeMultiLine">@Localizer["MultiLineField"]</span>
+                                    <span data-bind="visible: fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldTypeNumber">@Localizer["NumberField"]</span>
+                                    <span data-bind="visible: fieldType == GoNorth.FlexFieldDatabase.ObjectForm.FlexFieldTypeOption">@Localizer["OptionField"]</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bind="click: exportValues, disable: !selectedTemplate(), attr: { title: !selectedTemplate() ? '@Localizer["YouHaveToSelectATemplate"]' : '' }">@Localizer["Export"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: closeDialog" id="gn-flexFieldValueExportDialogCancelButton">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

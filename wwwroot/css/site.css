@@ -679,6 +679,129 @@ footer {
     white-space: nowrap;
 }
 
+.gn-flexFieldOverviewExportButton {
+    margin-left: 25px;
+}
+
+.gn-flexFieldOverviewExportDialogLoadingContent {
+    text-align: center;
+    font-size: 32px;
+    padding-top: 15px;
+}
+
+
+.gn-flexFieldOverviewExportDialogFieldList {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+@media(min-height:600px) {
+    .gn-flexFieldOverviewExportDialogFieldList {
+        max-height: 250px;
+    }
+}
+
+@media(min-height:700px) {
+    .gn-flexFieldOverviewExportDialogFieldList {
+        max-height: 350px;
+    }
+}
+
+@media(min-height:900px) {
+    .gn-flexFieldOverviewExportDialogFieldList {
+        max-height: 550px;
+    }
+}
+
+@media(min-height:1200px) {
+    .gn-flexFieldOverviewExportDialogFieldList {
+        max-height: 800px;
+    }
+}
+
+@media(min-height:1800px) {
+    .gn-flexFieldOverviewExportDialogFieldList {
+        max-height: 1400px;
+    }
+}
+
+.gn-flexFieldOverviewImportFieldValueDialog {
+    width: 90%;
+}
+
+.gn-flexFieldOverviewImportFieldValueDropzone {
+    text-align: center;
+    padding-top: 60px !important;
+}
+
+.gn-flexFieldOverviewImportFieldValueLoadingContainer {
+    text-align: center;
+    font-size: 24px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.gn-flexFieldOverviewImportFieldValueTableContainer {
+    max-height: 30vh;
+    max-width: 100%;
+    overflow: auto;
+}
+
+@media(min-height:300px) {
+    .gn-flexFieldOverviewImportFieldValueTableContainer {
+        max-height: 45vh;
+    }
+}
+
+@media(min-height:400px) {
+    .gn-flexFieldOverviewImportFieldValueTableContainer {
+        max-height: 55vh;
+    }
+}
+
+@media(min-height:600px) {
+    .gn-flexFieldOverviewImportFieldValueTableContainer {
+        max-height: 65vh;
+    }
+}
+
+@media(min-height:700px) {
+    .gn-flexFieldOverviewImportFieldValueTableContainer {
+        max-height: 70vh;
+    }
+}
+
+@media(min-height:900px) {
+    .gn-flexFieldOverviewImportFieldValueTableContainer {
+        max-height: 75vh;
+    }
+}
+
+@media(min-height:1200px) {
+    .gn-flexFieldOverviewImportFieldValueTableContainer {
+        max-height: 80vh;
+    }
+}
+
+@media(min-height:1800px) {
+    .gn-flexFieldOverviewImportFieldValueTableContainer {
+        max-height: 84vh;
+    }
+}
+
+.gn-flexFieldOverviewImportFieldValueTableNewValue {
+    background-color: #d4fcbc;
+}
+
+.gn-flexFieldOverviewImportFieldValueTableOldValue {
+    background-color: #fbb6c2;
+    text-decoration: line-through;
+}
+
+.gn-flexFieldOverviewImportFieldModeToggle {
+    float: left;
+}
+
 /** Flex Field Form **/
 .gn-flexFieldObjectFormOpenImageLink {
     position: absolute;

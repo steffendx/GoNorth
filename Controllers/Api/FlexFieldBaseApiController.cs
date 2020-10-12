@@ -19,14 +19,27 @@ using GoNorth.Services.FlexFieldThumbnail;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
 using System.Globalization;
+using System.Text;
+using GoNorth.Services.CsvHandling;
+using System.Text.Json;
 
 namespace GoNorth.Controllers.Api
 {
     /// <summary>
     /// Flex Field Base Api Controller Api controller
     /// </summary>
-    public abstract class FlexFieldBaseApiController<T> : ControllerBase where T:FlexFieldObject
+    public abstract class FlexFieldBaseApiController<T> : ControllerBase where T:FlexFieldObject,ICloneable
     {
+        /// <summary>
+        /// Number Flex Field Type
+        /// </summary>
+        public const int FlexFieldType_Number = 2;
+
+        /// <summary>
+        /// Option Flex Field Type
+        /// </summary>
+        public const int FlexFieldType_Option = 3;
+
         /// <summary>
         /// Folder Request data
         /// </summary>
@@ -90,6 +103,81 @@ namespace GoNorth.Controllers.Api
             /// </summary>
             public IList<T> FlexFieldObjects { get; set; }
         }
+
+
+        /// <summary>
+        /// Request to export field values
+        /// </summary>
+        public class ExportFieldValuesRequest
+        {
+            /// <summary>
+            /// Selected template
+            /// </summary>
+            public string SelectedTemplate { get; set; }
+
+            /// <summary>
+            /// Selected fields
+            /// </summary>
+            public List<string> SelectedFields { get; set; }
+
+            /// <summary>
+            /// Id of the folder
+            /// </summary>
+            public string FolderId { get; set; }
+        }
+
+
+        /// <summary>
+        /// Query result for querying field values
+        /// </summary>
+        public class ImportFieldValuesLogQueryResult
+        {
+            /// <summary>
+            /// true if there are more objects to query, else false
+            /// </summary>
+            public bool HasMore { get; set; }
+
+            /// <summary>
+            /// Logs
+            /// </summary>
+            public List<FlexFieldImportFieldValuesResultLog> Logs { get; set; }
+        }
+
+        
+        /// <summary>
+        /// Csv Content Type
+        /// </summary>
+        private const string CsvContentType = "text/csv";
+
+        /// <summary>
+        /// Excel Csv Content Type
+        /// </summary>
+        private const string ExcelCsvContentType = "application/vnd.ms-excel";
+
+        /// <summary>
+        /// CSV Header Id
+        /// </summary>
+        private const string CsvHeaderId = "Id";
+        
+        /// <summary>
+        /// CSV Header Id
+        /// </summary>
+        private const string CsvHeaderName = "Name";
+
+        /// <summary>
+        /// CSV Header Result
+        /// </summary>
+        private const string CsvHeaderResult = "Result";
+
+        /// <summary>
+        /// CSV Header Error Message
+        /// </summary>
+        private const string CsvHeaderErrorMessage = "Error Message";
+
+        /// <summary>
+        /// Prefix for CSV Header Template Id
+        /// </summary>
+        private const string CsvHeaderTemplateIdPrefix = "TemplateId:";
 
 
         /// <summary>
@@ -172,7 +260,13 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Event used for the object moved to root level event
         /// </summary>
-        protected abstract TimelineEvent ObjectMovedToRootEvent { get; }     
+        protected abstract TimelineEvent ObjectMovedToRootEvent { get; }
+
+
+        /// <summary>
+        /// Event used for the value file import event
+        /// </summary>
+        protected abstract TimelineEvent ValueFileImportEvent { get; }
 
 
         /// <summary>
@@ -204,6 +298,11 @@ namespace GoNorth.Controllers.Api
         /// Export Template Db Access
         /// </summary>
         private readonly IExportTemplateDbAccess _exportTemplateDbAccess;
+
+        /// <summary>
+        /// Import field values log Db Access
+        /// </summary>
+        private readonly IFlexFieldImportFieldValuesLogDbAccess _importFieldValuesLogDbAccess;
 
         /// <summary>
         /// Language Key Db Access
@@ -246,6 +345,16 @@ namespace GoNorth.Controllers.Api
         protected readonly ITimelineService _timelineService;
 
         /// <summary>
+        /// CSV Generator
+        /// </summary>
+        protected readonly ICsvGenerator _csvGenerator;
+
+        /// <summary>
+        /// CSV Parser
+        /// </summary>
+        protected readonly ICsvParser _csvParser;
+
+        /// <summary>
         /// User Manager
         /// </summary>
         protected readonly UserManager<GoNorthUser> _userManager;
@@ -274,12 +383,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
+        /// <param name="importFieldValuesLogDbAccess">Import field values log Db Access</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="imageAccess">Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
+        /// <param name="csvGenerator">CSV Generator</param>
+        /// <param name="csvParser">CSV Parser</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation Status Comparer</param>
         /// <param name="timelineService">Timeline Service</param>
@@ -287,9 +399,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public FlexFieldBaseApiController(IFlexFieldFolderDbAccess folderDbAccess, IFlexFieldObjectDbAccess<T> templateDbAccess, IFlexFieldObjectDbAccess<T> objectDbAccess, IProjectDbAccess projectDbAccess, IFlexFieldObjectTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
-                                          ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, 
-                                          IFlexFieldObjectImageAccess imageAccess, IFlexFieldThumbnailService thumbnailService, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, 
-                                          IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, IStringLocalizerFactory localizerFactory)
+                                          IFlexFieldImportFieldValuesLogDbAccess importFieldValuesLogDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
+                                          IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IFlexFieldObjectImageAccess imageAccess, IFlexFieldThumbnailService thumbnailService, ICsvGenerator csvGenerator, ICsvParser csvParser, UserManager<GoNorthUser> userManager, 
+                                          IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, IStringLocalizerFactory localizerFactory)
         {
             _folderDbAccess = folderDbAccess;
             _templateDbAccess = templateDbAccess;
@@ -297,12 +409,15 @@ namespace GoNorth.Controllers.Api
             _projectDbAccess = projectDbAccess;
             _tagDbAccess = tagDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
+            _importFieldValuesLogDbAccess = importFieldValuesLogDbAccess;
             _languageKeyDbAccess = languageKeyDbAccess;
             _exportFunctionIdDbAccess = exportFunctionIdDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _objectExportSnippetSnapshotDbAccess = objectExportSnippetSnapshotDbAccess;
             _imageAccess = imageAccess;
             _thumbnailService = thumbnailService;
+            _csvGenerator = csvGenerator;
+            _csvParser = csvParser;
             _userManager = userManager;
             _implementationStatusComparer = implementationStatusComparer;
             _timelineService = timelineService;
@@ -1402,5 +1517,709 @@ namespace GoNorth.Controllers.Api
             }
         }
 
+        /// <summary>
+        /// Exports a list of field values for a list of templates
+        /// </summary>
+        /// <param name="exportRequest">Export request</param>
+        /// <returns>File with field values</returns>
+        [ValidateAntiForgeryToken]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        [HttpPost]
+        public async Task<IActionResult> ExportFieldValues([FromForm]ExportFieldValuesRequest exportRequest)
+        {
+            if(exportRequest.SelectedFields == null)
+            {
+                exportRequest.SelectedFields = new List<string>();
+            }
+
+            T template = await _templateDbAccess.GetFlexFieldObjectById(exportRequest.SelectedTemplate);
+            if (template == null)
+            {
+                return NotFound();
+            }
+
+            List<T> objects = await _objectDbAccess.GetFlexFieldObjectsByTemplate(exportRequest.SelectedTemplate);
+            if(!string.IsNullOrEmpty(exportRequest.FolderId))
+            {
+                GoNorthProject curProject = await _projectDbAccess.GetDefaultProject();
+                List<FlexFieldFolder> folders = await _folderDbAccess.GetFoldersForHierarchy(curProject.Id);
+                objects = FilterObjectsByFolder(objects, folders, exportRequest.FolderId);
+            }
+
+            List<Dictionary<string, string>> rowValues = objects.Select(o => GetFieldValuesForObject(exportRequest.SelectedFields, o)).ToList();
+
+            List<string> headerValues = new List<string> { CsvHeaderId, CsvHeaderName };
+            headerValues.AddRange(exportRequest.SelectedFields);
+            headerValues.Add(CsvHeaderTemplateIdPrefix + template.Id);
+
+            string csvValues = await _csvGenerator.GenerateCsvFile(headerValues, rowValues);
+
+            return File(Encoding.UTF8.GetBytes(csvValues), CsvContentType, template.Name + "_FieldValues.csv");
+        }
+
+        /// <summary>
+        /// Filters an object by folder hierarchy
+        /// </summary>
+        /// <param name="objects">Objects to filter</param>
+        /// <param name="folders">Folder</param>
+        /// <param name="folderId">Id of the folder from which to filter</param>
+        /// <returns>List of objects</returns>
+        private List<T> FilterObjectsByFolder(List<T> objects, List<FlexFieldFolder> folders, string folderId)
+        {
+            List<FlexFieldFolder> filteredFolders = folders.Where(f => IsFolderChildOfFolder(folderId, f, folders)).ToList();
+            return objects.Where(o => filteredFolders.Any(f => f.Id == o.ParentFolderId)).ToList();
+        }
+
+        /// <summary>
+        /// Checks if a folder is a child of a folder
+        /// </summary>
+        /// <param name="folderId">Id of the folder to check</param>
+        /// <param name="folder">Folder</param>
+        /// <param name="folders">Folders</param>
+        /// <returns>true if the folder is a child</returns>
+        private bool IsFolderChildOfFolder(string folderId, FlexFieldFolder folder, List<FlexFieldFolder> folders)
+        {
+            if(folder.Id == folderId)
+            {
+                return true;
+            }
+
+            FlexFieldFolder parent = folder;
+            do
+            {
+                parent = folders.FirstOrDefault(f => f.Id == parent.ParentFolderId);
+                if(parent == null)
+                {
+                    break;
+                }
+
+                if(parent.Id == folderId)
+                {
+                    return true;
+                }
+            }
+            while(parent != null);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the field values for an object
+        /// </summary>
+        /// <param name="selectedFields">Selected fields for exporting</param>
+        /// <param name="obj">Object to export</param>
+        /// <returns>Field values for the object</returns>
+        private Dictionary<string, string> GetFieldValuesForObject(List<string> selectedFields, T obj)
+        {
+            Dictionary<string, string> fieldValues = new Dictionary<string, string>();
+            fieldValues.Add(CsvHeaderId, obj.Id);
+            fieldValues.Add(CsvHeaderName, obj.Name);
+
+            List<FlexField> fieldsToExport = obj.Fields.Where(f => selectedFields.Contains(f.Name) && f.Name != CsvHeaderId && f.Name != CsvHeaderName).ToList();
+            foreach(FlexField curField in fieldsToExport)
+            {
+                if(!fieldValues.ContainsKey(curField.Name))
+                {
+                    fieldValues.Add(curField.Name, curField.Value);
+                }
+            }
+
+            return fieldValues;
+        }
+
+        /// <summary>
+        /// Runs a field value import pre check
+        /// </summary>
+        /// <returns>Prcheck Result</returns>
+        [ValidateAntiForgeryToken]
+        [ProducesResponseType(typeof(FlexFieldImportValuePreCheckResult), StatusCodes.Status200OK)]
+        [HttpPost]
+        public async Task<IActionResult> ImportFieldValuesPreCheck()
+        {
+            if (!Request.Form.Files.Any())
+            {
+                return BadRequest();
+            }
+
+            IFormFile uploadFile = Request.Form.Files[0];
+            if (uploadFile.ContentType != CsvContentType && uploadFile.ContentType != ExcelCsvContentType)
+            {
+                return BadRequest();
+            }
+
+            CsvReadResult csvReadResult;
+            using (Stream csvStream = uploadFile.OpenReadStream())
+            {
+                csvReadResult = await _csvParser.ReadCsvFile(csvStream);
+            }
+
+            if (csvReadResult == null)
+            {
+                return BadRequest();
+            }
+
+            if(!csvReadResult.Columns.Any())
+            {
+                return BadRequest(_localizer["ImportFieldValuesNoValidRows"]);
+            }
+
+            List<T> objectsToUpdate = await LoadObjectsFromCsv(csvReadResult);
+            FlexFieldImportValuePreCheckResult preCheckResult = await BuildCsvPreCheckResult(uploadFile.FileName, csvReadResult, objectsToUpdate);
+            if(preCheckResult == null)
+            {
+                return BadRequest(_localizer["ImportFieldValuesNoValidTemplateSpecified"]);
+            }
+            return Ok(preCheckResult);
+        }
+
+        /// <summary>
+        /// Loads the objects which need to be updated for a CSV
+        /// </summary>
+        /// <param name="csvReadResult">CSV Read result</param>
+        /// <returns>Loaded objects</returns>
+        private async Task<List<T>> LoadObjectsFromCsv(CsvReadResult csvReadResult)
+        {
+            List<string> ids = new List<string>();
+            foreach (Dictionary<string, string> curRow in csvReadResult.Rows)
+            {
+                if (curRow.ContainsKey(CsvHeaderId))
+                {
+                    ids.Add(curRow[CsvHeaderId]);
+                }
+            }
+            List<T> objectsToUpdate = await _objectDbAccess.GetFlexFieldObjectsByIds(ids);
+            return objectsToUpdate;
+        }
+        
+        /// <summary>
+        /// Builds the CSV PreCheck result
+        /// </summary>
+        /// <param name="filename">Filename</param>
+        /// <param name="csvReadResult">CSV Read Result</param>
+        /// <param name="objectsToUpdate">Loaded objects</param>
+        /// <returns>Pre Check result</returns>
+        private async Task<FlexFieldImportValuePreCheckResult> BuildCsvPreCheckResult(string filename, CsvReadResult csvReadResult, List<T> objectsToUpdate)
+        {
+            FlexFieldImportValuePreCheckResult preCheckResult = new FlexFieldImportValuePreCheckResult();
+            preCheckResult.Filename = filename;
+
+            preCheckResult.Columns = csvReadResult.Columns.Where(c => c != CsvHeaderId && !c.StartsWith(CsvHeaderTemplateIdPrefix)).ToList();
+
+            string headerTemplateValue = csvReadResult.Columns.FirstOrDefault(c => c.StartsWith(CsvHeaderTemplateIdPrefix));
+            if(string.IsNullOrEmpty(headerTemplateValue))
+            {
+                return null;
+            }
+            
+            string templateId = headerTemplateValue.Replace(CsvHeaderTemplateIdPrefix, string.Empty);
+            T template = await _templateDbAccess.GetFlexFieldObjectById(templateId);
+            if(template == null)
+            {
+                return null;
+            }
+
+            preCheckResult.TemplateId = template.Id;
+
+            foreach(Dictionary<string, string> curRow in csvReadResult.Rows)
+            {
+                string id = string.Empty;
+                if(curRow.ContainsKey(CsvHeaderId))
+                {
+                    id = curRow[CsvHeaderId];
+                }
+
+                FlexFieldImportValuePreCheckRow preCheckRow = new FlexFieldImportValuePreCheckRow();
+                preCheckRow.Id = id;
+
+                T existingObject = objectsToUpdate.FirstOrDefault(o => o.Id == id);
+                foreach(string curCol in csvReadResult.Columns)
+                {
+                    if(curCol == CsvHeaderId || curCol.StartsWith(CsvHeaderTemplateIdPrefix))
+                    {
+                        continue;
+                    }
+
+                    FlexFieldImportValuePreCheckCell preCheckCell = new FlexFieldImportValuePreCheckCell();
+                    preCheckCell.Name = curCol;
+                    preCheckCell.NewValue = string.Empty;
+                    if(curRow.ContainsKey(curCol))
+                    {
+                        preCheckCell.NewValue = curRow[curCol];    
+                    }
+
+                    preCheckCell.OldValue = string.Empty;
+                    if(curCol == CsvHeaderName && existingObject != null)
+                    {
+                        preCheckCell.OldValue = existingObject.Name;
+                    }
+                    else if(existingObject != null && existingObject.Fields != null)
+                    {
+                        FlexField field = existingObject.Fields.FirstOrDefault(f => f.Name == curCol);
+                        if(field != null)
+                        {
+                            preCheckCell.OldValue = field.Value;
+                        }
+                    }
+                    preCheckRow.ColumnValues.Add(preCheckCell);
+                }
+
+                if(existingObject != null)
+                {
+                    preCheckResult.ExistingRows.Add(preCheckRow);
+                }
+                else
+                {
+                    preCheckResult.NewRows.Add(preCheckRow);
+                }
+            }
+
+            return preCheckResult;
+        }
+        
+        /// <summary>
+        /// Runs a field value import
+        /// </summary>
+        /// <param name="importRows">Rows to import</param>
+        /// <returns>Import Result</returns>
+        [ValidateAntiForgeryToken]
+        [ProducesResponseType(typeof(FlexFieldImportFieldValuesResultLog), StatusCodes.Status200OK)]
+        [HttpPost]
+        public async Task<IActionResult> ImportFieldValues([FromBody]FlexFieldImportValueImportRequest importRows)
+        {
+            if(string.IsNullOrEmpty(importRows.TemplateId))
+            {
+                return BadRequest();
+            }
+
+            if(string.IsNullOrEmpty(importRows.TargetFolderId))
+            {
+                importRows.TargetFolderId = string.Empty;
+            }
+
+            T template = await _templateDbAccess.GetFlexFieldObjectById(importRows.TemplateId);
+            if(template == null)
+            {
+                return BadRequest();
+            }
+
+            GoNorthProject curProject = await _projectDbAccess.GetDefaultProject();
+
+            FlexFieldImportFieldValuesResultLog importResult = new FlexFieldImportFieldValuesResultLog();
+            importResult.FileName = importRows.Filename;
+            importResult.ProjectId = curProject.Id;
+            importResult.Columns = importRows.Columns;
+
+            List<string> existingIds = importRows.ExistingRows.Select(e => e.Id).ToList();
+            List<T> existingObjectsToUpdate = await _objectDbAccess.GetFlexFieldObjectsByIds(existingIds);
+
+            await ImportFieldValuesExistingRows(template, importRows.ExistingRows, importResult, existingObjectsToUpdate);
+            await ImportFieldValuesNewRows(template, importRows.TargetFolderId, importRows.NewRows, importResult);
+
+            if(importResult.ExistingRows.Any(e => e.Result == FlexFieldImportValueRowResult.Success) || importResult.NewRows.Any(e => e.Result == FlexFieldImportValueRowResult.Success))
+            {
+                await _timelineService.AddTimelineEntry(ValueFileImportEvent, importResult.ExistingRows.Where(e => e.Result == FlexFieldImportValueRowResult.Success).Count().ToString(), 
+                                                        importResult.NewRows.Where(e => e.Result == FlexFieldImportValueRowResult.Success).Count().ToString());
+            }
+
+            await this.SetModifiedData(_userManager, importResult);
+
+            importResult = await _importFieldValuesLogDbAccess.CreateImportLog(importResult);
+
+            return Ok(importResult);
+        }
+
+        /// <summary>
+        /// Imports the field values for existing rows
+        /// </summary>
+        /// <param name="template">Template to which the rows belong</param>
+        /// <param name="existingRows">Existing rows that are being imported</param>
+        /// <param name="importResult">Import result to populate</param>
+        /// <param name="existingObjectsToUpdate">Already existing objects</param>
+        /// <returns>Task</returns>
+        private async Task ImportFieldValuesExistingRows(T template, List<FlexFieldImportValuePreCheckRow> existingRows, FlexFieldImportFieldValuesResultLog importResult, List<T> existingObjectsToUpdate)
+        {
+            foreach (FlexFieldImportValuePreCheckRow curExistingRow in existingRows)
+            {
+                FlexFieldImportValueRow importRow = new FlexFieldImportValueRow();
+                importRow.Id = curExistingRow.Id;
+                importRow.ColumnValues = curExistingRow.ColumnValues;
+
+                T existingObject = existingObjectsToUpdate.FirstOrDefault(e => e.Id == curExistingRow.Id);
+                if (existingObject == null)
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.Failed;
+                    importRow.ErrorMessage = _localizer["ImportFieldValuesObjectNotFound"];
+                    importResult.ExistingRows.Add(importRow);
+                    continue;
+                }
+
+                string invalidField = string.Empty;
+                bool unknownFieldForTemplate = false;
+                bool fieldValueInvalid = false;
+                bool anyChange = false;
+                foreach (FlexFieldImportValuePreCheckCell curColumn in curExistingRow.ColumnValues)
+                {
+                    if(curColumn.Name.StartsWith(CsvHeaderTemplateIdPrefix))
+                    {
+                        continue;
+                    }
+
+                    if (curColumn.Name == CsvHeaderName)
+                    {
+                        if (existingObject.Name != curColumn.NewValue)
+                        {
+                            existingObject.Name = curColumn.NewValue;
+                            anyChange = true;
+                        }
+                    }
+                    else
+                    {
+                        bool isNewField = false;
+                        string columnName = curColumn.Name.ToLowerInvariant();
+                        FlexField updatedField = existingObject.Fields.FirstOrDefault(f => f.Name.ToLowerInvariant() == columnName);
+                        if (updatedField == null)
+                        {
+                            isNewField = true;
+                            updatedField = GetFlexFieldFromTemplate(template, columnName);
+                            if(updatedField == null)
+                            {
+                                invalidField = curColumn.Name;
+                                unknownFieldForTemplate = true;
+                                continue;
+                            }
+                        }
+
+                        if (updatedField.Value == curColumn.NewValue && (!isNewField || string.IsNullOrEmpty(curColumn.NewValue)))
+                        {
+                            continue;
+                        }
+
+                        if (!ValidateFieldValue(updatedField, curColumn.NewValue))
+                        {
+                            invalidField = curColumn.Name;
+                            fieldValueInvalid = true;
+                            break;
+                        }
+
+                        updatedField.Value = curColumn.NewValue;
+                        if(isNewField)
+                        {
+                            existingObject.Fields.Add(updatedField);
+                        }
+                        anyChange = true;
+                    }
+                }
+
+                if(string.IsNullOrEmpty(existingObject.Name))
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.Failed;
+                    importRow.ErrorMessage = _localizer["ImportFieldValuesNameIsEmpty"];
+                    importResult.ExistingRows.Add(importRow);
+                    continue;
+                }
+
+                if (fieldValueInvalid || unknownFieldForTemplate)
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.Failed;
+                    importRow.ErrorMessage = _localizer[unknownFieldForTemplate ? "ImportFieldValuesValueNotValid" : "ImportFieldValuesValueNotValid", invalidField];
+                    importResult.ExistingRows.Add(importRow);
+                    continue;
+                }
+
+                if (!anyChange)
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.NoChange;
+                    importResult.ExistingRows.Add(importRow);
+                    continue;
+                }
+
+                try
+                {
+                    await SetNotImplementedFlagOnChange(existingObject);
+
+                    existingObject = await RunAdditionalUpdates(existingObject, existingObject);
+
+                    await this.SetModifiedData(_userManager, existingObject);
+
+                    await _objectDbAccess.UpdateFlexFieldObject(existingObject);
+                    importRow.Result = FlexFieldImportValueRowResult.Success;
+                }
+                catch (Exception ex)
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.Failed;
+                    importRow.ErrorMessage = _localizer["ImportFieldValuesObjectCouldNotBeUpdated"];
+                    _logger.LogError(ex, string.Format("Could not import object {0}", existingObject.Id));
+                }
+
+                importResult.ExistingRows.Add(importRow);
+            }
+        }
+
+        /// <summary>
+        /// Returns a flex field from a template
+        /// </summary>
+        /// <param name="template">Template</param>
+        /// <param name="name">Name of the field</param>
+        /// <returns>Flex Field</returns>
+        private FlexField GetFlexFieldFromTemplate(T template, string name)
+        {
+            FlexField templateField = template.Fields.FirstOrDefault(f => f.Name.ToLowerInvariant() == name);
+            if(templateField == null)
+            {
+                return null;
+            }
+
+            templateField = (FlexField)templateField.Clone();
+            templateField.Id = Guid.NewGuid().ToString();
+            templateField.CreatedFromTemplate = true;
+            return templateField;
+        }
+
+        /// <summary>
+        /// Imports the new rows for a field value
+        /// </summary>
+        /// <param name="template">Template to use</param>
+        /// <param name="targetFolderId">Target folder id</param>
+        /// <param name="newRows">New Rows to import</param>
+        /// <param name="importResult">Import result to fill</param>
+        /// <returns>Task</returns>
+        private async Task ImportFieldValuesNewRows(T template, string targetFolderId, List<FlexFieldImportValuePreCheckRow> newRows, FlexFieldImportFieldValuesResultLog importResult)
+        {
+            if(!newRows.Any())
+            {
+                return;
+            }
+
+            foreach (FlexFieldImportValuePreCheckRow curNewRow in newRows)
+            {
+                T newObject = (T)template.Clone();
+                newObject.TemplateId = template.Id;
+                newObject.ParentFolderId = targetFolderId;
+
+                string invalidField = string.Empty;
+                bool unknownFieldForTemplate = false;
+                bool fieldValueInvalid = false;
+
+                FlexFieldImportValueRow importRow = new FlexFieldImportValueRow();
+                importRow.ColumnValues = curNewRow.ColumnValues;
+
+                foreach (FlexFieldImportValuePreCheckCell curColumn in curNewRow.ColumnValues)
+                {
+                    if(curColumn.Name.StartsWith(CsvHeaderTemplateIdPrefix))
+                    {
+                        continue;
+                    }
+
+                    if (curColumn.Name == CsvHeaderName)
+                    {
+                        newObject.Name = curColumn.NewValue;
+                    }
+                    else
+                    {
+                        string columnName = curColumn.Name.ToLowerInvariant();
+                        FlexField updatedField = newObject.Fields.FirstOrDefault(f => f.Name.ToLowerInvariant() == columnName);
+                        if (updatedField == null)
+                        {
+                            invalidField = curColumn.Name;
+                            unknownFieldForTemplate = true;
+                            continue;
+                        }
+
+                        if (!ValidateFieldValue(updatedField, curColumn.NewValue))
+                        {
+                            invalidField = curColumn.Name;
+                            fieldValueInvalid = true;
+                            break;
+                        }
+
+                        updatedField.Value = curColumn.NewValue;
+                    }
+                }
+
+                if(string.IsNullOrEmpty(newObject.Name))
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.Failed;
+                    importRow.ErrorMessage = _localizer["ImportFieldValuesNameIsEmpty"];
+                    importResult.NewRows.Add(importRow);
+                    continue;
+                }
+
+                if (fieldValueInvalid || unknownFieldForTemplate)
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.Failed;
+                    importRow.ErrorMessage = _localizer[unknownFieldForTemplate ? "ImportFieldValuesValueNotValid" : "ImportFieldValuesValueNotValid", invalidField];
+                    importResult.NewRows.Add(importRow);
+                    continue;
+                }
+
+                try
+                {
+                    newObject.IsImplemented = false;
+
+                    newObject = await RunAdditionalUpdates(newObject, newObject);
+
+                    await this.SetModifiedData(_userManager, newObject);
+
+                    newObject = await _objectDbAccess.CreateFlexFieldObject(newObject);
+                    importRow.Result = FlexFieldImportValueRowResult.Success;
+                    importRow.Id = newObject.Id;
+                }
+                catch (Exception ex)
+                {
+                    importRow.Result = FlexFieldImportValueRowResult.Failed;
+                    importRow.ErrorMessage = _localizer["ImportFieldValuesObjectCouldNotBeCreated"];
+                    _logger.LogError(ex, string.Format("Could not import new object {0}", newObject.Name));
+                }
+
+                importResult.NewRows.Add(importRow);
+            }
+        }
+
+        /// <summary>
+        /// Validates a field value
+        /// </summary>
+        /// <param name="field">Target field</param>
+        /// <param name="newValue">New value</param>
+        /// <returns>True if the field is valid, else false</returns>
+        private bool ValidateFieldValue(FlexField field, string newValue)
+        {
+            if(field.FieldType == FlexFieldType_Number)
+            {
+                float tempVal;
+                return float.TryParse(newValue, out tempVal);
+            }
+            else if(field.FieldType == FlexFieldType_Option)
+            {
+                try
+                {
+                    List<string> allowedOptions = JsonSerializer.Deserialize<List<string>>(field.AdditionalConfiguration);
+                    return allowedOptions.Any(a => a == newValue);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, string.Format("Could not parse options for field {0}", field.Name));
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        
+        /// <summary>
+        /// Exports the result of an import for field values
+        /// </summary>
+        /// <param name="id">Id of the log</param>
+        /// <returns>Export file</returns>
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> ExportFieldValueImportResult(string id)
+        {
+            FlexFieldImportFieldValuesResultLog importLog = await _importFieldValuesLogDbAccess.GetImportLogById(id);
+            if(importLog == null)
+            {
+                return NotFound();
+            }
+
+            List<string> columns = new List<string> { CsvHeaderId, CsvHeaderResult, CsvHeaderErrorMessage };
+            columns.AddRange(importLog.Columns);
+
+            List<Dictionary<string, string>> rowValues = importLog.ExistingRows.Select(o => columns.ToDictionary(c => c, c => GetExportFieldValueLogValue(c, o, false))).ToList();
+            rowValues.AddRange(importLog.NewRows.Select(o => columns.ToDictionary(c => c, c => GetExportFieldValueLogValue(c, o, true))).ToList());
+
+            string csvValues = await _csvGenerator.GenerateCsvFile(columns, rowValues);
+
+            return File(Encoding.UTF8.GetBytes(csvValues), CsvContentType, Path.GetFileNameWithoutExtension(importLog.FileName) + "_Result.csv");
+        }
+
+        /// <summary>
+        /// Returns the column value for a log result
+        /// </summary>
+        /// <param name="column">Column</param>
+        /// <param name="valueRow">Value row</param>
+        /// <param name="isNewRow">True if the row is a new row</param>
+        /// <returns>Value</returns>
+        private string GetExportFieldValueLogValue(string column, FlexFieldImportValueRow valueRow, bool isNewRow)
+        {
+            if(column == CsvHeaderId)
+            {
+                if(isNewRow) 
+                {
+                    return !string.IsNullOrEmpty(valueRow.Id) ? string.Format("NEW: {0}", valueRow.Id) : "<NEW>";
+                }
+                else
+                {
+                    return valueRow.Id;
+                }
+            }
+            else if(column == CsvHeaderResult)
+            {
+                return valueRow.Result.ToString();
+            }
+            else if(column == CsvHeaderErrorMessage)
+            {
+                return valueRow.ErrorMessage;
+            }
+
+            if(valueRow.ColumnValues == null)
+            {
+                return string.Empty;
+            }
+
+            FlexFieldImportValuePreCheckCell value = valueRow.ColumnValues.FirstOrDefault(c => c.Name == column);
+            if(value == null)
+            {
+                return string.Empty;
+            }
+
+            if(value.NewValue == value.OldValue)
+            {
+                return value.NewValue;
+            }
+
+            if(isNewRow)
+            {
+                return value.NewValue;
+            }
+
+            return string.Format("{0} -> {1}", !string.IsNullOrEmpty(value.OldValue) ? value.OldValue : "<BLANK>", !string.IsNullOrEmpty(value.NewValue) ? value.NewValue : "<BLANK>");
+        }
+
+        /// <summary>
+        /// Returns a list of import logs
+        /// </summary>
+        /// <param name="start">Start of the page</param>
+        /// <param name="pageSize">Size of the page</param>
+        /// <returns>List of import logs without details</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<ActionResult<ImportFieldValuesLogQueryResult>> GetFlexFieldValueImportLogs(int start, int pageSize)
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            Task<List<FlexFieldImportFieldValuesResultLog>> queryTask;
+            Task<int> countTask;
+            queryTask = _importFieldValuesLogDbAccess.GetImportLogsByProject(project.Id, start, pageSize);
+            countTask = _importFieldValuesLogDbAccess.GetImportLogsByProjectCount(project.Id);
+            Task.WaitAll(queryTask, countTask);
+
+            ImportFieldValuesLogQueryResult queryResult = new ImportFieldValuesLogQueryResult();
+            queryResult.Logs = queryTask.Result;
+            queryResult.HasMore = start + queryResult.Logs.Count < countTask.Result;
+            return Ok(queryResult);
+        }
+        
+
+        /// <summary>
+        /// Returns a flex field value import log
+        /// </summary>
+        /// <param name="id">Id of the log</param>
+        /// <returns>Import log</returns>
+        [ProducesResponseType(typeof(FlexFieldImportFieldValuesResultLog), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<ActionResult<ImportFieldValuesLogQueryResult>> GetFlexFieldValueImportLog(string id)
+        {
+            FlexFieldImportFieldValuesResultLog importLog = await _importFieldValuesLogDbAccess.GetImportLogById(id);
+            return Ok(importLog);
+        }
     }
 }

@@ -22,6 +22,7 @@ using GoNorth.Data.Exporting;
 using GoNorth.Services.Security;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
+using GoNorth.Services.CsvHandling;
 
 namespace GoNorth.Controllers.Api
 {
@@ -117,6 +118,12 @@ namespace GoNorth.Controllers.Api
 
 
         /// <summary>
+        /// Event used for the value file import event
+        /// </summary>
+        protected override TimelineEvent ValueFileImportEvent { get { return TimelineEvent.StyrValueFileImport; } }
+
+
+        /// <summary>
         /// Aika Quest DB Access
         /// </summary>
         private readonly IAikaQuestDbAccess _aikaQuestDbAccess;
@@ -150,6 +157,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
+        /// <param name="importFieldValuesLogDbAccess">Import field values log Db Access</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
@@ -161,18 +169,20 @@ namespace GoNorth.Controllers.Api
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
         /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
+        /// <param name="csvGenerator">CSV Generator</param>
+        /// <param name="csvReader">CSV Reader</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation Status Comparer</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public StyrApiController(IStyrFolderDbAccess folderDbAccess, IStyrItemTemplateDbAccess templateDbAccess, IStyrItemDbAccess itemDbAccess, IProjectDbAccess projectDbAccess, IStyrItemTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
+        public StyrApiController(IStyrFolderDbAccess folderDbAccess, IStyrItemTemplateDbAccess templateDbAccess, IStyrItemDbAccess itemDbAccess, IProjectDbAccess projectDbAccess, IStyrItemTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IStyrImportFieldValuesLogDbAccess importFieldValuesLogDbAccess, 
                                  ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IStyrItemImageAccess imageAccess, 
-                                 IStyrThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, UserManager<GoNorthUser> userManager, 
-                                 IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<StyrApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                  : base(folderDbAccess, templateDbAccess, itemDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, imageAccess, thumbnailService, userManager, 
-                                         implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
+                                 IStyrThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, ICsvGenerator csvGenerator, 
+                                 ICsvParser csvReader, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<StyrApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                  : base(folderDbAccess, templateDbAccess, itemDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, imageAccess, thumbnailService, csvGenerator,
+                                         csvReader, userManager, implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;
             _taleDbAccess = taleDbAccess;

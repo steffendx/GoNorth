@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
@@ -245,6 +246,11 @@ namespace GoNorth.Controllers.Api
         private readonly IEvneSkillImplementationSnapshotDbAccess _skillImplementationSnapshotDbAccess;
 
         /// <summary>
+        /// Skill import field values log Db access
+        /// </summary>
+        private readonly IEvneImportFieldValuesLogDbAccess _skillImportFieldValuesLogDbAccess;
+
+        /// <summary>
         /// Npc Db Access
         /// </summary>
         private readonly IKortistoNpcDbAccess _npcDbAccess;
@@ -260,6 +266,11 @@ namespace GoNorth.Controllers.Api
         private readonly IKortistoNpcImplementationSnapshotDbAccess _npcImplementationSnapshotDbAccess;
 
         /// <summary>
+        /// Npc import field values log Db access
+        /// </summary>
+        private readonly IKortistoImportFieldValuesLogDbAccess _npcImportFieldValuesLogDbAccess;
+
+        /// <summary>
         /// Item Db Access
         /// </summary>
         private readonly IStyrItemDbAccess _itemDbAccess;
@@ -273,6 +284,11 @@ namespace GoNorth.Controllers.Api
         /// Item Implementation Snapshot Db Access
         /// </summary>
         private readonly IStyrItemImplementationSnapshotDbAccess _itemImplementationSnapshotDbAccess;
+
+        /// <summary>
+        /// Item import field values log Db access
+        /// </summary>
+        private readonly IStyrImportFieldValuesLogDbAccess _itemImportFieldValuesLogDbAccess;
 
         /// <summary>
         /// Export Template Db Access
@@ -379,12 +395,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="skillTemplateDbAccess">Skill Template Db Access</param>
         /// <param name="skillImplementationSnapshotDbAccess">Skill Implementation Snapshot Db Access</param>
+        /// <param name="skillImportFieldValuesLogDbAccess">Skill import field values log Db access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
         /// <param name="npcImplementationSnapshotDbAccess">Npc Implementation Snapshot Db Access</param>
+        /// <param name="npcImportFieldValuesLogDbAccess">Npc import field values log Db access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="itemTemplateDbAccess">Item Template Db Access</param>
         /// <param name="itemImplementationSnapshotDbAccess">Item Implementation Snapshot Db Access</param>
+        /// <param name="itemImportFieldValuesLogDbAccess">Item import field values log Db access</param>
         /// <param name="exportTemplateDbAccess">Export template Db access</param>
         /// <param name="includeExportTemplateDbAccess">Include export template Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object Export snippet Db Access</param>
@@ -405,8 +424,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="signInManager">Signin Manager</param>
         /// <param name="userDeleter">User Deleter</param>
         public PersonalDataApiController(IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questImplementationSnapshotDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, 
-                                         IEvneSkillTemplateDbAccess skillTemplateDbAccess, IEvneSkillImplementationSnapshotDbAccess skillImplementationSnapshotDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, 
-                                         IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
+                                         IEvneSkillTemplateDbAccess skillTemplateDbAccess, IEvneSkillImplementationSnapshotDbAccess skillImplementationSnapshotDbAccess, IEvneImportFieldValuesLogDbAccess skillImportFieldValuesLogDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, 
+                                         IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, IKortistoImportFieldValuesLogDbAccess npcImportFieldValuesLogDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, 
+                                         IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IStyrImportFieldValuesLogDbAccess itemImportFieldValuesLogDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
                                          IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, 
                                          IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, 
                                          ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
@@ -418,12 +438,15 @@ namespace GoNorth.Controllers.Api
             _skillDbAccess = skillDbAccess;
             _skillTemplateDbAccess = skillTemplateDbAccess;
             _skillImplementationSnapshotDbAccess = skillImplementationSnapshotDbAccess;
+            _skillImportFieldValuesLogDbAccess = skillImportFieldValuesLogDbAccess;
             _npcDbAccess = npcDbAccess;
             _npcTemplateDbAccess = npcTemplateDbAccess;
             _npcImplementationSnapshotDbAccess = npcImplementationSnapshotDbAccess;
+            _npcImportFieldValuesLogDbAccess = npcImportFieldValuesLogDbAccess;
             _itemDbAccess = itemDbAccess;
             _itemTemplateDbAccess = itemTemplateDbAccess;
             _itemImplementationSnapshotDbAccess = itemImplementationSnapshotDbAccess;
+            _itemImportFieldValuesLogDbAccess = itemImportFieldValuesLogDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
             _includeExportTemplateDbAccess = includeExportTemplateDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
@@ -579,6 +602,13 @@ namespace GoNorth.Controllers.Api
                 ModifiedDate = p.ModifiedOn
             }));
 
+            List<FlexFieldImportFieldValuesResultLog> skillsFieldValuesLogs = await _skillImportFieldValuesLogDbAccess.GetImportLogsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(skillsFieldValuesLogs.Select(p => new TrimmedModifiedData {
+                ObjectType = "SkillFieldValueImportLog",
+                Name = p.FileName,
+                ModifiedDate = p.ModifiedOn
+            }));
+
             List<EvneSkill> skillTemplates = await _skillTemplateDbAccess.GetFlexFieldObjectsByModifiedUser(currentUser.Id);
             response.ModifiedData.AddRange(skillTemplates.Select(p => new TrimmedModifiedData {
                 ObjectType = "SkillTemplate",
@@ -611,6 +641,13 @@ namespace GoNorth.Controllers.Api
             response.ModifiedData.AddRange(npcImplementationSnapshots.Select(p => new TrimmedModifiedData {
                 ObjectType = "NpcImplementationSnapshot",
                 Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+
+            List<FlexFieldImportFieldValuesResultLog> npcsFieldValuesLogs = await _npcImportFieldValuesLogDbAccess.GetImportLogsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(npcsFieldValuesLogs.Select(p => new TrimmedModifiedData {
+                ObjectType = "NpcFieldValueImportLog",
+                Name = p.FileName,
                 ModifiedDate = p.ModifiedOn
             }));
                        
@@ -646,6 +683,13 @@ namespace GoNorth.Controllers.Api
             response.ModifiedData.AddRange(itemImplementationSnapshots.Select(p => new TrimmedModifiedData {
                 ObjectType = "ItemImplementationSnapshot",
                 Name = p.Name,
+                ModifiedDate = p.ModifiedOn
+            }));
+            
+            List<FlexFieldImportFieldValuesResultLog> itemsFieldValuesLogs = await _itemImportFieldValuesLogDbAccess.GetImportLogsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(itemsFieldValuesLogs.Select(p => new TrimmedModifiedData {
+                ObjectType = "ItemFieldValueImportLog",
+                Name = p.FileName,
                 ModifiedDate = p.ModifiedOn
             }));
 

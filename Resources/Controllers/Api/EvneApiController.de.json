@@ -11,5 +11,14 @@
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",
     "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt.",
 
-    "DuplicateFieldNameExist": "Es existitieren mehrere Felder mit gleichem Namen."
+    "DuplicateFieldNameExist": "Es existitieren mehrere Felder mit gleichem Namen.",
+
+    "ImportFieldValuesObjectNotFound": "Die Fähigkeit wurde nicht gefunden.",
+    "ImportFieldValuesFieldNotFoundInTemplate": "Das Feld {0} wurde weder im Template noch in der Fähigkeit gefunden. Der Wert kann nicht importiert werden.",
+    "ImportFieldValuesNameIsEmpty": "Der Name darf nicht leer sein.",
+    "ImportFieldValuesValueNotValid": "Der Feldwert für das Feld {0} ist nicht gültig für den Feldtypen.",
+    "ImportFieldValuesObjectCouldNotBeUpdated": "Fähigkeit konnte nicht aktualisiert werden.",
+    "ImportFieldValuesObjectCouldNotBeCreated": "Fähigkeit konnte nicht angelegt werden.",
+    "ImportFieldValuesNoValidTemplateSpecified": "Es ist keine gültige Template Id in der CSV-Datei angegeben. Bitte exportier eine Vorlagen CSV und nutze diese für den Import.",
+    "ImportFieldValuesNoValidRows": "Keine gültige Zeilen gefunden. Bitte trag Zeilen für den Import ein."
 }

@@ -19,6 +19,9 @@
 
     "ManageTemplates": "Manage templates",
 
+    "FieldValueExport": "Export field values",
+    "FieldValueImport": "Import field values",
+
     "DropHereToMoveToParent": "Drop object here to move to parent folder",
     "SelectTargetCategory": "Select target category",
     "RootLevel": "Root level",

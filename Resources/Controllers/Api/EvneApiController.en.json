@@ -11,5 +11,14 @@
     "CouldNotUploadImage": "Image could not be uploaded.",
     "ImageFormatNotSupported": "The image format is not supported.",
 
-    "DuplicateFieldNameExist": "Multiple fields with the same name exist."
+    "DuplicateFieldNameExist": "Multiple fields with the same name exist.",
+
+    "ImportFieldValuesObjectNotFound": "Skill not found.",
+    "ImportFieldValuesFieldNotFoundInTemplate": "The field {0} was not found in the template nor in the skill. The value cannot be imported.",
+    "ImportFieldValuesNameIsEmpty": "The name must not be empty.",
+    "ImportFieldValuesValueNotValid": "The value of the field {0} is not valid for the field type.",
+    "ImportFieldValuesObjectCouldNotBeUpdated": "Skill could not be updated.",
+    "ImportFieldValuesObjectCouldNotBeCreated": "Skill could not be created.",
+    "ImportFieldValuesNoValidTemplateSpecified": "No valid template id was specified in the CSV file. Please export a CSV template using the CSV export functionality for an import.",
+    "ImportFieldValuesNoValidRows": "No valid rows to import. Please enter some rows to import."
 }
