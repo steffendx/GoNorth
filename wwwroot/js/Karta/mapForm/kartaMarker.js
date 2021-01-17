@@ -63,9 +63,7 @@
                 var def = new jQuery.Deferred();
 
                 var self = this;
-                jQuery.ajax({
-                    url: "/api/KartaApi/Map?id=" + this.mapChangeId
-                }).done(function(map) {
+                GoNorth.HttpClient.get("/api/KartaApi/Map?id=" + this.mapChangeId).done(function(map) {
                     var mapHtml = "<h4><a class='gn-clickable' onclick='GoNorth.Karta.Map.switchToMap(\"" + self.mapChangeId + "\")'>" + map.name + "</a></h4>";
 
                     def.resolve(mapHtml);

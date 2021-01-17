@@ -114,10 +114,7 @@
             Conditions.CheckNpcAliveStateCondition.prototype.loadObject = function(npcId) {
                 var loadingDef = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(npc) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(npc) {
                     loadingDef.resolve(npc);
                 }).fail(function(xhr) {
                     loadingDef.reject();

@@ -67,7 +67,7 @@
                     }
                     GoNorth.Util.replaceUrlParameters(urlParameters);
     
-                    jQuery.ajax("/api/AikaApi/GetQuests?searchPattern=" + this.searchPatternToUse + "&start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
+                    GoNorth.HttpClient.get("/api/AikaApi/GetQuests?searchPattern=" + this.searchPatternToUse + "&start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
                         self.quests(data.quests);
                         self.hasMore(data.hasMore);
 

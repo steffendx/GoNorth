@@ -26,10 +26,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/UserPreferencesApi/GetUserPreferences",
-                        type: "GET"
-                    }).done(function(userPreferences) {
+                    GoNorth.HttpClient.get("/api/UserPreferencesApi/GetUserPreferences").done(function(userPreferences) {
                         for(var curTheme = 0; curTheme < self.themes.length; ++curTheme)
                         {
                             if(self.themes[curTheme].theme == userPreferences.codeEditorTheme)
@@ -63,13 +60,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/UserPreferencesApi/SaveUserPreferences",
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(userPreferences), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(userPreferences) {
+                    GoNorth.HttpClient.post("/api/UserPreferencesApi/SaveUserPreferences", userPreferences).done(function(userPreferences) {
                         self.isLoading(false);
                     }).fail(function() {
                         self.isLoading(false);

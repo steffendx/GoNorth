@@ -83,8 +83,8 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             _languageKeyGenerator.SetErrorCollection(_errorCollection);
             
             List<ScribanExportSkill> skills = await LoadSkills(parsedTemplate, inputNpc); 
-            scriptObject.Add(ExportConstants.ScribanNpcSkillsObjectKey, skills);
-            scriptObject.Add(ExportConstants.ScribanLanguageKeyName, _languageKeyGenerator);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanNpcSkillsObjectKey, skills);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanLanguageKeyName, _languageKeyGenerator);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
                 return new List<ScribanExportSkill>();
             }
             
-            GoNorthProject project = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _exportCachedDbAccess.GetUserProject();
             ExportSettings exportSettings = await _exportCachedDbAccess.GetExportSettings(project.Id);
 
             List<EvneSkill> skills = await _exportCachedDbAccess.GetSkillsById(inputNpc.Skills.Select(i => i.SkillId).ToList());

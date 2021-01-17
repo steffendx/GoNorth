@@ -14,6 +14,11 @@ namespace GoNorth.Services.Export.Placeholder.Util
         /// <param name="dailyRoutine">Daily routine to sort</param>
         public static void SortDailyRoutine(List<KortistoNpcDailyRoutineEvent> dailyRoutine)
         {
+            if(dailyRoutine == null)
+            {
+                return;
+            }
+
             dailyRoutine.Sort((d1, d2) =>
             {
                 if (d1.EarliestTime == null && d2.EarliestTime != null)

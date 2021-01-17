@@ -5,10 +5,12 @@ using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Karta;
+using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Styr;
+using GoNorth.Services.Project;
 using GoNorth.Services.ProjectConfig;
 
 namespace GoNorth.Services.Export.Data
@@ -18,11 +20,6 @@ namespace GoNorth.Services.Export.Data
     /// </summary>
     public class ExportCachedDbAccess : IExportCachedDbAccess
     {
-        /// <summary>
-        /// Project Db Access
-        /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
-
         /// <summary>
         /// Export Settings Db Access
         /// </summary>
@@ -57,6 +54,16 @@ namespace GoNorth.Services.Export.Data
         /// Map Db Access
         /// </summary>
         private readonly IKartaMapDbAccess _mapDbAccess;
+
+        /// <summary>
+        /// Wiki Page Db Access
+        /// </summary>
+        private readonly IKirjaPageDbAccess _pageDbAccess;
+
+        /// <summary>
+        /// User project access
+        /// </summary>
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Project config provider
@@ -110,6 +117,11 @@ namespace GoNorth.Services.Export.Data
         private Dictionary<string, AikaQuest> _cachedQuest;
 
         /// <summary>
+        /// Cached Wiki Pages
+        /// </summary>
+        private Dictionary<string, KirjaPage> _cachedPages;
+
+        /// <summary>
         /// Cached Markers
         /// </summary>
         private Dictionary<string, KartaMapNamedMarkerQueryResult> _cachedMarkers;
@@ -127,7 +139,6 @@ namespace GoNorth.Services.Export.Data
         /// <summary>
         /// Export Cached Db Access
         /// </summary>
-        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="exportSettingsDbAccess">Export Settings Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
@@ -135,13 +146,14 @@ namespace GoNorth.Services.Export.Data
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
+        /// <param name="pageDbAccess">Page Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="projectConfigProvider">Project config provider</param>
         /// <param name="includeExportTemplateDbAccess">Include export template Db access</param>
-        public ExportCachedDbAccess(IProjectDbAccess projectDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKortistoNpcDbAccess npcDbAccess, 
-                                    IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, IProjectConfigProvider projectConfigProvider,
-                                    IIncludeExportTemplateDbAccess includeExportTemplateDbAccess)
+        public ExportCachedDbAccess(IExportSettingsDbAccess exportSettingsDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrItemDbAccess itemDbAccess, 
+                                    IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IUserProjectAccess userProjectAccess, 
+                                    IProjectConfigProvider projectConfigProvider,IIncludeExportTemplateDbAccess includeExportTemplateDbAccess)
         {
-            _projectDbAccess = projectDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _npcDbAccess = npcDbAccess;
@@ -149,6 +161,8 @@ namespace GoNorth.Services.Export.Data
             _skillDbAccess = skillDbAccess;
             _questDbAccess = questDbAccess;
             _mapDbAccess = mapDbAccess;
+            _pageDbAccess = pageDbAccess;
+            _userProjectAccess = userProjectAccess;
             _projectConfigProvider = projectConfigProvider;
             _includeExportTemplateDbAccess = includeExportTemplateDbAccess;
 
@@ -158,23 +172,24 @@ namespace GoNorth.Services.Export.Data
             _cachedItems = new Dictionary<string, StyrItem>();
             _cachedSkills = new Dictionary<string, EvneSkill>();
             _cachedQuest = new Dictionary<string, AikaQuest>();
+            _cachedPages = new Dictionary<string, KirjaPage>();
             _cachedMarkers = new Dictionary<string, KartaMapNamedMarkerQueryResult>();
             _cachedExportSnippets = new Dictionary<string, List<ObjectExportSnippet>>();
             _cachedIncludeExportTemplates = new Dictionary<string, IncludeExportTemplate>();
         }
 
         /// <summary>
-        /// Returns the project
+        /// Returns the user project
         /// </summary>
         /// <returns>Project</returns>
-        public async Task<GoNorthProject> GetDefaultProject()
+        public async Task<GoNorthProject> GetUserProject()
         {
             if(_project != null)
             {
                 return _project;
             }
 
-            _project = await _projectDbAccess.GetDefaultProject();
+            _project = await _userProjectAccess.GetUserProject();
             return _project;
         }
 
@@ -189,7 +204,7 @@ namespace GoNorth.Services.Export.Data
                 return _miscProjectConfig;
             }
 
-            GoNorthProject defaultProject = await GetDefaultProject();
+            GoNorthProject defaultProject = await GetUserProject();
             _miscProjectConfig = await _projectConfigProvider.GetMiscConfig(defaultProject.Id);
             return _miscProjectConfig;
         }
@@ -425,6 +440,28 @@ namespace GoNorth.Services.Export.Data
             KartaMapNamedMarkerQueryResult markerQueryResult = await _mapDbAccess.GetMarkerById(mapId, markerId);
             _cachedMarkers.Add(cacheId, markerQueryResult);
             return markerQueryResult;   
+        }
+
+        /// <summary>
+        /// Returns a wiki page by its id
+        /// </summary>
+        /// <param name="pageId">Page Id</param>
+        /// <returns>Wiki page</returns>
+        public async Task<KirjaPage> GetWikiPageById(string pageId)
+        {
+            if(string.IsNullOrEmpty(pageId))
+            {
+                return null;
+            }
+
+            if(_cachedPages.ContainsKey(pageId))
+            {
+                return _cachedPages[pageId];
+            }
+
+            KirjaPage page = await _pageDbAccess.GetPageById(pageId);
+            _cachedPages.Add(pageId, page);
+            return page;
         }
 
         /// <summary>

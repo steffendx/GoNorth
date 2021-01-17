@@ -1,8 +1,8 @@
-using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Project;
+using GoNorth.Services.Project;
 
 namespace GoNorth.Services.Export.LanguageKeyGeneration
 {
@@ -18,14 +18,14 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
 
 
         /// <summary>
-        /// Project Db Access
-        /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
-
-        /// <summary>
         /// Language Key Db Access
         /// </summary>
         private readonly ILanguageKeyDbAccess _languageKeyDbAccess;
+
+        /// <summary>
+        /// User project access
+        /// </summary>
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Language key reference collector
@@ -40,13 +40,13 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="languageKeyReferenceCollector">Language key reference collector</param>
-        public LanguageKeyGenerator(IProjectDbAccess projectDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector)
+        public LanguageKeyGenerator(ILanguageKeyDbAccess languageKeyDbAccess, IUserProjectAccess userProjectAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector)
         {
-            _projectDbAccess = projectDbAccess;
             _languageKeyDbAccess = languageKeyDbAccess;
+            _userProjectAccess = userProjectAccess;
             _languageKeyReferenceCollector = languageKeyReferenceCollector;
         }
 
@@ -186,7 +186,7 @@ namespace GoNorth.Services.Export.LanguageKeyGeneration
         {
             if(_project == null)
             {
-                _project = await _projectDbAccess.GetDefaultProject();
+                _project = await _userProjectAccess.GetUserProject();
             }
         }
 

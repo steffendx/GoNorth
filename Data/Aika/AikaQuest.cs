@@ -91,6 +91,12 @@ namespace GoNorth.Data.Aika
         [ListCompareAttribute(LabelKey = "NodeLinksChanged")]
         public List<NodeLink> Link { get; set; }
 
+        /// <summary>
+        /// Reference nodes
+        /// </summary>
+        [ListCompareAttribute(LabelKey = "NodeReferenceChanged")]
+        public List<ReferenceNode> Reference {get ; set; }
+
 
         /// <summary>
         /// true if the object is implemented, else false

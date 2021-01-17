@@ -113,16 +113,18 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <summary>
         /// Returns all flex field objects that are not part of an id list. This means that they are not part of the list themselfs and or their template
         /// </summary>
+        /// <param name="projectId">Id of the project</param>
         /// <param name="idList">List of ids</param>
         /// <returns>Flex field objects</returns>
-        Task<List<T>> GetFlexFieldObjectsNotPartOfIdList(IEnumerable<string> idList);
+        Task<List<T>> GetFlexFieldObjectsNotPartOfIdList(string projectId, IEnumerable<string> idList);
         
         /// <summary>
         /// Returns all flex field objects that are part of an id list. This means that they are not part of the list themselfs and or their template
         /// </summary>
+        /// <param name="projectId">Id of the project</param>
         /// <param name="idList">List of ids</param>
         /// <returns>Flex field objects</returns>
-        Task<List<T>> GetFlexFieldObjectsPartOfIdList(IEnumerable<string> idList);
+        Task<List<T>> GetFlexFieldObjectsPartOfIdList(string projectId, IEnumerable<string> idList);
 
         /// <summary>
         /// Resolves the names for a list of Flex Field Objects
@@ -170,9 +172,10 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <summary>
         /// Checks if any Flex Field Object use a tag
         /// </summary>
+        /// <param name="projectId">Id of the proejct</param>
         /// <param name="tag">Tag</param>
         /// <returns>true if tag is used, else false</returns>
-        Task<bool> AnyFlexFieldObjectUsingTag(string tag);
+        Task<bool> AnyFlexFieldObjectUsingTag(string projectId, string tag);
 
 
         /// <summary>

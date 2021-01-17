@@ -283,10 +283,7 @@
                 loadAllMaps: function() {
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/KartaApi/Maps",
-                        method: "GET"
-                    }).done(function(maps) {
+                    GoNorth.HttpClient.get("/api/KartaApi/Maps").done(function(maps) {
                         self.allMaps(maps);
 
                         if(!self.id() && maps.length > 0)
@@ -307,10 +304,7 @@
 
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/AikaApi/GetChapters",
-                        method: "GET"
-                    }).done(function(chapters) {
+                    GoNorth.HttpClient.get("/api/AikaApi/GetChapters").done(function(chapters) {
                         if(!chapters)
                         {
                             chapters = [];
@@ -536,10 +530,7 @@
                     this.resetErrorState();
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/KartaApi/Map?id=" + encodeURIComponent(id),
-                        method: "GET"
-                    }).done(function(map) {
+                    GoNorth.HttpClient.get("/api/KartaApi/Map?id=" + encodeURIComponent(id)).done(function(map) {
                         if(!map)
                         {
                             self.errorOccured(true);
@@ -702,11 +693,7 @@
                     this.resetErrorState();
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/DeleteMapMarker?id=" + this.id() + "&markerId=" + marker.id + "&markerType=" + marker.markerType, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/KartaApi/DeleteMapMarker?id=" + this.id() + "&markerId=" + marker.id + "&markerType=" + marker.markerType).done(function(data) {
                         markerToDeleteManager.removeMarker(marker, self.selectedChapter());
 
                         self.isLoading(false);
@@ -790,10 +777,7 @@
                     this.isLoading(true);
 
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/KartaApi/GetNewMapMarkerId",
-                        type: "GET"
-                    }).done(function(id) {
+                    GoNorth.HttpClient.get("/api/KartaApi/GetNewMapMarkerId").done(function(id) {
                         marker.setId(id);
                         self.saveMarker(marker);
                     }).fail(function() {
@@ -859,13 +843,7 @@
                     // Saves the markers
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/SaveMapMarker?id=" + this.id(), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/KartaApi/SaveMapMarker?id=" + this.id(), request).done(function(data) {
                         marker.flagAsNotImplemented();
                         self.isLoading(false);
                     }).fail(function(xhr) {
@@ -1027,10 +1005,7 @@
                         
                         self.isLoading(true);
                         self.resetErrorState();
-                        jQuery.ajax({
-                            url: "/api/KartaApi/GetNewMapMarkerId",
-                            type: "GET"
-                        }).done(function(id) {
+                        GoNorth.HttpClient.get("/api/KartaApi/GetNewMapMarkerId").done(function(id) {
                             layer.id = id;
                             self.geometryEditMarker.addGeometry(layer);
                             self.geometryEditMarkerManager.addGeometryToLayer(layer);

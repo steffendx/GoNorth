@@ -435,7 +435,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Filled Code</returns>
         private async Task<string> FillFlexFieldPlaceholders(string code, IFlexFieldExportable flexFieldObject, string objectType, ExportObjectData data)
         {
-            GoNorthProject project = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _exportCachedDbAccess.GetUserProject();
             ExportSettings exportSettings = await _exportCachedDbAccess.GetExportSettings(project.Id);
 
             HashSet<string> usedFields = new HashSet<string>();

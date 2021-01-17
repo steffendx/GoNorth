@@ -9,6 +9,7 @@ using GoNorth.Config;
 using GoNorth.Data.Project;
 using GoNorth.Data.Timeline;
 using GoNorth.Data.User;
+using GoNorth.Services.Project;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -26,9 +27,9 @@ namespace GoNorth.Services.Timeline
         private readonly ITimelineDbAccess _timelineDbAccess;
 
         /// <summary>
-        /// Project Db Accesss
+        /// User Project Accesss
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Template Service
@@ -59,15 +60,15 @@ namespace GoNorth.Services.Timeline
         /// Constructor
         /// </summary>
         /// <param name="timelineDbAccess">Timeline Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="userProjectAccess">User project Access</param>
         /// <param name="templateService">Template Service</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="httpContext">Http Context</param>
         /// <param name="configuration">Config Data</param>
-        public TimelineService(ITimelineDbAccess timelineDbAccess, IProjectDbAccess projectDbAccess, ITimelineTemplateService templateService, UserManager<GoNorthUser> userManager, IHttpContextAccessor httpContext, IOptions<ConfigurationData> configuration)
+        public TimelineService(ITimelineDbAccess timelineDbAccess, IUserProjectAccess userProjectAccess, ITimelineTemplateService templateService, UserManager<GoNorthUser> userManager, IHttpContextAccessor httpContext, IOptions<ConfigurationData> configuration)
         {
             _timelineDbAccess = timelineDbAccess;
-            _projectDbAccess = projectDbAccess;
+            _userProjectAccess = userProjectAccess;
             _templateService = templateService;
             _userManager = userManager;
             _httpContext = httpContext;
@@ -240,22 +241,32 @@ namespace GoNorth.Services.Timeline
         /// <summary>
         /// Adds a timeline event
         /// </summary>
+        /// <param name="projectId">Id of the project to associate, if null the project will be loaded</param>
         /// <param name="timelineEvent">Timeline Event</param>
         /// <param name="additionalValues">Additional Values</param>
         /// <returns>Task</returns>
-        public async Task AddTimelineEntry(TimelineEvent timelineEvent, params string[] additionalValues)
+        public async Task AddTimelineEntry(string projectId, TimelineEvent timelineEvent, params string[] additionalValues)
         {
-            Task<GoNorthUser> currentUserTask = _userManager.GetUserAsync(_httpContext.HttpContext.User);
-            Task<GoNorthProject> projectTask = _projectDbAccess.GetDefaultProject();
-            Task.WaitAll(currentUserTask, projectTask);
-            GoNorthUser currentUser = currentUserTask.Result;
-            GoNorthProject project = projectTask.Result;
+            GoNorthUser currentUser;
+            if(string.IsNullOrEmpty(projectId))
+            {
+                Task<GoNorthUser> currentUserTask = _userManager.GetUserAsync(_httpContext.HttpContext.User);
+                Task<GoNorthProject> projectTask = _userProjectAccess.GetUserProject();
+                Task.WaitAll(currentUserTask, projectTask);
+                currentUser = currentUserTask.Result;
+                GoNorthProject project = projectTask.Result;
+                projectId = project != null ? project.Id : string.Empty;
+            }
+            else
+            {
+                currentUser = await _userManager.GetUserAsync(_httpContext.HttpContext.User);
+            }
 
             string updateId = null;
             if(_eventMergeTimeSpan > 0)
             {
                 DateTimeOffset dateLimit = DateTimeOffset.UtcNow.AddMinutes(-_eventMergeTimeSpan);
-                List<TimelineEntry> timelineEntries = await _timelineDbAccess.GetTimelineEntriesByUserInTimeSpan(project.Id, currentUser.UserName, timelineEvent, dateLimit);
+                List<TimelineEntry> timelineEntries = await _timelineDbAccess.GetTimelineEntriesByUserInTimeSpan(projectId, currentUser.UserName, timelineEvent, dateLimit);
                 foreach(TimelineEntry curEntry in timelineEntries)
                 {
                     if(curEntry.AdditionalValues == null && additionalValues == null)
@@ -294,7 +305,7 @@ namespace GoNorth.Services.Timeline
             }
 
             TimelineEntry entry = new TimelineEntry();
-            entry.ProjectId = project != null ? project.Id : string.Empty;
+            entry.ProjectId = projectId;
             entry.Event = timelineEvent;
             entry.Timestamp = DateTimeOffset.UtcNow;
             entry.AdditionalValues = additionalValues;
@@ -320,7 +331,7 @@ namespace GoNorth.Services.Timeline
         /// <returns>Query result</returns>
         public async Task<TimelineEntriesQueryResult> GetTimelineEntriesPaged(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             string projectId = project != null ? project.Id : string.Empty;
 
             Task<GoNorthUser> currentUserTask = _userManager.GetUserAsync(_httpContext.HttpContext.User);

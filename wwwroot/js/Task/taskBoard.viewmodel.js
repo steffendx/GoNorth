@@ -5,6 +5,27 @@
         /// Dialog Page Size
         var dialogPageSize = 15;
 
+        /// Object Type for npcs
+        var objectTypeNpc = 0;
+
+        /// Object Type for items
+        var objectTypeItem = 1;
+
+        /// Object Type for skills
+        var objectTypeSkill = 2;
+
+        /// Object Type for quest
+        var objectTypeQuest = 3;
+
+        /// Object Type for wiki page
+        var objectTypeWikiPage = 4;
+
+        /// Object Type for daily routines
+        var objectTypeDailyRoutine = 5;
+
+        /// Object Type for marker
+        var objectTypeMarker = 6;
+
         /**
          * Page View Model
          * @class
@@ -12,6 +33,7 @@
         ChooseObjectDialog.ViewModel = function()
         {
             this.showDialog = new ko.observable(false);
+            this.showObjectTypeSelection = new ko.observable(false);
             this.dialogTitle = new ko.observable("");
             this.showNewButtonInDialog = new ko.observable(false);
             this.dialogSearchCallback = null;
@@ -24,10 +46,37 @@
             this.errorOccured = new ko.observable(false);
             this.idObservable = null;
 
+            var self = this;
+            this.selectedObjectType = new ko.observable(null);
+            this.selectedObjectType.subscribe(function() {
+                self.onObjectTypeChanged();
+            });
+            this.availableObjectTypes = [
+                { objectType: objectTypeNpc, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeNpc },
+                { objectType: objectTypeItem, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeItem },
+                { objectType: objectTypeSkill, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeSkill },
+                { objectType: objectTypeQuest, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeQuest },
+                { objectType: objectTypeWikiPage, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeWikiPage },
+                { objectType: objectTypeDailyRoutine, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeDailyRoutine },
+                { objectType: objectTypeMarker, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeMarker }
+            ];
+
             this.choosingDeferred = null;
         };
 
         ChooseObjectDialog.ViewModel.prototype = {
+            /**
+             * Opens the dialog to search for general objects
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openGeneralObjectSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(true);
+                this.selectedObjectType(this.availableObjectTypes[0]);
+                return this.openDialog(dialogTitle, this.searchNpcs, null, null);
+            },
+            
             /**
              * Opens the dialog to search for npcs
              * 
@@ -36,6 +85,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openNpcSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchNpcs, createCallback, null);
             },
 
@@ -47,6 +97,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openItemSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchItems, createCallback, null);
             },
 
@@ -58,6 +109,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openSkillSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchSkills, createCallback, null);
             },
 
@@ -70,6 +122,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openKirjaPageSearch: function(dialogTitle, createCallback, idObservable) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchPages, createCallback, idObservable);
             },
 
@@ -81,6 +134,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openQuestSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchQuest, createCallback, null);
             },
 
@@ -93,6 +147,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openChapterDetailSearch: function(dialogTitle, createCallback, idObservable) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchChapterDetails, createCallback, idObservable);
             },
 
@@ -103,6 +158,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openDailyRoutineSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchDailyRoutines, null, null);
             },
 
@@ -113,6 +169,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openMarkerSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchMarkers, null, null);
             },
 
@@ -137,15 +194,59 @@
                 this.dialogCreateNewCallback = typeof createCallback == "function" ? createCallback : null;
                 this.showNewButtonInDialog(this.dialogCreateNewCallback ? true : false);
                 this.dialogSearchCallback = searchCallback;
+                this.resetDialogValues();
+                this.idObservable = idObservable;
+
+                this.choosingDeferred = new jQuery.Deferred();
+                return this.choosingDeferred.promise();
+            },
+
+            /**
+             * Resets the dialog values
+             */
+            resetDialogValues: function() {
                 this.dialogSearchPattern("");
                 this.dialogIsLoading(false);
                 this.dialogEntries([]);
                 this.dialogHasMore(false);
                 this.dialogCurrentPage(0);
-                this.idObservable = idObservable;
+            },
 
-                this.choosingDeferred = new jQuery.Deferred();
-                return this.choosingDeferred.promise();
+            /**
+             * Gets called if the selected object type is changed
+             */
+            onObjectTypeChanged: function() {
+                this.resetDialogValues();
+
+                var objectType = this.selectedObjectType().objectType;
+                if(objectType == objectTypeNpc) 
+                {
+                    this.dialogSearchCallback = this.searchNpcs;
+                }
+                else if(objectType == objectTypeItem) 
+                {
+                    this.dialogSearchCallback = this.searchItems;
+                }
+                else if(objectType == objectTypeSkill) 
+                {
+                    this.dialogSearchCallback = this.searchSkills;
+                }
+                else if(objectType == objectTypeQuest) 
+                {
+                    this.dialogSearchCallback = this.searchQuest;
+                }
+                else if(objectType == objectTypeWikiPage) 
+                {
+                    this.dialogSearchCallback = this.searchPages;
+                }
+                else if(objectType == objectTypeDailyRoutine) 
+                {
+                    this.dialogSearchCallback = this.searchDailyRoutines;
+                }
+                else if(objectType == objectTypeMarker) 
+                {
+                    this.dialogSearchCallback = this.searchMarkers;
+                }
             },
 
             /**
@@ -171,11 +272,53 @@
             selectObject: function(selectedObject) {
                 if(this.choosingDeferred)
                 {
+                    if(this.showObjectTypeSelection())
+                    {
+                        selectedObject.objectType = this.getDependencyObjectType();
+                    }
                     this.choosingDeferred.resolve(selectedObject);
                     this.choosingDeferred = null;
                 }
 
                 this.closeDialog();
+            },
+
+            /**
+             * Returns the dependency object type
+             * @returns {string} Dependency object type
+             */
+            getDependencyObjectType: function() {
+                var objectType = this.selectedObjectType().objectType;
+                if(objectType == objectTypeNpc) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc;
+                }
+                else if(objectType == objectTypeItem) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem;
+                }
+                else if(objectType == objectTypeSkill) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectSkill;
+                }
+                else if(objectType == objectTypeQuest) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest;
+                }
+                else if(objectType == objectTypeWikiPage) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToWikiPage;
+                }
+                else if(objectType == objectTypeDailyRoutine) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine;
+                }
+                else if(objectType == objectTypeMarker) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker;
+                }
+
+                return "";
             },
 
             /**
@@ -292,10 +435,7 @@
                 }
 
                 var self = this;
-                jQuery.ajax({ 
-                    url: searchUrl, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get(searchUrl).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -332,10 +472,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -365,10 +502,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -398,10 +532,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -431,10 +562,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuests?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuests?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -463,10 +591,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetails?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetails?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -500,10 +625,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -535,17 +657,14 @@
 
                 dailyRoutineEventNpc.isLoadingExpandedObject(true);
                 dailyRoutineEventNpc.errorLoadingExpandedObject(false);
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id).done(function(data) {
                     var dailyRoutineObjects = [];
                     if(data.dailyRoutine)
                     {
                         for(var curEvent = 0; curEvent < data.dailyRoutine.length; ++curEvent)
                         {
                             data.dailyRoutine[curEvent].parentObject = dailyRoutineEventNpc;
-                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan("hh:mm", data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
+                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan(GoNorth.ChooseObjectDialog.Localization.TimeFormat, data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
                             var additionalName = "";
                             if(data.dailyRoutine[curEvent].scriptName)
                             {
@@ -579,10 +698,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -1092,17 +1208,11 @@
                  */
                 loadAllTaskTypes: function() {
                     var self = this;
-                    var taskGroupTypesDef = jQuery.ajax({ 
-                        url: "/api/TaskApi/GetTaskGroupTypes", 
-                        type: "GET"
-                    }).done(function(data) {
+                    var taskGroupTypesDef = GoNorth.HttpClient.get("/api/TaskApi/GetTaskGroupTypes").done(function(data) {
                         self.taskGroupTypes(data);
                     });
 
-                    var taskTypesDef = jQuery.ajax({ 
-                        url: "/api/TaskApi/GetTaskTypes", 
-                        type: "GET"
-                    }).done(function(data) {
+                    var taskTypesDef = GoNorth.HttpClient.get("/api/TaskApi/GetTaskTypes").done(function(data) {
                         self.taskTypes(data);
                     });
 
@@ -1119,10 +1229,7 @@
                     var def = new jQuery.Deferred();
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/GetTaskBoardCategories", 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetTaskBoardCategories").done(function(data) {
                         self.allBoardCategories(data);
                         def.resolve();
                     }).fail(function() {
@@ -1139,10 +1246,7 @@
                     this.resetErrorState();
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/GetOpenTaskBoards?start=0&pageSize=100", 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetOpenTaskBoards?start=0&pageSize=100").done(function(data) {
                         self.allBoards(data.boards);
                         self.isLoading(false);
 
@@ -1179,10 +1283,7 @@
                     var def = new jQuery.Deferred();
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/UtilApi/GetAllUsers", 
-                        type: "GET"
-                    }).done(function(users) {
+                    GoNorth.HttpClient.get("/api/UtilApi/GetAllUsers").done(function(users) {
                         self.allUsers(users);
                         def.resolve();
                     }).fail(function() {
@@ -1308,10 +1409,7 @@
                     this.isLoading(true);
                     this.setId(id);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(id),
-                        method: "GET"
-                    }).done(function(board) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(id)).done(function(board) {
                         // If a user has a reference to a board that can no longer be loaded we must fall back to an old board
                         if(!board)
                         {
@@ -1409,10 +1507,7 @@
                  */
                 getLastOpenedBoardId: function() {
                     var def = new jQuery.Deferred();
-                    jQuery.ajax({
-                        url: "/api/TaskApi/GetLastOpenedTaskBoard",
-                        method: "GET"
-                    }).done(function(boardId) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetLastOpenedTaskBoard").done(function(boardId) {
                         def.resolve(boardId);
                     }).fail(function() {
                         def.reject();
@@ -1427,11 +1522,7 @@
                  * @param {string} boardId Id of the board
                  */
                 saveLastOpenedBoardId: function(boardId) {
-                    jQuery.ajax({
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        url: "/api/TaskApi/SetLastOpenedTaskBoard?boardId=" + encodeURIComponent(boardId),
-                        method: "POST"
-                    });
+                    GoNorth.HttpClient.post("/api/TaskApi/SetLastOpenedTaskBoard?boardId=" + encodeURIComponent(boardId), {});
                 },
 
 
@@ -1691,13 +1782,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post(url, request).done(function(data) {
                         if(self.editTaskGroup)
                         {
                             self.editTaskGroup.parseFromServerResponse(data);
@@ -1796,13 +1881,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post(url, request).done(function(data) {
                         self.isLoading(false);
                         def.resolve();
                     }).fail(function(xhr) {
@@ -2032,11 +2111,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE",
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete(url).done(function(data) {
                         if(self.editTaskGroup)
                         {
                             self.taskGroups.remove(self.editTaskGroup);
@@ -2097,10 +2172,7 @@
                     this.isLoadingMoveTaskGroups(true);
                     this.errorOccuredLoadingMoveTaskGroups(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(this.moveTargetTaskBoard()),
-                        method: "GET"
-                    }).done(function(board) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(this.moveTargetTaskBoard())).done(function(board) {
                         if(board.taskGroups)
                         {
                             self.targetTaskBoardGroups(board.taskGroups)
@@ -2163,11 +2235,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST",
-                    }).done(function() {
+                    GoNorth.HttpClient.post(url, {}).done(function() {
                         if(self.editTaskGroup)
                         {
                             self.taskGroups.remove(self.editTaskGroup);
@@ -2200,12 +2268,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/ReorderTaskGroup?boardId=" + this.id() + "&groupId=" + sortArg.item.id + "&targetIndex=" + sortArg.targetIndex, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/TaskApi/ReorderTaskGroup?boardId=" + this.id() + "&groupId=" + sortArg.item.id + "&targetIndex=" + sortArg.targetIndex, {}).done(function(data) {
                         self.isLoading(false);
                     }).fail(function(xhr) {
                         self.isLoading(false);

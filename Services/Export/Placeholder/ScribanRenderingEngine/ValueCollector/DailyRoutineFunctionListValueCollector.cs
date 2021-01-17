@@ -86,11 +86,11 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             }
             
             List<ScribanExportDailyRoutineFunction> scribanFunctions = inputFunction.Select(i => new ScribanExportDailyRoutineFunction(i)).ToList();
-            scriptObject.Add(ExportConstants.ScribanDailyRoutineFunctionListObjectKey, scribanFunctions);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanDailyRoutineFunctionListObjectKey, scribanFunctions);
 
             if(!scriptObject.ContainsKey(DailyRoutineEventFunctionRenderer.DailyRoutineEventFunctionName))
             {
-                scriptObject.Add(DailyRoutineEventFunctionRenderer.DailyRoutineEventFunctionName, new DailyRoutineEventFunctionRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection));
+                scriptObject.AddOrUpdate(DailyRoutineEventFunctionRenderer.DailyRoutineEventFunctionName, new DailyRoutineEventFunctionRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection));
             }
 
             return Task.CompletedTask;

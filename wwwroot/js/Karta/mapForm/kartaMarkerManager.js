@@ -51,10 +51,7 @@
                 }
 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/Maps", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/Maps").done(function(data) {
                     self.allMaps = data;
                     def.resolve({
                         entries: self.getFilteredMaps(),

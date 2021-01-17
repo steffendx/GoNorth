@@ -243,7 +243,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Code with resolved placeholders</returns>
         public async Task<string> ResolveDailyRoutineEventPlaceholders(string code, KortistoNpc npc, KortistoNpcDailyRoutineEvent dailyRoutineEvent)
         {
-            GoNorthProject defaultProject = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _cachedDbAccess.GetUserProject();
             MiscProjectConfig projectConfig = await _cachedDbAccess.GetMiscProjectConfig();
 
             code = ExportUtil.RenderPlaceholderIfTrue(code, Placeholder_HasMovementTargetStart, Placeholder_HasMovementTargetEnd, dailyRoutineEvent.MovementTarget != null && !string.IsNullOrEmpty(dailyRoutineEvent.MovementTarget.Name));

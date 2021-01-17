@@ -447,6 +447,12 @@ namespace GoNorth.Data.Exporting
         /// </summary> 
         TaleActionChooseNpcUseItem = 352,
 
+                  
+        /// <summary>
+        /// Reference Node
+        /// </summary> 
+        ReferenceNode = 500,
+
 
         /// <summary>
         /// Logic Grouping Template

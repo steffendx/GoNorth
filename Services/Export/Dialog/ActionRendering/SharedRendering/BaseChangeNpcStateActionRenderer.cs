@@ -106,7 +106,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.SharedRendering
         {
             if(_isPlayer)
             {
-                GoNorthProject curProject = await _cachedDbAccess.GetDefaultProject();
+                GoNorthProject curProject = await _cachedDbAccess.GetUserProject();
                 flexFieldObject = await _cachedDbAccess.GetPlayerNpc(curProject.Id);
                 if(flexFieldObject == null)
                 {

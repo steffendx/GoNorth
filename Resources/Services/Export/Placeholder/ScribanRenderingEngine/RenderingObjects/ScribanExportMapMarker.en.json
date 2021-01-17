@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_MapId": "Id of the map to which the marker belongs.",
+    "PlaceholderDesc_MapName": "Name of the map to which the marker belongs.",
+    "PlaceholderDesc_MarkerType": "Type of the marker.",
+    "PlaceholderDesc_MarkerId": "Id of the marker.",
+    "PlaceholderDesc_MarkerName": "Name of the marker."
+}

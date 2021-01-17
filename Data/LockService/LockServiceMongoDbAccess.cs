@@ -78,6 +78,16 @@ namespace GoNorth.Data.LockService
         }
 
         /// <summary>
+        /// Deletes a lock by its id
+        /// </summary>
+        /// <param name="id">Id</param>
+        /// <returns>Task</returns>
+        public async Task DeleteLockById(string id)
+        {
+            await _LockCollection.DeleteOneAsync(l => l.Id == id);
+        }
+
+        /// <summary>
         /// Deletes all locks for a user
         /// </summary>
         /// <param name="userId">Id of the user</param>
@@ -85,6 +95,16 @@ namespace GoNorth.Data.LockService
         public async Task DeleteAllLocksOfUser(string userId)
         {
             await _LockCollection.DeleteManyAsync(l => l.UserId == userId);
+        }
+
+        /// <summary>
+        /// Deletes all expired locks
+        /// </summary>
+        /// <returns>Task</returns>
+        public async Task DeleteExpiredLocks()
+        {
+            DateTimeOffset refDate = DateTimeOffset.UtcNow.AddMinutes(-1);
+            await _LockCollection.DeleteManyAsync(l => l.ExpireDate < refDate);
         }
 
         /// <summary>

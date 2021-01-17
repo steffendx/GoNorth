@@ -35,7 +35,7 @@
                  */
                 loadProjects: function() {
                     var self = this;
-                    jQuery.ajax("/api/ProjectApi/Entries").done(function(data) {
+                    GoNorth.HttpClient.get("/api/ProjectApi/Entries").done(function(data) {
                         self.projects(data);
                     }).fail(function() {
                         self.errorOccured(true);
@@ -107,13 +107,7 @@
 
                     var self = this;
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(requestProject), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post(url, requestProject).done(function(data) {
                         self.closeCreateEditProjectDialog();
                         self.loadProjects();
                     }).fail(function(xhr) {
@@ -151,11 +145,7 @@
                 deleteProject: function() {
                     var self = this;
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: "/api/ProjectApi/DeleteProject?id=" + this.deleteProjectId, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/ProjectApi/DeleteProject?id=" + this.deleteProjectId).done(function() {
                         self.closeConfirmDeleteDialog();
                         self.loadProjects();
                     }).fail(function(xhr) {

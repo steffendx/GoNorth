@@ -18,11 +18,21 @@ namespace GoNorth.Data.Project
         /// Collection Name of the projects
         /// </summary>
         public const string ProjectCollectionName = "Project";
+        
+        /// <summary>
+        /// Collection Name of the selected projects for a user
+        /// </summary>
+        public const string UserSelectedProjectCollectionName = "UserSelectedProject";
 
         /// <summary>
         /// Project Collection
         /// </summary>
         private IMongoCollection<GoNorthProject> _ProjectCollection;
+
+        /// <summary>
+        /// User selected project Collection
+        /// </summary>
+        private IMongoCollection<UserSelectedProject> _UserSelectedProjectCollection;
 
         /// <summary>
         /// Constructor
@@ -31,6 +41,7 @@ namespace GoNorth.Data.Project
         public ProjectMongoDbAccess(IOptions<ConfigurationData> configuration) : base(configuration)
         {
             _ProjectCollection = _Database.GetCollection<GoNorthProject>(ProjectCollectionName);
+            _UserSelectedProjectCollection = _Database.GetCollection<UserSelectedProject>(UserSelectedProjectCollectionName);
         }
 
         /// <summary>
@@ -104,6 +115,7 @@ namespace GoNorth.Data.Project
         /// <returns>Task</returns>
         public async Task DeleteProject(GoNorthProject project)
         {
+            await _UserSelectedProjectCollection.DeleteManyAsync(p => p.ProjectId == project.Id);
             DeleteResult result = await _ProjectCollection.DeleteOneAsync(p => p.Id == project.Id);
         }
 
@@ -114,6 +126,51 @@ namespace GoNorth.Data.Project
         private async Task SetAllProjectsAsNonDefault()
         {
             await _ProjectCollection.UpdateManyAsync(FilterDefinition<GoNorthProject>.Empty, Builders<GoNorthProject>.Update.Set(p => p.IsDefault, false));
+        }
+
+
+        /// <summary>
+        /// Sets the selected project for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <param name="projectId">Id of the project</param>
+        /// <returns>Task</returns>
+        public async Task SetUserSelectedProject(string userId, string projectId)
+        {
+            UserSelectedProject userSelectedProject = await _UserSelectedProjectCollection.Find(f => f.UserId == userId).FirstOrDefaultAsync();
+            if(userSelectedProject != null)
+            {
+                userSelectedProject.ProjectId = projectId;
+                await _UserSelectedProjectCollection.ReplaceOneAsync(f => f.Id == userSelectedProject.Id, userSelectedProject);
+            }
+            else
+            {
+                userSelectedProject = new UserSelectedProject();
+                userSelectedProject.Id = Guid.NewGuid().ToString();
+                userSelectedProject.UserId = userId;
+                userSelectedProject.ProjectId = projectId;
+                await _UserSelectedProjectCollection.InsertOneAsync(userSelectedProject);
+            }
+        }
+        
+        /// <summary>
+        /// Deletes the selected project for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task DeleteUserSelectedProject(string userId)
+        {
+            await _UserSelectedProjectCollection.DeleteManyAsync(p => p.UserId == userId);
+        }
+        
+        /// <summary>
+        /// Deletes the selected project for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        public async Task<UserSelectedProject> GetUserSelectedProject(string userId)
+        {
+            return await _UserSelectedProjectCollection.Find(f => f.UserId == userId).FirstOrDefaultAsync();
         }
     }
 }

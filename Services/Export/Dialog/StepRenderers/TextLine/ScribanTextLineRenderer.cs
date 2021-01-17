@@ -47,9 +47,9 @@ namespace GoNorth.Services.Export.Dialog.StepRenderers.TextLine
         /// </summary>
         /// <param name="exportCachedDbAccess">Export cached Db access</param>
         /// <param name="exportSettings">Export Settings</param>
+        /// <param name="errorCollection">Error Collection</param>
         /// <param name="languageKeyGenerator">Language key generator</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        /// <param name="errorCollection">Error Collection</param>
         /// <param name="isPlayerLine">true if its a player line, else false</param>
         public ScribanTextLineRenderer(IExportCachedDbAccess exportCachedDbAccess, ExportSettings exportSettings, ExportPlaceholderErrorCollection errorCollection, IScribanLanguageKeyGenerator languageKeyGenerator, 
                                        IStringLocalizerFactory localizerFactory, bool isPlayerLine) : 

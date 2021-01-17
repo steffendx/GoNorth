@@ -286,11 +286,7 @@
                     return;
                 }
 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/GetDialogByRelatedObjectId?relatedObjectId=" + npcId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/TaleApi/GetDialogByRelatedObjectId?relatedObjectId=" + npcId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -314,13 +310,7 @@
                     return;
                 }
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify([ npcId ]), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(itemNames) {
+                GoNorth.HttpClient.post("/api/KortistoApi/ResolveFlexFieldObjectNames", [ npcId ]).done(function(itemNames) {
                     if(itemNames.length == 0)
                     {
                         def.reject();

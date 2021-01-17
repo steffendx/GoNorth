@@ -14,7 +14,9 @@
 
     "ConditionNode": "Condition",
     "ActionNode": "Action",
+    "ReferenceNode": "Reference",
 
+    "ChooseGeneralObject": "Choose object",
     "ChooseQuest": "Choose quest",
     "ChooseNpc": "Choose npc",
     "ChooseSkill": "Choose skill",

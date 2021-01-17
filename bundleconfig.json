@@ -83,7 +83,8 @@
       "wwwroot/lib/moment/locale/de.js",
       "wwwroot/js/Shared/util.js",
       "wwwroot/js/Shared/knockout.bindings.js",
-      "wwwroot/js/Shared/lockService.js"
+      "wwwroot/js/Shared/lockService.js",
+      "wwwroot/js/Shared/httpClient.js"
     ],
     "minify": {
       "enabled": true,
@@ -130,7 +131,17 @@
     "sourceMap": false
   },
 
-
+  {
+    "outputFileName": "wwwroot/js/Home/home.viewmodel.min.js",
+    "inputFiles": [
+      "wwwroot/js/Home/home.viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
   {
     "outputFileName": "wwwroot/js/Timeline/timeline.viewmodel.min.js",
     "inputFiles": [
@@ -358,6 +369,8 @@
       "wwwroot/js/Shared/nodeGraph/conditionNode.js",
       "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
 
+      "wwwroot/js/Shared/nodeGraph/referenceNode.js",
+
       "wwwroot/js/Kortisto/npcForm/utilFunctions.js",
       "wwwroot/js/Kortisto/npcForm/inventoryForm.js",
       "wwwroot/js/Kortisto/npcForm/skillForm.js",
@@ -424,6 +437,7 @@
       "wwwroot/js/Shared/scriptDialog/codeEditor.bindingHandler.js",
       "wwwroot/js/Shared/scriptDialog/codeScriptDialog.js",
       "wwwroot/js/Shared/scriptDialog/nodeScriptDialog.js",
+      "wwwroot/js/Shared/dailyRoutines/utilFunctions.js",
 
       "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
       "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
@@ -498,6 +512,8 @@
       "wwwroot/js/Shared/nodeGraph/actions/spawnObjectAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/spawnNpcAtMarkerAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/spawnItemAtMarkerAction.js",
+      
+      "wwwroot/js/Shared/nodeGraph/referenceNode.js",
 
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
@@ -688,6 +704,8 @@
       "wwwroot/js/Shared/nodeGraph/actions/spawnNpcAtMarkerAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/spawnItemAtMarkerAction.js",
 
+      "wwwroot/js/Shared/nodeGraph/referenceNode.js",
+
       "wwwroot/js/Evne/skillForm/textNode.js",
 
       "wwwroot/js/Evne/skillForm/viewmodel.js"
@@ -874,6 +892,8 @@
       "wwwroot/js/Shared/nodeGraph/conditionNode.js",
       "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
 
+      "wwwroot/js/Shared/nodeGraph/referenceNode.js",
+
       "wwwroot/js/Karta/mapForm/cachedLoading.js",
       "wwwroot/js/Karta/mapForm/leafletDrawColorpicker.js",
       "wwwroot/js/Karta/mapForm/leafletDrawToolbarExtensions.js",
@@ -1034,6 +1054,8 @@
       "wwwroot/js/Shared/nodeGraph/conditions/checkCodeCondition.js",
       "wwwroot/js/Shared/nodeGraph/conditionNode.js",
       "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
+
+      "wwwroot/js/Shared/nodeGraph/referenceNode.js",
 
       "wwwroot/js/Tale/dialogForm/viewmodel.js"
     ],
@@ -1212,6 +1234,8 @@
       "wwwroot/js/Shared/nodeGraph/actions/spawnNpcAtMarkerAction.js",
       "wwwroot/js/Shared/nodeGraph/actions/spawnItemAtMarkerAction.js",
       
+      "wwwroot/js/Shared/nodeGraph/referenceNode.js",
+
       "wwwroot/js/Aika/shared/finishNode.js",
       "wwwroot/js/Aika/shared/startNode.js",
       "wwwroot/js/Aika/shared/allDoneNode.js",

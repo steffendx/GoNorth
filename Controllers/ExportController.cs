@@ -8,6 +8,7 @@ using GoNorth.Models.ExportViewModels;
 using GoNorth.Services.Export.Dialog;
 using GoNorth.Services.Export.Dialog.ActionRendering;
 using GoNorth.Services.Export.Dialog.ActionRendering.Localization;
+using GoNorth.Services.Project;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -42,9 +43,9 @@ namespace GoNorth.Controllers
         private readonly IExportSettingsDbAccess _exportSettings;
 
         /// <summary>
-        /// Project Db Access
+        /// User Project Access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Action translator
@@ -58,16 +59,16 @@ namespace GoNorth.Controllers
         /// <param name="userPreferencesDbAccess">User PReferences Database access</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="exportSettings">Export settings</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="userProjectAccess">User project Access</param>
         /// <param name="actionTranslator">Action translator</param>
-        public ExportController(IExportDefaultTemplateProvider exportDefaultTemplateProvider, IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, IExportSettingsDbAccess exportSettings, IProjectDbAccess projectDbAccess,
+        public ExportController(IExportDefaultTemplateProvider exportDefaultTemplateProvider, IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, IExportSettingsDbAccess exportSettings, IUserProjectAccess userProjectAccess,
                                 IActionTranslator actionTranslator)
         {
             _exportDefaultTemplateProvider = exportDefaultTemplateProvider;
             _userPreferencesDbAccess = userPreferencesDbAccess;
             _userManager = userManager;
             _exportSettings = exportSettings;
-            _projectDbAccess = projectDbAccess;
+            _userProjectAccess = userProjectAccess;
             _actionTranslator = actionTranslator;
         }
 
@@ -142,7 +143,7 @@ namespace GoNorth.Controllers
         /// <returns>View</returns>
         public async Task<IActionResult> FunctionGenerationCondition()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             FunctionGenerationConditionViewModel viewModel = new FunctionGenerationConditionViewModel();
             viewModel.DialogFunctionGenerationActionTypes = Enum.GetValues(typeof(ActionType)).Cast<ActionType>().Select(s => new MappedDialogFunctionGenerationActionType {
                 OriginalActionType = s,
@@ -163,7 +164,7 @@ namespace GoNorth.Controllers
         /// <returns>Script Language</returns>
         private async Task<string> GetScriptLanguage(bool isLanguage)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             ExportSettings exportSettings = await _exportSettings.GetExportSettings(project.Id);
 
             if(exportSettings != null)

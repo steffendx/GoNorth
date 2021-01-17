@@ -96,14 +96,14 @@
                  */
                 loadConfig: function() {
                     var self = this;
-                    jQuery.ajax("/api/ProjectConfigApi/GetMiscConfig").done(function(data) {
+                    GoNorth.HttpClient.get("/api/ProjectConfigApi/GetMiscConfig").done(function(data) {
                         self.hoursPerDay(data.hoursPerDay);
                         self.minutesPerHour(data.minutesPerHour);
                     }).fail(function() {
                         self.errorOccured(true);
                     });
 
-                    jQuery.ajax("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction).done(function(loadedConfigData) {
+                    GoNorth.HttpClient.get("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction).done(function(loadedConfigData) {
                         if(!loadedConfigData)
                         {
                             return;
@@ -638,11 +638,7 @@
 
                     var self = this;
                     var currentNpcId = this.currentNpcId();
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/DeleteDailyRoutineEvent?id=" + encodeURIComponent(currentNpcId) + "&eventId=" + encodeURIComponent(eventToDelete.eventId), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function() {
+                    GoNorth.HttpClient.delete("/api/KortistoApi/DeleteDailyRoutineEvent?id=" + encodeURIComponent(currentNpcId) + "&eventId=" + encodeURIComponent(eventToDelete.eventId)).done(function() {
                         Map.invalidateCachedNpc(currentNpcId);
 
                         self.isLoading(false);
@@ -699,13 +695,7 @@
                     var def = new jQuery.Deferred();
 
                     var currentNpcId = this.currentNpcId();
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/SaveDailyRoutineEvent?id=" + encodeURIComponent(currentNpcId), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(GoNorth.DailyRoutines.serializeRoutineEvent(routineEvent)), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(eventId) {
+                    GoNorth.HttpClient.post("/api/KortistoApi/SaveDailyRoutineEvent?id=" + encodeURIComponent(currentNpcId), GoNorth.DailyRoutines.serializeRoutineEvent(routineEvent)).done(function(eventId) {
                         Map.invalidateCachedNpc(currentNpcId);
 
                         if(!routineEvent.eventId) {

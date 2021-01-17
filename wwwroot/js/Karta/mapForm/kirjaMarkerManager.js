@@ -42,10 +42,7 @@
              */
             Map.KirjaMarkerManager.prototype.sendEntriesRequest = function() {
                 var def = new jQuery.Deferred();
-                jQuery.ajax({ 
-                    url: "/api/KirjaApi/SearchPages?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * kirjaPageSize) + "&pageSize=" + kirjaPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KirjaApi/SearchPages?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * kirjaPageSize) + "&pageSize=" + kirjaPageSize).done(function(data) {
                     def.resolve({
                         entries: data.pages,
                         hasMore: data.hasMore

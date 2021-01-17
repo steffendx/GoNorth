@@ -59,14 +59,14 @@
                  */
                 loadConfig: function() {
                     var self = this;
-                    jQuery.ajax("/api/ProjectConfigApi/GetMiscConfig").done(function(data) {
+                    GoNorth.HttpClient.get("/api/ProjectConfigApi/GetMiscConfig").done(function(data) {
                         self.hoursPerDay(data.hoursPerDay);
                         self.minutesPerHour(data.minutesPerHour);
                     }).fail(function() {
                         self.errorOccured(true);
                     });
 
-                    jQuery.ajax("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction).done(function(loadedConfigData) {
+                    GoNorth.HttpClient.get("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + GoNorth.ProjectConfig.ConfigKeys.SetNpcStateAction).done(function(loadedConfigData) {
                         if(!loadedConfigData)
                         {
                             return;

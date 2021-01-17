@@ -85,9 +85,14 @@ namespace GoNorth.Data.Tale
         /// <returns>All Dialogs object is referenced in without detail information and the entrie with relatedobjectid = itself</returns>
         public async Task<List<TaleDialog>> GetDialogsObjectIsReferenced(string objectId)
         {
-            List<TaleDialog> dialogs = await _DialogCollection.AsQueryable().Where(t => t.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || t.Condition.Any(c => c.Conditions.Any(ce => ce.DependsOnObjects.Any(o => o.ObjectId == objectId))) || t.Choice.Any(c => c.Choices.Any(co => co.Condition != null && co.Condition.DependsOnObjects.Any(o => o.ObjectId == objectId)))).Select(t => new TaleDialog() {
+            List<TaleDialog> dialogs = await _DialogCollection.AsQueryable().Where(t => t.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || t.Condition.Any(c => c.Conditions.Any(ce => ce.DependsOnObjects.Any(o => o.ObjectId == objectId))) || t.Choice.Any(c => c.Choices.Any(co => co.Condition != null && co.Condition.DependsOnObjects.Any(o => o.ObjectId == objectId))) ||
+                                                                                        t.Reference.Any(a => a.ReferencedObjects.Any(r => r.ObjectId == objectId))).Select(t => new TaleDialog() {
                 Id = t.Id,
-                RelatedObjectId = t.RelatedObjectId
+                RelatedObjectId = t.RelatedObjectId,
+                Action = t.Action,
+                Choice = t.Choice,
+                Condition = t.Condition,
+                Reference = t.Reference
             }).ToListAsync();
             return dialogs;
         }

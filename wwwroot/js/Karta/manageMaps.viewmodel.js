@@ -46,9 +46,7 @@
                 loadMaps: function() {
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/KartaApi/Maps"
-                    }).done(function(maps) {
+                    GoNorth.HttpClient.get("/api/KartaApi/Maps").done(function(maps) {
                         self.maps(maps);
                     }).fail(function() {
                        self.errorOccured(true); 
@@ -175,11 +173,7 @@
                 renameMap: function() {
                     this.dialogLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/RenameMap?id=" + this.editMapId() + "&name=" + encodeURIComponent(this.createEditName()), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/KartaApi/RenameMap?id=" + this.editMapId() + "&name=" + encodeURIComponent(this.createEditName()), {}).done(function(data) {
                         self.closeCreateEditMapDialog();
                         self.dialogLoading(false);
                         self.loadMaps();
@@ -219,11 +213,7 @@
                 deleteMap: function() {
                     var self = this;
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/DeleteMap?id=" + this.deleteMapId, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/KartaApi/DeleteMap?id=" + this.deleteMapId).done(function(data) {
                         self.closeConfirmDeleteDialog();
                         self.dialogLoading(false);
                         self.loadMaps();

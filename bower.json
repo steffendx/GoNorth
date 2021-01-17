@@ -4,10 +4,10 @@
   "dependencies": {
     "bootstrap": "3.4.1",
     "jquery": "^3.5.1",
-    "jquery-validation": "1.19.2",
+    "jquery-validation": "1.19.3",
     "jquery-validation-unobtrusive": "3.2.10",
     "knockout": "^3.5.1",
-    "moment": "^2.29.0",
+    "moment": "^2.29.1",
     "dropzone": "^5.7.2",
     "bootstrap3-typeahead": "^4.0.2",
     "bootstrap-tagsinput": "^0.8.0",

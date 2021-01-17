@@ -1,18 +1,22 @@
 {
     "FolderNotEmpty": "The folder is not empty.",
 
-    "CanNotDeleteItemReferencedInAikaQuest": "The item is referenced in the Aika quests \"{0}\". To prevent errors in the story it must be deleted there first.", 
-    "CanNotDeleteItemMentionedInKirjaPage": "The item is mentioned in the Kirja pages \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteItemMarkedInKartaMap": "The item is marked in the Karta maps \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteItemReferencedInTaleDialog": "The item is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteItemReferencedInAikaQuest": "The item is referenced in the quests \"{0}\". To prevent errors in the story it must be deleted there first.", 
+    "CanNotDeleteItemMentionedInKirjaPage": "The item is mentioned in the wiki pages \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteItemMarkedInKartaMap": "The item is marked in the maps \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteItemReferencedInTaleDialog": "The item is referenced in the dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteItemUsedInInventory": "The item is used in the npc inventories \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteItemUsedInDailyRoutine": "The item is referenced in daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteObjectUsedInExportSnippet": "The object is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteItemUsedInSkill": "The item is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",
     "ImageFormatNotSupported": "The image format is not supported.",
 
     "DuplicateFieldNameExist": "Multiple fields with the same name exist.",
+
+    "TemplateIsForDifferentProject": "The specified template belongs to a different project. Please switch to that project.",
 
     "ImportFieldValuesObjectNotFound": "Item not found.",
     "ImportFieldValuesFieldNotFoundInTemplate": "The field {0} was not found in the template nor in the item. The value cannot be imported.",

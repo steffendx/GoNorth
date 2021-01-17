@@ -183,7 +183,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Filled Code</returns>
         private async Task<string> FillLanguageKeyPlaceholders(string code, IFlexFieldExportable flexFieldObject, List<LanguageKey> referencedLanguageKeys)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             List<LanguageKey> languageKeys = await _languageKeyDbAccess.GetLanguageKeysByGroupId(project.Id, flexFieldObject.Id);
             ExportSettings exportSettings = await _cachedDbAccess.GetExportSettings(project.Id);
 

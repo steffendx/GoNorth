@@ -56,13 +56,7 @@
 
                     var itemDef = new jQuery.Deferred();
                     loadingDefs.push(itemDef);
-                    jQuery.ajax({ 
-                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify([ existingIds.itemId ]), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(itemNames) {
+                    GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", [ existingIds.itemId ]).done(function(itemNames) {
                         if(itemNames.length == 0)
                         {
                             itemDef.reject();
@@ -82,13 +76,7 @@
 
                     var npcDef = new jQuery.Deferred();
                     loadingDefs.push(npcDef);
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify([ existingIds.npcId ]), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(npcNames) {
+                    GoNorth.HttpClient.post("/api/KortistoApi/ResolveFlexFieldObjectNames", [ existingIds.npcId ]).done(function(npcNames) {
                         if(npcNames.length == 0)
                         {
                             npcDef.reject();

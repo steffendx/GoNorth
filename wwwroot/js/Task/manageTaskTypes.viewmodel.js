@@ -149,10 +149,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/" + this.loadingApiFunction, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/" + this.loadingApiFunction).done(function(data) {
                         var loadedTypes = [];
 
                         // Ignore default task types
@@ -176,10 +173,7 @@
                  */
                 loadAnyTaskWithoutType: function() {
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/" + this.anyTaskWithOutTypeApiFunction, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/" + this.anyTaskWithOutTypeApiFunction).done(function(data) {
                         self.anyTaskWithoutType(data);
                     }).fail(function() {
                         self.errorOccured(true);
@@ -264,13 +258,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function() {
+                    GoNorth.HttpClient.post(url, request).done(function() {
                         self.isLoading(false);
                         self.loadTypes();
                         self.cancelCreateEditTaskTypeDialog();
@@ -313,11 +301,7 @@
                     var self = this;
                     this.isLoading(true);
                     this.errorOccured(false);
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function() {
+                    GoNorth.HttpClient.delete(url).done(function() {
                         self.isLoading(false);
                         self.loadTypes();
                         self.cancelDeleteTaskTypeDialog();

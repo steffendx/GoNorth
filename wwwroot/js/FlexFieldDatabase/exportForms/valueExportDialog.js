@@ -61,10 +61,7 @@
                     this.isLoading(true);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get(url).done(function(data) {
                         self.isLoading(false);
 
                         var fields = [];

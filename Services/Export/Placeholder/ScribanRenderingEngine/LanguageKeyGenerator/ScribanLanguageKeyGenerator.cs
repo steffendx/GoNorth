@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine.RenderingObjects;
 using GoNorth.Services.Export.Dialog.StepRenderers.RenderingObjects;
 using GoNorth.Services.Export.LanguageKeyGeneration;
+using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFunctions;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingObjects;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util;
 using Microsoft.Extensions.Localization;
@@ -15,7 +16,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKey
     /// <summary>
     /// Class for Scriban Language Key Generators
     /// </summary>
-    public class ScribanLanguageKeyGenerator : IScribanLanguageKeyGenerator, IScriptCustomFunction
+    public class ScribanLanguageKeyGenerator : ScribanBaseStringRenderingFunction<object>, IScribanLanguageKeyGenerator
     {
         /// <summary>
         /// Language Key Generator
@@ -249,7 +250,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKey
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Language Key</returns>
-        public object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return GetLanguageKey(context, callerContext, arguments).Result;
         }
@@ -262,7 +263,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKey
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Language Key</returns>
-        public ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return GetLanguageKey(context, callerContext, arguments);
         }

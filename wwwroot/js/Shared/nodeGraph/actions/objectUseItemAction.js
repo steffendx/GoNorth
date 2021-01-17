@@ -46,13 +46,7 @@
 
                     actionNode.showLoading();
                     actionNode.hideError();
-                    jQuery.ajax({ 
-                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify([ existingItemId ]), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(itemNames) {
+                    GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", [ existingItemId ]).done(function(itemNames) {
                         if(itemNames.length == 0)
                         {
                             actionNode.hideLoading();

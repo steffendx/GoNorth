@@ -36,13 +36,7 @@
                     this.isLoadingSkills(true);
                     this.loadingSkillsError(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/EvneApi/ResolveFlexFieldObjectNames",
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(learnedSkillIds),
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function (skillNames) {
+                    GoNorth.HttpClient.post("/api/EvneApi/ResolveFlexFieldObjectNames", learnedSkillIds).done(function (skillNames) {
                         var loadedSkills = [];
                         for (var curSkill = 0; curSkill < skillNames.length; ++curSkill) {
                             loadedSkills.push({

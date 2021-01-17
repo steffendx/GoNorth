@@ -23,6 +23,9 @@
             
             /// Object Resource for Project misc config
             Shapes.ObjectResourceProjectMiscConfig = 6;
+            
+            /// Object Resource for Wiki page
+            Shapes.ObjectResourceWikiPage = 7;
 
 
             /// Cached loaded objects

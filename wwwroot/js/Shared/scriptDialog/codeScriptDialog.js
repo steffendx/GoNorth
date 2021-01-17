@@ -41,7 +41,7 @@
                  */
                 loadConfig: function() {
                     var self = this;
-                    jQuery.ajax("/api/UserPreferencesApi/GetCodeEditorPreferences").done(function(config) {
+                    GoNorth.HttpClient.get("/api/UserPreferencesApi/GetCodeEditorPreferences").done(function(config) {
                         self.codeEditorTheme(config.codeEditorTheme);
                         self.codeEditorScriptLanguage(config.scriptLanguage);
                     }).fail(function() {

@@ -38,13 +38,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/SaveChapterOverview", 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify(serializedGraph), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post("/api/AikaApi/SaveChapterOverview", serializedGraph).done(function(data) {
                     Aika.Shared.setDetailViewIds(self.nodeGraph(), data.chapter);
 
                     if(!self.id())
@@ -73,10 +67,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterOverview", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterOverview").done(function(data) {
                     self.isLoading(false);
 
                     // Only deserialize data if a chapter overview already exists, will be null before someone saves it

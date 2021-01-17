@@ -93,10 +93,7 @@
                         var self = this;
                         this.showLoading();
                         this.hideError();
-                        jQuery.ajax({ 
-                            url: "/api/AikaApi/GetQuest?id=" + self.model.get("questId"), 
-                            type: "GET"
-                        }).done(function(data) {
+                        GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + self.model.get("questId")).done(function(data) {
                             self.hideLoading();
                             if(!data)
                             {

@@ -19,6 +19,10 @@ using GoNorth.Data.Kortisto;
 using GoNorth.Data.Tale;
 using GoNorth.Data.Aika;
 using Microsoft.AspNetCore.Http;
+using GoNorth.Services.Project;
+using GoNorth.Data.Evne;
+using GoNorth.Data.Exporting;
+using GoNorth.Services.Export.ExportSnippets;
 
 namespace GoNorth.Controllers.Api
 {
@@ -131,9 +135,19 @@ namespace GoNorth.Controllers.Api
         private readonly IAikaQuestDbAccess _questDbAccess;
 
         /// <summary>
-        /// Project Db Access
+        /// Skill Db Access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IEvneSkillDbAccess _skillDbAccess;
+
+        /// <summary>
+        /// Object export snippet Db Access
+        /// </summary>
+        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+
+        /// <summary>
+        /// User project access
+        /// </summary>
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Karta Image Access
@@ -144,6 +158,11 @@ namespace GoNorth.Controllers.Api
         /// Karta Image Processor
         /// </summary>
         private readonly IKartaImageProcessor _imageProcessor;
+        
+        /// <summary>
+        /// Service that will resolve export snippet related object names
+        /// </summary>
+        private readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
 
         /// <summary>
         /// Timeline Service
@@ -173,15 +192,19 @@ namespace GoNorth.Controllers.Api
         /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="skillDbAccess">Skill Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="mapImageAccess">Map Image Access</param>
         /// <param name="imageProcessor">Map Image Processor</param>
+        /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public KartaApiController(IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerImplementationSnapshotDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, ITaleDbAccess taleDbAccess, 
-                                  IAikaQuestDbAccess questDbAccess, IProjectDbAccess projectDbAccess, IKartaImageAccess mapImageAccess, IKartaImageProcessor imageProcessor, ITimelineService timelineService, 
+                                  IAikaQuestDbAccess questDbAccess, IEvneSkillDbAccess skillDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IUserProjectAccess userProjectAccess, 
+                                  IKartaImageAccess mapImageAccess, IKartaImageProcessor imageProcessor, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, ITimelineService timelineService, 
                                   UserManager<GoNorthUser> userManager, ILogger<KartaApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _mapDbAccess = mapDbAccess;
@@ -189,9 +212,12 @@ namespace GoNorth.Controllers.Api
             _kortistoNpcDbAccess = kortistoNpcDbAccess;
             _taleDbAccess = taleDbAccess;
             _questDbAccess = questDbAccess;
-            _projectDbAccess = projectDbAccess;
+            _skillDbAccess = skillDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _userProjectAccess = userProjectAccess;
             _mapImageAccess = mapImageAccess;
             _imageProcessor = imageProcessor;
+            _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
             _timelineService = timelineService;
             _userManager = userManager;
             _logger = logger;
@@ -237,7 +263,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> Maps()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             List<KartaMap> maps = await _mapDbAccess.GetAllProjectMaps(project.Id);
             return Ok(maps);
         }
@@ -372,7 +398,7 @@ namespace GoNorth.Controllers.Api
 
             await this.SetModifiedData(_userManager, map);
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             map.ProjectId = project.Id;
 
             // Process Map
@@ -399,7 +425,7 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         
-            await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapCreated, map.Name, map.Id);
+            await _timelineService.AddTimelineEntry(map.ProjectId, TimelineEvent.KartaMapCreated, map.Name, map.Id);
 
             return Ok(map.Id);
         }
@@ -504,7 +530,7 @@ namespace GoNorth.Controllers.Api
             // Clean rollback data
             _mapImageAccess.CleanRollbackMapImages(map.Id);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapUpdated, name, id);
+            await _timelineService.AddTimelineEntry(map.ProjectId, TimelineEvent.KartaMapUpdated, name, id);
 
             return Ok(id);
         }
@@ -576,7 +602,7 @@ namespace GoNorth.Controllers.Api
                 await this.SyncMapNameToMarkers(id, name);
             }
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapUpdated, name, id);
+            await _timelineService.AddTimelineEntry(map.ProjectId, TimelineEvent.KartaMapUpdated, name, id);
             return Ok(id);
         }
 
@@ -630,7 +656,7 @@ namespace GoNorth.Controllers.Api
             _mapImageAccess.DeleteMapFolder(map.Id);
             _logger.LogInformation("Map image was deleted.");
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapDeleted, map.Name);
+            await _timelineService.AddTimelineEntry(map.ProjectId, TimelineEvent.KartaMapDeleted, map.Name);
             return Ok(id);
         }
 
@@ -668,6 +694,21 @@ namespace GoNorth.Controllers.Api
             {
                 string referencedInQuests = string.Join(", ", aikaQuests.Select(p => p.Name));
                 return _localizer["CanNotDeleteMapReferencedInAikaQuest", referencedInQuests].Value;
+            }
+
+            List<EvneSkill> referencedInSkills = await _skillDbAccess.GetSkillsObjectIsReferencedIn(id);
+            if(referencedInSkills.Count > 0)
+            {
+                string usedInSkills = string.Join(", ", referencedInSkills.Select(m => m.Name));
+                return _localizer["CanNotDeleteMapReferencedInSkill", usedInSkills].Value;
+            }
+
+            List<ObjectExportSnippet> referencedInSnippets = await _objectExportSnippetDbAccess.GetExportSnippetsObjectIsReferenced(id);
+            if(referencedInSnippets.Count > 0)
+            {
+                List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
+                string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
+                return _localizer["CanNotDeleteMapReferencedInExportSnippet", usedInDailyRoutines].Value;
             }
 
             return null;
@@ -856,7 +897,7 @@ namespace GoNorth.Controllers.Api
             await _mapDbAccess.UpdateMap(map);
 
             string localizedMarkerType = _localizer["MarkerType" + markerType].Value;
-            await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapMarkerUpdated, map.Name, map.Id, markerId, markerType, localizedMarkerType);
+            await _timelineService.AddTimelineEntry(map.ProjectId, TimelineEvent.KartaMapMarkerUpdated, map.Name, map.Id, markerId, markerType, localizedMarkerType);
 
             return Ok(id);
         } 
@@ -922,7 +963,7 @@ namespace GoNorth.Controllers.Api
             await _mapDbAccess.UpdateMap(map);
 
             string localizedMarkerType = _localizer["MarkerType" + markerType.ToString()].Value;
-            await _timelineService.AddTimelineEntry(TimelineEvent.KartaMapMarkerDeleted, map.Name, map.Id, localizedMarkerType);
+            await _timelineService.AddTimelineEntry(map.ProjectId, TimelineEvent.KartaMapMarkerDeleted, map.Name, map.Id, localizedMarkerType);
 
             return Ok(id);
         } 
@@ -956,6 +997,21 @@ namespace GoNorth.Controllers.Api
                 return _localizer["CanNotDeleteMarkerReferencedInAikaQuest", referencedInQuests].Value;
             }
             
+            List<EvneSkill> referencedInSkills = await _skillDbAccess.GetSkillsObjectIsReferencedIn(markerId);
+            if(referencedInSkills.Count > 0)
+            {
+                string usedInSkills = string.Join(", ", referencedInSkills.Select(m => m.Name));
+                return _localizer["CanNotDeleteMarkerReferencedInSkill", usedInSkills].Value;
+            }
+
+            List<ObjectExportSnippet> referencedInSnippets = await _objectExportSnippetDbAccess.GetExportSnippetsObjectIsReferenced(markerId);
+            if(referencedInSnippets.Count > 0)
+            {
+                List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
+                string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
+                return _localizer["CanNotDeleteMarkerReferencedInExportSnippet", usedInDailyRoutines].Value;
+            }
+
             return null;
         }
 
@@ -1002,7 +1058,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetNotImplementedMarkers(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<MarkerImplementationQueryResultObject>> queryTask;
             Task<int> countTask;
             queryTask = _mapDbAccess.GetNotImplementedMarkers(project.Id, start, pageSize);
@@ -1031,7 +1087,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> SearchMarkersByExportName(string searchPattern, int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             List<KartaMapNamedMarkerQueryResult> markers = await _mapDbAccess.GetMarkersByExportName(project.Id, searchPattern);
 
             NamedMarkerQueryResult queryResult = new NamedMarkerQueryResult();

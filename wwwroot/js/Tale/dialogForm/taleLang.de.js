@@ -4,6 +4,7 @@
         (function(Localization) {
 
             Localization.ViewModel = {};
+            Localization.ViewModel.ChooseGeneralObject = "Objekt auswählen";
             Localization.ViewModel.ChooseQuest = "Quest auswählen";
             Localization.ViewModel.ChooseNpc = "Npc auswählen";
             Localization.ViewModel.ChooseSkill = "Fähigkeit auswählen";

@@ -133,13 +133,7 @@
                     this.errorOccured(false);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/ImportFieldValues", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(requestObject), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/" + this.apiControllerName + "/ImportFieldValues", requestObject).done(function(data) {
                         self.importWasRun(true);
                         self.isLoading(false);
 
@@ -149,6 +143,15 @@
                     }).fail(function(xhr) {
                         self.isLoading(false);
                         self.errorOccured(true);
+
+                        if(xhr && xhr.status == 400 && err && err.value)
+                        {
+                            self.additionalErrorMessage(err.value);
+                        }
+                        else
+                        {
+                            self.additionalErrorMessage("");
+                        }
                     });
                 },
 
@@ -239,10 +242,7 @@
                     this.errorOccured(false);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/GetFlexFieldValueImportLogs?start=" + (this.currentImportsListPage() * importLogPageSize) + "&pageSize=" + importLogPageSize, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/GetFlexFieldValueImportLogs?start=" + (this.currentImportsListPage() * importLogPageSize) + "&pageSize=" + importLogPageSize).done(function(data) {
                         self.previousImportsLoading(false);
                         self.previousImportsPrevLoading(false);
                         self.previousImportsNextLoading(false);
@@ -267,10 +267,7 @@
                     this.previousImportsNextLoading(true);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/GetFlexFieldValueImportLog?id=" + encodeURIComponent(importLog.id), 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/GetFlexFieldValueImportLog?id=" + encodeURIComponent(importLog.id)).done(function(data) {
                         self.previousImportsLoading(false);
                         self.previousImportsPrevLoading(false);
                         self.previousImportsNextLoading(false);

@@ -13,9 +13,11 @@ using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Styr;
 using GoNorth.Data.TaskManagement;
+using GoNorth.Data.User;
 using GoNorth.Services.Timeline;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -26,7 +28,7 @@ namespace GoNorth.Controllers.Api
     /// Project Api controller
     /// </summary>
     [ApiController]
-    [Authorize(Roles = RoleNames.Administrator)]
+    [Authorize]
     [Route("/api/[controller]/[action]")]
     public class ProjectApiController : ControllerBase
     {
@@ -121,6 +123,11 @@ namespace GoNorth.Controllers.Api
         private readonly IProjectConfigDbAccess _projectConfigDbAccess;
 
         /// <summary>
+        /// User Manager
+        /// </summary>
+        private readonly UserManager<GoNorthUser> _userManager;
+
+        /// <summary>
         /// Timeline Service
         /// </summary>
         private readonly ITimelineService _timelineService;
@@ -156,13 +163,14 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="includeExportTemplateDbAccess">Include export template Db Access</param>
         /// <param name="projectConfigDbAccess">Project Config Db Access</param>
+        /// <param name="userManager">User Manager</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ProjectApiController(IProjectDbAccess projectDbAccess, IKortistoFolderDbAccess kortistoFolderDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrFolderDbAccess styrFolderDbAccess, IStyrItemDbAccess itemDbAccess, IEvneFolderDbAccess evneFolderDbAccess, IEvneSkillDbAccess skillDbAccess, 
                                     IKirjaPageDbAccess kirjaPageDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaQuestDbAccess questDbAccess, IKartaMapDbAccess mapDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskNumberDbAccess taskNumberDbAccess, 
                                     IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, IProjectConfigDbAccess projectConfigDbAccess, 
-                                    ITimelineService timelineService, ILogger<ProjectApiController> logger,IStringLocalizerFactory localizerFactory)
+                                    UserManager<GoNorthUser> userManager, ITimelineService timelineService, ILogger<ProjectApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _projectDbAccess = projectDbAccess;
             _kortistoFolderDbAccess = kortistoFolderDbAccess;
@@ -182,6 +190,7 @@ namespace GoNorth.Controllers.Api
             _exportTemplateDbAccess = exportTemplateDbAccess;
             _includeExportTemplateDbAccess = includeExportTemplateDbAccess;
             _projectConfigDbAccess = projectConfigDbAccess;
+            _userManager = userManager;
             _timelineService = timelineService;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(ProjectApiController));
@@ -199,12 +208,35 @@ namespace GoNorth.Controllers.Api
 
             return Ok(projects);
         }
+        
+        /// <summary>
+        /// Returns all project entries
+        /// </summary>
+        /// <returns>Project Entries</returns>
+        [ValidateAntiForgeryToken]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        public async Task<IActionResult> SetUserSelectedProject(string projectId)
+        {
+            GoNorthProject project = await _projectDbAccess.GetProjectById(projectId);
+            if(project == null)
+            {
+                return NotFound();
+            }
+
+            string userId = _userManager.GetUserId(this.User);
+            await _projectDbAccess.SetUserSelectedProject(userId, project.Id);
+
+            return Ok();
+        }
 
         /// <summary>
         /// Creates a new project
         /// </summary>
         /// <param name="project">Project to create</param>
         /// <returns>Result</returns>
+        [Authorize(Roles = RoleNames.Administrator)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
@@ -219,7 +251,7 @@ namespace GoNorth.Controllers.Api
             try
             {
                 project = await _projectDbAccess.CreateProject(project);
-                await _timelineService.AddTimelineEntry(TimelineEvent.ProjectCreated, project.Name);
+                await _timelineService.AddTimelineEntry(null, TimelineEvent.ProjectCreated, project.Name);
                 return Ok(project.Id);
             }
             catch(Exception ex)
@@ -234,6 +266,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="id">Id of the project</param>
         /// <returns>Result Status Code</returns>
+        [Authorize(Roles = RoleNames.Administrator)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]  
         [HttpDelete]
@@ -259,7 +292,7 @@ namespace GoNorth.Controllers.Api
             await CleanUpAdditionalProjectData(project);
             _logger.LogInformation("Additional project data was deleted.");
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.ProjectDeleted, project.Name);
+            await _timelineService.AddTimelineEntry(null, TimelineEvent.ProjectDeleted, project.Name);
             return Ok(id);
         }
 
@@ -371,6 +404,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="id">Project Id</param>
         /// <param name="project">Update project data</param>
         /// <returns>Result Status Code</returns>
+        [Authorize(Roles = RoleNames.Administrator)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)] 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -383,7 +417,7 @@ namespace GoNorth.Controllers.Api
 
             await _projectDbAccess.UpdateProject(loadedProject);
             _logger.LogInformation("Project was updated.");
-            await _timelineService.AddTimelineEntry(TimelineEvent.ProjectUpdated, project.Name);
+            await _timelineService.AddTimelineEntry(null, TimelineEvent.ProjectUpdated, project.Name);
 
             return Ok(id);
         }

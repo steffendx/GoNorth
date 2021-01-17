@@ -15,7 +15,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
     /// <summary>
     /// Class to render an export snippet function
     /// </summary>
-    public class ExportSnippetFunctionPipeRenderer : IScriptCustomFunction
+    public class ExportSnippetFunctionPipeRenderer : ScribanBaseStringRenderingFunction<ScribanExportSnippetFunction>
     {
         /// <summary>
         /// Name of the function
@@ -74,7 +74,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
             }
             ScribanExportSnippetFunction exportFunction = (ScribanExportSnippetFunction)arguments[0];
 
-            GoNorthProject curProject = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject curProject = await _exportCachedDbAccess.GetUserProject();
             ExportTemplate snippetFunctionTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(curProject.Id, TemplateType.ObjectExportSnippetFunction);
 
             ExportObjectData objectData = new ExportObjectData();
@@ -94,7 +94,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Export snippet function</returns>
-        public object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return RenderExportSnippetFunction(context, callerContext, arguments).Result;
         }
@@ -107,7 +107,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Export snippet function</returns>
-        public async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return await RenderExportSnippetFunction(context, callerContext, arguments);
         }

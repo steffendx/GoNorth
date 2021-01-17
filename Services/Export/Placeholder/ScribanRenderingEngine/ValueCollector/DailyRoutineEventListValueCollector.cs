@@ -76,7 +76,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
 
             List<ScribanExportDailyRoutineEvent> events = await ScribanDailyRoutineEventUtil.MapNpcDailyRoutineEvents(_cachedDbAccess, _dailyRoutineFunctionNameGenerator, inputNpc, inputNpc.DailyRoutine);
 
-            scriptObject.Add(ExportConstants.ScribanDailyRoutineEventsObjectKey, events);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanDailyRoutineEventsObjectKey, events);
         }
 
         /// <summary>

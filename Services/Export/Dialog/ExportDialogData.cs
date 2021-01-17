@@ -33,6 +33,11 @@ namespace GoNorth.Services.Export.Dialog
         /// Node Type for action
         /// </summary>
         private const string NodeType_Action = "Action";
+                
+        /// <summary>
+        /// Node Type for reference
+        /// </summary>
+        private const string NodeType_Reference = "Reference";
 
 
         /// <summary>
@@ -69,6 +74,11 @@ namespace GoNorth.Services.Export.Dialog
         /// Conditions
         /// </summary>
         public ConditionNode Condition { get; set; } 
+
+        /// <summary>
+        /// Reference Data
+        /// </summary>
+        public ReferenceNode Reference { get; set; }
 
 
         /// <summary>
@@ -130,6 +140,10 @@ namespace GoNorth.Services.Export.Dialog
             {
                 return NodeType_Action;
             }
+            else if(Reference != null)
+            {
+                return NodeType_Reference;
+            }
 
             return string.Empty;
         }
@@ -145,7 +159,8 @@ namespace GoNorth.Services.Export.Dialog
                 NodeType_NpcText,
                 NodeType_Choice,
                 NodeType_Condition,
-                NodeType_Action
+                NodeType_Action,
+                NodeType_Reference
             };
         }
     }

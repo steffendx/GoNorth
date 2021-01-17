@@ -132,10 +132,7 @@
                     this.errorOccured(false);
                     this.difference([]);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ImplementationStatusApi/" + urlPostfix, 
-                        type: "GET"
-                    }).done(function(compareResult) {
+                    GoNorth.HttpClient.get("/api/ImplementationStatusApi/" + urlPostfix).done(function(compareResult) {
                         self.isLoading(false);
                         self.addExpandedObservable(compareResult.compareDifference);
                         self.doesSnapshotExists(compareResult.doesSnapshotExist);
@@ -187,11 +184,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ImplementationStatusApi/" + this.flagAsImplementedMethodUrlPostfix, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/ImplementationStatusApi/" + this.flagAsImplementedMethodUrlPostfix, {}).done(function() {
                         if(window.refreshImplementationStatusList)
                         {
                             window.refreshImplementationStatusList();

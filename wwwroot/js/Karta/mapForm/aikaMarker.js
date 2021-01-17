@@ -63,9 +63,7 @@
                 var def = new jQuery.Deferred();
 
                 var self = this;
-                jQuery.ajax({
-                    url: "/api/AikaApi/GetQuest?id=" + this.questId
-                }).done(function(quest) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + this.questId).done(function(quest) {
                     var questHtml = "<h4><a href='/Aika/Quest?id=" + self.questId + "' target='_blank'>" + quest.name + "</a></h4>";
                     questHtml += "<div class='gn-kartaPopupContent'>" + jQuery("<div></div>").text(self.name).html() + "</div>";
 

@@ -93,7 +93,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
                 referencedLanguageKeys = new List<LanguageKey>();
             }
 
-            GoNorthProject project = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _exportCachedDbAccess.GetUserProject();
             List<LanguageKey> languageKeys = await _languageKeyDbAccess.GetLanguageKeysByGroupId(project.Id, flexFieldObject.Id);
             ExportSettings exportSettings = await _exportCachedDbAccess.GetExportSettings(project.Id);
 
@@ -104,7 +104,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             languageFileData.LanguageKeys = ConvertLanguageKeysToScriban(languageKeys, exportSettings);
             languageFileData.ReferencedLanguageKeys = ConvertLanguageKeysToScriban(referencedLanguageKeys, exportSettings);
 
-            scriptObject.Add(LanguageObjectKey, languageFileData);
+            scriptObject.AddOrUpdate(LanguageObjectKey, languageFileData);
         }
 
         /// <summary>

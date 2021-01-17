@@ -26,10 +26,7 @@
             Overview.ImplementationStatusNpcList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/GetNotImplementedNpcs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/GetNotImplementedNpcs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.flexFieldObjects,
                       hasMore: data.hasMore

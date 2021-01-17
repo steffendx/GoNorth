@@ -279,10 +279,7 @@
                     var def = new jQuery.Deferred();
 
                     var selectNpcAction = this.contentElement.find(".gn-actionNodeNpcSelect");
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/FlexFieldObject?id=" + selectNpcAction.data("npcid"), 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + selectNpcAction.data("npcid")).done(function(data) {
                         def.resolve(data);
                     }).fail(function(xhr) {
                         def.reject();

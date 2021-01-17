@@ -34,7 +34,7 @@
             function loadActionConfig(configKey) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
+                GoNorth.HttpClient.get("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
                     if(!loadedConfigData)
                     {
                         def.resolve();
@@ -100,7 +100,7 @@
                         {
                             type: actionType,
                             icon: "glyphicon-cog",
-                            size: { width: 250, height: 200 },
+                            size: { width: 250, height: actionNodeHeight },
                             inPorts: ['input'],
                             outPorts: ['output'],
                             attrs:

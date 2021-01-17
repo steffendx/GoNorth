@@ -11,7 +11,7 @@ using GoNorth.Services.Timeline;
 namespace GoNorth.Services.Export.ExportSnippets
 {
     /// <summary>
-    /// Interface for Services that update the related object of an export snippet
+    /// Service that updates the related object of an export snippet
     /// </summary>
     public class ExportSnippetRelatedObjectUpdater : IExportSnippetRelatedObjectUpdater
     {
@@ -134,7 +134,7 @@ namespace GoNorth.Services.Export.ExportSnippets
                 return null;
             }
 
-            await _timelineService.AddTimelineEntry(timelineEvent, exportSnippet.SnippetName, npc.Name, npc.Id);
+            await _timelineService.AddTimelineEntry(exportSnippet.ProjectId, timelineEvent, exportSnippet.SnippetName, npc.Name, npc.Id);
 
             CompareResult result = await _implementationStatusComparer.CompareNpc(npc.Id, npc);
             if(result.CompareDifference != null && result.CompareDifference.Count > 0)
@@ -161,7 +161,7 @@ namespace GoNorth.Services.Export.ExportSnippets
                 return null;
             }
 
-            await _timelineService.AddTimelineEntry(timelineEvent, exportSnippet.SnippetName, item.Name, item.Id);
+            await _timelineService.AddTimelineEntry(exportSnippet.ProjectId, timelineEvent, exportSnippet.SnippetName, item.Name, item.Id);
 
             CompareResult result = await _implementationStatusComparer.CompareItem(item.Id, item);
             if(result.CompareDifference != null && result.CompareDifference.Count > 0)
@@ -188,7 +188,7 @@ namespace GoNorth.Services.Export.ExportSnippets
                 return null;
             }
 
-            await _timelineService.AddTimelineEntry(timelineEvent, exportSnippet.SnippetName, skill.Name, skill.Id);
+            await _timelineService.AddTimelineEntry(exportSnippet.ProjectId, timelineEvent, exportSnippet.SnippetName, skill.Name, skill.Id);
 
             CompareResult result = await _implementationStatusComparer.CompareSkill(skill.Id, skill);
             if(result.CompareDifference != null && result.CompareDifference.Count > 0)

@@ -39,13 +39,7 @@
                     this.isLoadingInventory(true);
                     this.loadingInventoryError(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/StyrApi/ResolveFlexFieldObjectNames",
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(inventoryItemIds),
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function (itemNames) {
+                    GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", inventoryItemIds).done(function (itemNames) {
                         var loadedInventoryItems = [];
                         for (var curItem = 0; curItem < itemNames.length; ++curItem) {
                             loadedInventoryItems.push({

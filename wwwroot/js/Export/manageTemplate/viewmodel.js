@@ -141,10 +141,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({
-                        url: url,
-                        type: "GET"
-                    }).done(function(template) {
+                    GoNorth.HttpClient.get(url).done(function(template) {
                         self.isLoading(false);
                         if(self.customizedObjectId())
                         {
@@ -179,10 +176,7 @@
                 loadTemplatePlaceholders: function() {
                     this.isLoadingPlaceholders(true);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/ExportApi/GetTemplatePlaceholders?templateType=" + this.templateType + "&renderingEngine=" + this.templateRenderingEngine(),
-                        type: "GET"
-                    }).done(function(placeholders) {
+                    GoNorth.HttpClient.get("/api/ExportApi/GetTemplatePlaceholders?templateType=" + this.templateType + "&renderingEngine=" + this.templateRenderingEngine()).done(function(placeholders) {
                         self.templatePlaceholders(placeholders);
                         self.prepareTemplateAutoCompleteLookupTree(placeholders);
                         self.isLoadingPlaceholders(false);
@@ -205,13 +199,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        url: url,
-                        type: "POST",
-                        data: JSON.stringify(this.templateCode()),
-                        contentType: "application/json"
-                    }).done(function() {
+                    GoNorth.HttpClient.post(url, this.templateCode()).done(function() {
                         self.customizedObjectTemplateIsDefault(false);
                         self.isLoading(false);
 
@@ -263,11 +251,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ExportApi/DeleteExportTemplateByObjectId?id=" + this.customizedObjectId(), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/ExportApi/DeleteExportTemplateByObjectId?id=" + this.customizedObjectId()).done(function(data) {
                         self.closeDeleteTemplateDialog();
                         self.redirectToObjectPage();
                     }).fail(function(xhr) {
@@ -308,10 +292,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({
-                        url: url,
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get(url).done(function(data) {
                         self.customizedChildTemplates(data);
                         self.isLoading(false);
                     }).fail(function() {
@@ -364,10 +345,7 @@
                         url += "&id=" + this.customizedObjectId();
                     }
                     var self = this;
-                    jQuery.ajax({
-                        url: url,
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get(url).done(function(data) {
                         self.objectWithInvalidSnippets(data);
                     }).fail(function() {
                         self.errorOccured(true);
@@ -520,7 +498,14 @@
                  */
                 acquireLock: function() {
                     var self = this;
-                    GoNorth.LockService.acquireLock("ExportTemplate", this.templateType).done(function(isLocked, lockedUsername) { 
+                    var appendProjectId = true;
+                    var lockId = this.templateType;
+                    if(this.customizedObjectId())
+                    {
+                        appendProjectId = false;
+                        lockId = this.customizedObjectId();
+                    }
+                    GoNorth.LockService.acquireLock("ExportTemplate", lockId, appendProjectId).done(function(isLocked, lockedUsername) { 
                         if(isLocked)
                         {
                             self.isReadonly(true);

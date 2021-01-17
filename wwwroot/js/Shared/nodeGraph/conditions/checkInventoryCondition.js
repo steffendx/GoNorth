@@ -47,13 +47,7 @@
             Conditions.CheckInventoryCondition.prototype.getItemName = function(itemId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify([ itemId ]), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(itemNames) {
+                GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", [ itemId ]).done(function(itemNames) {
                     if(itemNames.length == 0)
                     {
                         def.reject();

@@ -27,15 +27,15 @@
   "dependencies": {
     "jquery": ">= 1.7.2"
   },
-  "version": "1.19.2",
-  "_release": "1.19.2",
+  "version": "1.19.3",
+  "_release": "1.19.3",
   "_resolution": {
     "type": "version",
-    "tag": "1.19.2",
-    "commit": "203b1fa015c30bb53f31776fd4494f5556dc6ad1"
+    "tag": "1.19.3",
+    "commit": "45b9e2857ba024514f9a46083009f25a94c17e3e"
   },
   "_source": "https://github.com/jzaefferer/jquery-validation.git",
-  "_target": "1.19.2",
+  "_target": "1.19.3",
   "_originalSource": "jquery-validation",
   "_direct": true
 }

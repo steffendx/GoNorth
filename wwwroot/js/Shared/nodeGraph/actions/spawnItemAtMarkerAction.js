@@ -118,10 +118,7 @@
             Actions.SpawnItemAtMarkerAction.prototype.loadChoosenObject = function(itemId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/FlexFieldObject?id=" + itemId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/StyrApi/FlexFieldObject?id=" + itemId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

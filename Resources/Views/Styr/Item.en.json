@@ -42,18 +42,27 @@
     "UnsavedChanges": "Unsaved changes",
     "AreYouSureYouWantToExportUnsavedChanges": "There are unsaved changes. The export will reflect an old state. Are you sure you want to export the old state?",
 
-    "ReferencedInAikaQuests": "Referenced in Aika quests:",
+    "ReferencedInAikaQuests": "Referenced in quests:",
     
-    "MentionedInKirjaPages": "Mentioned in Kirja pages:",
+    "MentionedInKirjaPages": "Mentioned in wiki pages:",
 
-    "MarkedInKartaMaps": "Marked in Karta maps:",
+    "MarkedInKartaMaps": "Marked in maps:",
     "MarkedInMapNTimes": "Item is marked in the map {{0}} times. No zoom on marker is possible.",
 
-    "ReferencedInTaleDialogs": "Referenced in Tale dialogs:",
+    "ReferencedInTaleDialogs": "Referenced in dialogs:",
 
     "ReferencedInDailyRoutines": "Referenced in daily routines:",
+    "ReferencedInExportSnippets": "Referenced in export snippets:",
     
     "ReferencedInNpcInventories": "In npc inventory:",
+    
+    "ReferencedInEvneSkills": "Referenced in skills:",
+
+    "ClickHereForDetailedReferences": "The item is referenced in multiple objects. Click here for details.",
+    "ClickHereToCloseDetailedReferences": "Click here to close the references.",
+
+    "Npc": "Npc",
+    "Skill": "Skill",
     
     "AreYouSure": "Are you sure?",
     "AreYouSureYouWantToDeleteTheObject": "Are you sure you want to delete the item?",

@@ -27,6 +27,10 @@ using GoNorth.Data.Styr;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Aika;
 using System.Globalization;
+using GoNorth.Services.Project;
+using GoNorth.Data.Tale;
+using GoNorth.Data.Exporting;
+using GoNorth.Services.Export.ExportSnippets;
 
 namespace GoNorth.Controllers.Api
 {
@@ -150,9 +154,9 @@ namespace GoNorth.Controllers.Api
         private readonly IKirjaPageVersionDbAccess _pageVersionDbAccess;
 
         /// <summary>
-        /// Project Db Service
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Karta Map Db Access
@@ -180,6 +184,16 @@ namespace GoNorth.Controllers.Api
         private readonly IAikaQuestDbAccess _questDbAccess;
 
         /// <summary>
+        /// Dialog Db Access
+        /// </summary>
+        private readonly ITaleDbAccess _dialogDbAccess;
+
+        /// <summary>
+        /// Object export snippet Db Access
+        /// </summary>
+        protected readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+
+        /// <summary>
         /// File Access
         /// </summary>
         private readonly IKirjaFileAccess _fileAccess;
@@ -193,6 +207,11 @@ namespace GoNorth.Controllers.Api
         /// Page parser service
         /// </summary>
         private readonly IKirjaPageParserService _pageParserService;
+
+        /// <summary>
+        /// Service that will resolve export snippet related object names
+        /// </summary>
+        private readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
 
         /// <summary>
         /// User Manager
@@ -234,35 +253,42 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
-        /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
+        /// <param name="dialogDbAccess">Dialog Db Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="fileAccess">File Access</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="pageParserService">Page parser service</param>
+        /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         /// <param name="configuration">Config Data</param>
-        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IProjectDbAccess projectDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, 
-                                  IAikaQuestDbAccess questDbAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, UserManager<GoNorthUser> userManager, IXssChecker xssChecker, ILogger<KirjaApiController> logger, 
-                                  IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
+        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, 
+                                  IAikaQuestDbAccess questDbAccess, ITaleDbAccess dialogDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IUserProjectAccess userProjectAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, 
+                                  IKirjaPageParserService pageParserService, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, UserManager<GoNorthUser> userManager, IXssChecker xssChecker, 
+                                  ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
         {
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
-            _projectDbAccess = projectDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
             _npcDbAccess = npcDbAccess;
             _itemDbAccess = itemDbAccess;
             _skillDbAccess = skillDbAccess;
             _questDbAccess = questDbAccess;
+            _dialogDbAccess = dialogDbAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _userProjectAccess = userProjectAccess;
             _fileAccess = fileAccess;
             _timelineService = timelineService;
             _pageParserService = pageParserService;
+            _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
             _userManager = userManager;
             _xssChecker = xssChecker;
             _logger = logger;
@@ -303,7 +329,7 @@ namespace GoNorth.Controllers.Api
             }
             else
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 page = await _pageDbAccess.GetDefaultPageForProject(project.Id);
                 if(page == null)
                 {
@@ -357,7 +383,7 @@ namespace GoNorth.Controllers.Api
                 searchPattern = "";
             }
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<KirjaPage>> queryTask;
             Task<int> countTask;
             queryTask = _pageDbAccess.SearchPages(project.Id, searchPattern, start, pageSize, excludeId, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
@@ -483,7 +509,7 @@ namespace GoNorth.Controllers.Api
 
             try
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
 
                 KirjaPage newPage = new KirjaPage();
                 newPage.ProjectId = project.Id;
@@ -497,7 +523,7 @@ namespace GoNorth.Controllers.Api
 
                 newPage = await _pageDbAccess.CreatePage(newPage);
                 await SaveVersionOfPage(newPage);
-                await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageCreated, newPage.Name, newPage.Id);
+                await _timelineService.AddTimelineEntry(newPage.ProjectId, TimelineEvent.KirjaPageCreated, newPage.Name, newPage.Id);
                 return Ok(newPage);
             }
             catch(Exception ex)
@@ -568,7 +594,7 @@ namespace GoNorth.Controllers.Api
             await DeleteUnusedImages(loadedPage.Id, oldImages.Except(loadedPage.UplodadedImages, StringComparer.OrdinalIgnoreCase).ToList());
             _logger.LogInformation("Unused Images were deleted.");
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageUpdated, loadedPage.Name, loadedPage.Id, versionId, oldVersionId);
+            await _timelineService.AddTimelineEntry(loadedPage.ProjectId, TimelineEvent.KirjaPageUpdated, loadedPage.Name, loadedPage.Id, versionId, oldVersionId);
 
             return Ok(loadedPage);
         }
@@ -725,6 +751,43 @@ namespace GoNorth.Controllers.Api
                 return BadRequest(_localizer["CanNotDeletePageMarkedInKartaMap", markedInMaps].Value);
             }
 
+            List<TaleDialog> taleDialogs = await _dialogDbAccess.GetDialogsObjectIsReferenced(id);
+            if(taleDialogs.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _npcDbAccess.ResolveFlexFieldObjectNames(taleDialogs.Select(t => t.RelatedObjectId).ToList());
+                string referencedInDialogs = string.Join(", ", npcs.Select(n => n.Name));
+                return BadRequest(_localizer["CanNotDeletePageReferencedInDialog", referencedInDialogs].Value);
+            }
+            
+            List<KortistoNpc> usedNpcs = await _npcDbAccess.GetNpcsObjectIsReferencedInDailyRoutine(id);
+            if(usedNpcs.Count > 0)
+            {
+                string referencedInNpcs = string.Join(", ", usedNpcs.Select(p => p.Name));
+                return BadRequest(_localizer["CanNotDeletePageReferencedInNpc", referencedInNpcs].Value);
+            }
+
+            List<AikaQuest> aikaQuests = await _questDbAccess.GetQuestsObjectIsReferenced(id);
+            if(aikaQuests.Count > 0)
+            {
+                string referencedInQuests = string.Join(", ", aikaQuests.Select(p => p.Name));
+                return BadRequest(_localizer["CanNotDeletePageReferencedInQuest", referencedInQuests].Value);
+            }
+
+            List<EvneSkill> referencedInSkills = await _skillDbAccess.GetSkillsObjectIsReferencedIn(id);
+            if(referencedInSkills.Count > 0)
+            {
+                string usedInSkills = string.Join(", ", referencedInSkills.Select(m => m.Name));
+                return BadRequest(_localizer["CanNotDeletePageReferencedInSkill", usedInSkills].Value);
+            }
+            
+            List<ObjectExportSnippet> referencedInSnippets = await _objectExportSnippetDbAccess.GetExportSnippetsObjectIsReferenced(id);
+            if(referencedInSnippets.Count > 0)
+            {
+                List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
+                string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
+                return BadRequest(_localizer["CanNotDeletePageReferencedInExportSnippet", usedInDailyRoutines].Value);
+            }
+
             KirjaPage page = await _pageDbAccess.GetPageById(id);
             if(page.IsDefault)
             {
@@ -767,7 +830,7 @@ namespace GoNorth.Controllers.Api
 
             await _pageVersionDbAccess.DeletePageVersionsByPage(page.Id);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaPageDeleted, page.Name);
+            await _timelineService.AddTimelineEntry(page.ProjectId, TimelineEvent.KirjaPageDeleted, page.Name);
             return Ok(id);
         }
 
@@ -944,7 +1007,7 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.InternalServerError, _localizer["CouldNotUploadFile"]);
             }
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaAttachmentAdded, page.Name, page.Id, pageAttachment.OriginalFilename);
+            await _timelineService.AddTimelineEntry(page.ProjectId, TimelineEvent.KirjaAttachmentAdded, page.Name, page.Id, pageAttachment.OriginalFilename);
 
             return Ok(pageAttachment);
         }
@@ -1041,7 +1104,7 @@ namespace GoNorth.Controllers.Api
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
             
-            await _timelineService.AddTimelineEntry(TimelineEvent.KirjaAttachmentDeleted, page.Name, page.Id, attachment.OriginalFilename);
+            await _timelineService.AddTimelineEntry(page.ProjectId, TimelineEvent.KirjaAttachmentDeleted, page.Name, page.Id, attachment.OriginalFilename);
 
             return Ok(pageId);
         }

@@ -156,7 +156,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
             if(dialogFunction != null)
             {
                 // Replace Dialog Function
-                GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+                GoNorthProject project = await _cachedDbAccess.GetUserProject();
                 return await RenderDialogFunction(project, dialogFunction);
             }
             
@@ -171,7 +171,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Filled code</returns>
         private async Task<string> FillDialogPlaceholders(string code, KortistoNpc npc)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             TaleDialog dialog = await _taleDbAccess.GetDialogByRelatedObjectId(npc.Id);
 
             try

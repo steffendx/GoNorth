@@ -4,6 +4,7 @@ using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.User;
 using GoNorth.Extensions;
+using GoNorth.Services.Project;
 using GoNorth.Services.ProjectConfig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -48,9 +49,9 @@ namespace GoNorth.Controllers.Api
         private readonly IProjectConfigDbAccess _projectConfigDbAccess;
 
         /// <summary>
-        /// Project Db Service
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// User Manager
@@ -62,13 +63,13 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="projectConfigProvider">Project config provider</param>
         /// <param name="projectConfigDbAccess">Project config Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="userManager">User Manager</param>
-        public ProjectConfigApiController(IProjectConfigProvider projectConfigProvider, IProjectConfigDbAccess projectConfigDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager)
+        public ProjectConfigApiController(IProjectConfigProvider projectConfigProvider, IProjectConfigDbAccess projectConfigDbAccess, IUserProjectAccess userProjectAccess, UserManager<GoNorthUser> userManager)
         {
             _projectConfigProvider = projectConfigProvider;
             _projectConfigDbAccess = projectConfigDbAccess;
-            _projectDbAccess = projectDbAccess;
+            _userProjectAccess = userProjectAccess;
             _userManager = userManager;
         }
 
@@ -81,7 +82,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetJsonConfigByKey(string configKey)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             JsonConfigEntry configEntry = await _projectConfigDbAccess.GetJsonConfigByKey(project.Id, configKey);
             if(configEntry != null)
             {
@@ -109,7 +110,7 @@ namespace GoNorth.Controllers.Api
                 configData = await reader.ReadToEndAsync();
             }
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             JsonConfigEntry configEntry = await _projectConfigDbAccess.GetJsonConfigByKey(project.Id, configKey);
             if(configEntry != null)
             {
@@ -142,7 +143,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetMiscConfig()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             MiscProjectConfig configEntry = await _projectConfigProvider.GetMiscConfig(project.Id);
             return Ok(StripMiscConfig(configEntry));
         }
@@ -177,7 +178,7 @@ namespace GoNorth.Controllers.Api
                 return BadRequest();
             }
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             MiscProjectConfig configEntry = await _projectConfigDbAccess.GetMiscConfig(project.Id);
             if(configEntry != null)
             {

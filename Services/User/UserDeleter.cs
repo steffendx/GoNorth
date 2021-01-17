@@ -9,6 +9,7 @@ using GoNorth.Data.Karta;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.LockService;
+using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
@@ -180,6 +181,11 @@ namespace GoNorth.Services.User
         private readonly IUserTaskBoardHistoryDbAccess _userTaskBoardHistoryDbAccess;
 
         /// <summary>
+        /// Project Db Access
+        /// </summary>
+        private readonly IProjectDbAccess _projectDbAccess;
+
+        /// <summary>
         /// User manager
         /// </summary>
         private readonly UserManager<GoNorthUser> _userManager;
@@ -218,6 +224,7 @@ namespace GoNorth.Services.User
         /// <param name="userTaskBoardHistoryDbAccess">User Task Board History</param>
         /// <param name="lockDbService">Lock Db Service</param>
         /// <param name="timelineDbAccess">Timeline Db Access</param>
+        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="userManager">User manager</param>
         public UserDeleter(IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questImplementationSnapshotDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IEvneSkillDbAccess skillDbAccess, 
                            IEvneSkillTemplateDbAccess skillTemplateDbAccess, IEvneSkillImplementationSnapshotDbAccess skillImplementationSnapshotDbAccess, IEvneImportFieldValuesLogDbAccess skillImportFieldValuesLogDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, 
@@ -225,7 +232,7 @@ namespace GoNorth.Services.User
                            IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IStyrImportFieldValuesLogDbAccess itemImportFieldValuesLogDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
                            IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, 
                            IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, ILockServiceDbAccess lockDbService, 
-                           ITimelineDbAccess timelineDbAccess, UserManager<GoNorthUser> userManager)
+                           ITimelineDbAccess timelineDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager)
         {
             _questDbAccess = questDbAccess;
             _questImplementationSnapshotDbAccess = questImplementationSnapshotDbAccess;
@@ -258,6 +265,7 @@ namespace GoNorth.Services.User
             _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
             _lockDbService = lockDbService;
             _timelineDbAccess = timelineDbAccess;
+            _projectDbAccess = projectDbAccess;
             _userManager = userManager;
         }
 
@@ -513,6 +521,8 @@ namespace GoNorth.Services.User
                 curType.ModifiedOn = DateTimeOffset.UtcNow;
                 await _taskTypeDbAccess.UpdateTaskType(curType);
             }
+
+            await _projectDbAccess.DeleteUserSelectedProject(user.Id);
         }
         
         /// <summary>

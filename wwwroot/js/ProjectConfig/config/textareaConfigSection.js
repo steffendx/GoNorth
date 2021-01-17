@@ -34,7 +34,7 @@
                     var self = this;
                     this.isLoading(true);
                     this.errorOccured(false);
-                    jQuery.ajax("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(this.configKey)).done(function(loadedConfigData) {
+                    GoNorth.HttpClient.get("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(this.configKey)).done(function(loadedConfigData) {
                         self.isLoading(false);
                         
                         if(!loadedConfigData)
@@ -81,13 +81,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ProjectConfigApi/SaveJsonConfigByKey?configKey=" + encodeURIComponent(this.configKey), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(configLines), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/ProjectConfigApi/SaveJsonConfigByKey?configKey=" + encodeURIComponent(this.configKey), configLines).done(function() {
                         self.isLoading(false);
                     }).fail(function() {
                         self.isLoading(false);

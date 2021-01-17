@@ -175,10 +175,7 @@
             Actions.SetDailyRoutineEventStateAction.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + this.nodeModel.get("objectId"), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + this.nodeModel.get("objectId")).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

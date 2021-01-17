@@ -96,6 +96,8 @@
     "TemplateTypeTaleActionPlayerUseItem": "Action: Player uses item",
     "TemplateTypeTaleActionChooseNpcUseItem": "Action: Choose npc uses item",
 
+    "TemplateTypeReferenceNode": "Reference node",
+    
     
     "TemplateTypeGeneralLogicGroup": "Logic: Group",
     "TemplateTypeGeneralLogicAnd": "Logic: And operator",

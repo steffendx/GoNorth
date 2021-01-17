@@ -29,6 +29,12 @@ namespace GoNorth.Data.NodeGraph
         public List<ConditionNode> Condition { get; set; }
 
         /// <summary>
+        /// Reference nodes
+        /// </summary>
+        [ListCompareAttribute(LabelKey = "NodeReferenceChanged")]
+        public List<ReferenceNode> Reference {get ; set; }
+
+        /// <summary>
         /// Clones the node graph snippet
         /// </summary>
         /// <returns>Cloned node graph snippet</returns>
@@ -37,7 +43,8 @@ namespace GoNorth.Data.NodeGraph
             return new NodeGraphSnippet {
                 Link = this.Link != null ? this.Link.Select(l => l.Clone()).Cast<NodeLink>().ToList() : null,
                 Action = this.Action != null ? this.Action.Select(l => l.Clone()).Cast<ActionNode>().ToList() : null,
-                Condition = this.Condition != null ? this.Condition.Select(l => l.Clone()).Cast<ConditionNode>().ToList() : null
+                Condition = this.Condition != null ? this.Condition.Select(l => l.Clone()).Cast<ConditionNode>().ToList() : null,
+                Reference = this.Reference != null ? this.Reference.Select(l => l.Clone()).Cast<ReferenceNode>().ToList() : null
             };
         }
     }

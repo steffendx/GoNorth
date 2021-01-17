@@ -67,10 +67,7 @@
                     GoNorth.Util.replaceUrlParameters(urlParameters);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KirjaApi/SearchPages?searchPattern=" + encodeURIComponent(this.searchPatternToUse) + "&start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/KirjaApi/SearchPages?searchPattern=" + encodeURIComponent(this.searchPatternToUse) + "&start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
                        self.pages(data.pages);
                        self.hasMore(data.hasMore);
 

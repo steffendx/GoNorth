@@ -67,7 +67,7 @@
                  */
                 loadAvailableRoles: function() {
                     var self = this;
-                    jQuery.ajax("/api/RoleApi/AvailableRoles").done(function(data) {
+                    GoNorth.HttpClient.get("/api/RoleApi/AvailableRoles").done(function(data) {
                         self.availableRoles(data);
                     }).fail(function() {
                         self.errorOccured(true);
@@ -82,7 +82,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
     
-                    jQuery.ajax("/api/UserApi/Entries?start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
+                    GoNorth.HttpClient.get("/api/UserApi/Entries?start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
                         self.users(data.users);
                         self.hasMore(data.hasMore);
 
@@ -159,13 +159,7 @@
 
                     var self = this;
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: "/api/UserApi/CreateUser", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(requestUser), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/UserApi/CreateUser", requestUser).done(function(data) {
                         self.closeCreateUserDialog();
                         self.loadPage();
                     }).fail(function(xhr) {
@@ -206,11 +200,7 @@
                     var self = this;
                     this.dialogLoading(true);
                     this.updateSecurityStampErrorOccured(false);
-                    jQuery.ajax({ 
-                        url: "/api/UserApi/UpdateSecurityStampForUser?id=" + this.userToUpdateSecurityStamp.id, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/UserApi/UpdateSecurityStampForUser?id=" + this.userToUpdateSecurityStamp.id, {}).done(function(data) {
                         self.closeUpdateSecurityStampDialog();
                         self.loadPage();
                     }).fail(function() {
@@ -253,11 +243,7 @@
                     this.dialogLoading(true);
                     this.deleteErrorOccured(false);
                     this.deleteErrorAdditionalDetails("");
-                    jQuery.ajax({ 
-                        url: "/api/UserApi/DeleteUser?id=" + this.userToDelete.id, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/UserApi/DeleteUser?id=" + this.userToDelete.id).done(function(data) {
                         self.closeConfirmDeleteDialog();
                         if(self.users().length <= 1 && self.currentPage() > 0) {
                             self.currentPage(self.currentPage() - 1);
@@ -351,13 +337,7 @@
                     var userRoles = this.assignedUserRoles();
                     var self = this;
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: "/api/UserApi/SetUserRoles?id=" + this.userToEdit.id, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(userRoles),
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/UserApi/SetUserRoles?id=" + this.userToEdit.id, userRoles).done(function(data) {
                         self.closeUserRolesDialog();
                         self.loadPage();
                     }).fail(function(xhr) {
@@ -398,11 +378,7 @@
                     var self = this;
                     this.confirmEmailErrorOccured(false);
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: "/api/UserApi/ConfirmEmailForUser?id=" + this.userToConfirmEmail.id, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/UserApi/ConfirmEmailForUser?id=" + this.userToConfirmEmail.id, {}).done(function(data) {
                         self.closeConfirmEmailDialog();
                         self.loadPage();
                     }).fail(function() {

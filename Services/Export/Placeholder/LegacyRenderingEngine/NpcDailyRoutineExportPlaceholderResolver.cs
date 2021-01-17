@@ -189,7 +189,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Filled code</returns>
         private async Task<string> FillDailyRoutinePlaceholders(string code, KortistoNpc npc, ExportObjectData data)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             ExportTemplate dailyRoutineFunctionTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.ObjectDailyRoutineFunction);
 
             code = await ExportUtil.BuildPlaceholderRegex(Placeholder_DailyRoutine_Events, ExportConstants.ListIndentPrefix).ReplaceAsync(code, async m => {
@@ -228,7 +228,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Filled code</returns>
         private async Task<string> FillDailyRoutineFunctionListPlaceholders(string code, List<DailyRoutineFunction> functions)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             ExportTemplate dailyRoutineFunctionTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.ObjectDailyRoutineFunction);
 
             code = ExportUtil.BuildPlaceholderRegex(Placeholder_DailyRoutine_Function, ExportConstants.ListIndentPrefix).Replace(code, m => {

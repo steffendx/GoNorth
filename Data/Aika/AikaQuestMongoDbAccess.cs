@@ -196,10 +196,14 @@ namespace GoNorth.Data.Aika
         /// <returns>All Quests object is referenced in without detail information</returns>
         public async Task<List<AikaQuest>> GetQuestsObjectIsReferenced(string objectId)
         {
-            List<AikaQuest> quests = await _QuestCollection.AsQueryable().Where(q => q.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || q.Condition.Any(c => c.Conditions.Any(ce => ce.DependsOnObjects.Any(o => o.ObjectId == objectId)))).Select(q => new AikaQuest() {
+            List<AikaQuest> quests = await _QuestCollection.AsQueryable().Where(q => q.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || q.Condition.Any(c => c.Conditions.Any(ce => ce.DependsOnObjects.Any(o => o.ObjectId == objectId))) ||
+                                                                                     q.Reference.Any(a => a.ReferencedObjects.Any(r => r.ObjectId == objectId))).Select(q => new AikaQuest() {
                 Id = q.Id,
                 Name = q.Name,
-                IsMainQuest = q.IsMainQuest
+                IsMainQuest = q.IsMainQuest,
+                Action = q.Action,
+                Condition= q.Condition,
+                Reference = q.Reference
             }).ToListAsync();
 
             quests = quests.OrderBy(q => q.Name).ToList();

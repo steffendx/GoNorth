@@ -52,9 +52,10 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Returns all export templates for a template type which are associated to an object
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <param name="templateType">Template Type</param>
         /// <returns>Customized object export templates</returns>
-        Task<List<ExportTemplate>> GetCustomizedObjectTemplatesByType(TemplateType templateType);
+        Task<List<ExportTemplate>> GetCustomizedObjectTemplatesByType(string projectId, TemplateType templateType);
         
         /// <summary>
         /// Creates a template

@@ -18,6 +18,11 @@ namespace GoNorth.Services.ImplementationStatusCompare
             None,
 
             /// <summary>
+            /// Value is an npc id and must be resolved
+            /// </summary>
+            ResolveNpcName,
+
+            /// <summary>
             /// Value is an item id and must be resolved
             /// </summary>
             ResolveItemName,
@@ -26,6 +31,26 @@ namespace GoNorth.Services.ImplementationStatusCompare
             /// Value is a skill id and must be resolved
             /// </summary>
             ResolveSkillName,
+
+            /// <summary>
+            /// Value is a quest id and must be resolved
+            /// </summary>
+            ResolveQuestName,
+
+            /// <summary>
+            /// Value is a wiki page id and must be resolved
+            /// </summary>
+            ResolveWikiPageName,
+
+            /// <summary>
+            /// Value is a map id and must be resolved
+            /// </summary>
+            ResolveMapName,
+
+            /// <summary>
+            /// Value must be ignored
+            /// </summary>
+            Ignore,
 
             /// <summary>
             /// Value is a language key and must be resolved

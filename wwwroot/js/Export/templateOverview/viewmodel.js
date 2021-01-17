@@ -69,10 +69,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/ExportApi/GetTemplateCategories",
-                        method: "GET"
-                    }).done(function(templateCategories) {
+                    GoNorth.HttpClient.get("/api/ExportApi/GetTemplateCategories").done(function(templateCategories) {
                         self.templateCategories(templateCategories);
                         self.isLoading(false);
 
@@ -155,10 +152,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/ExportApi/GetDefaultTemplatesByCategory?category=" + self.selectedCategory(),
-                        type: "GET"
-                    }).done(function(templates) {
+                    GoNorth.HttpClient.get("/api/ExportApi/GetDefaultTemplatesByCategory?category=" + self.selectedCategory()).done(function(templates) {
                         self.isLoading(false);
                         self.templates(templates);
                     }).fail(function() {
@@ -187,10 +181,7 @@
                     this.dialogLoading(true);
                     this.dialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/ExportApi/GetExportSettings",
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/ExportApi/GetExportSettings").done(function(data) {
                         self.selectedCodeEditorMode(self.searchCodeEditorMode(data.scriptLanguage));
                         self.escapeCharacter(data.escapeCharacter);
                         self.charactersNeedingEscaping(data.charactersNeedingEscaping);
@@ -261,13 +252,7 @@
                     this.dialogLoading(true);
                     this.dialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        url: "/api/ExportApi/SaveExportSettings",
-                        type: "POST",
-                        data: JSON.stringify(exportSettings),
-                        contentType: "application/json"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/ExportApi/SaveExportSettings", exportSettings).done(function() {
                         self.dialogLoading(false);
                         self.closeSettingsDialog();
                     }).fail(function() {
@@ -299,10 +284,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/ExportApi/GetIncludeExportTemplates?start=" + (this.currentIncludeTemplatePage() * includeTemplatePageSize) + "&pageSize=" + includeTemplatePageSize,
-                        type: "GET"
-                    }).done(function(result) {
+                    GoNorth.HttpClient.get("/api/ExportApi/GetIncludeExportTemplates?start=" + (this.currentIncludeTemplatePage() * includeTemplatePageSize) + "&pageSize=" + includeTemplatePageSize).done(function(result) {
                         self.isLoading(false);
                         self.hasMoreIncludeTemplates(result.hasMore);
                         self.includeTemplates(result.templates);

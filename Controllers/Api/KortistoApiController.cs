@@ -26,6 +26,9 @@ using GoNorth.Data.ProjectConfig;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using GoNorth.Services.CsvHandling;
+using GoNorth.Services.Project;
+using GoNorth.Services.Export.ExportSnippets;
+using GoNorth.Data.Evne;
 
 namespace GoNorth.Controllers.Api
 {
@@ -132,6 +135,11 @@ namespace GoNorth.Controllers.Api
         private readonly IAikaQuestDbAccess _aikaQuestDbAccess;
 
         /// <summary>
+        /// Skill DB Access
+        /// </summary>
+        private readonly IEvneSkillDbAccess _skillDbAccess;
+
+        /// <summary>
         /// Tale DB Access
         /// </summary>
         private readonly ITaleDbAccess _taleDbAccess;
@@ -157,7 +165,6 @@ namespace GoNorth.Controllers.Api
         /// <param name="folderDbAccess">Folder Db Access</param>
         /// <param name="templateDbAccess">Template Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
-        /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="importFieldValuesLogDbAccess">Import field values log Db Access</param>
@@ -165,12 +172,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
+        /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="imageAccess">Npc Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db Access</param>
+        /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="projectConfigProvider">Project config provider</param>
         /// <param name="csvGenerator">CSV Generator</param>
         /// <param name="csvReader">CSV Reader</param>
@@ -180,14 +190,16 @@ namespace GoNorth.Controllers.Api
         /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public KortistoApiController(IKortistoFolderDbAccess folderDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKortistoImportFieldValuesLogDbAccess importFieldValuesLogDbAccess,
-                                     ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IKortistoNpcImageAccess imageAccess, 
-                                     IKortistoThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, IProjectConfigProvider projectConfigProvider, ICsvGenerator csvGenerator, 
-                                     ICsvParser csvReader, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<KortistoApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                     : base(folderDbAccess, templateDbAccess, npcDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, imageAccess, thumbnailService, csvGenerator,
-                                            csvReader, userManager, implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
+        public KortistoApiController(IKortistoFolderDbAccess folderDbAccess, IKortistoNpcTemplateDbAccess templateDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IKortistoImportFieldValuesLogDbAccess importFieldValuesLogDbAccess,
+                                     ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, 
+                                     IKortistoNpcImageAccess imageAccess, IKortistoThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, IEvneSkillDbAccess skillDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, IUserProjectAccess userProjectAccess, 
+                                     IProjectConfigProvider projectConfigProvider, ICsvGenerator csvGenerator, ICsvParser csvReader, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<KortistoApiController> logger, 
+                                     IStringLocalizerFactory localizerFactory) 
+                                     : base(folderDbAccess, templateDbAccess, npcDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, exportSnippetRelatedObjectNameResolver, userProjectAccess, imageAccess, thumbnailService, 
+                                            csvGenerator, csvReader, userManager, implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;
+            _skillDbAccess = skillDbAccess;
             _taleDbAccess = taleDbAccess;
             _kirjaPageDbAccess = kirjaPageDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
@@ -331,6 +343,13 @@ namespace GoNorth.Controllers.Api
                 return _localizer["CanNotDeleteNpcUsedInDailyRoutine", usedInDailyRoutines].Value;
             }
 
+            List<EvneSkill> referencedInSkills = await _skillDbAccess.GetSkillsObjectIsReferencedIn(id);
+            if(referencedInSkills.Count > 0)
+            {
+                string referencedInSkillsString = string.Join(", ", referencedInSkills.Select(n => n.Name));
+                return _localizer["CanNotDeleteNpcUsedInSkill", referencedInSkillsString].Value;
+            }
+            
             return string.Empty;
         }
 
@@ -394,7 +413,7 @@ namespace GoNorth.Controllers.Api
                 if(usedNpcs.Count > 0)
                 {
                     string referencedInNpcs = string.Join(", ", usedNpcs.Select(p => p.Name));
-                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInNpc", referencedInNpcs].Value;
+                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInNpc", FormatDailyRoutineEventTime(loadedFlexFieldObject.DailyRoutine, curDeletedEventId), referencedInNpcs].Value;
                 }
 
                 List<TaleDialog> taleDialogs = await _taleDbAccess.GetDialogsObjectIsReferenced(curDeletedEventId);
@@ -402,18 +421,58 @@ namespace GoNorth.Controllers.Api
                 {
                     List<KortistoNpc> npcs = await _objectDbAccess.ResolveFlexFieldObjectNames(taleDialogs.Select(t => t.RelatedObjectId).ToList());
                     string referencedInDialogs = string.Join(", ", npcs.Select(n => n.Name));
-                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInTaleDialog", referencedInDialogs].Value;
+                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInTaleDialog", FormatDailyRoutineEventTime(loadedFlexFieldObject.DailyRoutine, curDeletedEventId), referencedInDialogs].Value;
                 }
 
                 List<AikaQuest> aikaQuests = await _aikaQuestDbAccess.GetQuestsObjectIsReferenced(curDeletedEventId);
                 if(aikaQuests.Count > 0)
                 {
                     string referencedInQuests = string.Join(", ", aikaQuests.Select(p => p.Name));
-                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInAikaQuest", referencedInQuests].Value;
+                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInAikaQuest", FormatDailyRoutineEventTime(loadedFlexFieldObject.DailyRoutine, curDeletedEventId), referencedInQuests].Value;
+                }
+
+                List<EvneSkill> referencedInSkills = await _skillDbAccess.GetSkillsObjectIsReferencedIn(curDeletedEventId);
+                if(referencedInSkills.Count > 0)
+                {
+                    string usedInSkills = string.Join(", ", referencedInSkills.Select(m => m.Name));
+                    return _localizer["CanNotDeleteDailyRoutineEventReferencedInSkill", FormatDailyRoutineEventTime(loadedFlexFieldObject.DailyRoutine, curDeletedEventId), usedInSkills].Value;
+                }
+                
+                List<ObjectExportSnippet> referencedInSnippets = await _objectExportSnippetDbAccess.GetExportSnippetsObjectIsReferenced(curDeletedEventId);
+                if(referencedInSnippets.Count > 0)
+                {
+                    List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
+                    string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
+                    return _localizer["CanNotDeleteDailyRoutineEventUsedInExportSnippet", FormatDailyRoutineEventTime(loadedFlexFieldObject.DailyRoutine, curDeletedEventId), usedInDailyRoutines].Value;
                 }
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Formats the daily routine event time
+        /// </summary>
+        /// <param name="dailyRoutines">Daily routines</param>
+        /// <param name="deletedEventId">Event Id</param>
+        /// <returns>Formatted Routine Event</returns>
+        private string FormatDailyRoutineEventTime(List<KortistoNpcDailyRoutineEvent> dailyRoutines, string deletedEventId)
+        {
+            KortistoNpcDailyRoutineEvent dailyRoutineEvent = dailyRoutines.FirstOrDefault(d => d.EventId == deletedEventId);
+            if(dailyRoutineEvent == null)
+            {
+                return string.Empty;
+            }
+
+            string timeFormat = _localizer["TimeFormat"].Value;
+            if(dailyRoutineEvent.EarliestTime.Hours == dailyRoutineEvent.LatestTime.Hours && dailyRoutineEvent.EarliestTime.Minutes == dailyRoutineEvent.LatestTime.Minutes)
+            {
+                return dailyRoutineEvent.EarliestTime.ToString(timeFormat);
+            }
+
+            string earliestTime = dailyRoutineEvent.EarliestTime.ToString(timeFormat);
+            string latestTime = dailyRoutineEvent.LatestTime.ToString(timeFormat);
+            return string.Format("{0} - {1}", earliestTime, latestTime);
         }
 
         /// <summary>
@@ -428,8 +487,7 @@ namespace GoNorth.Controllers.Api
             {
                 if(flexFieldObject.IsPlayerNpc && loadedFlexFieldObject.IsPlayerNpc != flexFieldObject.IsPlayerNpc)
                 {
-                    GoNorthProject project = await _projectDbAccess.GetDefaultProject();
-                    await ((IKortistoNpcDbAccess)_objectDbAccess).ResetPlayerFlagForAllNpcs(project.Id);
+                    await ((IKortistoNpcDbAccess)_objectDbAccess).ResetPlayerFlagForAllNpcs(loadedFlexFieldObject.ProjectId);
                 }
                 loadedFlexFieldObject.IsPlayerNpc = flexFieldObject.IsPlayerNpc;
             }
@@ -594,7 +652,7 @@ namespace GoNorth.Controllers.Api
             await this.SetModifiedData(_userManager, npc);
             await SetNotImplementedFlagOnChange(npc);
             await _objectDbAccess.UpdateFlexFieldObject(npc);
-            await _timelineService.AddTimelineEntry(ObjectUpdatedEvent, npc.Name, npc.Id);
+            await _timelineService.AddTimelineEntry(npc.ProjectId, ObjectUpdatedEvent, npc.Name, npc.Id);
         }
 
 
@@ -606,7 +664,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetNpcsWithDailyRoutineOutsideTimeRange()
         {
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _userProjectAccess.GetUserProject();
             MiscProjectConfig miscConfig = await _projectConfigProvider.GetMiscConfig(defaultProject.Id);
 
             List<KortistoNpc> npcs = await ((IKortistoNpcDbAccess)_objectDbAccess).GetNpcsWithDailyRoutineAfterTime(miscConfig.HoursPerDay, miscConfig.MinutesPerHour);
@@ -635,7 +693,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> PlayerNpc()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             KortistoNpc npc = await ((IKortistoNpcDbAccess)_objectDbAccess).GetPlayerNpc(project.Id);
             return Ok(npc);
         }
@@ -679,7 +737,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetNotImplementedNpcs(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<KortistoNpc>> queryTask;
             Task<int> countTask;
             queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);

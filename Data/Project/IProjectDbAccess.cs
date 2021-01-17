@@ -47,5 +47,28 @@ namespace GoNorth.Data.Project
         /// <param name="project">Project</param>
         /// <returns>Task</returns>
         Task DeleteProject(GoNorthProject project);
+
+
+        /// <summary>
+        /// Sets the selected project for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <param name="projectId">Id of the project</param>
+        /// <returns>Task</returns>
+        Task SetUserSelectedProject(string userId, string projectId);
+
+        /// <summary>
+        /// Deletes the selected project for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        Task DeleteUserSelectedProject(string userId);
+        
+        /// <summary>
+        /// Deletes the selected project for a user
+        /// </summary>
+        /// <param name="userId">Id of the user</param>
+        /// <returns>Task</returns>
+        Task<UserSelectedProject> GetUserSelectedProject(string userId);
     }
 }

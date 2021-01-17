@@ -59,7 +59,7 @@ namespace GoNorth.Services.Export.Dialog
         /// <returns>Function code</returns>
         public async Task<List<ExportDialogFunctionCode>> RenderDialogSteps(ExportDialogData exportDialog, KortistoNpc npc)
         {
-            _curProject = await _cachedDbAccess.GetDefaultProject();
+            _curProject = await _cachedDbAccess.GetUserProject();
             _exportSettings = await _cachedDbAccess.GetExportSettings(_curProject.Id);
 
             SetupStepRenderes();
@@ -94,7 +94,8 @@ namespace GoNorth.Services.Export.Dialog
             _stepRenderers.Add(new ExportDialogChoiceRenderer(_cachedDbAccess, _errorCollection, _defaultTemplateProvider, _languageKeyGenerator, _scribanLanguageKeyGenerator, _conditionRenderer, _stringLocalizerFactory, _exportSettings, _curProject));
             _stepRenderers.Add(new ExportDialogConditionRenderer(_cachedDbAccess, _errorCollection, _defaultTemplateProvider, _languageKeyGenerator, _conditionRenderer, _stringLocalizerFactory, _exportSettings, _curProject));
             _stepRenderers.Add(new ExportDialogActionRenderer(_errorCollection, _defaultTemplateProvider, _cachedDbAccess, _legacyDailyRoutineEventPlaceholderResolver, _dailyRoutineFunctionNameGenerator, _languageKeyGenerator, _scribanLanguageKeyGenerator, _stringLocalizerFactory, _actionTranslator, _exportSettings, _curProject));
-
+            _stepRenderers.Add(new ExportReferenceRenderer(_cachedDbAccess, _errorCollection, _defaultTemplateProvider, _dailyRoutineFunctionNameGenerator, _scribanLanguageKeyGenerator, _stringLocalizerFactory, _exportSettings, _curProject));
+        
             SetExportTemplatePlaceholderResolverToStepRenderers();
         }
 
@@ -137,7 +138,7 @@ namespace GoNorth.Services.Export.Dialog
         public List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType, ExportTemplateRenderingEngine renderingEngine)
         {
             // Since project and export settings are not required for resolving placeholders the renderes are setup without loading the data
-            _curProject = _cachedDbAccess.GetDefaultProject().Result;
+            _curProject = _cachedDbAccess.GetUserProject().Result;
             SetupStepRenderes();
 
             List<ExportTemplatePlaceholder> placeholders = new List<ExportTemplatePlaceholder>();

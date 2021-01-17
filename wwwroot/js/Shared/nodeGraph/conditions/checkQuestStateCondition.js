@@ -101,10 +101,7 @@
             Conditions.CheckQuestStateCondition.prototype.loadObject = function(questId) {
                 var loadingDef = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + questId, 
-                    type: "GET"
-                }).done(function(quest) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + questId).done(function(quest) {
                     loadingDef.resolve(quest);
                 }).fail(function(xhr) {
                     loadingDef.reject();

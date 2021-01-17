@@ -184,7 +184,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Item List</returns>
         private async Task<string> RenderInventory(ExportObjectData data, string indent)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             ExportTemplate inventoryTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.ObjectInventory);
 
             ExportPlaceholderFillResult fillResult = await _placeholderResolver.FillPlaceholders(TemplateType.ObjectInventory, inventoryTemplate.Code, data, inventoryTemplate.RenderingEngine);

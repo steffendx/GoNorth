@@ -182,7 +182,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.SharedRendering
 
             if(_isPlayer) 
             {
-                GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+                GoNorthProject project = await _cachedDbAccess.GetUserProject();
                 return await _cachedDbAccess.GetPlayerNpc(project.Id);
             }
 

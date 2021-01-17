@@ -6,7 +6,10 @@
     Dropzone.autoDiscover = false;
 
     GoNorth.FlexFieldDatabase.ObjectForm.Localization = {
-        MarkedInMapNTimes: "@Model["MarkedInMapNTimes"]"
+        MarkedInMapNTimes: "@Model["MarkedInMapNTimes"]",
+        Npc: "@Model["Npc"]",
+        Item: "@Model["Item"]",
+        Skill: "@Model["Skill"]"
     };
 
     @if(User.IsInRole(RoleNames.Aika))
@@ -74,6 +77,19 @@
         </text>
     }
 
+    @if(User.IsInRole(RoleNames.Evne))
+    {
+        <text>
+        GoNorth.FlexFieldDatabase.ObjectForm.hasEvneRights = true;
+        </text>
+    }
+    else
+    {
+        <text>
+        GoNorth.FlexFieldDatabase.ObjectForm.hasEvneRights = false;
+        </text>
+    }
+
     @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
     {
         <text>
@@ -84,6 +100,19 @@
     {
         <text>
         GoNorth.FlexFieldDatabase.ObjectForm.hasImplementationStatusTrackerRights = false;
+        </text>
+    }
+    
+    @if(User.IsInRole(RoleNames.ExportObjects))
+    {
+        <text>
+        GoNorth.FlexFieldDatabase.ObjectForm.hasExportObjectsRights = true;
+        </text>
+    }
+    else
+    {
+        <text>
+        GoNorth.FlexFieldDatabase.ObjectForm.hasExportObjectsRights = false;
         </text>
     }
 </script>

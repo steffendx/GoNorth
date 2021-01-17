@@ -150,7 +150,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.SharedRendering
             }
             else if(_isPlayer)
             {
-                GoNorthProject curProject = await _cachedDbAccess.GetDefaultProject();
+                GoNorthProject curProject = await _cachedDbAccess.GetUserProject();
                 KortistoNpc npc = await _cachedDbAccess.GetPlayerNpc(curProject.Id);
                 if(npc == null)
                 {

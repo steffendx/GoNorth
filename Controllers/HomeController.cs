@@ -8,6 +8,7 @@ using GoNorth.Models;
 using Microsoft.AspNetCore.Authorization;
 using GoNorth.Data.Project;
 using GoNorth.Models.HomeViewModels;
+using GoNorth.Services.Project;
 
 namespace GoNorth.Controllers
 {
@@ -21,15 +22,15 @@ namespace GoNorth.Controllers
         /// <summary>
         /// Project Db Access
         /// </summary>
-        private IProjectDbAccess _projectDbAccess;
+        private IUserProjectAccess _projectUserAccess;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="projectDbAccess">Project Db Access</param>
-        public HomeController(IProjectDbAccess projectDbAccess)
+        /// <param name="projectUserAccess">Project User Access</param>
+        public HomeController(IUserProjectAccess projectUserAccess)
         {
-            _projectDbAccess = projectDbAccess;
+            _projectUserAccess = projectUserAccess;
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace GoNorth.Controllers
         /// <returns>View</returns>
         public async Task<IActionResult> Index()
         {
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _projectUserAccess.GetUserProject();
 
             IndexViewModel viewModel = new IndexViewModel();
             viewModel.ProjectName = defaultProject != null ? defaultProject.Name : "";

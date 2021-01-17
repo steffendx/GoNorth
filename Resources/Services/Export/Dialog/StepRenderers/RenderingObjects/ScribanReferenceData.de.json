@@ -1,0 +1,11 @@
+{
+    "PlaceholderDesc_ReferenceText": "Beschreibungstext des Verweises.",
+    "PlaceholderDesc_ObjectType": "Art des Objekts. Kann Npc, Item, Skill, Quest, WikiPage, MapMarker oder NpcDailyRoutineEvent sein.",
+    "PlaceholderDesc_Npc": "Npc auf den verwiesen wird. Ist nur gefüllt wenn der Typ Npc oder NpcDailyRoutineEvent ist.",
+    "PlaceholderDesc_Item": "Item auf das verwiesen wird. Ist nur gefüllt wenn der Typ Item ist.",
+    "PlaceholderDesc_Skill": "Fähigkeit auf die verwiesen wird. Ist nur gefüllt wenn der Typ Skill ist.",
+    "PlaceholderDesc_Quest": "Quest auf den verwiesen wird. Ist nur gefüllt wenn der Typ Quest ist.",
+    "PlaceholderDesc_WikiPage": "Wiki-Seite auf die verwiesen wird. Ist nur gefüllt wenn der Typ WikiPage ist.",
+    "PlaceholderDesc_DailyRoutineEvent": "Tagesablauf Ereignis auf das verwiesen wird. Ist nur gefüllt wenn der Typ NpcDailyRoutineEvent ist.",
+    "PlaceholderDesc_Marker": "Karten Markierung auf die verwiesen wird. Ist nur gefüllt wenn der Typ MapMarker ist."
+}

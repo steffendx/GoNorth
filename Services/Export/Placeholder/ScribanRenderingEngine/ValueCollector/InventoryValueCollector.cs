@@ -83,8 +83,8 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             _languageKeyGenerator.SetErrorCollection(_errorCollection);
             
             List<ScribanExportInventoryItem> items = await LoadInventory(parsedTemplate, inputNpc); 
-            scriptObject.Add(ExportConstants.ScribanNpcInventoryObjectKey, items);
-            scriptObject.Add(ExportConstants.ScribanLanguageKeyName, _languageKeyGenerator);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanNpcInventoryObjectKey, items);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanLanguageKeyName, _languageKeyGenerator);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             }
             
 
-            GoNorthProject project = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _exportCachedDbAccess.GetUserProject();
             ExportSettings exportSettings = await _exportCachedDbAccess.GetExportSettings(project.Id);
 
             List<ScribanExportInventoryItem> inventoryItems = new List<ScribanExportInventoryItem>();

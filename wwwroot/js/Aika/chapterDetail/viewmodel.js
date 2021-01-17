@@ -140,13 +140,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/UpdateChapterDetail?id=" + this.id(), 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify(serializedGraph), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post("/api/AikaApi/UpdateChapterDetail?id=" + this.id(), serializedGraph).done(function(data) {
                     Aika.Shared.setDetailViewIds(self.nodeGraph(), data.detail);
 
                     if(!self.id())
@@ -180,10 +174,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetail?id=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetail?id=" + this.id()).done(function(data) {
                     self.isLoading(false);
                     self.name(data.name);
 

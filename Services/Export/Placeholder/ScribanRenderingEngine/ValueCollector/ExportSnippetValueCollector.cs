@@ -100,9 +100,9 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
 
             ScribanExportSnippetsData scribanExportSnippets = new ScribanExportSnippetsData();
             scribanExportSnippets.Snippets = new ScribanExportSnippetDictionary(mappedSnippets);
-            scriptObject.Add(ExportConstants.ScribanExportSnippetsObjectKey, scribanExportSnippets);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanExportSnippetsObjectKey, scribanExportSnippets);
 
-            scriptObject.Add(ExportSnippetFunctionPipeRenderer.ExportSnippetFunctionName, new ExportSnippetFunctionPipeRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection));
+            scriptObject.AddOrUpdate(ExportSnippetFunctionPipeRenderer.ExportSnippetFunctionName, new ExportSnippetFunctionPipeRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection));
         }
 
         /// <summary>

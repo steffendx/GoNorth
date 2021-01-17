@@ -32,7 +32,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util
                 return new List<ScribanExportDailyRoutineEvent>();
             }
 
-            GoNorthProject project = await cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await cachedDbAccess.GetUserProject();
             MiscProjectConfig projectConfig = await cachedDbAccess.GetMiscProjectConfig();
             ExportSettings exportSettings = await cachedDbAccess.GetExportSettings(project.Id);
 

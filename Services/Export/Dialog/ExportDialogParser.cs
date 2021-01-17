@@ -45,6 +45,7 @@ namespace GoNorth.Services.Export.Dialog
             rootNodes.AddRange(GetRootNodesFromList(dialog.Choice, dialog.Link, (e, n) => e.Choice = n));
             rootNodes.AddRange(GetRootNodesFromList(dialog.Action, dialog.Link, (e, n) => e.Action = n));
             rootNodes.AddRange(GetRootNodesFromList(dialog.Condition, dialog.Link, (e, n) => e.Condition = n));
+            rootNodes.AddRange(GetRootNodesFromList(dialog.Reference, dialog.Link, (e, n) => e.Reference = n));
 
             if(rootNodes.Count != 1)
             {
@@ -81,6 +82,7 @@ namespace GoNorth.Services.Export.Dialog
             childNodes.AddRange(FindDialogElementChildrenInList(convertedDialogNodes, exportable.Choice, childLinks, (e, n) => e.Choice = n));
             childNodes.AddRange(FindDialogElementChildrenInList(convertedDialogNodes, exportable.Action, childLinks, (e, n) => e.Action = n));
             childNodes.AddRange(FindDialogElementChildrenInList(convertedDialogNodes, exportable.Condition, childLinks, (e, n) => e.Condition = n));
+            childNodes.AddRange(FindDialogElementChildrenInList(convertedDialogNodes, exportable.Reference, childLinks, (e, n) => e.Reference = n));
             return childNodes;
         }
 

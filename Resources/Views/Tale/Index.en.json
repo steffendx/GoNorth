@@ -12,6 +12,7 @@
     "ChoiceNode": "Choice",
     "ActionNode": "Action",
     "ConditionNode": "Condition",
+    "ReferenceNode": "Reference",
 
     "Error": "Error",
     "ErrorOccured": "An error occured.",

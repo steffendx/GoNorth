@@ -114,6 +114,39 @@
 
 
             /**
+             * Focuses a node if a node is specified in the url
+             */
+            focusNodeFromUrl: function() {
+                var nodeId = GoNorth.Util.getParameterFromUrl("nodeFocusId");
+                if(!nodeId)
+                {
+                    return;
+                }
+
+                GoNorth.Util.removeUrlParameter("nodeFocusId");
+                var targetNode = this.nodeGraph().getCell(nodeId);
+                if(!targetNode) 
+                {
+                    return;
+                }
+
+                var targetPosition = targetNode.position();
+                var targetSize = targetNode.size();
+                var paper = this.nodePaper();
+                var viewBoundingBox;
+                if(paper.el && paper.el.parentElement)
+                {
+                    viewBoundingBox = paper.el.parentElement.getBoundingClientRect()
+                }
+                else
+                {
+                    viewBoundingBox = paper.getContentBBox();
+                }
+                paper.translate(-targetPosition.x - targetSize.width * 0.5 + viewBoundingBox.width * 0.5, -targetPosition.y - targetSize.width * 0.5 + viewBoundingBox.height * 0.5);
+            },
+
+
+            /**
              * Delete Callback if a user wants to delete a node
              * 
              * @param {object} node Node to delete
@@ -278,10 +311,7 @@
                 // Load finish nodes
                 chapterNode.showLoading();
                 chapterNode.hideError();
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetail?id=" + detailViewId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetail?id=" + detailViewId).done(function(data) {
                     chapterNode.hideLoading();
                     
                     Shared.addFinishNodesAsOutports(chapterNode, data.finish);
@@ -415,10 +445,7 @@
                }
 
                var def = new jQuery.Deferred();
-               jQuery.ajax({ 
-                   url: "/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId, 
-                   type: "GET"
-               }).done(function(data) {
+               GoNorth.HttpClient.get("/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId).done(function(data) {
                    if(data.canBeDeleted)
                    {
                        def.resolve();
@@ -692,13 +719,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/SaveChapterOverview", 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify(serializedGraph), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post("/api/AikaApi/SaveChapterOverview", serializedGraph).done(function(data) {
                     Aika.Shared.setDetailViewIds(self.nodeGraph(), data.chapter);
 
                     if(!self.id())
@@ -727,10 +748,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterOverview", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterOverview").done(function(data) {
                     self.isLoading(false);
 
                     // Only deserialize data if a chapter overview already exists, will be null before someone saves it

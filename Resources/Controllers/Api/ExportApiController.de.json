@@ -95,6 +95,8 @@
     "TemplateTypeTaleActionNpcUseItem": "Aktion: Npc benutzt Item",
     "TemplateTypeTaleActionPlayerUseItem": "Aktion: Spieler benutzt Item",
     "TemplateTypeTaleActionChooseNpcUseItem": "Aktion: Beliebiger Npc benutzt Item",
+
+    "TemplateTypeReferenceNode": "Referenz Knoten",
     
     
     "TemplateTypeGeneralLogicGroup": "Logik: Gruppe",

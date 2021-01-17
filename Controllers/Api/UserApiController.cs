@@ -196,7 +196,7 @@ namespace GoNorth.Controllers.Api
             {
                 _logger.LogInformation("User created a new account with password.");
 
-                await _timelineService.AddTimelineEntry(TimelineEvent.NewUser, user.Email);
+                await _timelineService.AddTimelineEntry(null, TimelineEvent.NewUser, user.Email);
 
                 return Ok(user.Email);
             }
@@ -230,7 +230,7 @@ namespace GoNorth.Controllers.Api
             {
                 _logger.LogInformation("User was deleted.");
 
-                await _timelineService.AddTimelineEntry(TimelineEvent.UserDeleted, user.Email);
+                await _timelineService.AddTimelineEntry(null, TimelineEvent.UserDeleted, user.Email);
                 return Ok(id);
             }
             else
@@ -266,7 +266,7 @@ namespace GoNorth.Controllers.Api
             }
 
             _logger.LogInformation("User roles were set.");
-            await _timelineService.AddTimelineEntry(TimelineEvent.UserRolesSet, user.Email, string.Join(", ", roles));
+            await _timelineService.AddTimelineEntry(null, TimelineEvent.UserRolesSet, user.Email, string.Join(", ", roles));
 
             return Ok(id);
         }

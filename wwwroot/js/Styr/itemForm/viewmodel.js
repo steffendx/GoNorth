@@ -53,10 +53,7 @@
                 this.loadingContainedInNpcInventory(true);
                 this.errorLoadingContainedInNpcInventory(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/GetNpcsByItemInInventory?itemId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/GetNpcsByItemInInventory?itemId=" + this.id()).done(function(data) {
                     self.containedInNpcInventory(data);
                     self.loadingContainedInNpcInventory(false);
                 }).fail(function(xhr) {

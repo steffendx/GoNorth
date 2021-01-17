@@ -25,6 +25,7 @@
     "TextNode": "Text",
     "ActionNode": "Aktion",
     "ConditionNode": "Bedingung",
+    "ReferenceNode": "Referenz",
 
     "ExportResult": "Export Ergebnis",
     "Warning": "Warnung:",
@@ -47,16 +48,25 @@
     "UnsavedChanges": "Ungespeicherte Änderungen",
     "AreYouSureYouWantToExportUnsavedChanges": "Es liegen ungespeicherte Änderungen vor. Der Export wird einen veralteten Stand reflektieren. Bist du sicher das du einen veralteten Stand exportieren willst?",
 
-    "ReferencedInAikaQuests": "Referenziert in Aika Quests:",
+    "ReferencedInAikaQuests": "Referenziert in Quests:",
     
-    "MentionedInKirjaPages": "Erwähnt in Kirja Seiten:",
+    "MentionedInKirjaPages": "Erwähnt in Wiki-Seiten:",
 
-    "MarkedInKartaMaps": "Markiert in Karta Karten:",
+    "MarkedInKartaMaps": "Markiert in Karten:",
     "MarkedInMapNTimes": "Fähigkeit ist in Karte {{0}} mal markiert. Kein Zoom auf Markierung möglich.",
 
-    "ReferencedInTaleDialogs": "Referenziert in Tale Dialogen:",
+    "ReferencedInTaleDialogs": "Referenziert in Dialogen:",
 
     "ReferencedInDailyRoutines": "Referenziert in Tagesabläufen:",
+    "ReferencedInExportSnippets": "Referenziert in Export Snippets:",
+
+    "ReferencedInEvneSkills": "Referenziert in Fähigkeiten:",
+
+    "ClickHereForDetailedReferences": "Der Skill ist in mehreren Objekten referenziert. Klick hier für Details.",
+    "ClickHereToCloseDetailedReferences": "Hier klicken um die Referenzen zu schließen.",
+    
+    "Npc": "Npc",
+    "Item": "Item",
 
     "LearnedByNpcs": "Gelernt durch Npcs:",
 

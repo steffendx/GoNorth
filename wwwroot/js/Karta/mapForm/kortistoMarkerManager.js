@@ -30,10 +30,7 @@
              */
             Map.KortistoMarkerManager.prototype.sendEntriesRequest = function() {
                 var def = new jQuery.Deferred();
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * kortistoPageSize) + "&pageSize=" + kortistoPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * kortistoPageSize) + "&pageSize=" + kortistoPageSize).done(function(data) {
                     def.resolve({
                         entries: data.flexFieldObjects,
                         hasMore: data.hasMore

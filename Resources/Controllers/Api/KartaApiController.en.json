@@ -7,13 +7,17 @@
     "MarkerTypeNote": "Note",
 
     "CanNotDeleteMapMarkedInKartaMap": "The map is marked in the maps \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteMapReferencedInTaleDialog": "The map is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMapReferencedInTaleDialog": "The map is referenced in the dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteMapReferencedInNpc": "The map is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteMapReferencedInAikaQuest": "The map is referenced in the Aika quests \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMapReferencedInAikaQuest": "The map is referenced in the quests \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMapReferencedInSkill": "The map is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMapReferencedInExportSnippet": "The map is referenced in the export snippets \"{0}\". To prevent errors while exporting it must be deleted there first.",
 
-    "CanNotDeleteMarkerReferencedInTaleDialog": "The marker is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMarkerReferencedInTaleDialog": "The marker is referenced in the dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteMarkerReferencedInNpc": "The marker is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteMarkerReferencedInAikaQuest": "The marker is referenced in the Aika quests \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMarkerReferencedInAikaQuest": "The marker is referenced in the quests \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMarkerReferencedInSkill": "The marker is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteMarkerReferencedInExportSnippet": "The marker is referenced in the export snippets \"{0}\". To prevent errors while exporting it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",

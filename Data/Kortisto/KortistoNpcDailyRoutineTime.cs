@@ -31,5 +31,15 @@ namespace GoNorth.Data.Kortisto
                 Minutes = this.Minutes
             };
         }
+
+        /// <summary>
+        /// Formats the time as a string
+        /// </summary>
+        /// <param name="format">Time format</param>
+        /// <returns>Formatted Time Value</returns>
+        public string ToString(string format)
+        {
+            return format.Replace("hh", Hours.ToString().PadLeft(2, '0')).Replace("mm", Minutes.ToString().PadLeft(2, '0'));
+        }
     }
 }

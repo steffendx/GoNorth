@@ -4,8 +4,12 @@
 
     "BlankValue": "<blank>",
 
+    "NpcWasDeleted": "<Npc was deleted>",
     "ItemWasDeleted": "<Item was deleted>",
     "SkillWasDeleted": "<Skill was deleted>",
+    "QuestWasDeleted": "<Quest was deleted>",
+    "WikiPageWasDeleted": "<Wiki page was deleted>",
+    "MapWasDeleted": "<Map was deleted>",
 
     "PropertyNameName": "Name",
     "PropertyNameIsPlayerNpc": "Is Player",
@@ -27,6 +31,7 @@
     "PropertyNameAddedInChapter": "Added in chapter",
     "PropertyNameDeletedInChapter": "Deleted in chapter",
     "PropertyNameGeoData": "Geometry data",
+    "PropertyNameReferenceText": "Description",
 
     "EntryRemoved": "Entry '{0}' removed.",
     "EntryAdded": "Entry '{0}' added.",
@@ -42,11 +47,14 @@
     "NodeChoicesChanged": "Choice nodes changed:",
     "NodeActionsChanged": "Action nodes changed:",
     "NodeConditionsChanged": "Condition nodes changed:",
+    "NodeReferenceChanged": "Reference nodes changed:",
     "ActionTypeChanged": "Action type changed",
     "ActionDataChanged": "Action data changed",
     "ConditionsChanged": "Conditions changed:",
     "ConditionDataChanged": "Condition data changed",
     "Condition": "Condition",
+    "ReferencedObjectChanged": "Referenced object changed",
+    "ReferenceTextChanged": "Reference text changed",
     "Node": "Node",
     "NodeConnection": "Node connection",
     "ChoicesChanged": "Choices changed:",

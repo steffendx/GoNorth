@@ -29,11 +29,24 @@ namespace GoNorth.Data.LockService
         Task LockResource(string category, string id, string userId, DateTimeOffset expireDate);
 
         /// <summary>
+        /// Deletes a lock by its id
+        /// </summary>
+        /// <param name="id">Id</param>
+        /// <returns>Task</returns>
+        Task DeleteLockById(string id);
+
+        /// <summary>
         /// Deletes all locks for a user
         /// </summary>
         /// <param name="userId">Id of the user</param>
         /// <returns>Task</returns>
         Task DeleteAllLocksOfUser(string userId);
+
+        /// <summary>
+        /// Deletes all expired locks
+        /// </summary>
+        /// <returns>Task</returns>
+        Task DeleteExpiredLocks();
 
         /// <summary>
         /// Returns all locks of a user

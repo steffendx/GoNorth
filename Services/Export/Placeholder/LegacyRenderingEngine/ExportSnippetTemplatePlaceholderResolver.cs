@@ -374,7 +374,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
                 return string.Empty;
             }
             
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             ExportTemplate functionContentTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.ObjectExportSnippetFunction);
             List<ExportSnippetFunction> functions = await RenderFunctions(renderedFunctions, objectExportSnippet, flexFieldObject);
             List<ExportSnippetFunction> additionalFunctions = functions.Skip(1).ToList();

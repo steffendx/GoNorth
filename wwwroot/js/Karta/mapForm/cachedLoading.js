@@ -33,9 +33,7 @@
                 var def = new jQuery.Deferred();
                 npcPromises[npcId] = def;
 
-                jQuery.ajax({
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId
-                }).done(function(npc) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(npc) {
                     npcCache[npcId] = npc;
                     npcPromises[npcId] = null;
                     def.resolve(npc);

@@ -59,9 +59,24 @@ namespace GoNorth.Services.Export
         public const string ExportObjectTypeSkill = "skill";
 
         /// <summary>
-        /// Export Object Type for skills
+        /// Export Object Type for quests
         /// </summary>
         public const string ExportObjectTypeQuest = "quest";
+
+        /// <summary>
+        /// Export Object Type for wiki pages
+        /// </summary>
+        public const string ExportObjectTypeWikiPage = "wikipage";
+
+        /// <summary>
+        /// Export Object Type for map markers
+        /// </summary>
+        public const string ExportObjectTypeMapMarker = "mapmarker";
+
+        /// <summary>
+        /// Export Object Type for daily routine events
+        /// </summary>
+        public const string ExportObjectTypeDailyRoutineEvent = "npcdailyroutineevent";
 
 
         /// <summary>

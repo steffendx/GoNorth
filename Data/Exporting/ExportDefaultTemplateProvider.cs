@@ -159,6 +159,8 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSpawnNpcAtMarker),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionSpawnItemAtMarker),
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleActionChangeItemValue),
+
+            new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.ReferenceNode),
             
             // General
             new DefaultTemplateEntry(TemplateCategory.General, TemplateType.GeneralLogicGroup),
@@ -216,7 +218,7 @@ namespace GoNorth.Data.Exporting
             List<ExportTemplate> templates = await _templateDbAccess.GetDefaultTemplatesByCategory(projectId, category);
             
             await FilterAndDeleteInvalidTemplates(templates);
-            await AddMissingDefaultTemplates(templates, category);
+            await AddMissingDefaultTemplates(projectId, templates, category);
             
             return templates;
         }
@@ -233,7 +235,7 @@ namespace GoNorth.Data.Exporting
             if(template == null)
             {
                 DefaultTemplateEntry defaultTemplate = _DefaultTemplates.First(t => t.TemplateType == templateType);
-                template = await CreateDefaultTemplate(defaultTemplate.Category, defaultTemplate.TemplateType, true);
+                template = await CreateDefaultTemplate(projectId, defaultTemplate.Category, defaultTemplate.TemplateType, true);
             }
 
             return template;
@@ -260,16 +262,17 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Adds missing default templates to a list of templates without loading the code
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <param name="templates">Loaded templates</param>
         /// <param name="category">Category for which to add the entry</param>
         /// <returns>Task</returns>
-        private async Task AddMissingDefaultTemplates(List<ExportTemplate> templates, TemplateCategory category)
+        private async Task AddMissingDefaultTemplates(string projectId, List<ExportTemplate> templates, TemplateCategory category)
         {
             foreach(DefaultTemplateEntry curDefaultTemplate in _DefaultTemplates)
             {
                 if(curDefaultTemplate.Category == category && !templates.Any(t => t.TemplateType == curDefaultTemplate.TemplateType))
                 {
-                    ExportTemplate defaultTemplate = await CreateDefaultTemplate(category, curDefaultTemplate.TemplateType, false);
+                    ExportTemplate defaultTemplate = await CreateDefaultTemplate(projectId, category, curDefaultTemplate.TemplateType, false);
                     templates.Add(defaultTemplate);
                 }
             }
@@ -278,14 +281,16 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Creates a default template
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <param name="category">Category</param>
         /// <param name="templateType">Template Type</param>
         /// <param name="loadCode">true if the code must be loaded, else false</param>
         /// <returns>Default Template</returns>
-        private async Task<ExportTemplate> CreateDefaultTemplate(TemplateCategory category, TemplateType templateType, bool loadCode)
+        private async Task<ExportTemplate> CreateDefaultTemplate(string projectId, TemplateCategory category, TemplateType templateType, bool loadCode)
         {
             ExportTemplate defaultTemplate = new ExportTemplate();
             defaultTemplate.Id = string.Empty;
+            defaultTemplate.ProjectId = projectId;
             defaultTemplate.CustomizedObjectId = string.Empty;
             defaultTemplate.Category = category;
             defaultTemplate.TemplateType = templateType;

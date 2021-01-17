@@ -172,13 +172,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(save) {
+                    GoNorth.HttpClient.post(url, request).done(function(save) {
                         self.isLoading(false);
 
                         if(!self.editingBoard || !self.editingBoard.isClosed)
@@ -222,11 +216,7 @@
                     var self = this;
                     this.isLoading(true);
                     this.resetErrorState();
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/DeleteTaskBoard?id=" + this.deleteBoardId, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/TaskApi/DeleteTaskBoard?id=" + this.deleteBoardId).done(function(data) {
                         self.isLoading(false);
                         self.openBoardList.loadBoards();
                         self.closedBoardList.loadBoards();
@@ -271,11 +261,7 @@
                     var self = this;
                     this.isLoading(true);
                     this.resetErrorState();
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/SetTaskBoardStatus?id=" + this.toogleStatusBoardId + "&closed=" + this.isToogleStatusClosing(), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/TaskApi/SetTaskBoardStatus?id=" + this.toogleStatusBoardId + "&closed=" + this.isToogleStatusClosing(), {}).done(function(data) {
                         self.isLoading(false);
                         self.openBoardList.loadBoards();
                         self.closedBoardList.loadBoards();

@@ -103,11 +103,11 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             ScribanExportDailyRoutine dailyRoutine = new ScribanExportDailyRoutine();
             dailyRoutine.Events = await ScribanDailyRoutineEventUtil.MapNpcDailyRoutineEvents(_cachedDbAccess, _dailyRoutineFunctionNameGenerator, inputNpc, inputNpc.DailyRoutine);
             dailyRoutine.EventFunctions = await BuildDailyRoutineFunctions(inputNpc, inputNpc.DailyRoutine);
-            scriptObject.Add(ExportConstants.ScribanDailyRoutineObjectKey, dailyRoutine);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanDailyRoutineObjectKey, dailyRoutine);
 
-            scriptObject.Add(DailyRoutineEventListRenderer.DailyRoutineEventListFunctionName, new DailyRoutineEventListRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
-            scriptObject.Add(DailyRoutineEventFunctionRenderer.DailyRoutineEventFunctionName, new DailyRoutineEventFunctionRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection));
-            scriptObject.Add(DailyRoutineEventFunctionListRenderer.DailyRoutineEventFunctionListFunctionName, new DailyRoutineEventFunctionListRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection));
+            scriptObject.AddOrUpdate(DailyRoutineEventListRenderer.DailyRoutineEventListFunctionName, new DailyRoutineEventListRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
+            scriptObject.AddOrUpdate(DailyRoutineEventFunctionRenderer.DailyRoutineEventFunctionName, new DailyRoutineEventFunctionRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection));
+            scriptObject.AddOrUpdate(DailyRoutineEventFunctionListRenderer.DailyRoutineEventFunctionListFunctionName, new DailyRoutineEventFunctionListRenderer(_templatePlaceholderResolver, _cachedDbAccess, _defaultTemplateProvider, _errorCollection));
         }
 
         /// <summary>

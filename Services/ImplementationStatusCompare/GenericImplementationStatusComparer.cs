@@ -9,6 +9,7 @@ using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
+using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
@@ -82,6 +83,11 @@ namespace GoNorth.Services.ImplementationStatusCompare
         private readonly IKartaMarkerImplementationSnapshotDbAccess _markerSnapshotDbAccess;
 
         /// <summary>
+        /// Kirja Page Db Access
+        /// </summary>
+        private readonly IKirjaPageDbAccess _pageDbAccess;
+
+        /// <summary>
         /// Object Export Snippet Db Access
         /// </summary>
         private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
@@ -111,13 +117,14 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="questSnapshotDbAccess">Quest Implementation Snapshot Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="markerSnapshotDbAccess">Marker Db Access</param>
+        /// <param name="pageDbAccess">Kirja page Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public GenericImplementationStatusComparer(IKortistoNpcDbAccess npcDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcSnapshotDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemImplementationSnapshotDbAccess itemSnapshotDbAccess, 
                                                    IEvneSkillDbAccess skillDbAccess, IEvneSkillImplementationSnapshotDbAccess skillSnapshotDbAccess, ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, 
                                                    IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, 
-                                                   IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
+                                                   IKirjaPageDbAccess pageDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
         {
             _npcDbAccess = npcDbAccess;
             _npcSnapshotDbAccess = npcSnapshotDbAccess;
@@ -131,6 +138,7 @@ namespace GoNorth.Services.ImplementationStatusCompare
             _questSnapshotDbAccess = questSnapshotDbAccess;
             _mapDbAccess = mapDbAccess;
             _markerSnapshotDbAccess = markerSnapshotDbAccess;
+            _pageDbAccess = pageDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _objectExportSnippetSnapshotDbAccess = objectExportSnippetSnapshotDbAccess;
             _localizer = localizerFactory.Create(typeof(GenericImplementationStatusComparer));
@@ -549,6 +557,12 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="differences">Differences to resolve</param>
         private async Task ResolveNames(List<CompareDifference> differences)
         {
+            List<string> npcIds = CollectIds(differences, CompareDifferenceValue.ValueResolveType.ResolveNpcName);
+            if(npcIds.Count > 0)
+            {
+                await ResolveNpcNames(npcIds, differences);
+            }
+
             List<string> itemIds = CollectIds(differences, CompareDifferenceValue.ValueResolveType.ResolveItemName);
             if(itemIds.Count > 0)
             {
@@ -560,8 +574,28 @@ namespace GoNorth.Services.ImplementationStatusCompare
             {
                 await ResolveSkillNames(skillIds, differences);
             }
+            
+            List<string> questIds = CollectIds(differences, CompareDifferenceValue.ValueResolveType.ResolveQuestName);
+            if(questIds.Count > 0)
+            {
+                await ResolveQuestNames(questIds, differences);
+            }
+            
+            List<string> pageIds = CollectIds(differences, CompareDifferenceValue.ValueResolveType.ResolveWikiPageName);
+            if(pageIds.Count > 0)
+            {
+                await ResolveWikiPageNames(pageIds, differences);
+            }
+            
+            List<string> mapIds = CollectIds(differences, CompareDifferenceValue.ValueResolveType.ResolveMapName);
+            if(mapIds.Count > 0)
+            {
+                await ResolveMapNames(mapIds, differences);
+            }
 
             ResolveLanguageKeys(differences);
+
+            RemoveIgnoreValues(differences);
         }
 
         /// <summary>
@@ -606,6 +640,19 @@ namespace GoNorth.Services.ImplementationStatusCompare
         }
 
         /// <summary>
+        /// Resolves npc names
+        /// </summary>
+        /// <param name="npcIds">Npcs Ids to resolve</param>
+        /// <param name="differences">Differences to fill</param>
+        private async Task ResolveNpcNames(List<string> npcIds, List<CompareDifference> differences)
+        {
+            npcIds = npcIds.Distinct().ToList();
+            List<KortistoNpc> npcs = await _npcDbAccess.ResolveFlexFieldObjectNames(npcIds);
+            Dictionary<string, string> npcLookup = npcs.ToDictionary(i => i.Id, i => i.Name);
+            FillObjectNames(differences, npcLookup, CompareDifferenceValue.ValueResolveType.ResolveNpcName, "NpcWasDeleted");
+        }
+
+        /// <summary>
         /// Resolves item names
         /// </summary>
         /// <param name="itemIds">Item Ids to resolve</param>
@@ -629,6 +676,45 @@ namespace GoNorth.Services.ImplementationStatusCompare
             List<EvneSkill> skills = await _skillDbAccess.ResolveFlexFieldObjectNames(skillIds);
             Dictionary<string, string> skillLookup = skills.ToDictionary(i => i.Id, i => i.Name);
             FillObjectNames(differences, skillLookup, CompareDifferenceValue.ValueResolveType.ResolveSkillName, "SkillWasDeleted");
+        }
+
+        /// <summary>
+        /// Resolves quest names
+        /// </summary>
+        /// <param name="questIds">Quest Ids to resolve</param>
+        /// <param name="differences">Differences to fill</param>
+        private async Task ResolveQuestNames(List<string> questIds, List<CompareDifference> differences)
+        {
+            questIds = questIds.Distinct().ToList();
+            List<AikaQuest> quests = await _questDbAccess.ResolveQuestNames(questIds);
+            Dictionary<string, string> questLookup = quests.ToDictionary(i => i.Id, i => i.Name);
+            FillObjectNames(differences, questLookup, CompareDifferenceValue.ValueResolveType.ResolveQuestName, "QuestWasDeleted");
+        }
+
+        /// <summary>
+        /// Resolves wiki page names
+        /// </summary>
+        /// <param name="pageIds">Page Ids to resolve</param>
+        /// <param name="differences">Differences to fill</param>
+        private async Task ResolveWikiPageNames(List<string> pageIds, List<CompareDifference> differences)
+        {
+            pageIds = pageIds.Distinct().ToList();
+            List<KirjaPage> pages = await _pageDbAccess.ResolveNames(pageIds);
+            Dictionary<string, string> pageLookup = pages.ToDictionary(i => i.Id, i => i.Name);
+            FillObjectNames(differences, pageLookup, CompareDifferenceValue.ValueResolveType.ResolveWikiPageName, "WikiPageWasDeleted");
+        }
+
+        /// <summary>
+        /// Resolves map names
+        /// </summary>
+        /// <param name="mapIds">Map Ids to resolve</param>
+        /// <param name="differences">Differences to fill</param>
+        private async Task ResolveMapNames(List<string> mapIds, List<CompareDifference> differences)
+        {
+            mapIds = mapIds.Distinct().ToList();
+            List<KartaMap> maps = await _mapDbAccess.ResolveMapNames(mapIds);
+            Dictionary<string, string> mapLookup = maps.ToDictionary(i => i.Id, i => i.Name);
+            FillObjectNames(differences, mapLookup, CompareDifferenceValue.ValueResolveType.ResolveMapName, "MapWasDeleted");
         }
 
         /// <summary>
@@ -712,6 +798,21 @@ namespace GoNorth.Services.ImplementationStatusCompare
             }
 
             value.Value = _localizer[value.Value, value.AdditionalValuesForLanguageKey.ToArray()].Value;
+        }
+
+        /// <summary>
+        /// Removes all values that must be ignored
+        /// </summary>
+        /// <param name="differences">Differences to update</param>
+        private void RemoveIgnoreValues(List<CompareDifference> differences)
+        {
+            if(differences == null)
+            {
+                return;
+            }
+
+            differences.RemoveAll(d => (d.OldValue != null && d.OldValue.ResolveType == CompareDifferenceValue.ValueResolveType.Ignore) || (d.NewValue != null && d.NewValue.ResolveType == CompareDifferenceValue.ValueResolveType.Ignore));
+            differences.ForEach(d => RemoveIgnoreValues(d.SubDifferences));
         }
 
         /// <summary>

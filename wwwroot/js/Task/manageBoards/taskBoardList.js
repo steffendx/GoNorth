@@ -56,10 +56,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/" + this.apiMethod + "?start=" + (this.currentPage() * boardPageSize) + "&pageSize=" + boardPageSize, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/" + this.apiMethod + "?start=" + (this.currentPage() * boardPageSize) + "&pageSize=" + boardPageSize).done(function(data) {
                         for(var curBoard = 0; curBoard < data.boards.length; ++curBoard)
                         {
                             data.boards[curBoard].categoryName = new ko.pureComputed(function() {

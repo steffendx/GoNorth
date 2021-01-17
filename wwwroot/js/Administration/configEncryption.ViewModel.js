@@ -36,13 +36,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/AdministrationApi/EncryptConfigValue", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/AdministrationApi/EncryptConfigValue", request).done(function(data) {
                         self.encryptedConfigValue(data);
                         self.isLoading(false);
                     }).fail(function(xhr) {

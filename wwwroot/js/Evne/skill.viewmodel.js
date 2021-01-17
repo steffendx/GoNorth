@@ -5,6 +5,27 @@
         /// Dialog Page Size
         var dialogPageSize = 15;
 
+        /// Object Type for npcs
+        var objectTypeNpc = 0;
+
+        /// Object Type for items
+        var objectTypeItem = 1;
+
+        /// Object Type for skills
+        var objectTypeSkill = 2;
+
+        /// Object Type for quest
+        var objectTypeQuest = 3;
+
+        /// Object Type for wiki page
+        var objectTypeWikiPage = 4;
+
+        /// Object Type for daily routines
+        var objectTypeDailyRoutine = 5;
+
+        /// Object Type for marker
+        var objectTypeMarker = 6;
+
         /**
          * Page View Model
          * @class
@@ -12,6 +33,7 @@
         ChooseObjectDialog.ViewModel = function()
         {
             this.showDialog = new ko.observable(false);
+            this.showObjectTypeSelection = new ko.observable(false);
             this.dialogTitle = new ko.observable("");
             this.showNewButtonInDialog = new ko.observable(false);
             this.dialogSearchCallback = null;
@@ -24,10 +46,37 @@
             this.errorOccured = new ko.observable(false);
             this.idObservable = null;
 
+            var self = this;
+            this.selectedObjectType = new ko.observable(null);
+            this.selectedObjectType.subscribe(function() {
+                self.onObjectTypeChanged();
+            });
+            this.availableObjectTypes = [
+                { objectType: objectTypeNpc, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeNpc },
+                { objectType: objectTypeItem, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeItem },
+                { objectType: objectTypeSkill, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeSkill },
+                { objectType: objectTypeQuest, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeQuest },
+                { objectType: objectTypeWikiPage, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeWikiPage },
+                { objectType: objectTypeDailyRoutine, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeDailyRoutine },
+                { objectType: objectTypeMarker, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeMarker }
+            ];
+
             this.choosingDeferred = null;
         };
 
         ChooseObjectDialog.ViewModel.prototype = {
+            /**
+             * Opens the dialog to search for general objects
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openGeneralObjectSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(true);
+                this.selectedObjectType(this.availableObjectTypes[0]);
+                return this.openDialog(dialogTitle, this.searchNpcs, null, null);
+            },
+            
             /**
              * Opens the dialog to search for npcs
              * 
@@ -36,6 +85,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openNpcSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchNpcs, createCallback, null);
             },
 
@@ -47,6 +97,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openItemSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchItems, createCallback, null);
             },
 
@@ -58,6 +109,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openSkillSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchSkills, createCallback, null);
             },
 
@@ -70,6 +122,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openKirjaPageSearch: function(dialogTitle, createCallback, idObservable) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchPages, createCallback, idObservable);
             },
 
@@ -81,6 +134,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openQuestSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchQuest, createCallback, null);
             },
 
@@ -93,6 +147,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openChapterDetailSearch: function(dialogTitle, createCallback, idObservable) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchChapterDetails, createCallback, idObservable);
             },
 
@@ -103,6 +158,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openDailyRoutineSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchDailyRoutines, null, null);
             },
 
@@ -113,6 +169,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openMarkerSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchMarkers, null, null);
             },
 
@@ -137,15 +194,59 @@
                 this.dialogCreateNewCallback = typeof createCallback == "function" ? createCallback : null;
                 this.showNewButtonInDialog(this.dialogCreateNewCallback ? true : false);
                 this.dialogSearchCallback = searchCallback;
+                this.resetDialogValues();
+                this.idObservable = idObservable;
+
+                this.choosingDeferred = new jQuery.Deferred();
+                return this.choosingDeferred.promise();
+            },
+
+            /**
+             * Resets the dialog values
+             */
+            resetDialogValues: function() {
                 this.dialogSearchPattern("");
                 this.dialogIsLoading(false);
                 this.dialogEntries([]);
                 this.dialogHasMore(false);
                 this.dialogCurrentPage(0);
-                this.idObservable = idObservable;
+            },
 
-                this.choosingDeferred = new jQuery.Deferred();
-                return this.choosingDeferred.promise();
+            /**
+             * Gets called if the selected object type is changed
+             */
+            onObjectTypeChanged: function() {
+                this.resetDialogValues();
+
+                var objectType = this.selectedObjectType().objectType;
+                if(objectType == objectTypeNpc) 
+                {
+                    this.dialogSearchCallback = this.searchNpcs;
+                }
+                else if(objectType == objectTypeItem) 
+                {
+                    this.dialogSearchCallback = this.searchItems;
+                }
+                else if(objectType == objectTypeSkill) 
+                {
+                    this.dialogSearchCallback = this.searchSkills;
+                }
+                else if(objectType == objectTypeQuest) 
+                {
+                    this.dialogSearchCallback = this.searchQuest;
+                }
+                else if(objectType == objectTypeWikiPage) 
+                {
+                    this.dialogSearchCallback = this.searchPages;
+                }
+                else if(objectType == objectTypeDailyRoutine) 
+                {
+                    this.dialogSearchCallback = this.searchDailyRoutines;
+                }
+                else if(objectType == objectTypeMarker) 
+                {
+                    this.dialogSearchCallback = this.searchMarkers;
+                }
             },
 
             /**
@@ -171,11 +272,53 @@
             selectObject: function(selectedObject) {
                 if(this.choosingDeferred)
                 {
+                    if(this.showObjectTypeSelection())
+                    {
+                        selectedObject.objectType = this.getDependencyObjectType();
+                    }
                     this.choosingDeferred.resolve(selectedObject);
                     this.choosingDeferred = null;
                 }
 
                 this.closeDialog();
+            },
+
+            /**
+             * Returns the dependency object type
+             * @returns {string} Dependency object type
+             */
+            getDependencyObjectType: function() {
+                var objectType = this.selectedObjectType().objectType;
+                if(objectType == objectTypeNpc) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc;
+                }
+                else if(objectType == objectTypeItem) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem;
+                }
+                else if(objectType == objectTypeSkill) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectSkill;
+                }
+                else if(objectType == objectTypeQuest) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest;
+                }
+                else if(objectType == objectTypeWikiPage) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToWikiPage;
+                }
+                else if(objectType == objectTypeDailyRoutine) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine;
+                }
+                else if(objectType == objectTypeMarker) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker;
+                }
+
+                return "";
             },
 
             /**
@@ -292,10 +435,7 @@
                 }
 
                 var self = this;
-                jQuery.ajax({ 
-                    url: searchUrl, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get(searchUrl).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -332,10 +472,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -365,10 +502,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -398,10 +532,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -431,10 +562,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuests?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuests?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -463,10 +591,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetails?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetails?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -500,10 +625,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -535,17 +657,14 @@
 
                 dailyRoutineEventNpc.isLoadingExpandedObject(true);
                 dailyRoutineEventNpc.errorLoadingExpandedObject(false);
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id).done(function(data) {
                     var dailyRoutineObjects = [];
                     if(data.dailyRoutine)
                     {
                         for(var curEvent = 0; curEvent < data.dailyRoutine.length; ++curEvent)
                         {
                             data.dailyRoutine[curEvent].parentObject = dailyRoutineEventNpc;
-                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan("hh:mm", data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
+                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan(GoNorth.ChooseObjectDialog.Localization.TimeFormat, data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
                             var additionalName = "";
                             if(data.dailyRoutine[curEvent].scriptName)
                             {
@@ -579,10 +698,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -1156,10 +1272,7 @@
                     this.errorOccured(false);
                     this.difference([]);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ImplementationStatusApi/" + urlPostfix, 
-                        type: "GET"
-                    }).done(function(compareResult) {
+                    GoNorth.HttpClient.get("/api/ImplementationStatusApi/" + urlPostfix).done(function(compareResult) {
                         self.isLoading(false);
                         self.addExpandedObservable(compareResult.compareDifference);
                         self.doesSnapshotExists(compareResult.doesSnapshotExist);
@@ -1211,11 +1324,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ImplementationStatusApi/" + this.flagAsImplementedMethodUrlPostfix, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/ImplementationStatusApi/" + this.flagAsImplementedMethodUrlPostfix, {}).done(function() {
                         if(window.refreshImplementationStatusList)
                         {
                             window.refreshImplementationStatusList();
@@ -2291,18 +2400,12 @@
                     var availableSnippets = null;
                     var existingSnippets = null;
 
-                    var templateSnippetsDef = jQuery.ajax({ 
-                        url: "/api/ExportApi/GetExportTemplateSnippetsByObjectId?id=" + id + "&templateType=" + templateType, 
-                        type: "GET"
-                    });
+                    var templateSnippetsDef = GoNorth.HttpClient.get("/api/ExportApi/GetExportTemplateSnippetsByObjectId?id=" + id + "&templateType=" + templateType);
                     templateSnippetsDef.done(function(data) {
                         availableSnippets = data;
                     })
 
-                    var existingSnippetsDef = jQuery.ajax({ 
-                        url: "/api/ExportApi/GetFilledExportTemplateSnippetsByObjectId?id=" + id, 
-                        type: "GET"
-                    });
+                    var existingSnippetsDef = GoNorth.HttpClient.get("/api/ExportApi/GetFilledExportTemplateSnippetsByObjectId?id=" + id);
                     existingSnippetsDef.done(function(data) {
                         existingSnippets = data;
                     })
@@ -2455,13 +2558,7 @@
                     this.snippetManagerDialogLoading(false);
                     this.snippetManagerDialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(requestData), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(result) {
+                    GoNorth.HttpClient.post(url, requestData).done(function(result) {
                         self.snippetManagerDialogLoading(false);
                         
                         if(!snippet.id) 
@@ -2504,12 +2601,7 @@
                     this.snippetManagerDialogLoading(false);
                     this.snippetManagerDialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ExportApi/DeleteObjectExportSnippet?id=" + this.snippetToDelete.id + "&objectType=" + this.objectType, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE",
-                        contentType: "application/json"
-                    }).done(function(result) {
+                    GoNorth.HttpClient.delete("/api/ExportApi/DeleteObjectExportSnippet?id=" + this.snippetToDelete.id + "&objectType=" + this.objectType).done(function(result) {
                         self.snippetManagerDialogLoading(false);
 
                         self.resetSnippet(self.snippetToDelete);
@@ -3044,6 +3136,16 @@
                 this.referencedInDailyRoutines = new ko.observableArray();
                 this.loadingReferencedInDailyRoutines = new ko.observable(false);
                 this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
+
+                this.referencedInEvneSkills = new ko.observableArray();
+                this.loadingReferencedInEvneSkills = new ko.observable(false);
+                this.errorLoadingReferencedInEvneSkills = new ko.observable(false);
+
+                this.referencedInExportSnippets = new ko.observableArray();
+                this.loadingReferencedInExportSnippets = new ko.observable(false);
+                this.errorLoadingReferencedInExportSnippets = new ko.observable(false);
+                
+                this.extendedReferenceCallout = new ko.observable(null);
                 
                 this.exportSnippetManager = new ObjectForm.ExportSnippetManager(objectType, this.isImplemented);
 
@@ -3120,9 +3222,19 @@
                         this.loadTaleDialogs();
                     } 
 
+                    if(GoNorth.FlexFieldDatabase.ObjectForm.hasEvneRights && !this.isTemplateMode())
+                    {
+                        this.loadUsedInEvneSkills();
+                    } 
+
                     if(GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights && !this.isTemplateMode())
                     {
                         this.loadUsedInDailyRoutines();
+                    } 
+
+                    if(GoNorth.FlexFieldDatabase.ObjectForm.hasExportObjectsRights && !this.isTemplateMode())
+                    {
+                        this.loadUsedInExportSnippets();
                     } 
 
                     this.loadAdditionalDependencies();
@@ -3146,10 +3258,7 @@
                 }
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/ExportApi/DoesExportTemplateExistForObjectId?id=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/ExportApi/DoesExportTemplateExistForObjectId?id=" + this.id()).done(function(data) {
                     self.showCustomizedExportTemplateWarningOnDelete(data.doesTemplateExist);
                 }).fail(function(xhr) {
                     self.errorOccured(true);
@@ -3170,10 +3279,7 @@
              */
             ObjectForm.BaseViewModel.prototype.loadExistingObjectTags = function() {
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/" + this.apiControllerName + "/FlexFieldObjectTags", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/FlexFieldObjectTags").done(function(data) {
                     self.existingObjectTags(data);
                 }).fail(function(xhr) {
                     self.errorOccured(true);
@@ -3197,10 +3303,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: url, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get(url).done(function(data) {
                     self.isLoading(false);
                     if(!data)
                     {
@@ -3338,13 +3441,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: url, 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify(requestObject), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post(url, requestObject).done(function(data) {
                     if(!self.id())
                     {
                         self.id(data.id);
@@ -3418,12 +3515,7 @@
              */
             ObjectForm.BaseViewModel.prototype.distributeFields = function() {
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/" + this.apiControllerName + "/DistributeFlexFieldTemplateFields?id=" + this.id(), 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post("/api/" + this.apiControllerName + "/DistributeFlexFieldTemplateFields?id=" + this.id(), {}).done(function(data) {
                     self.isLoading(false);
                 }).fail(function(xhr) {
                     self.isLoading(false);
@@ -3459,11 +3551,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: url, 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    type: "DELETE"
-                }).done(function(data) {
+                GoNorth.HttpClient.delete(url).done(function(data) {
                     self.callObjectGridRefresh();
                     self.closeConfirmObjectDeleteDialog();
                     window.location = self.rootPage;
@@ -3618,10 +3706,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/ExportApi/ExportObject?exportFormat=" + exportFormat + "&id=" + this.id() + "&templateType=" + templateType, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/ExportApi/ExportObject?exportFormat=" + exportFormat + "&id=" + this.id() + "&templateType=" + templateType).done(function(data) {
                     self.isLoading(false);
                     self.showExportResultDialog(true);
                     self.exportResultContent(data.code);
@@ -3737,11 +3822,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/ExportApi/DeleteLanguageKeysByGroupId?groupId=" + this.id(), 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    type: "DELETE"
-                }).done(function(data) {
+                GoNorth.HttpClient.delete("/api/ExportApi/DeleteLanguageKeysByGroupId?groupId=" + this.id()).done(function(data) {
                     self.isLoading(false);
                     self.closeConfirmRegenerateLanguageKeysDialog();
                 }).fail(function(xhr) {
@@ -3766,10 +3847,7 @@
                 this.loadingReferencedInQuests(true);
                 this.errorLoadingReferencedInQuests(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuestsObjectIsReferenced?objectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuestsObjectIsReferenced?objectId=" + this.id()).done(function(data) {
                     self.referencedInQuests(data);
                     self.loadingReferencedInQuests(false);
                 }).fail(function(xhr) {
@@ -3782,10 +3860,21 @@
              * Builds the url for an Aika quest
              * 
              * @param {object} quest Quest to build the url
+             * @param {object} detailedReference Detailed reference to build the object reference for
              * @returns {string} Url for quest
              */
-            ObjectForm.BaseViewModel.prototype.buildAikaQuestUrl = function(quest) {
-                return "/Aika/Quest?id=" + quest.id;
+            ObjectForm.BaseViewModel.prototype.buildAikaQuestUrl = function(quest, detailedReference) {
+                var url = "/Aika/Quest?id=" + quest.objectId;
+                if(!detailedReference && quest.detailedReferences && quest.detailedReferences.length == 1)
+                {
+                    detailedReference = quest.detailedReferences[0];
+                }
+
+                if(detailedReference)
+                {
+                    url += "&nodeFocusId=" + detailedReference.objectId;
+                }
+                return url;
             };
 
 
@@ -3796,10 +3885,7 @@
                 this.loadingMentionedInKirjaPages(true);
                 this.errorLoadingMentionedInKirjaPages(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KirjaApi/" + this.kirjaApiMentionedMethod + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KirjaApi/" + this.kirjaApiMentionedMethod + this.id()).done(function(data) {
                     self.mentionedInKirjaPages(data);
                     self.loadingMentionedInKirjaPages(false);
                 }).fail(function(xhr) {
@@ -3831,10 +3917,7 @@
                 this.loadingMarkedInKartaMaps(true);
                 this.errorLoadingMarkedInKartaMaps(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/" + this.kartaApiMarkedMethod + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/" + this.kartaApiMarkedMethod + this.id()).done(function(data) {
                     for(var curMap = 0; curMap < data.length; ++curMap)
                     {
                         data[curMap].tooltip = self.buildKartaMapMarkerCountTooltip(data[curMap]);
@@ -3880,40 +3963,9 @@
                 this.loadingReferencedInTaleDialogs(true);
                 this.errorLoadingReferencedInTaleDialogs(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/GetDialogsObjectIsReferenced?objectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(dialogs) {
-                    var npcIds = [];
-                    for(var curDialog = 0; curDialog < dialogs.length; ++curDialog)
-                    {
-                        if(dialogs[curDialog].relatedObjectId != self.id())
-                        {
-                            npcIds.push(dialogs[curDialog].relatedObjectId);
-                        }
-                    }
-
-                    if(npcIds.length == 0)
-                    {
-                        self.referencedInTaleDialogs([]);
-                        self.loadingReferencedInTaleDialogs(false);
-                        return;
-                    }
-
-                    // Get Npc names of the dialog npcs
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(npcIds), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(npcNames) {
-                        self.referencedInTaleDialogs(npcNames);
-                        self.loadingReferencedInTaleDialogs(false);
-                    }).fail(function(xhr) {
-                        self.errorLoadingReferencedInTaleDialogs(true);
-                        self.loadingReferencedInTaleDialogs(false);
-                    });
+                GoNorth.HttpClient.get("/api/TaleApi/GetDialogsObjectIsReferenced?objectId=" + this.id()).done(function(dialogs) {
+                    self.referencedInTaleDialogs(dialogs);
+                    self.loadingReferencedInTaleDialogs(false);
                 }).fail(function(xhr) {
                     self.errorLoadingReferencedInTaleDialogs(true);
                     self.loadingReferencedInTaleDialogs(false);
@@ -3923,25 +3975,33 @@
             /**
              * Builds the url for a Tale dialog
              * 
-             * @param {object} dialogNpc Npc for which to open the dialog
+             * @param {object} dialogRef Dialog in which the object is referenced
+             * @param {object} detailedReference Detailed reference to build the object reference for
              * @returns {string} Url for the dialog
              */
-            ObjectForm.BaseViewModel.prototype.buildTaleDialogUrl = function(dialogNpc) {
-                return "/Tale?npcId=" + dialogNpc.id;
+            ObjectForm.BaseViewModel.prototype.buildTaleDialogUrl = function(dialogRef, detailedReference) {
+                var url = "/Tale?npcId=" + dialogRef.objectId;
+                if(!detailedReference && dialogRef.detailedReferences && dialogRef.detailedReferences.length == 1)
+                {
+                    detailedReference = dialogRef.detailedReferences[0];
+                }
+
+                if(detailedReference)
+                {
+                    url += "&nodeFocusId=" + detailedReference.objectId;
+                }
+                return url;
             };
 
 
             /**
-             * Loads the npcs in which the daily routines are used
+             * Loads the npcs in daily routines the object is are used
              */
             ObjectForm.BaseViewModel.prototype.loadUsedInDailyRoutines = function() {
                 this.loadingReferencedInDailyRoutines(true);
                 this.errorLoadingReferencedInDailyRoutines(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id()).done(function(data) {
                     self.referencedInDailyRoutines(data);
                     self.loadingReferencedInDailyRoutines(false);
                 }).fail(function(xhr) {
@@ -3958,6 +4018,110 @@
              */
             ObjectForm.BaseViewModel.prototype.buildDailyRoutineNpcUrl = function(npc) {
                 return "/Kortisto/Npc?id=" + npc.id;
+            };
+
+
+            /**
+             * Loads the skills in which the object is used
+             */
+            ObjectForm.BaseViewModel.prototype.loadUsedInEvneSkills = function() {
+                this.loadingReferencedInEvneSkills(true);
+                this.errorLoadingReferencedInEvneSkills(false);
+                var self = this;
+                GoNorth.HttpClient.get("/api/EvneApi/GetSkillsObjectIsReferencedIn?objectId=" + this.id()).done(function(data) {
+                    self.referencedInEvneSkills(data);
+                    self.loadingReferencedInEvneSkills(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInEvneSkills(true);
+                    self.loadingReferencedInEvneSkills(false);
+                });
+            };
+
+            /**
+             * Builds the url for a Skill
+             * 
+             * @param {object} skill Skill to build the url for
+             * @returns {string} Url for the skill
+             */
+            ObjectForm.BaseViewModel.prototype.buildEvneSkillUrl = function(npc) {
+                return "/Evne/Skill?id=" + npc.id;
+            };
+
+
+            /**
+             * Loads export snippets in which the object is used
+             */
+            ObjectForm.BaseViewModel.prototype.loadUsedInExportSnippets = function() {
+                this.loadingReferencedInExportSnippets(true);
+                this.errorLoadingReferencedInExportSnippets(false);
+                var self = this;
+                GoNorth.HttpClient.get("/api/ExportApi/GetSnippetsObjectIsReferencedIn?id=" + this.id()).done(function(data) {
+                    self.referencedInExportSnippets(data);
+                    self.loadingReferencedInExportSnippets(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInExportSnippets(true);
+                    self.loadingReferencedInExportSnippets(false);
+                });
+            };
+
+            /**
+             * Builds the reference name for a used export snippet
+             * 
+             * @param {object} snippet Snippet to build the name for
+             * @returns {string} Name for the snippet
+             */
+            ObjectForm.BaseViewModel.prototype.buildUsedExportSnippetName = function(snippet) {
+                var objectType = "";
+                if(snippet.objectType == "npc")
+                {
+                    objectType = GoNorth.FlexFieldDatabase.ObjectForm.Localization.Npc;
+                }
+                else if(snippet.objectType == "item")
+                {
+                    objectType = GoNorth.FlexFieldDatabase.ObjectForm.Localization.Item;
+                }
+                else if(snippet.objectType == "skill")
+                {
+                    objectType = GoNorth.FlexFieldDatabase.ObjectForm.Localization.Skill;
+                }
+                
+                return snippet.objectName + " (" + objectType + ")";
+            };
+
+            /**
+             * Builds the url for a snippet
+             * 
+             * @param {object} snippet Snippet to build the url for
+             * @returns {string} Url for the snippet
+             */
+            ObjectForm.BaseViewModel.prototype.buildUsedExportSnippetUrl = function(snippet) {
+                if(snippet.objectType == "npc")
+                {
+                    return "/Kortisto/Npc?id=" + snippet.objectId;
+                }
+                else if(snippet.objectType == "item")
+                {
+                    return "/Styr/Item?id=" + snippet.objectId;
+                }
+                else if(snippet.objectType == "skill")
+                {
+                    return "/Evne/Skill?id=" + snippet.objectId;
+                }
+                
+                return "";
+            };
+
+
+            /**
+             * Sets the extended reference callout
+             * @param {object} refObj Reference callout to extend
+             */
+            ObjectForm.BaseViewModel.prototype.setExtendedReferenceCallout = function(refObj) {
+                if(this.extendedReferenceCallout() == refObj)
+                {
+                    refObj = null;
+                }
+                this.extendedReferenceCallout(refObj);
             };
 
 
@@ -4095,6 +4259,9 @@
             
             /// Object Resource for Project misc config
             Shapes.ObjectResourceProjectMiscConfig = 6;
+            
+            /// Object Resource for Wiki page
+            Shapes.ObjectResourceWikiPage = 7;
 
 
             /// Cached loaded objects
@@ -4354,6 +4521,39 @@
                         view.reloadSharedLoadedData(objectType, id);
                     }
                 }
+            },
+
+
+            /**
+             * Focuses a node if a node is specified in the url
+             */
+            focusNodeFromUrl: function() {
+                var nodeId = GoNorth.Util.getParameterFromUrl("nodeFocusId");
+                if(!nodeId)
+                {
+                    return;
+                }
+
+                GoNorth.Util.removeUrlParameter("nodeFocusId");
+                var targetNode = this.nodeGraph().getCell(nodeId);
+                if(!targetNode) 
+                {
+                    return;
+                }
+
+                var targetPosition = targetNode.position();
+                var targetSize = targetNode.size();
+                var paper = this.nodePaper();
+                var viewBoundingBox;
+                if(paper.el && paper.el.parentElement)
+                {
+                    viewBoundingBox = paper.el.parentElement.getBoundingClientRect()
+                }
+                else
+                {
+                    viewBoundingBox = paper.getContentBBox();
+                }
+                paper.translate(-targetPosition.x - targetSize.width * 0.5 + viewBoundingBox.width * 0.5, -targetPosition.y - targetSize.width * 0.5 + viewBoundingBox.height * 0.5);
             },
 
 
@@ -4684,7 +4884,7 @@
                  */
                 loadConfig: function() {
                     var self = this;
-                    jQuery.ajax("/api/UserPreferencesApi/GetCodeEditorPreferences").done(function(config) {
+                    GoNorth.HttpClient.get("/api/UserPreferencesApi/GetCodeEditorPreferences").done(function(config) {
                         self.codeEditorTheme(config.codeEditorTheme);
                         self.codeEditorScriptLanguage(config.scriptLanguage);
                     }).fail(function() {
@@ -4867,6 +5067,11 @@
                     var conditionDialogDeferred = new jQuery.Deferred();
                     self.conditionDialog.openDialog(condition, conditionDialogDeferred);
                     return conditionDialogDeferred;
+                };
+
+                // Opens the general object search dialog 
+                GoNorth.DefaultNodeShapes.openGeneralObjectSearchDialog = function() {
+                    return self.chooseObjectDialog.openGeneralObjectSearch(ScriptDialog.Localization.NodeScripts.ChooseGeneralObject);
                 };
 
                 // Opens the item search dialog
@@ -6088,11 +6293,7 @@
             Conditions.CheckSkillValueCondition.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
                 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + Evne.getCurrentSkillId(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/FlexFieldObject?id=" + Evne.getCurrentSkillId()).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -6156,13 +6357,7 @@
             Conditions.CheckInventoryCondition.prototype.getItemName = function(itemId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify([ itemId ]), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(itemNames) {
+                GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", [ itemId ]).done(function(itemNames) {
                     if(itemNames.length == 0)
                     {
                         def.reject();
@@ -6568,11 +6763,7 @@
             Conditions.CheckPlayerValueCondition.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
                 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/PlayerNpc", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/PlayerNpc").done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -6680,10 +6871,7 @@
             Conditions.CheckChooseQuestValueCondition.prototype.loadObject = function(objectId) {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + objectId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + objectId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -6800,10 +6988,7 @@
             Conditions.CheckQuestStateCondition.prototype.loadObject = function(questId) {
                 var loadingDef = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + questId, 
-                    type: "GET"
-                }).done(function(quest) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + questId).done(function(quest) {
                     loadingDef.resolve(quest);
                 }).fail(function(xhr) {
                     loadingDef.reject();
@@ -7016,10 +7201,7 @@
             Conditions.CheckNpcAliveStateCondition.prototype.loadObject = function(npcId) {
                 var loadingDef = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(npc) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(npc) {
                     loadingDef.resolve(npc);
                 }).fail(function(xhr) {
                     loadingDef.reject();
@@ -7237,10 +7419,7 @@
             Conditions.CheckGameTimeCondition.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/ProjectConfigApi/GetMiscConfig", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/ProjectConfigApi/GetMiscConfig").done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -7444,10 +7623,7 @@
             Conditions.CheckChooseSkillValueCondition.prototype.loadObject = function(objectId) {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + objectId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/FlexFieldObject?id=" + objectId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -7706,10 +7882,7 @@
             Conditions.CheckLearnedSkillCondition.prototype.loadObject = function(objectId) {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + objectId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/FlexFieldObject?id=" + objectId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -8174,10 +8347,7 @@
             Conditions.CheckDailyRoutineEventStateCondition.prototype.loadObject = function(npcId) {
                 var loadingDef = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(npc) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(npc) {
                     loadingDef.resolve(npc);
                 }).fail(function(xhr) {
                     loadingDef.reject();
@@ -9394,7 +9564,7 @@
             function loadActionConfig(configKey) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
+                GoNorth.HttpClient.get("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(configKey)).done(function(loadedConfigData) {
                     if(!loadedConfigData)
                     {
                         def.resolve();
@@ -9460,7 +9630,7 @@
                         {
                             type: actionType,
                             icon: "glyphicon-cog",
-                            size: { width: 250, height: 200 },
+                            size: { width: 250, height: actionNodeHeight },
                             inPorts: ['input'],
                             outPorts: ['output'],
                             attrs:
@@ -9791,6 +9961,9 @@
 
             /// Actions that are related to a daily routine
             Actions.RelatedToObjectDailyRoutine = "NpcDailyRoutineEvent";
+
+            /// Actions that are related to a daily routine
+            Actions.RelatedToWikiPage = "WikiPage";
 
             /**
              * Base Action
@@ -10477,11 +10650,7 @@
             Actions.ChangeCurrentSkillValueAction.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + Evne.getCurrentSkillId(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/FlexFieldObject?id=" + Evne.getCurrentSkillId()).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -10577,10 +10746,7 @@
                 var def = new jQuery.Deferred();
 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/PlayerNpc", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/PlayerNpc").done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -10644,13 +10810,7 @@
 
                     actionNode.showLoading();
                     actionNode.hideError();
-                    jQuery.ajax({ 
-                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify([ existingItemId ]), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(itemNames) {
+                    GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", [ existingItemId ]).done(function(itemNames) {
                         if(itemNames.length == 0)
                         {
                             actionNode.hideLoading();
@@ -10826,13 +10986,7 @@
 
                     var itemDef = new jQuery.Deferred();
                     loadingDefs.push(itemDef);
-                    jQuery.ajax({ 
-                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify([ existingIds.itemId ]), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(itemNames) {
+                    GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", [ existingIds.itemId ]).done(function(itemNames) {
                         if(itemNames.length == 0)
                         {
                             itemDef.reject();
@@ -10852,13 +11006,7 @@
 
                     var npcDef = new jQuery.Deferred();
                     loadingDefs.push(npcDef);
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify([ existingIds.npcId ]), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(npcNames) {
+                    GoNorth.HttpClient.post("/api/KortistoApi/ResolveFlexFieldObjectNames", [ existingIds.npcId ]).done(function(npcNames) {
                         if(npcNames.length == 0)
                         {
                             npcDef.reject();
@@ -11555,11 +11703,7 @@
             Actions.ChangeQuestValueAction.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + this.nodeModel.get("objectId"), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + this.nodeModel.get("objectId")).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -11778,10 +11922,7 @@
             Actions.SetQuestStateAction.prototype.loadObject = function(questId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + questId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + questId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -11997,10 +12138,7 @@
             Actions.AddQuestTextAction.prototype.loadObject = function(questId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + questId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + questId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -12585,11 +12723,7 @@
             Actions.LearnForgetSkillAction.prototype.loadObject = function(skillId) {
                 var def = new jQuery.Deferred();
 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + skillId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/FlexFieldObject?id=" + skillId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -12781,10 +12915,7 @@
                 var def = new jQuery.Deferred();
 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + this.nodeModel.get("objectId"), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/FlexFieldObject?id=" + this.nodeModel.get("objectId")).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -13457,10 +13588,7 @@
             Actions.ShowFloatingTextAboveChooseNpcAction.prototype.loadObject = function(npcId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -13530,10 +13658,7 @@
             Actions.SetGameTimeAction.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/ProjectConfigApi/GetMiscConfig", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/ProjectConfigApi/GetMiscConfig").done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -13811,10 +13936,7 @@
             Actions.SetDailyRoutineEventStateAction.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + this.nodeModel.get("objectId"), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + this.nodeModel.get("objectId")).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -14153,10 +14275,7 @@
 
                 var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
 
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid"), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid")).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -14529,10 +14648,7 @@
                     var def = new jQuery.Deferred();
 
                     var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid"), 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid")).done(function(data) {
                         def.resolve(data);
                     }).fail(function(xhr) {
                         def.reject();
@@ -14681,10 +14797,7 @@
             Actions.TeleportChooseNpcAction.prototype.loadChoosenObject = function(npcId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -14845,10 +14958,7 @@
             Actions.WalkChooseNpcToMarkerAction.prototype.loadChoosenObject = function(npcId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -15143,10 +15253,7 @@
                     var def = new jQuery.Deferred();
 
                     var selectNpcAction = this.contentElement.find(".gn-actionNodeNpcSelect");
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/FlexFieldObject?id=" + selectNpcAction.data("npcid"), 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + selectNpcAction.data("npcid")).done(function(data) {
                         def.resolve(data);
                     }).fail(function(xhr) {
                         def.reject();
@@ -15295,10 +15402,7 @@
             Actions.TeleportChooseNpcToNpcAction.prototype.loadChoosenObject = function(npcId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -15459,10 +15563,7 @@
             Actions.WalkChooseNpcToNpcAction.prototype.loadChoosenObject = function(npcId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -15798,10 +15899,7 @@
                     var def = new jQuery.Deferred();
 
                     var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid"), 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid")).done(function(data) {
                         def.resolve(data);
                     }).fail(function(xhr) {
                         def.reject();
@@ -15936,10 +16034,7 @@
             Actions.SpawnNpcAtMarkerAction.prototype.loadChoosenObject = function(npcId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + npcId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + npcId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -16073,10 +16168,7 @@
             Actions.SpawnItemAtMarkerAction.prototype.loadChoosenObject = function(itemId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/FlexFieldObject?id=" + itemId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/StyrApi/FlexFieldObject?id=" + itemId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();
@@ -16088,6 +16180,490 @@
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.SpawnItemAtMarkerAction());
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
+        (function(Shapes) {
+
+            /// Reference Type
+            var referenceType = "default.Reference";
+            
+            /// Reference Target Array
+            var referenceTargetArray = "reference";
+
+            joint.shapes.default = joint.shapes.default || {};
+
+            /**
+             * Creates the reference shape
+             * @returns {object} reference shape
+             * @memberof Shapes
+             */
+            function createReferenceShape() {
+                var model = joint.shapes.devs.Model.extend(
+                {
+                    defaults: joint.util.deepSupplement
+                    (
+                        {
+                            type: referenceType,
+                            icon: "glyphicon-link",
+                            size: { width: 250, height: 200 },
+                            inPorts: ['input'],
+                            outPorts: ['output'],
+                            attrs:
+                            {
+                                '.inPorts circle': { "magnet": "passive", "port-type": "input" },
+                                '.outPorts circle': { "magnet": "true" }
+                            },
+                            referencedObjects: [],
+                            referencedMarkerType: "",
+                            referenceText: ""
+                        },
+                        joint.shapes.default.Base.prototype.defaults
+                    )
+                });
+                return model;
+            }
+
+            /**
+             * Creates a reference view
+             * @returns {object} Reference view
+             * @memberof Shapes
+             */
+            function createReferenceView() {
+                let baseView = joint.shapes.default.BaseView.extend(
+                {
+                    /**
+                     * Template
+                     */
+                    template:
+                    [
+                        '<div class="node">',
+                            '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
+                            '<span class="gn-nodeLoading" style="display: none"><i class="glyphicon glyphicon-refresh spinning"></i></span>',
+                            '<span class="gn-nodeError text-danger" style="display: none" title="' + GoNorth.DefaultNodeShapes.Localization.ErrorOccured + '"><i class="glyphicon glyphicon-warning-sign"></i></span>',
+                            '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '" type="button">x</button>',
+                            '<div class="gn-referenceNodeLink">',
+                                '<a class="gn-clickable gn-nodeNonClickableOnReadonly objectChooseLink"></a>',
+                                '<a class="gn-clickable gn-nodeActionOpenObject" title="' + DefaultNodeShapes.Localization.Reference.OpenObjectTooltip + '" style="display: none"><i class="glyphicon glyphicon-eye-open"></i></a>',
+                            '</div>',
+                            '<textarea class="gn-referenceText" placeholder="' + GoNorth.DefaultNodeShapes.Localization.Reference.ReferenceText + '"></textarea>',
+                        '</div>',
+                    ].join(''),
+
+                    /**
+                     * Initializes the shape
+                     */
+                    initialize: function() {
+                        joint.shapes.default.BaseView.prototype.initialize.apply(this, arguments);
+                        GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
+
+                        var self = this;
+                        this.$box.find('.gn-referenceText').on('change', function(evt)
+                        {
+                            self.model.set('referenceText', jQuery(evt.target).val());
+                        });
+
+                        this.$box.find('.objectChooseLink').on("click", function() {
+                            GoNorth.DefaultNodeShapes.openGeneralObjectSearchDialog().then(function(selectedObject) {
+                                var referencedMarkerType = "";
+                                var dependencyObjects = [{
+                                    objectType: selectedObject.objectType,
+                                    objectId: selectedObject.eventId ? selectedObject.eventId : selectedObject.id
+                                }];
+                                if(selectedObject.parentObject) {
+                                    dependencyObjects.push({
+                                        objectType: GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc,
+                                        objectId: selectedObject.parentObject.id
+                                    });
+                                }
+                                if(selectedObject.mapId) {
+                                    dependencyObjects.push({
+                                        objectType: GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMap,
+                                        objectId: selectedObject.mapId
+                                    });
+                                    referencedMarkerType = selectedObject.markerType;
+                                }
+
+                                self.model.set('referencedObjects', dependencyObjects);
+                                self.model.set('referencedMarkerType', referencedMarkerType);
+                                var objectName = selectedObject.name;
+                                if(selectedObject.additionalName) {
+                                    objectName += " (" + selectedObject.additionalName + ")";
+                                }
+                                self.setLinkLabel(objectName, selectedObject.objectType);
+                            });
+                        });
+                        
+                        this.$box.find('.gn-nodeActionOpenObject').on("click", function() {
+                            self.openObject();
+                        });
+
+                        this.syncModelData();
+                    },
+
+                    /**
+                     * Syncs the model data
+                     */
+                    syncModelData: function() {
+                        this.$box.find('.gn-referenceText').val(this.model.get('referenceText'));
+
+                        var selectionText = GoNorth.DefaultNodeShapes.Localization.Reference.ChooseObject;
+                        this.$box.find('.objectChooseLink').text(selectionText);
+
+                        var referencedObjects = this.model.get('referencedObjects');
+                        if(referencedObjects && referencedObjects.length > 0)
+                        {
+                            var self = this;
+                            self.hideError();
+                            self.showLoading();
+                            this.loadReferencedObjectName(referencedObjects).then(function(name) {
+                                self.hideLoading();
+                                self.setLinkLabel(name, referencedObjects[0].objectType);
+                            }, function() {
+                                self.showError();
+                                self.hideLoading();
+                            });
+                        }
+                    },
+
+                    /**
+                     * Sets the link label
+                     * @param {string} objectName Object name
+                     * @param {string} objectType Object type
+                     */
+                    setLinkLabel: function(objectName, objectType) {
+                        var iconName = "";
+                        if(objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc) 
+                        {
+                            iconName = "glyphicon-user";
+                        }
+                        else if(objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem) 
+                        {
+                            iconName = "glyphicon-apple";
+                        }
+                        else if(objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectSkill) 
+                        {
+                            iconName = "glyphicon-flash";
+                        }
+                        else if(objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest) 
+                        {
+                            iconName = "glyphicon-king";
+                        }
+                        else if(objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToWikiPage) 
+                        {
+                            iconName = "glyphicon-book";
+                        }
+                        else if(objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine) 
+                        {
+                            iconName = "glyphicon-hourglass";
+                        }
+                        else if(objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker) 
+                        {
+                            iconName = "glyphicon-map-marker";
+                        }
+
+                        var htmlContent = "<i class='glyphicon " + iconName + "'></i>&nbsp;" + objectName;
+                        this.$box.find('.objectChooseLink').html(htmlContent);
+                        this.$box.find('.gn-nodeActionOpenObject').show();
+                    },
+
+                    /**
+                     * Opens an object 
+                     */
+                    openObject: function() {
+                        let referencedObjects = this.model.get("referencedObjects");
+                        if(!referencedObjects || referencedObjects.length == 0) {
+                            return;
+                        }
+
+                        var referencedObject = referencedObjects[0];
+                        var url = "";
+                        if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc) 
+                        {
+                            url = "/Kortisto/Npc?id=" + referencedObject.objectId;
+                        }
+                        else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem) 
+                        {
+                            url = "/Styr/Item?id=" + referencedObject.objectId;
+                        }
+                        else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectSkill) 
+                        {
+                            url = "/Evne/Skill?id=" + referencedObject.objectId;
+                        }
+                        else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest) 
+                        {
+                            url = "/Aika/Quest?id=" + referencedObject.objectId;
+                        }
+                        else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToWikiPage) 
+                        {
+                            url = "/Kirja?id=" + referencedObject.objectId;
+                        }
+                        else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine && referencedObjects.length > 1) 
+                        {
+                            url = "/Kortisto/Npc?id=" + referencedObjects[1].objectId;
+                        }
+                        else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker && referencedObjects.length > 1) 
+                        {
+                            url = "/Karta?id=" + referencedObjects[1].objectId + "&zoomOnMarkerId=" + referencedObjects[0].objectId + "&zoomOnMarkerType=" + this.model.get("referencedMarkerType");
+                        }
+
+                        if(url) 
+                        {
+                            window.open(url);
+                        }
+                    },
+
+                    /**
+                     * Returns the display name of a daily routine
+                     * @param {object} dailyRoutineEvent Daily routine event to format
+                     * @returns {string} Formatted Dialy routine event
+                     */
+                    getDailyRoutineDisplayName: function(dailyRoutineEvent) {
+                        var displayName = GoNorth.DailyRoutines.Util.formatTimeSpan(GoNorth.DefaultNodeShapes.Localization.Reference.TimeFormat, dailyRoutineEvent.earliestTime, dailyRoutineEvent.latestTime);
+                        var additionalName = "";
+                        if (dailyRoutineEvent.scriptName) 
+                        {
+                            additionalName = dailyRoutineEvent.scriptName;
+                        }
+                        else if (dailyRoutineEvent.movementTarget && dailyRoutineEvent.movementTarget.name) 
+                        {
+                            additionalName = dailyRoutineEvent.movementTarget.name;
+                        }
+    
+                        if (additionalName) {
+                            displayName += " (" + additionalName + ")";
+                        }
+                        return displayName;
+                    },
+
+                    /**
+                     * Loads the referenced object name
+                     * @param referencedObjects Referenced objects
+                     * @returns {jQuery.Deferred} Deferred for the loading proccess 
+                     */
+                    loadReferencedObjectName: function(referencedObjects) {
+                        var def = new jQuery.Deferred();
+
+                        var self = this;
+                        this.loadObjectShared(referencedObjects).then(function(object) {
+                            if(referencedObjects[0].objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine) 
+                            {                                
+                                for(var curEvent = 0; curEvent < object.dailyRoutine.length; ++curEvent)
+                                {
+                                    if(object.dailyRoutine[curEvent].eventId == referencedObjects[0].objectId)
+                                    {
+                                        var displayName = self.getDailyRoutineDisplayName(object.dailyRoutine[curEvent]);
+                                        def.resolve(displayName);
+                                        return;
+                                    }
+                                }
+                                def.resolve("<MISSING>");
+                            }
+                            else if(referencedObjects[0].objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker) 
+                            {
+                                def.resolve(object.markerName + " (" + object.mapName + ")");
+                            }
+                            else
+                            {
+                                def.resolve(object.name);
+                            }
+                        }, function(e) {
+                            def.reject(e);
+                        })
+
+                        return def.promise();
+                    },
+
+                    /**
+                     * Shows the loading indicator
+                     */
+                    showLoading: function() {
+                        this.$box.find(".gn-nodeLoading").show();
+                    },
+
+                    /**
+                     * Hides the loading indicator
+                     */
+                    hideLoading: function() {
+                        this.$box.find(".gn-nodeLoading").hide();
+                    },
+
+
+                    /**
+                     * Shows the error indicator
+                     */
+                    showError: function() {
+                        this.$box.find(".gn-nodeError").show();
+                    },
+
+                    /**
+                     * Hides the error indicator
+                     */
+                    hideError: function() {
+                        this.$box.find(".gn-nodeError").hide();
+                    }
+                });
+                baseView.prototype = jQuery.extend(baseView.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
+                
+                /**
+                 * Returns the object id
+                 * 
+                 * @param {object[]} referencedObjects Referenced objects
+                 * @returns {string} Object Id
+                 */
+                baseView.prototype.getObjectId = function(referencedObjects) {
+                    var referencedObject = referencedObjects[0];
+                    if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine) 
+                    {
+                        return referencedObjects[1].objectId;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker) 
+                    {
+                        return referencedObjects[1].objectId + "|" + referencedObjects[0].objectId;
+                    }
+
+                    return referencedObject.objectId;
+                };
+
+                /**
+                 * Returns the object resource
+                 * 
+                 * @param {object[]} referencedObjects Referenced objects
+                 * @returns {int} Object Resource
+                 */
+                baseView.prototype.getObjectResource = function(referencedObjects) {
+                    var referencedObject = referencedObjects[0];
+                    if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc || referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine) 
+                    {
+                        return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceNpc;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem) 
+                    {
+                        return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceItem;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectSkill) 
+                    {
+                        return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceSkill;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest) 
+                    {
+                        return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceQuest;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToWikiPage) 
+                    {
+                        return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceWikiPage;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker) 
+                    {
+                        return GoNorth.DefaultNodeShapes.Shapes.ObjectResourceMapMarker;
+                    }
+                };
+
+                /**
+                 * Loads a referenced object
+                 * @param {string} objectId Id of the object to load
+                 * @param {object[]} referencedObjects Referenced objects
+                 */
+                baseView.prototype.loadObject = function(objectId, referencedObjects) {
+                    var url = "";
+                    var referencedObject = referencedObjects[0];
+                    if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc || referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine) 
+                    {
+                        url = "/api/KortistoApi/FlexFieldObject?id=" + objectId;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem) 
+                    {
+                        url = "/api/StyrApi/FlexFieldObject?id=" + objectId;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectSkill) 
+                    {
+                        url = "/api/EvneApi/FlexFieldObject?id=" + objectId;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest) 
+                    {
+                        url = "/api/AikaApi/GetQuest?id=" + objectId;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToWikiPage) 
+                    {
+                        url = "/api/KirjaApi/Page?id=" + objectId;
+                    }
+                    else if(referencedObject.objectType == GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker) 
+                    {
+                        url = "/api/KartaApi/GetMarker?mapId=" + referencedObjects[1].objectId + "&markerId=" + referencedObjects[0].objectId;
+                    }
+                    
+                    return GoNorth.HttpClient.get(url);
+                };
+
+                return baseView;
+            }
+
+            /**
+             * Reference Shape
+             */
+            joint.shapes.default.Reference = createReferenceShape();
+
+            /**
+             * Reference View
+             */
+            joint.shapes.default.ReferenceView = createReferenceView();
+
+
+            /** 
+             * Reference Serializer 
+             * 
+             * @class
+             */
+            Shapes.ReferenceSerializer = function()
+            {
+                GoNorth.DefaultNodeShapes.Serialize.BaseNodeSerializer.apply(this, [ joint.shapes.default.Reference, referenceType, referenceTargetArray ]);
+            };
+
+            Shapes.ReferenceSerializer.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.Serialize.BaseNodeSerializer.prototype)
+
+            /**
+             * Serializes a node
+             * 
+             * @param {object} node Node Object
+             * @returns {object} Serialized NOde
+             */
+            Shapes.ReferenceSerializer.prototype.serialize = function(node) {
+                var serializedData = {
+                    id: node.id,
+                    x: node.position.x,
+                    y: node.position.y,
+                    referencedObjects: node.referencedObjects,
+                    referenceText: node.referenceText
+                };
+
+                return serializedData;
+            };
+
+            /**
+             * Deserializes a serialized node
+             * 
+             * @param {object} node Serialized Node Object
+             * @returns {object} Deserialized Node
+             */
+            Shapes.ReferenceSerializer.prototype.deserialize = function(node) {
+                var initOptions = {
+                    id: node.id,
+                    position: { x: node.x, y: node.y },
+                    referencedObjects: node.referencedObjects,
+                    referenceText: node.referenceText
+                };
+
+                var node = new this.classType(initOptions);
+                return node;
+            };
+
+            // Register Serializers
+            var referenceSerializer = new Shapes.ReferenceSerializer();
+            GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().addNodeSerializer(referenceSerializer);
+
+        }(DefaultNodeShapes.Shapes = DefaultNodeShapes.Shapes || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
@@ -16372,10 +16948,7 @@
                 this.loadingLearnedByNpcs(true);
                 this.errorLoadingLearnedByNpcs(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/GetNpcsByLearnedSkill?skillId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/GetNpcsByLearnedSkill?skillId=" + this.id()).done(function(data) {
                     self.learnedByNpcs(data);
                     self.loadingLearnedByNpcs(false);
                 }).fail(function(xhr) {

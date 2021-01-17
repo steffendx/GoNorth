@@ -4,6 +4,7 @@ using GoNorth.Data.Project;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;
 using GoNorth.Services.Export.Script;
+using GoNorth.Services.Project;
 
 namespace GoNorth.Services.Export.LanguageExport
 {
@@ -33,9 +34,9 @@ namespace GoNorth.Services.Export.LanguageExport
         private readonly IExportSettingsDbAccess _exportSettingsDbAccess;
 
         /// <summary>
-        /// Project Db Access
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Language key reference collector
@@ -47,19 +48,19 @@ namespace GoNorth.Services.Export.LanguageExport
         /// </summary>
         /// <param name="placeholderResolver">Pkaceholder Resolver</param>
         /// <param name="defaultTemplateProvider">Default Template Provider</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="exportSettingsDbAccess">Export Settings Db Accesss</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="languageKeyReferenceCollector">Language key reference collector</param>
-        public LanguageExporter(IExportTemplatePlaceholderResolver placeholderResolver, IExportDefaultTemplateProvider defaultTemplateProvider, IProjectDbAccess projectDbAccess, IExportSettingsDbAccess exportSettingsDbAccess,
+        public LanguageExporter(IExportTemplatePlaceholderResolver placeholderResolver, IExportDefaultTemplateProvider defaultTemplateProvider, IExportSettingsDbAccess exportSettingsDbAccess, IUserProjectAccess userProjectAccess, 
                                 ILanguageKeyReferenceCollector languageKeyReferenceCollector)
         {
             _placeholderResolver = placeholderResolver;
             _defaultTemplateProvider = defaultTemplateProvider;
-            _projectDbAccess = projectDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
+            _userProjectAccess = userProjectAccess;
             _languageKeyReferenceCollector = languageKeyReferenceCollector;
 
-            _scriptExporter = new ScriptExporter(placeholderResolver, projectDbAccess, exportSettingsDbAccess);
+            _scriptExporter = new ScriptExporter(placeholderResolver, exportSettingsDbAccess, userProjectAccess);
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace GoNorth.Services.Export.LanguageExport
             objectData.ExportData[ExportConstants.ExportDataReferencedLanguageIds] = _languageKeyReferenceCollector.GetReferencedLanguageKeys();
 
             // Export language keys
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             ExportSettings exportSettings = await _exportSettingsDbAccess.GetExportSettings(project.Id);
             ExportTemplate exportTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.LanguageFile);
 

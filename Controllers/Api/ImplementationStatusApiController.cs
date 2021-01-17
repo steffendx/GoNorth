@@ -223,7 +223,7 @@ namespace GoNorth.Controllers.Api
             await FlagObjectExportSnippetsAsImplemented(npc.Id);
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedNpc, npc.Id, npc.Name);
+            await _timelineService.AddTimelineEntry(npc.ProjectId, TimelineEvent.ImplementedNpc, npc.Id, npc.Name);
 
             return Ok();
         }
@@ -272,7 +272,7 @@ namespace GoNorth.Controllers.Api
             await FlagObjectExportSnippetsAsImplemented(item.Id);
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedItem, item.Id, item.Name);
+            await _timelineService.AddTimelineEntry(item.ProjectId, TimelineEvent.ImplementedItem, item.Id, item.Name);
 
             return Ok();
         }
@@ -322,7 +322,7 @@ namespace GoNorth.Controllers.Api
             await FlagObjectExportSnippetsAsImplemented(skill.Id);
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedSkill, skill.Id, skill.Name);
+            await _timelineService.AddTimelineEntry(skill.ProjectId, TimelineEvent.ImplementedSkill, skill.Id, skill.Name);
 
             return Ok();
         }
@@ -377,7 +377,7 @@ namespace GoNorth.Controllers.Api
             {
                 npcName = npcNames[0].Name;
             }
-            await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedDialog, dialog.RelatedObjectId, npcName);
+            await _timelineService.AddTimelineEntry(dialog.ProjectId, TimelineEvent.ImplementedDialog, dialog.RelatedObjectId, npcName);
 
             return Ok();
         }
@@ -426,7 +426,7 @@ namespace GoNorth.Controllers.Api
             await _questDbAccess.UpdateQuest(quest);
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedQuest, quest.Id, quest.Name);
+            await _timelineService.AddTimelineEntry(quest.ProjectId, TimelineEvent.ImplementedQuest, quest.Id, quest.Name);
 
             return Ok();
         }
@@ -511,7 +511,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.ImplementedMarker, mapId, markerId, markerType.ToString(), map.Name);
+            await _timelineService.AddTimelineEntry(map.ProjectId, TimelineEvent.ImplementedMarker, mapId, markerId, markerType.ToString(), map.Name);
 
             return Ok();
         }

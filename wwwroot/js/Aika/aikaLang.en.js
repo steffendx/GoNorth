@@ -74,6 +74,7 @@
 
             // View Model
             Localization.QuestViewModel = {};
+            Localization.QuestViewModel.ChooseGeneralObject = "Choose object";
             Localization.QuestViewModel.ChooseQuest = "Choose quest";
             Localization.QuestViewModel.ChooseNpc = "Choose npc";
             Localization.QuestViewModel.ChooseItem = "Choose item";

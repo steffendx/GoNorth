@@ -20,7 +20,7 @@ namespace GoNorth.Services.Export.Placeholder.Util
                 return false;
             }
 
-            if(!dialog.NpcText.Any() && !dialog.PlayerText.Any() && !dialog.Choice.Any() && !dialog.Condition.Any() && !dialog.Action.Any())
+            if(!dialog.NpcText.Any() && !dialog.PlayerText.Any() && !dialog.Choice.Any() && !dialog.Condition.Any() && !dialog.Action.Any() && !dialog.Reference.Any())
             {
                 return false;
             }

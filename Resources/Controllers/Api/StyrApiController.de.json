@@ -1,18 +1,22 @@
 {
     "FolderNotEmpty": "Der Ordner ist nicht leer.",
 
-    "CanNotDeleteItemReferencedInAikaQuest": "Das Item wird in den Aika Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.", 
-    "CanNotDeleteItemMentionedInKirjaPage": "Das Item wird in den Kirja Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteItemReferencedInAikaQuest": "Das Item wird in den Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.", 
+    "CanNotDeleteItemMentionedInKirjaPage": "Das Item wird in den Wiki-Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemMarkedInKartaMap": "Das Item ist in den Karta Karten \"{0}\" markiert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
-    "CanNotDeleteItemReferencedInTaleDialog": "Das Item ist in den Tale Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteItemReferencedInTaleDialog": "Das Item ist in den Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemUsedInInventory": "Das Item wird in den Inventaren der Npcs \"{0}\" benutzt. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemUsedInDailyRoutine": "Das Item ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteObjectUsedInExportSnippet": "Das Objekt ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteItemUsedInSkill": "Das Item ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
 
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",
     "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt.",
 
-    "DuplicateFieldNameExist": "Es existitieren mehrere Felder mit gleichem Namen.",
+    "DuplicateFieldNameExist": "Es existieren mehrere Felder mit gleichem Namen.",
+
+    "TemplateIsForDifferentProject": "Das hinterlegte Template gehört einem anderen Projekt. Bitte wechsel zu diesem Projekt.",
 
     "ImportFieldValuesObjectNotFound": "Das Item wurde nicht gefunden.",
     "ImportFieldValuesFieldNotFoundInTemplate": "Das Feld {0} wurde weder im Template noch im Item gefunden. Der Wert kann nicht importiert werden.",

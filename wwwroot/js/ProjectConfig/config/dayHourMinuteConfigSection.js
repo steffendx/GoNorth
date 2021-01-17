@@ -43,7 +43,7 @@
                     var self = this;
                     this.isLoading(true);
                     this.errorOccured(false);
-                    jQuery.ajax("/api/ProjectConfigApi/GetMiscConfig").done(function(loadedConfigData) {
+                    GoNorth.HttpClient.get("/api/ProjectConfigApi/GetMiscConfig").done(function(loadedConfigData) {
                         self.isLoading(false);
                         self.hoursPerDay(loadedConfigData.hoursPerDay);
                         self.minutesPerHour(loadedConfigData.minutesPerHour);
@@ -62,7 +62,7 @@
                     }
 
                     var self = this;
-                    jQuery.ajax("/api/KortistoApi/GetNpcsWithDailyRoutineOutsideTimeRange").done(function(npcsOutsideRange) {
+                    GoNorth.HttpClient.get("/api/KortistoApi/GetNpcsWithDailyRoutineOutsideTimeRange").done(function(npcsOutsideRange) {
                         self.npcsOutsideTimeRange(npcsOutsideRange);
                     }).fail(function() {
                         self.errorOccured(true);
@@ -88,13 +88,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ProjectConfigApi/SaveMiscConfig", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(postData), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/ProjectConfigApi/SaveMiscConfig", postData).done(function() {
                         self.isLoading(false);
                         self.checkNpcOutsideTimeRange();
                     }).fail(function() {

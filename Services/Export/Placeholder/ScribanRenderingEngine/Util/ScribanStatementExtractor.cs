@@ -25,7 +25,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util
         /// </summary>
         /// <param name="statements">Statement list</param>
         /// <returns>Script statement list</returns>
-        private static List<ScriptStatement> ExtractStatementsFromList(List<ScriptStatement> statements)
+        private static List<ScriptStatement> ExtractStatementsFromList(ScriptList<ScriptStatement> statements)
         {
             List<ScriptStatement> scriptStatements = new List<ScriptStatement>();
             if(statements == null || !statements.Any())
@@ -56,9 +56,13 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util
             if (statement is ScriptLoopStatementBase)
             {
                 ScriptLoopStatementBase loopStatement = (ScriptLoopStatementBase)statement;
-                if (loopStatement.Body != null)
+                foreach(ScriptNode curChild in loopStatement.Children)
                 {
-                    scriptStatements.AddRange(ExtractStatementsFromList(loopStatement.Body.Statements));
+                    ScriptStatement curStatement = curChild as ScriptStatement;
+                    if(curStatement != null)
+                    {
+                        ExtractStatement(scriptStatements, curStatement);
+                    }
                 }
             }
             else if (statement is ScriptIfStatement)

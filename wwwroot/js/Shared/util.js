@@ -66,7 +66,7 @@
         /**
          * Sets the url parameters
          * 
-         * @param {string} parameters Parameters
+         * @param {string} parameter Parameters
          */
         Util.setUrlParameters = function(parameter) {
             manipulateHistoryState(parameter, false);
@@ -75,10 +75,30 @@
         /**
          * Replace the url parameters without pushing a new history state
          * 
-         * @param {string} parameters Parameters
+         * @param {string} parameter Parameters
          */
         Util.replaceUrlParameters = function(parameter) {
             manipulateHistoryState(parameter, true);
+        }
+
+        /**
+         * Removes an url parameter
+         * 
+         * @param {string} parameter Name of the parameter to remove
+         */
+        Util.removeUrlParameter = function(parameter) {
+            var url = window.location.search;
+            if(!url) 
+            {
+                return;
+            }
+
+            url = url.replace(new RegExp("(\\?|&)" + parameter + "=.*?(&|$)"), "&");
+            if(url[url.length - 1] == "&")
+            {
+                url = url.substr(0, url.length - 1);
+            }
+            window.history.replaceState(url, null, url);
         }
 
         /**

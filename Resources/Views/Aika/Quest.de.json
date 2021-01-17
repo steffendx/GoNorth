@@ -16,12 +16,21 @@
     "NoFieldsAdded": "Es wurden noch keine Felder zum Quest hinzugefügt",
 
     "Connections": "Verknüpfungen",
-    "UsedInAikaDetailView": "In Aika Detailansichten genutzt:",
-    "UsedInAikaQuest": "In Aika Quests genutzt:",
-    "MentionedInKirjaPages": "In Kirja Seiten erwähnt:",
-    "ReferencedInTaleDialogs": "Referenziert in Tale Dialogen:",
-    "HasMarkersInKartaMaps": "Markierungen in Karta Maps:",
+    "UsedInAikaDetailView": "In Kapitel Detailansichten genutzt:",
+    "UsedInAikaQuest": "In Quests genutzt:",
+    "MentionedInKirjaPages": "In Wiki-Seiten erwähnt:",
+    "ReferencedInTaleDialogs": "Referenziert in Dialogen:",
+    "HasMarkersInKartaMaps": "Markierungen in Karten:",
     "ReferencedInDailyRoutines": "Referenziert in Tagesabläufen:",
+    "ReferencedInEvneSkills": "Referenziert in Fähigkeiten:",
+    "ReferencedInExportSnippets": "Referenziert in Export Snippets:",
+    
+    "ClickHereForDetailedReferences": "Der Quest ist in mehreren Objekten referenziert. Klick hier für Details.",
+    "ClickHereToCloseDetailedReferences": "Hier klicken um die Referenzen zu schließen.",
+
+    "Npc": "Npc",    
+    "Item": "Item",
+    "Skill": "Fähigkeit",
 
     "Name": "Name",
     "Description": "Beschreibung",
@@ -32,6 +41,7 @@
     "ActionNode": "Aktion",
     "FinishNode": "Abschluss",
     "AllDone": "Alles abgeschlossen",
+    "ReferenceNode": "Referenz",
 
     "AreYouSure": "Bist du sicher?",
     "AreYouSureYouWantToDeleteTheQuest": "Bist du sicher das der Quest gelöscht werden soll?",

@@ -749,10 +749,7 @@
                     this.isLoading(true);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get(url).done(function(data) {
                         self.isLoading(false);
 
                         var fields = [];
@@ -953,13 +950,7 @@
                     this.errorOccured(false);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/ImportFieldValues", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(requestObject), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/" + this.apiControllerName + "/ImportFieldValues", requestObject).done(function(data) {
                         self.importWasRun(true);
                         self.isLoading(false);
 
@@ -969,6 +960,15 @@
                     }).fail(function(xhr) {
                         self.isLoading(false);
                         self.errorOccured(true);
+
+                        if(xhr && xhr.status == 400 && err && err.value)
+                        {
+                            self.additionalErrorMessage(err.value);
+                        }
+                        else
+                        {
+                            self.additionalErrorMessage("");
+                        }
                     });
                 },
 
@@ -1059,10 +1059,7 @@
                     this.errorOccured(false);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/GetFlexFieldValueImportLogs?start=" + (this.currentImportsListPage() * importLogPageSize) + "&pageSize=" + importLogPageSize, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/GetFlexFieldValueImportLogs?start=" + (this.currentImportsListPage() * importLogPageSize) + "&pageSize=" + importLogPageSize).done(function(data) {
                         self.previousImportsLoading(false);
                         self.previousImportsPrevLoading(false);
                         self.previousImportsNextLoading(false);
@@ -1087,10 +1084,7 @@
                     this.previousImportsNextLoading(true);
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/GetFlexFieldValueImportLog?id=" + encodeURIComponent(importLog.id), 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/GetFlexFieldValueImportLog?id=" + encodeURIComponent(importLog.id)).done(function(data) {
                         self.previousImportsLoading(false);
                         self.previousImportsPrevLoading(false);
                         self.previousImportsNextLoading(false);
@@ -1255,7 +1249,7 @@
                     }
 
                     var self = this;
-                    jQuery.ajax("/api/" + this.apiControllerName + "/Folders?start=0&pageSize=500" + additionalParameter).done(function(folders) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/Folders?start=0&pageSize=500" + additionalParameter).done(function(folders) {
                         if(parentObject)
                         {
                             parentObject.isLoading(false);
@@ -1532,7 +1526,7 @@
                  */
                 loadAvailableTemplates: function() {
                     var self = this;
-                    jQuery.ajax("/api/" + this.apiControllerName + "/FlexFieldTemplates?start=0&pageSize=1000").done(function(data) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/FlexFieldTemplates?start=0&pageSize=1000").done(function(data) {
                         self.availableTemplates(data.flexFieldObjects);
                     }).fail(function() {
                         self.errorOccured(true);
@@ -1595,7 +1589,7 @@
                     }
 
                     var self = this;
-                    jQuery.ajax("/api/" + this.apiControllerName + "/Folders" + idAppend).done(function(data) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/Folders" + idAppend).done(function(data) {
                         self.parentFolderId(data.parentId);
                         self.currentFolderName(data.folderName);
                         self.folders = data.folders;
@@ -1640,7 +1634,7 @@
                     }
 
                     var self = this;
-                    jQuery.ajax(url).done(function(data) {
+                    GoNorth.HttpClient.get(url).done(function(data) {
                         self.flexFieldObjects = data.flexFieldObjects;
                         self.hasMoreFlexFieldObjects = data.hasMore;
                         deferred.resolve();
@@ -1927,13 +1921,7 @@
 
                     var self = this;
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(requestFolder), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(folderId) {
+                    GoNorth.HttpClient.post(url, requestFolder).done(function(folderId) {
                         if(self.hasFolderImageInQueue())
                         {
                             self.editFolderImageId(folderId);
@@ -1993,11 +1981,7 @@
                 deleteFolder: function() {
                     var self = this;
                     this.dialogLoading(true);
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/DeleteFolder?id=" + this.deleteFolderId, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/" + this.apiControllerName + "/DeleteFolder?id=" + this.deleteFolderId).done(function(data) {
                         self.closeConfirmDeleteFolderDialog();
                         self.loadPage();
                     }).fail(function(xhr) {
@@ -2048,11 +2032,7 @@
                     var self = this;
                     this.errorOccured(false);
                     this.showAllLoading();
-                    jQuery.ajax({ 
-                        url: "/api/" + this.apiControllerName + "/" + apiMethod + "?id=" + objectToMove.id + "&newParentId=" + newTargetId, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/" + this.apiControllerName + "/" + apiMethod + "?id=" + objectToMove.id + "&newParentId=" + newTargetId, {}).done(function() {
                         self.loadPage();
                     }).fail(function(xhr) {
                         self.errorOccured(true);

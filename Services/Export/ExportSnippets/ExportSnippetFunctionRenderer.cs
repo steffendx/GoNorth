@@ -91,7 +91,7 @@ namespace GoNorth.Services.Export.ExportSnippets
         {
             _nodeGraphParser.SetErrorCollection(_errorCollection);
 
-            _curProject = await _cachedDbAccess.GetDefaultProject();
+            _curProject = await _cachedDbAccess.GetUserProject();
             _exportSettings = await _cachedDbAccess.GetExportSettings(_curProject.Id);
 
             SetupStepRenderes();
@@ -152,6 +152,7 @@ namespace GoNorth.Services.Export.ExportSnippets
             _stepRenderers.Clear();
             _stepRenderers.Add(new ExportDialogConditionRenderer(_cachedDbAccess, _errorCollection, _defaultTemplateProvider, _languageKeyGenerator, _conditionRenderer, _stringLocalizerFactory, _exportSettings, _curProject));
             _stepRenderers.Add(new ExportDialogActionRenderer(_errorCollection, _defaultTemplateProvider, _cachedDbAccess, _legacyDailyRoutineEventPlaceholderResolver, _dailyRoutineFunctionNameGenerator, _languageKeyGenerator, _scribanLanguageKeyGenerator, _stringLocalizerFactory, _actionTranslator, _exportSettings, _curProject));
+            _stepRenderers.Add(new ExportReferenceRenderer(_cachedDbAccess, _errorCollection, _defaultTemplateProvider, _dailyRoutineFunctionNameGenerator, _scribanLanguageKeyGenerator, _stringLocalizerFactory, _exportSettings, _curProject));
         
             SetExportTemplatePlaceholderResolverToStepRenderers();
         }

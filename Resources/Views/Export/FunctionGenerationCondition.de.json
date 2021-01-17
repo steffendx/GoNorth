@@ -6,6 +6,7 @@
     "NodeTypeChoice": "Auswahl",
     "NodeTypeCondition": "Bedingung",
     "NodeTypeAction": "Aktion",
+    "NodeTypeReference": "Referenz",
 
     "GenerationRules": "Regeln die eine Funktion generieren",
     "PreventGenerationRules": "Regeln die Funktionsgenerierung verhindern",

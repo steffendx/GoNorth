@@ -335,6 +335,18 @@ footer {
     font-size: 12px;
 }
 
+.gn-homeProjectSwitch {
+    display: inline-block;
+}
+
+.gn-homeProjectSwitch i {
+    font-size: 22px;
+}
+
+.gn-homeProjectSwitchable {
+    cursor: pointer;
+}
+
 @media(min-width:1600px) {
     .gn-homeTile {
         height: 300px;
@@ -507,6 +519,80 @@ footer {
 
 .gn-preferencesWidgetContainer {
     padding-top: 12px;
+}
+
+/** References **/
+.gn-detaildReferenceContainer {
+    position: relative;
+}
+
+.gn-detailedReferenceCount {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.gn-detaildReferenceCallout {
+    position: absolute;
+    max-width: 300px;
+    border: 1px solid #CCC;
+    left: 35px;
+    top: 8px;
+    background-color: white;
+    transform: translate(0, -50%);
+    border-radius: 4px;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -webkit-box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 10px 5px rgba(0,0,0,0.1);
+    padding: 10px;
+    text-align: left;
+    font-weight: normal;
+    line-height: normal;
+    color: #333;
+}
+
+.gn-detaildReferenceCalloutClose {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    cursor: pointer;
+}
+
+.gn-detaildReferenceCallout div {
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.gn-detaildReferenceCallout:before 
+{
+    content: "";
+    position: absolute;
+    top: calc(50% - 9.5px);
+    left: -9px;
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent; 
+    border-right: 9px solid #CCC; 
+    display: block;
+    width: 0;
+    z-index: 1;
+}
+
+.gn-detaildReferenceCallout:after
+{
+    content: "";
+    position: absolute;
+    top: calc(50% - 9px);
+    left: -8px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent; 
+    border-right: 8px solid white; 
+    display: block;
+    width: 0;
+    z-index: 1;
 }
 
 /** Flex Field Database Overview **/
@@ -1100,7 +1186,7 @@ footer {
 }
 
 .gn-kirjaSidebarContent {
-    height: calc(100% - 60px);
+    height: calc(100% - 80px);
     overflow-y: auto;
 }
 
@@ -1128,12 +1214,26 @@ footer {
     }
 }
 
+.gn-kirjaSidebarReferenceType {
+    float: right;
+    font-size: 10px;
+    line-height: 20px;
+}
+
 .gn-kirjaSidebarList {
     list-style: none;
     padding-left: 10px;
     margin-top: 8px;
     max-height: 152px;
     overflow-y: auto;
+}
+
+.gn-kirjaSidebarListLink {
+    display: inline-block;
+    white-space: nowrap;
+    width: calc(100% - 90px);
+    overflow-x: hidden;
+    text-overflow: ellipsis;
 }
 
 @media(max-height:700px) {
@@ -1499,6 +1599,25 @@ path.leaflet-interactive {
     color: #8fb2e4;
 }
 
+.node .label.default_Reference, .gn-nodeReference .gn-labelInsert {
+    color: #11c9b9;
+}
+
+.gn-referenceNodeLink {
+    margin-top: 15px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: auto;
+}
+
+.gn-referenceNodeLink a {
+    color: #FFF;
+}
+
+.gn-referenceText {
+    height: calc(100% - 65px) !important;
+}
 
 .gn-taleChoiceTextCell {
     width: 73%;
@@ -1630,6 +1749,7 @@ path.leaflet-interactive {
 .node .label.aika_AllDone, .gn-aikaNodeAllDone .gn-labelInsert {
     color: #e23b25;
 }
+
 
 .gn-aikaQuestFormRelatedList {
     list-style: none;

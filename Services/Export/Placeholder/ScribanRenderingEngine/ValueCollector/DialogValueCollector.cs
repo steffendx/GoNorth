@@ -123,14 +123,14 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
 
             _languageKeyGenerator.SetErrorCollection(_errorCollection);
 
-            GoNorthProject project = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _exportCachedDbAccess.GetUserProject();
             TaleDialog dialog = await _taleDbAccess.GetDialogByRelatedObjectId(inputNpc.Id);
 
             ExportDialogData parsedDialog = await ParseDialog(inputNpc, project, dialog);
             ScribanExportDialog exportDialog = await BuildExportDialog(parsedDialog, inputNpc);
 
-            scriptObject.Add(ExportConstants.ScribanDialogKey, exportDialog);
-            scriptObject.Add(DialogFunctionRenderer.DialogFunctionName, new DialogFunctionRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
+            scriptObject.AddOrUpdate(ExportConstants.ScribanDialogKey, exportDialog);
+            scriptObject.AddOrUpdate(DialogFunctionRenderer.DialogFunctionName, new DialogFunctionRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
         }
 
         /// <summary>

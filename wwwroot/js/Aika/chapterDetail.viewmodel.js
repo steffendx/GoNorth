@@ -5,6 +5,27 @@
         /// Dialog Page Size
         var dialogPageSize = 15;
 
+        /// Object Type for npcs
+        var objectTypeNpc = 0;
+
+        /// Object Type for items
+        var objectTypeItem = 1;
+
+        /// Object Type for skills
+        var objectTypeSkill = 2;
+
+        /// Object Type for quest
+        var objectTypeQuest = 3;
+
+        /// Object Type for wiki page
+        var objectTypeWikiPage = 4;
+
+        /// Object Type for daily routines
+        var objectTypeDailyRoutine = 5;
+
+        /// Object Type for marker
+        var objectTypeMarker = 6;
+
         /**
          * Page View Model
          * @class
@@ -12,6 +33,7 @@
         ChooseObjectDialog.ViewModel = function()
         {
             this.showDialog = new ko.observable(false);
+            this.showObjectTypeSelection = new ko.observable(false);
             this.dialogTitle = new ko.observable("");
             this.showNewButtonInDialog = new ko.observable(false);
             this.dialogSearchCallback = null;
@@ -24,10 +46,37 @@
             this.errorOccured = new ko.observable(false);
             this.idObservable = null;
 
+            var self = this;
+            this.selectedObjectType = new ko.observable(null);
+            this.selectedObjectType.subscribe(function() {
+                self.onObjectTypeChanged();
+            });
+            this.availableObjectTypes = [
+                { objectType: objectTypeNpc, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeNpc },
+                { objectType: objectTypeItem, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeItem },
+                { objectType: objectTypeSkill, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeSkill },
+                { objectType: objectTypeQuest, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeQuest },
+                { objectType: objectTypeWikiPage, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeWikiPage },
+                { objectType: objectTypeDailyRoutine, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeDailyRoutine },
+                { objectType: objectTypeMarker, objectLabel: GoNorth.ChooseObjectDialog.Localization.ObjectTypeMarker }
+            ];
+
             this.choosingDeferred = null;
         };
 
         ChooseObjectDialog.ViewModel.prototype = {
+            /**
+             * Opens the dialog to search for general objects
+             * 
+             * @param {string} dialogTitle Title of the dialog
+             * @returns {jQuery.Deferred} Deferred for the selecting process
+             */
+            openGeneralObjectSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(true);
+                this.selectedObjectType(this.availableObjectTypes[0]);
+                return this.openDialog(dialogTitle, this.searchNpcs, null, null);
+            },
+            
             /**
              * Opens the dialog to search for npcs
              * 
@@ -36,6 +85,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openNpcSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchNpcs, createCallback, null);
             },
 
@@ -47,6 +97,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openItemSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchItems, createCallback, null);
             },
 
@@ -58,6 +109,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openSkillSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchSkills, createCallback, null);
             },
 
@@ -70,6 +122,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openKirjaPageSearch: function(dialogTitle, createCallback, idObservable) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchPages, createCallback, idObservable);
             },
 
@@ -81,6 +134,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openQuestSearch: function(dialogTitle, createCallback) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchQuest, createCallback, null);
             },
 
@@ -93,6 +147,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openChapterDetailSearch: function(dialogTitle, createCallback, idObservable) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchChapterDetails, createCallback, idObservable);
             },
 
@@ -103,6 +158,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openDailyRoutineSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchDailyRoutines, null, null);
             },
 
@@ -113,6 +169,7 @@
              * @returns {jQuery.Deferred} Deferred for the selecting process
              */
             openMarkerSearch: function(dialogTitle) {
+                this.showObjectTypeSelection(false);
                 return this.openDialog(dialogTitle, this.searchMarkers, null, null);
             },
 
@@ -137,15 +194,59 @@
                 this.dialogCreateNewCallback = typeof createCallback == "function" ? createCallback : null;
                 this.showNewButtonInDialog(this.dialogCreateNewCallback ? true : false);
                 this.dialogSearchCallback = searchCallback;
+                this.resetDialogValues();
+                this.idObservable = idObservable;
+
+                this.choosingDeferred = new jQuery.Deferred();
+                return this.choosingDeferred.promise();
+            },
+
+            /**
+             * Resets the dialog values
+             */
+            resetDialogValues: function() {
                 this.dialogSearchPattern("");
                 this.dialogIsLoading(false);
                 this.dialogEntries([]);
                 this.dialogHasMore(false);
                 this.dialogCurrentPage(0);
-                this.idObservable = idObservable;
+            },
 
-                this.choosingDeferred = new jQuery.Deferred();
-                return this.choosingDeferred.promise();
+            /**
+             * Gets called if the selected object type is changed
+             */
+            onObjectTypeChanged: function() {
+                this.resetDialogValues();
+
+                var objectType = this.selectedObjectType().objectType;
+                if(objectType == objectTypeNpc) 
+                {
+                    this.dialogSearchCallback = this.searchNpcs;
+                }
+                else if(objectType == objectTypeItem) 
+                {
+                    this.dialogSearchCallback = this.searchItems;
+                }
+                else if(objectType == objectTypeSkill) 
+                {
+                    this.dialogSearchCallback = this.searchSkills;
+                }
+                else if(objectType == objectTypeQuest) 
+                {
+                    this.dialogSearchCallback = this.searchQuest;
+                }
+                else if(objectType == objectTypeWikiPage) 
+                {
+                    this.dialogSearchCallback = this.searchPages;
+                }
+                else if(objectType == objectTypeDailyRoutine) 
+                {
+                    this.dialogSearchCallback = this.searchDailyRoutines;
+                }
+                else if(objectType == objectTypeMarker) 
+                {
+                    this.dialogSearchCallback = this.searchMarkers;
+                }
             },
 
             /**
@@ -171,11 +272,53 @@
             selectObject: function(selectedObject) {
                 if(this.choosingDeferred)
                 {
+                    if(this.showObjectTypeSelection())
+                    {
+                        selectedObject.objectType = this.getDependencyObjectType();
+                    }
                     this.choosingDeferred.resolve(selectedObject);
                     this.choosingDeferred = null;
                 }
 
                 this.closeDialog();
+            },
+
+            /**
+             * Returns the dependency object type
+             * @returns {string} Dependency object type
+             */
+            getDependencyObjectType: function() {
+                var objectType = this.selectedObjectType().objectType;
+                if(objectType == objectTypeNpc) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectNpc;
+                }
+                else if(objectType == objectTypeItem) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectItem;
+                }
+                else if(objectType == objectTypeSkill) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectSkill;
+                }
+                else if(objectType == objectTypeQuest) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectQuest;
+                }
+                else if(objectType == objectTypeWikiPage) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToWikiPage;
+                }
+                else if(objectType == objectTypeDailyRoutine) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectDailyRoutine;
+                }
+                else if(objectType == objectTypeMarker) 
+                {
+                    return GoNorth.DefaultNodeShapes.Actions.RelatedToObjectMapMarker;
+                }
+
+                return "";
             },
 
             /**
@@ -292,10 +435,7 @@
                 }
 
                 var self = this;
-                jQuery.ajax({ 
-                    url: searchUrl, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get(searchUrl).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -332,10 +472,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -365,10 +502,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -398,10 +532,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -431,10 +562,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuests?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuests?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -463,10 +591,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetails?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetails?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -500,10 +625,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/SearchFlexFieldObjects?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -535,17 +657,14 @@
 
                 dailyRoutineEventNpc.isLoadingExpandedObject(true);
                 dailyRoutineEventNpc.errorLoadingExpandedObject(false);
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + dailyRoutineEventNpc.id).done(function(data) {
                     var dailyRoutineObjects = [];
                     if(data.dailyRoutine)
                     {
                         for(var curEvent = 0; curEvent < data.dailyRoutine.length; ++curEvent)
                         {
                             data.dailyRoutine[curEvent].parentObject = dailyRoutineEventNpc;
-                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan("hh:mm", data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
+                            data.dailyRoutine[curEvent].name = GoNorth.DailyRoutines.Util.formatTimeSpan(GoNorth.ChooseObjectDialog.Localization.TimeFormat, data.dailyRoutine[curEvent].earliestTime, data.dailyRoutine[curEvent].latestTime);
                             var additionalName = "";
                             if(data.dailyRoutine[curEvent].scriptName)
                             {
@@ -579,10 +698,7 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/SearchMarkersByExportName?searchPattern=" + encodeURIComponent(searchPattern) + "&start=" + (this.dialogCurrentPage() * dialogPageSize) + "&pageSize=" + dialogPageSize).done(function(data) {
                     var result = {
                         hasMore: data.hasMore,
                         entries: []
@@ -722,6 +838,39 @@
                         view.reloadSharedLoadedData(objectType, id);
                     }
                 }
+            },
+
+
+            /**
+             * Focuses a node if a node is specified in the url
+             */
+            focusNodeFromUrl: function() {
+                var nodeId = GoNorth.Util.getParameterFromUrl("nodeFocusId");
+                if(!nodeId)
+                {
+                    return;
+                }
+
+                GoNorth.Util.removeUrlParameter("nodeFocusId");
+                var targetNode = this.nodeGraph().getCell(nodeId);
+                if(!targetNode) 
+                {
+                    return;
+                }
+
+                var targetPosition = targetNode.position();
+                var targetSize = targetNode.size();
+                var paper = this.nodePaper();
+                var viewBoundingBox;
+                if(paper.el && paper.el.parentElement)
+                {
+                    viewBoundingBox = paper.el.parentElement.getBoundingClientRect()
+                }
+                else
+                {
+                    viewBoundingBox = paper.getContentBBox();
+                }
+                paper.translate(-targetPosition.x - targetSize.width * 0.5 + viewBoundingBox.width * 0.5, -targetPosition.y - targetSize.width * 0.5 + viewBoundingBox.height * 0.5);
             },
 
 
@@ -890,10 +1039,7 @@
                 // Load finish nodes
                 chapterNode.showLoading();
                 chapterNode.hideError();
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetail?id=" + detailViewId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetail?id=" + detailViewId).done(function(data) {
                     chapterNode.hideLoading();
                     
                     Shared.addFinishNodesAsOutports(chapterNode, data.finish);
@@ -1027,10 +1173,7 @@
                }
 
                var def = new jQuery.Deferred();
-               jQuery.ajax({ 
-                   url: "/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId, 
-                   type: "GET"
-               }).done(function(data) {
+               GoNorth.HttpClient.get("/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId).done(function(data) {
                    if(data.canBeDeleted)
                    {
                        def.resolve();
@@ -1588,10 +1731,7 @@
                         var self = this;
                         this.showLoading();
                         this.hideError();
-                        jQuery.ajax({ 
-                            url: "/api/AikaApi/GetQuest?id=" + self.model.get("questId"), 
-                            type: "GET"
-                        }).done(function(data) {
+                        GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + self.model.get("questId")).done(function(data) {
                             self.hideLoading();
                             if(!data)
                             {
@@ -2054,13 +2194,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/UpdateChapterDetail?id=" + this.id(), 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify(serializedGraph), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post("/api/AikaApi/UpdateChapterDetail?id=" + this.id(), serializedGraph).done(function(data) {
                     Aika.Shared.setDetailViewIds(self.nodeGraph(), data.detail);
 
                     if(!self.id())
@@ -2094,10 +2228,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetail?id=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetail?id=" + this.id()).done(function(data) {
                     self.isLoading(false);
                     self.name(data.name);
 

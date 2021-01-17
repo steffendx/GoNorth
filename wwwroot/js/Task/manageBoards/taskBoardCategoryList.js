@@ -47,10 +47,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/GetTaskBoardCategories", 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetTaskBoardCategories").done(function(data) {
                         self.boardCategories(data);
 
                         self.isLoading(false);
@@ -116,13 +113,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function() {
+                    GoNorth.HttpClient.post(url, request).done(function() {
                         self.isLoading(false);
                         self.loadBoardCategories();
                         self.cancelBoardCategoryDialog();
@@ -161,10 +152,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/IsTaskBoardCategoryUsedByBoard?id=" + category.id, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/IsTaskBoardCategoryUsedByBoard?id=" + category.id).done(function(data) {
                         self.isCategoryToDeleteUsedByBoard(data);
                         self.isLoading(false);
                     }).fail(function() {
@@ -180,11 +168,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        url: "/api/TaskApi/DeleteTaskBoardCategory?id=" + this.categoryToDelete.id, 
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/TaskApi/DeleteTaskBoardCategory?id=" + this.categoryToDelete.id).done(function(data) {
                         self.isLoading(false);
                         self.closeConfirmDeleteBoardCategoryDialog();
                         self.loadBoardCategories();

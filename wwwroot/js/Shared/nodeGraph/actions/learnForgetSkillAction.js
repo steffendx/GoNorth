@@ -159,11 +159,7 @@
             Actions.LearnForgetSkillAction.prototype.loadObject = function(skillId) {
                 var def = new jQuery.Deferred();
 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/FlexFieldObject?id=" + skillId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/FlexFieldObject?id=" + skillId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

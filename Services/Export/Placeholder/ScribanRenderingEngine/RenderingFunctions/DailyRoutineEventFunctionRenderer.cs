@@ -16,7 +16,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
     /// <summary>
     /// Class to render a daily routine function
     /// </summary>
-    public class DailyRoutineEventFunctionRenderer : IScriptCustomFunction
+    public class DailyRoutineEventFunctionRenderer : ScribanBaseStringRenderingFunction<ScribanExportDailyRoutineFunction>
     {
         /// <summary>
         /// Name of the function
@@ -75,7 +75,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
             }
             ScribanExportDailyRoutineFunction exportFunction = (ScribanExportDailyRoutineFunction)arguments[0];
 
-            GoNorthProject curProject = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject curProject = await _exportCachedDbAccess.GetUserProject();
             ExportTemplate eventFunctionTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(curProject.Id, TemplateType.ObjectDailyRoutineFunction);
 
             ExportObjectData objectData = new ExportObjectData();
@@ -95,7 +95,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Daily routine event function</returns>
-        public object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return RenderDailyRoutineEventFunction(context, callerContext, arguments).Result;
         }
@@ -108,7 +108,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Daily routine event function</returns>
-        public async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return await RenderDailyRoutineEventFunction(context, callerContext, arguments);
         }

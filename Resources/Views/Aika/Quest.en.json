@@ -16,12 +16,21 @@
     "NoFieldsAdded": "No fields have been added to the quest",
 
     "Connections": "Connections",
-    "UsedInAikaDetailView": "Used in Aika detail views:",
-    "UsedInAikaQuest": "Used in Aika quests:",
-    "MentionedInKirjaPages": "Mentioned in Kirja pages:",
-    "ReferencedInTaleDialogs": "Referenced in Tale dialogs:",
-    "HasMarkersInKartaMaps": "Marked in Karta maps:",
+    "UsedInAikaDetailView": "Used in chapter detail views:",
+    "UsedInAikaQuest": "Used in quests:",
+    "MentionedInKirjaPages": "Mentioned in wiki pages:",
+    "ReferencedInTaleDialogs": "Referenced in dialogs:",
+    "HasMarkersInKartaMaps": "Marked in maps:",
     "ReferencedInDailyRoutines": "Referenced in daily routines:",
+    "ReferencedInEvneSkills": "Referenced in skills:",
+    "ReferencedInExportSnippets": "Referenced in export snippets:",
+
+    "ClickHereForDetailedReferences": "The quest is referenced in multiple objects. Click here for details.",
+    "ClickHereToCloseDetailedReferences": "Click here to close the references.",
+
+    "Npc": "Npc",    
+    "Item": "Item",
+    "Skill": "Skill",
 
     "Name": "Name",
     "Description": "Description",
@@ -32,6 +41,7 @@
     "ActionNode": "Action",
     "FinishNode": "Finish",
     "AllDone": "All done",
+    "ReferenceNode": "Reference",
 
     "AreYouSure": "Are you sure?",
     "AreYouSureYouWantToDeleteTheQuest": "Are you sure you want to delete the quest?",

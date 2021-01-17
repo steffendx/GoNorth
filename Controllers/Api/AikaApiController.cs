@@ -22,6 +22,11 @@ using GoNorth.Data.Karta.Marker;
 using GoNorth.Services.ImplementationStatusCompare;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
+using GoNorth.Services.Project;
+using GoNorth.Data.Exporting;
+using GoNorth.Services.Export.ExportSnippets;
+using GoNorth.Data.Evne;
+using GoNorth.Services.ReferenceAnalyzer;
 
 namespace GoNorth.Controllers.Api
 {
@@ -118,14 +123,14 @@ namespace GoNorth.Controllers.Api
         private readonly IAikaQuestDbAccess _questDbAccess;
 
         /// <summary>
-        /// Project Db Access
-        /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
-
-        /// <summary>
         /// Kirja Page Db Access
         /// </summary>
         private readonly IKirjaPageDbAccess _kirjaPageDbAccess;
+
+        /// <summary>
+        /// Skill DB Access
+        /// </summary>
+        private readonly IEvneSkillDbAccess _skillDbAccess;
 
         /// <summary>
         /// Tale DB Access
@@ -143,6 +148,16 @@ namespace GoNorth.Controllers.Api
         private readonly IKartaMapDbAccess _kartaMapDbAccess;
 
         /// <summary>
+        /// User project access
+        /// </summary>
+        private readonly IUserProjectAccess _userProjectAccess;
+
+        /// <summary>
+        /// Interface to analyze references
+        /// </summary>
+        private readonly IReferenceAnalyzer _referenceAnalyzer;
+
+        /// <summary>
         /// Timeline Service
         /// </summary>
         private readonly ITimelineService _timelineService;
@@ -156,6 +171,16 @@ namespace GoNorth.Controllers.Api
         /// Implementation status comparer
         /// </summary>
         private readonly IImplementationStatusComparer _implementationStatusComparer;
+
+        /// <summary>
+        /// Object export snippet Db Access
+        /// </summary>
+        protected readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+
+        /// <summary>
+        /// Service that will resolve export snippet related object names
+        /// </summary>
+        private readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
 
         /// <summary>
         /// Logger
@@ -173,30 +198,39 @@ namespace GoNorth.Controllers.Api
         /// <param name="chapterOverviewDbAccess">Chapter Overview Db Access</param>
         /// <param name="chapterDetailDbAccess">Chapter Detail Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="kirjaPageDbAccess">Kirja Db Access</param>
+        /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
+        /// <param name="userProjectAccess">User project Access</param>
+        /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation status comparer</param>
+        /// <param name="referenceAnalyzer">Reference analyzer</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public AikaApiController(IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaQuestDbAccess questDbAccess, IProjectDbAccess projectDbAccess, 
-                                 IKirjaPageDbAccess kirjaPageDbAccess, ITaleDbAccess taleDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IKartaMapDbAccess kartaMapDbAccess, UserManager<GoNorthUser> userManager, 
-                                 IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<AikaApiController> logger, IStringLocalizerFactory localizerFactory)
+        public AikaApiController(IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaQuestDbAccess questDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IEvneSkillDbAccess skillDbAccess,
+                                 ITaleDbAccess taleDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IKartaMapDbAccess kartaMapDbAccess, IUserProjectAccess userProjectAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess,
+                                 IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, IReferenceAnalyzer referenceAnalyzer, 
+                                 ITimelineService timelineService, ILogger<AikaApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _chapterOverviewDbAccess = chapterOverviewDbAccess;
             _chapterDetailDbAccess = chapterDetailDbAccess;
             _questDbAccess = questDbAccess;
-            _projectDbAccess = projectDbAccess;
             _kirjaPageDbAccess = kirjaPageDbAccess;
+            _skillDbAccess = skillDbAccess;
             _taleDbAccess = taleDbAccess;
             _kortistoNpcDbAccess = kortistoNpcDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
+            _userProjectAccess = userProjectAccess;
+            _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
             _userManager = userManager;
             _implementationStatusComparer = implementationStatusComparer;
+            _referenceAnalyzer = referenceAnalyzer;
             _timelineService = timelineService;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(AikaApiController));
@@ -210,7 +244,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetChapterOverview()
         {
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _userProjectAccess.GetUserProject();
 
             AikaChapterOverview chapterOverview = await _chapterOverviewDbAccess.GetChapterOverviewByProjectId(defaultProject.Id);
             return Ok(chapterOverview);
@@ -268,7 +302,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Get Current Overview
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _userProjectAccess.GetUserProject();
             AikaChapterOverview chapterOverview = await _chapterOverviewDbAccess.GetChapterOverviewByProjectId(defaultProject.Id);
             bool overviewExisted = true;
             List<AikaChapterDetail> chapterDetailsToDelete = new List<AikaChapterDetail>();
@@ -384,15 +418,15 @@ namespace GoNorth.Controllers.Api
             }
 
             // Adjust Aika markers for deleted chapters
-            int minChapterNumber = chapterOverview.Chapter.Min(c => c.ChapterNumber);
-            int maxChapterNumber = chapterOverview.Chapter.Max(c => c.ChapterNumber);
+            int minChapterNumber = chapterOverview.Chapter.Any() ? chapterOverview.Chapter.Min(c => c.ChapterNumber) : 0;
+            int maxChapterNumber = chapterOverview.Chapter.Any() ? chapterOverview.Chapter.Max(c => c.ChapterNumber) : 0;
             foreach(int curChapterNumber in deletedChapterNumbers)
             {
                 await AdjustKartaMapMarkersForDeletedChapter(defaultProject.Id, curChapterNumber, minChapterNumber, maxChapterNumber, chapterOverview.Chapter);
             }
 
             // Timeline Entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.AikaChapterOverviewUpdated);
+            await _timelineService.AddTimelineEntry(chapterOverview.ProjectId, TimelineEvent.AikaChapterOverviewUpdated);
 
             return Ok(chapterOverview);
         }
@@ -557,7 +591,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetChapters()
         {
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _userProjectAccess.GetUserProject();
             AikaChapterOverview chapterOverview = await _chapterOverviewDbAccess.GetChapterOverviewByProjectId(defaultProject.Id);
             if(chapterOverview == null || chapterOverview.Chapter == null)
             {
@@ -585,7 +619,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetChapterDetails(string searchPattern, int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             Task<List<AikaChapterDetail>> queryTask;
             Task<int> countTask;
@@ -682,10 +716,10 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Creates the detail views for detail nodes in a chapter detail
         /// </summary>
-        /// <param name="defaultProject">Default Project</param>
+        /// <param name="projectId">Id of the project</param>
         /// <param name="detail">Detail for which to create the views</param>
         /// <returns>true if successfull, else false</returns>
-        private async Task<bool> CreateDetailsForDetail(GoNorthProject defaultProject, AikaChapterDetail detail)
+        private async Task<bool> CreateDetailsForDetail(string projectId, AikaChapterDetail detail)
         {
             // Create Detail Views
             _logger.LogInformation("Creating chapter detail views");
@@ -697,7 +731,7 @@ namespace GoNorth.Controllers.Api
                 {
                     try
                     {
-                        AikaChapterDetail newChapterDetail = await CreateNewChapterDetail(defaultProject.Id, string.Empty, curDetail.Name);
+                        AikaChapterDetail newChapterDetail = await CreateNewChapterDetail(projectId, string.Empty, curDetail.Name);
                         curDetail.DetailViewId = newChapterDetail.Id;
                         createdChapterDetails.Add(newChapterDetail);
                     }
@@ -748,7 +782,7 @@ namespace GoNorth.Controllers.Api
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChapterDetail([FromBody]AikaChapterDetail chapterDetail)
         {
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _userProjectAccess.GetUserProject();
             AikaChapterDetail newChapterDetail = new AikaChapterDetail();
             newChapterDetail.ProjectId = defaultProject.Id;
             
@@ -759,7 +793,7 @@ namespace GoNorth.Controllers.Api
 
             await this.SetModifiedData(_userManager, newChapterDetail);
 
-            bool detailSuccess = await CreateDetailsForDetail(defaultProject, newChapterDetail);
+            bool detailSuccess = await CreateDetailsForDetail(defaultProject.Id, newChapterDetail);
             if(!detailSuccess)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError);
@@ -768,7 +802,7 @@ namespace GoNorth.Controllers.Api
             newChapterDetail = await _chapterDetailDbAccess.CreateChapterDetail(newChapterDetail);
 
             // Timeline Entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.AikaChapterDetailCreated, newChapterDetail.Id);
+            await _timelineService.AddTimelineEntry(newChapterDetail.ProjectId, TimelineEvent.AikaChapterDetailCreated, newChapterDetail.Id);
 
             return Ok(newChapterDetail);
         }
@@ -785,7 +819,6 @@ namespace GoNorth.Controllers.Api
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateChapterDetail(string id, [FromBody]AikaChapterDetail chapterDetail)
         {
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
             AikaChapterDetail updatedChapterDetail = await _chapterDetailDbAccess.GetChapterDetailById(id);
             if(updatedChapterDetail.Detail == null)
             {
@@ -845,7 +878,7 @@ namespace GoNorth.Controllers.Api
 
             await this.SetModifiedData(_userManager, updatedChapterDetail);
 
-            bool detailSuccess = await CreateDetailsForDetail(defaultProject, updatedChapterDetail);
+            bool detailSuccess = await CreateDetailsForDetail(updatedChapterDetail.ProjectId, updatedChapterDetail);
             if(!detailSuccess)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError);
@@ -866,7 +899,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Timeline Entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.AikaChapterDetailUpdated, updatedChapterDetail.Id);
+            await _timelineService.AddTimelineEntry(updatedChapterDetail.ProjectId, TimelineEvent.AikaChapterDetailUpdated, updatedChapterDetail.Id);
 
             return Ok(updatedChapterDetail);
         }
@@ -916,7 +949,7 @@ namespace GoNorth.Controllers.Api
             await _chapterDetailDbAccess.DeleteChapterDetail(deletedChapterDetail);
 
             // Timeline Entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.AikaChapterDetailDeleted);
+            await _timelineService.AddTimelineEntry(deletedChapterDetail.ProjectId, TimelineEvent.AikaChapterDetailDeleted);
 
             return Ok(id);
         }
@@ -933,7 +966,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetQuests(string searchPattern, int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             Task<List<AikaQuest>> queryTask;
             Task<int> countTask;
@@ -967,7 +1000,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetNotImplementedQuests(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             Task<List<AikaQuest>> queryTask = _questDbAccess.GetNotImplementedQuests(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             Task<int> countTask = _questDbAccess.GetNotImplementedQuestsCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
@@ -997,12 +1030,15 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="objectId">Object id</param>
         /// <returns>Quests</returns>
-        [ProducesResponseType(typeof(List<AikaQuest>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ObjectReference>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetQuestsObjectIsReferenced(string objectId)
         {
             List<AikaQuest> quests = await _questDbAccess.GetQuestsObjectIsReferenced(objectId);
-            return Ok(quests);
+            List<ObjectReference> objectReferences = quests.Select(q => {
+                return _referenceAnalyzer.BuildObjectReferences(objectId, q.Id, q.Name, q.Action, q.Condition, q.Reference, null);
+            }).Where(o => o != null).ToList();
+            return Ok(objectReferences);
         }
 
         /// <summary>
@@ -1029,7 +1065,7 @@ namespace GoNorth.Controllers.Api
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateQuest([FromBody]AikaQuest quest)
         {
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _userProjectAccess.GetUserProject();
             AikaQuest newQuest = new AikaQuest();
             newQuest.ProjectId = defaultProject.Id;
             
@@ -1040,7 +1076,7 @@ namespace GoNorth.Controllers.Api
             newQuest = await _questDbAccess.CreateQuest(newQuest);
 
             // Timeline Entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.AikaQuestCreated, newQuest.Id, newQuest.Name);
+            await _timelineService.AddTimelineEntry(newQuest.ProjectId, TimelineEvent.AikaQuestCreated, newQuest.Id, newQuest.Name);
 
             return Ok(newQuest);
         }
@@ -1074,7 +1110,7 @@ namespace GoNorth.Controllers.Api
             await _questDbAccess.UpdateQuest(updatedQuest);
 
             // Timeline Entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.AikaQuestUpdated, updatedQuest.Id, updatedQuest.Name);
+            await _timelineService.AddTimelineEntry(updatedQuest.ProjectId, TimelineEvent.AikaQuestUpdated, updatedQuest.Id, updatedQuest.Name);
 
             return Ok(updatedQuest);
         }
@@ -1102,6 +1138,7 @@ namespace GoNorth.Controllers.Api
             targetQuest.Action = sourceQuest.Action != null ? sourceQuest.Action : new List<ActionNode>();
             targetQuest.AllDone = sourceQuest.AllDone != null ? sourceQuest.AllDone : new List<AikaAllDone>();
             targetQuest.Link = sourceQuest.Link != null ? sourceQuest.Link : new List<NodeLink>();
+            targetQuest.Reference = sourceQuest.Reference != null ? sourceQuest.Reference : new List<ReferenceNode>();
         }
 
         /// <summary>
@@ -1145,6 +1182,21 @@ namespace GoNorth.Controllers.Api
                 string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
                 return BadRequest(_localizer["CanNotDeleteQuestUsedInDailyRoutine", usedInDailyRoutines].Value);
             }
+            
+            List<EvneSkill> referencedInSkills = await _skillDbAccess.GetSkillsObjectIsReferencedIn(id);
+            if(referencedInSkills.Count > 0)
+            {
+                string usedInSkills = string.Join(", ", referencedInSkills.Select(m => m.Name));
+                return BadRequest(_localizer["CanNotDeleteQuestUsedInSkill", usedInSkills].Value);
+            }
+
+            List<ObjectExportSnippet> referencedInSnippets = await _objectExportSnippetDbAccess.GetExportSnippetsObjectIsReferenced(id);
+            if(referencedInSnippets.Count > 0)
+            {
+                List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
+                string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
+                return BadRequest(_localizer["CanNotDeleteQuestUsedInExportSnippet", usedInDailyRoutines].Value);
+            }
 
             // Delete Quest
             AikaQuest deletedQuest = await _questDbAccess.GetQuestById(id);
@@ -1154,7 +1206,7 @@ namespace GoNorth.Controllers.Api
             await _kartaMapDbAccess.DeleteMarkersOfQuest(id);
 
             // Timeline Entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.AikaQuestDeleted, deletedQuest.Name);
+            await _timelineService.AddTimelineEntry(deletedQuest.ProjectId, TimelineEvent.AikaQuestDeleted, deletedQuest.Name);
 
             return Ok(id);
         }

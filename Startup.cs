@@ -61,6 +61,10 @@ using GoNorth.Services.Export.Dialog.ActionRendering.Localization;
 using GoNorth.Services.Export.Dialog.ConditionRendering.Localization;
 using GoNorth.Services.Export.DailyRoutine;
 using GoNorth.Services.CsvHandling;
+using GoNorth.Services.Project;
+using GoNorth.Services.ReferenceAnalyzer;
+using GoNorth.Services.TimerJob;
+using GoNorth.Services.TimerJob.JobDefinitions;
 
 namespace GoNorth
 {
@@ -157,12 +161,14 @@ namespace GoNorth
             }
 
             // Framework services
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
 
             // Application services
             services.AddTransient<IConfigViewAccess, AppSettingsConfigViewAccess>();
 
             services.AddTransient<IProjectConfigProvider, ProjectConfigProvider>();
+
+            services.AddTransient<IUserProjectAccess, UserProjectAccess>();
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IEncryptionService, AesEncryptionService>();
@@ -222,6 +228,7 @@ namespace GoNorth
             services.AddTransient<IExportSnippetNodeGraphFunctionGenerator, ExportSnippetNodeGraphFunctionGenerator>();
             services.AddTransient<IExportSnippetRelatedObjectUpdater, ExportSnippetRelatedObjectUpdater>();
             services.AddTransient<IExportSnippetFunctionRenderer, ExportSnippetFunctionRenderer>();
+            services.AddTransient<IExportSnippetRelatedObjectNameResolver, ExportSnippetRelatedObjectNameResolver>();
             services.AddScoped<IActionTranslator, ActionTranslator>();
             services.AddScoped<IConditionTranslator, ConditionTranslator>();
 
@@ -231,9 +238,14 @@ namespace GoNorth
 
             services.AddTransient<ICsvGenerator, CsvGenerator>();
             services.AddTransient<ICsvParser, CsvParser>();
+
+            services.AddTransient<IReferenceAnalyzer, ReferenceAnalyzer>();
+
+            services.AddTransient<ILockCleanupTimerJob, LockCleanupTimerJob>();
+            services.AddSingleton<ITimerJobManager, TimerJobManager>();
             
             // Database
-            services.AddScoped<ILockServiceDbAccess, LockServiceMongoDbAccess>();
+            services.AddTransient<ILockServiceDbAccess, LockServiceMongoDbAccess>();
             services.AddScoped<IUserDbAccess, UserMongoDbAccess>();
             services.AddScoped<IUserPreferencesDbAccess, UserPreferencesMongoDbAccess>();
             services.AddScoped<IRoleDbAccess, RoleMongoDbAccess>();
@@ -359,7 +371,8 @@ namespace GoNorth
         /// </summary>
         /// <param name="app">Application builder</param>
         /// <param name="env">Hosting environment</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        /// <param name="timerJobManager">Timer Job Manager</param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ITimerJobManager timerJobManager)
         {
             ConfigurationData configData = Configuration.Get<ConfigurationData>();
             
@@ -397,6 +410,8 @@ namespace GoNorth
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
             });
+
+            timerJobManager.InitializeTimerJobs();
 
             if(env.IsDevelopment())
             {

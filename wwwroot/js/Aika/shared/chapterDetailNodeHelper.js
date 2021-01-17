@@ -30,10 +30,7 @@
                 // Load finish nodes
                 chapterNode.showLoading();
                 chapterNode.hideError();
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetChapterDetail?id=" + detailViewId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetChapterDetail?id=" + detailViewId).done(function(data) {
                     chapterNode.hideLoading();
                     
                     Shared.addFinishNodesAsOutports(chapterNode, data.finish);
@@ -167,10 +164,7 @@
                }
 
                var def = new jQuery.Deferred();
-               jQuery.ajax({ 
-                   url: "/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId, 
-                   type: "GET"
-               }).done(function(data) {
+               GoNorth.HttpClient.get("/api/AikaApi/ValidateChapterDetailDelete?id=" + detailNodeId).done(function(data) {
                    if(data.canBeDeleted)
                    {
                        def.resolve();

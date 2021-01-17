@@ -29,6 +29,11 @@
                                 <div class="gn-labelInsert">@Localizer["ActionNode"]</div>
                             </div>
                         </div>
+                        <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeReference" data-nodetype="default.Reference">
+                            <div class="gn-nodeInsert">
+                                <div class="gn-labelInsert">@Localizer["ReferenceNode"]</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="gn-nodeScriptEditorContainer">
                         <div data-bind="nodeGraph: nodeGraph, nodePaper: nodePaper, nodeGraphAllowMultpleOutbound: false, nodeGraphDisablePositionZoomUrl: true, droppableElement: addNewNode, droppableAccept: '.gn-nodeInsertContainer'"></div>
@@ -74,6 +79,7 @@
     window.GoNorth.ScriptDialog = window.GoNorth.ScriptDialog || {};
     window.GoNorth.ScriptDialog.Localization = window.GoNorth.ScriptDialog.Localization || {};
     window.GoNorth.ScriptDialog.Localization.NodeScripts = {
+        ChooseGeneralObject: "@Localizer["ChooseGeneralObject"]",
         ChooseQuest: "@Localizer["ChooseQuest"]",
         ChooseNpc: "@Localizer["ChooseNpc"]",
         ChooseSkill: "@Localizer["ChooseSkill"]",

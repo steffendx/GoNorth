@@ -63,9 +63,7 @@
                 var def = new jQuery.Deferred();
 
                 var self = this;
-                jQuery.ajax({
-                    url: "/api/KirjaApi/Page?id=" + this.pageId
-                }).done(function(pageContent) {
+                GoNorth.HttpClient.get("/api/KirjaApi/Page?id=" + this.pageId).done(function(pageContent) {
                     var pageHtml = "<h4><a href='/Kirja?id=" + self.pageId + "' target='_blank'>" + pageContent.name + "</a></h4>";
                     pageHtml += "<div class='gn-kartaPopupContent'>" + pageContent.content + "</div>";
 

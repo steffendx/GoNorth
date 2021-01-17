@@ -26,10 +26,7 @@
             Overview.ImplementationStatusQuestList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetNotImplementedQuests?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetNotImplementedQuests?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.quests,
                       hasMore: data.hasMore

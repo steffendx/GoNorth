@@ -14,7 +14,9 @@
 
     "ConditionNode": "Bedingung",
     "ActionNode": "Aktion",
+    "ReferenceNode": "Referenz",
     
+    "ChooseGeneralObject": "Objekt auswählen",
     "ChooseQuest": "Quest auswählen",
     "ChooseNpc": "Npc auswählen",
     "ChooseSkill": "Fähigkeit auswählen",

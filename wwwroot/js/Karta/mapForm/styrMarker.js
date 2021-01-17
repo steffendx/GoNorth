@@ -63,9 +63,7 @@
                 var def = new jQuery.Deferred();
 
                 var self = this;
-                jQuery.ajax({
-                    url: "/api/StyrApi/FlexFieldObject?id=" + this.itemId
-                }).done(function(item) {
+                GoNorth.HttpClient.get("/api/StyrApi/FlexFieldObject?id=" + this.itemId).done(function(item) {
                     var itemHtml = "<h4><a href='/Styr/Item?id=" + self.itemId + "' target='_blank'>" + item.name + "</a></h4>";
                     if(item.imageFile)
                     {

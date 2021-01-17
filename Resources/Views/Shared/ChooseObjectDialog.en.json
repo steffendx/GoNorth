@@ -4,6 +4,15 @@
     "Close": "Close",
     "CreateNewPage": "Create new page",
 
+    "ObjectType": "Object type",
+    "ObjectTypeNpc": "Npc",
+    "ObjectTypeItem": "Item",
+    "ObjectTypeSkill": "Skill",
+    "ObjectTypeQuest": "Quest",
+    "ObjectTypeWikiPage": "Wiki page",
+    "ObjectTypeDailyRoutine": "Daily routine",
+    "ObjectTypeMarker": "Marker",
+
     "Search": "Search",
 
     "PreviousPage": "Previous page",

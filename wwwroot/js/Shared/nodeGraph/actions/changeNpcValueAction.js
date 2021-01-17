@@ -79,10 +79,7 @@
             Actions.ChangeNpcValueAction.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/FlexFieldObject?id=" + DefaultNodeShapes.getCurrentRelatedObjectId(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/FlexFieldObject?id=" + DefaultNodeShapes.getCurrentRelatedObjectId()).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

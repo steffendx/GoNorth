@@ -50,6 +50,13 @@ namespace GoNorth.Data.Exporting
         /// <returns>Task</returns>
         Task DeleteExportSnippetsByObjectId(string objectId);
 
+        /// <summary>
+        /// Returns all snippets an object is referenced
+        /// </summary>
+        /// <param name="objectId">Object Id</param>
+        /// <returns>All snippets the object is referenced in without details</returns>
+        Task<List<ObjectExportSnippet>> GetExportSnippetsObjectIsReferenced(string objectId);
+
 
         /// <summary>
         /// Returns all invalid export snippet objects

@@ -30,6 +30,7 @@ using GoNorth.Services.Export.TemplateParsing;
 using GoNorth.Services.Export.ExportSnippets;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
+using GoNorth.Services.Project;
 
 namespace GoNorth.Controllers.Api
 {
@@ -233,9 +234,9 @@ namespace GoNorth.Controllers.Api
         private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
 
         /// <summary>
-        /// Project Db Access
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Npc Db Access
@@ -288,6 +289,11 @@ namespace GoNorth.Controllers.Api
         private readonly IExportSnippetRelatedObjectUpdater _exportSnippetRelatedObjectUpdater;
 
         /// <summary>
+        /// Service that will resolve export snippet related object names
+        /// </summary>
+        private readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
+
+        /// <summary>
         /// Dialog Function Generation Condition Provider
         /// </summary>
         private readonly IDialogFunctionGenerationConditionProvider _dialogFunctionGenerationConditionProvider;
@@ -335,7 +341,6 @@ namespace GoNorth.Controllers.Api
         /// <param name="includeExportTemplateDbAccess">Include export template Db Access</param>
         /// <param name="exportSettingsDbAccess">Export Settings Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
         /// <param name="dialogDbAccess">Dialog Db Access</param>
@@ -343,9 +348,11 @@ namespace GoNorth.Controllers.Api
         /// <param name="itemTemplateDbAccess">Item Template Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="skillTemplateDbAccess">Skill Template Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="templatePlaceholderResolver">Template Placeholder Resolver</param>
         /// <param name="exportTemplateParser">Export template parser</param>
         /// <param name="exportSnippetRelatedObjectUpdater">Export Snippet related object updater</param>
+        /// <param name="exportSnippetRelatedObjectNameResolver">Export snippet related object name resolver</param>
         /// <param name="dialogFunctionDbAccess">Dialog Function Db Access</param>
         /// <param name="dialogFunctionGenerationConditionProvider">Dialog Function Generation Condition Provider</param>
         /// <param name="languageKeyDbAccess">Language Key Db Access</param>
@@ -355,18 +362,18 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ExportApiController(IExportDefaultTemplateProvider defaultTemplateProvider, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, 
-                                   IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IProjectDbAccess projectDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, ITaleDbAccess dialogDbAccess, IStyrItemDbAccess itemDbAccess, 
-                                   IStyrItemTemplateDbAccess itemTemplateDbAccess, IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess skillTemplateDbAccess, IExportTemplatePlaceholderResolver templatePlaceholderResolver, IExportTemplateParser exportTemplateParser, 
-                                   IExportSnippetRelatedObjectUpdater exportSnippetRelatedObjectUpdater, IDialogFunctionGenerationConditionDbAccess dialogFunctionDbAccess, IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, 
-                                   ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector, ITimelineService timelineService, UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, 
-                                   IStringLocalizerFactory localizerFactory) 
+                                   IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, ITaleDbAccess dialogDbAccess, IStyrItemDbAccess itemDbAccess, 
+                                   IStyrItemTemplateDbAccess itemTemplateDbAccess, IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess skillTemplateDbAccess, IUserProjectAccess userProjectAccess, IExportTemplatePlaceholderResolver templatePlaceholderResolver, 
+                                   IExportTemplateParser exportTemplateParser, IExportSnippetRelatedObjectUpdater exportSnippetRelatedObjectUpdater, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IDialogFunctionGenerationConditionDbAccess dialogFunctionDbAccess, 
+                                   IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector, ITimelineService timelineService, 
+                                   UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, IStringLocalizerFactory localizerFactory) 
         {
             _defaultTemplateProvider = defaultTemplateProvider;
             _exportTemplateDbAccess = exportTemplateDbAccess;
             _includeExportTemplateDbAccess = includeExportTemplateDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
-            _projectDbAccess = projectDbAccess;
+            _userProjectAccess = userProjectAccess;
             _npcDbAccess = npcDbAccess;
             _npcTemplateDbAccess = npcTemplateDbAccess;
             _dialogDbAccess = dialogDbAccess;
@@ -377,6 +384,7 @@ namespace GoNorth.Controllers.Api
             _templatePlaceholderResolver = templatePlaceholderResolver;
             _exportTemplateParser = exportTemplateParser;
             _exportSnippetRelatedObjectUpdater = exportSnippetRelatedObjectUpdater;
+            _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
             _dialogFunctionDbAccess = dialogFunctionDbAccess;
             _dialogFunctionGenerationConditionProvider = dialogFunctionGenerationConditionProvider;
             _languageKeyDbAccess = languageKeyDbAccess;
@@ -386,9 +394,9 @@ namespace GoNorth.Controllers.Api
             _localizer = localizerFactory.Create(this.GetType());
 
             _exporters = new Dictionary<string, IObjectExporter>();
-            _exporters.Add("script", new ScriptExporter(templatePlaceholderResolver, projectDbAccess, exportSettingsDbAccess));
+            _exporters.Add("script", new ScriptExporter(templatePlaceholderResolver, exportSettingsDbAccess, userProjectAccess));
             _exporters.Add("json", new JsonExporter(objectExportSnippetDbAccess));
-            _exporters.Add("languagefile", new LanguageExporter(templatePlaceholderResolver, defaultTemplateProvider, projectDbAccess, exportSettingsDbAccess, languageKeyReferenceCollector));
+            _exporters.Add("languagefile", new LanguageExporter(templatePlaceholderResolver, defaultTemplateProvider, exportSettingsDbAccess, userProjectAccess, languageKeyReferenceCollector));
         }
 
         /// <summary>
@@ -424,7 +432,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetDefaultTemplatesByCategory(TemplateCategory category)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             List<ExportTemplate> templates = await _defaultTemplateProvider.GetDefaultTemplatesByCategory(project.Id, category);
             return Ok(templates.Select(t => TranslateTemplateLabel(t)).ToList());
@@ -440,7 +448,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetDefaultTemplateByType(TemplateType templateType)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             ExportTemplate template = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, templateType);
             return Ok(TranslateTemplateLabel(template));
@@ -456,7 +464,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> DoesExportTemplateExistForObjectId(string id)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             ExportTemplate template = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(project.Id, id);
             ObjectTemplateExistsResult result = new ObjectTemplateExistsResult();
             result.DoesTemplateExist = template != null;
@@ -518,21 +526,22 @@ namespace GoNorth.Controllers.Api
         {
             ExportTemplateByObjectIdResult template = await GetValidExportTemplateByIdAndType(id, templateType);
 
-            List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetCustomizedObjectTemplatesByType(templateType);
+            string projectId = template.Template.ProjectId;
+            List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetCustomizedObjectTemplatesByType(projectId, templateType);
             List<FlexFieldObject> childObjects = new List<FlexFieldObject>();
             if(template.IsDefault)
             {
                 if(templateType == TemplateType.ObjectNpc)
                 {
-                    childObjects = (await _npcDbAccess.GetFlexFieldObjectsNotPartOfIdList(exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
+                    childObjects = (await _npcDbAccess.GetFlexFieldObjectsNotPartOfIdList(projectId, exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
                 }
                 else if(templateType == TemplateType.ObjectItem)
                 {
-                    childObjects = (await _itemDbAccess.GetFlexFieldObjectsNotPartOfIdList(exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
+                    childObjects = (await _itemDbAccess.GetFlexFieldObjectsNotPartOfIdList(projectId, exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
                 }
                 else if(templateType == TemplateType.ObjectSkill)
                 {
-                    childObjects = (await _skillDbAccess.GetFlexFieldObjectsNotPartOfIdList(exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
+                    childObjects = (await _skillDbAccess.GetFlexFieldObjectsNotPartOfIdList(projectId, exportTemplates.Select(e => e.CustomizedObjectId))).Cast<FlexFieldObject>().ToList();
                 }
             }
             else
@@ -540,15 +549,15 @@ namespace GoNorth.Controllers.Api
                 List<string> objectId = new List<string> { template.Template.CustomizedObjectId };
                 if(templateType == TemplateType.ObjectNpc)
                 {
-                    childObjects = (await _npcDbAccess.GetFlexFieldObjectsPartOfIdList(objectId)).Cast<FlexFieldObject>().ToList();
+                    childObjects = (await _npcDbAccess.GetFlexFieldObjectsPartOfIdList(projectId, objectId)).Cast<FlexFieldObject>().ToList();
                 }
                 else if(templateType == TemplateType.ObjectItem)
                 {
-                    childObjects = (await _itemDbAccess.GetFlexFieldObjectsPartOfIdList(objectId)).Cast<FlexFieldObject>().ToList();
+                    childObjects = (await _itemDbAccess.GetFlexFieldObjectsPartOfIdList(projectId, objectId)).Cast<FlexFieldObject>().ToList();
                 }
                 else if(templateType == TemplateType.ObjectSkill)
                 {
-                    childObjects = (await _skillDbAccess.GetFlexFieldObjectsPartOfIdList(objectId)).Cast<FlexFieldObject>().ToList();
+                    childObjects = (await _skillDbAccess.GetFlexFieldObjectsPartOfIdList(projectId, objectId)).Cast<FlexFieldObject>().ToList();
                 }
             }
 
@@ -595,7 +604,7 @@ namespace GoNorth.Controllers.Api
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateObjectExportSnippet(string objectType, [FromBody]ObjectExportSnippet snippet)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             
             snippet.ProjectId = project.Id;
             await this.SetModifiedData(_userManager, snippet);
@@ -676,6 +685,21 @@ namespace GoNorth.Controllers.Api
 
             return Ok(result);
         }
+        
+        /// <summary>
+        /// Returns the filled object export snippets of an object
+        /// </summary>
+        /// <param name="id">Id of the object for which to read the export template</param>
+        /// <returns>Object Export Template snippets</returns>
+        [ProducesResponseType(typeof(List<ObjectExportSnippetReference>), StatusCodes.Status200OK)]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [HttpGet]
+        public async Task<IActionResult> GetSnippetsObjectIsReferencedIn(string id)
+        {
+            List<ObjectExportSnippet> objectSnippets = await _objectExportSnippetDbAccess.GetExportSnippetsObjectIsReferenced(id);
+            List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(objectSnippets, User.IsInRole(RoleNames.Kortisto), User.IsInRole(RoleNames.Styr), User.IsInRole(RoleNames.Evne));
+            return Ok(references);
+        }
 
         /// <summary>
         /// Returns the object name by type
@@ -712,36 +736,46 @@ namespace GoNorth.Controllers.Api
             ExportTemplateByObjectIdResult result = new ExportTemplateByObjectIdResult();
             result.IsDefault = false;
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            FlexFieldObject flexFieldObject = null;
+            if(templateType == TemplateType.ObjectNpc)
+            {
+                flexFieldObject = await _npcDbAccess.GetFlexFieldObjectById(id);
+            }
+            else if(templateType == TemplateType.ObjectItem)
+            {
+                flexFieldObject = await _itemDbAccess.GetFlexFieldObjectById(id);
+            }
+            else if(templateType == TemplateType.ObjectSkill)
+            {
+                flexFieldObject = await _skillDbAccess.GetFlexFieldObjectById(id);
+            }
 
-            ExportTemplate template = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(project.Id, id);
+            string projectId = null;
+            if(flexFieldObject != null)
+            {
+                projectId = flexFieldObject.ProjectId;
+            }
+
+            if(string.IsNullOrEmpty(projectId))
+            {
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
+                projectId = project.Id;
+            }
+
+            ExportTemplate template = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(projectId, id);
 
             if(template == null)
             {
                 result.IsDefault = true;
 
-                FlexFieldObject flexFieldObject = null;
-                if(templateType == TemplateType.ObjectNpc)
-                {
-                    flexFieldObject = await _npcDbAccess.GetFlexFieldObjectById(id);
-                }
-                else if(templateType == TemplateType.ObjectItem)
-                {
-                    flexFieldObject = await _itemDbAccess.GetFlexFieldObjectById(id);
-                }
-                else if(templateType == TemplateType.ObjectSkill)
-                {
-                    flexFieldObject = await _skillDbAccess.GetFlexFieldObjectById(id);
-                }
-
                 if(flexFieldObject != null)
                 {
-                    template = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(project.Id, flexFieldObject.TemplateId);
+                    template = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(projectId, flexFieldObject.TemplateId);
                 }
 
                 if(template == null)
                 {
-                    template = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, templateType);
+                    template = await _defaultTemplateProvider.GetDefaultTemplateByType(projectId, templateType);
                 }
             }
 
@@ -813,12 +847,12 @@ namespace GoNorth.Controllers.Api
                 return BadRequest(validationResult.Errors);
             }
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             ExportTemplate template = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, templateType);
             template = await SaveExportTemplate(project, template, renderingEngine, code);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.ExportDefaultTemplateUpdated, ((int)templateType).ToString());
+            await _timelineService.AddTimelineEntry(template.ProjectId, TimelineEvent.ExportDefaultTemplateUpdated, ((int)templateType).ToString());
 
             return Ok(template);
         }
@@ -844,7 +878,7 @@ namespace GoNorth.Controllers.Api
                 return BadRequest(validationResult.Errors);
             }
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             ExportTemplate template = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(project.Id, id);
             if(template == null)
@@ -856,7 +890,7 @@ namespace GoNorth.Controllers.Api
             }
             template = await SaveExportTemplate(project, template, renderingEngine, code);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.ExportObjectTemplateUpdated, ((int)templateType).ToString(), id);
+            await _timelineService.AddTimelineEntry(project.Id, TimelineEvent.ExportObjectTemplateUpdated, ((int)templateType).ToString(), id);
 
             return Ok(template);
         }
@@ -906,7 +940,7 @@ namespace GoNorth.Controllers.Api
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteExportTemplateByObjectId(string id)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             ExportTemplate template = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(project.Id, id);
             if(template == null)
@@ -916,7 +950,7 @@ namespace GoNorth.Controllers.Api
 
             await _exportTemplateDbAccess.DeleteTemplate(template);
             
-            await _timelineService.AddTimelineEntry(TimelineEvent.ExportObjectTemplateDeleted);
+            await _timelineService.AddTimelineEntry(template.ProjectId, TimelineEvent.ExportObjectTemplateDeleted);
 
             return Ok(id);
         }
@@ -952,7 +986,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetIncludeExportTemplates(int start, int pageSize)
         {
-            GoNorthProject curProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject curProject = await _userProjectAccess.GetUserProject();
 
             Task<List<IncludeExportTemplate>> queryTask;
             Task<int> countTask;
@@ -983,7 +1017,7 @@ namespace GoNorth.Controllers.Api
                 return BadRequest();
             }
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             bool nameExists = await _includeExportTemplateDbAccess.DoesIncludeTemplateExist(project.Id, string.Empty, saveRequest.Name);
             if(nameExists)
@@ -999,9 +1033,9 @@ namespace GoNorth.Controllers.Api
             await this.SetModifiedData(_userManager, exportTemplate);
 
             IncludeExportTemplate createdTemplate = await _includeExportTemplateDbAccess.CreateIncludeTemplate(exportTemplate);
-            await CheckTemplatesForChangedIncludeReference(project, createdTemplate);
+            await CheckTemplatesForChangedIncludeReference(exportTemplate.ProjectId, createdTemplate);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.IncludeExportTemplateCreated, createdTemplate.Id, createdTemplate.Name);
+            await _timelineService.AddTimelineEntry(exportTemplate.ProjectId, TimelineEvent.IncludeExportTemplateCreated, createdTemplate.Id, createdTemplate.Name);
 
             return Ok(createdTemplate.Id);
         }
@@ -1026,9 +1060,7 @@ namespace GoNorth.Controllers.Api
                 return NotFound();
             }
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
-
-            bool nameExists = await _includeExportTemplateDbAccess.DoesIncludeTemplateExist(project.Id, id, saveRequest.Name);
+            bool nameExists = await _includeExportTemplateDbAccess.DoesIncludeTemplateExist(existingTemplate.ProjectId, id, saveRequest.Name);
             if(nameExists)
             {
                 return BadRequest(_localizer["ErrorIncludeTemplateNameDoesAlreadyExist", saveRequest.Name]);
@@ -1039,9 +1071,9 @@ namespace GoNorth.Controllers.Api
             await this.SetModifiedData(_userManager, existingTemplate);
 
             await _includeExportTemplateDbAccess.UpdateIncludeTemplate(existingTemplate);
-            await CheckTemplatesForChangedIncludeReference(project, existingTemplate);
+            await CheckTemplatesForChangedIncludeReference(existingTemplate.Id, existingTemplate);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.IncludeExportTemplateUpdated, existingTemplate.Id, existingTemplate.Name);
+            await _timelineService.AddTimelineEntry(existingTemplate.ProjectId, TimelineEvent.IncludeExportTemplateUpdated, existingTemplate.Id, existingTemplate.Name);
 
             return Ok(existingTemplate.Id);
         }
@@ -1049,14 +1081,14 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Checks the templates for include references that are changed
         /// </summary>
-        /// <param name="project">Current project</param>
+        /// <param name="projectId">Current project id</param>
         /// <param name="includeExportTemplate">Include export template that is checked</param>
         /// <returns>Task</returns>
-        private async Task CheckTemplatesForChangedIncludeReference(GoNorthProject project, IncludeExportTemplate includeExportTemplate)
+        private async Task CheckTemplatesForChangedIncludeReference(string projectId, IncludeExportTemplate includeExportTemplate)
         {
             try
             {
-                List<ExportTemplate> invalidTemplates = await _exportTemplateDbAccess.GetTemplatesByWrongReferencedIncludeTemplate(project.Id, includeExportTemplate.Id, includeExportTemplate.Name);
+                List<ExportTemplate> invalidTemplates = await _exportTemplateDbAccess.GetTemplatesByWrongReferencedIncludeTemplate(projectId, includeExportTemplate.Id, includeExportTemplate.Name);
                 foreach(ExportTemplate curTemplate in invalidTemplates)
                 {
                     foreach(IncludeExportTemplateReference curReference in curTemplate.UsedIncludeTemplates)
@@ -1099,7 +1131,7 @@ namespace GoNorth.Controllers.Api
             
             try
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 List<ExportTemplate> templates = await _exportTemplateDbAccess.GetTemplatesByReferencedIncludeTemplate(project.Id, id);
                 foreach(ExportTemplate curTemplate in templates)
                 {
@@ -1112,7 +1144,7 @@ namespace GoNorth.Controllers.Api
                 _logger.LogError(ex, "Could not reset include template references.");
             }
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.IncludeExportTemplateDeleted, existingTemplate.Name);
+            await _timelineService.AddTimelineEntry(existingTemplate.ProjectId, TimelineEvent.IncludeExportTemplateDeleted, existingTemplate.Name);
 
             return Ok(id);
         }
@@ -1129,7 +1161,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetExportTemplatesReferencingIncludeTemplate(string id)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             List<ExportTemplate> templates = await _exportTemplateDbAccess.GetTemplatesByReferencedIncludeTemplate(project.Id, id);
 
             List<TemplateIncludeReference> templateReferences = await BuildTemplateIncludeReferences(templates, id);
@@ -1207,7 +1239,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetExportSettings()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             ExportSettings loadedExportSettings = await _exportSettingsDbAccess.GetExportSettings(project.Id);
 
             return Ok(loadedExportSettings);
@@ -1224,7 +1256,7 @@ namespace GoNorth.Controllers.Api
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveExportSettings([FromBody]ExportSettings exportSettings)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             ExportSettings loadedExportSettings = await _exportSettingsDbAccess.GetExportSettings(project.Id);
 
             loadedExportSettings.ScriptExtension = exportSettings.ScriptExtension;
@@ -1243,7 +1275,7 @@ namespace GoNorth.Controllers.Api
 
             await _exportSettingsDbAccess.SaveExportSettings(project.Id, loadedExportSettings);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.ExportSettingsUpdated);
+            await _timelineService.AddTimelineEntry(project.Id, TimelineEvent.ExportSettingsUpdated);
 
             return Ok();
         }
@@ -1258,7 +1290,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetDialogFunctionGenerationConditions()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             DialogFunctionGenerationConditionCollection dialogFunctionGenerationConditionCollection = await _dialogFunctionGenerationConditionProvider.GetDialogFunctionGenerationConditions(project.Id);
 
             return Ok(dialogFunctionGenerationConditionCollection);
@@ -1274,13 +1306,13 @@ namespace GoNorth.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SaveDialogFunctionGenerationConditions([FromBody]DialogFunctionGenerationConditionCollection functionGenerationConditionCollection)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             await this.SetModifiedData(_userManager, functionGenerationConditionCollection);
 
             await _dialogFunctionDbAccess.SaveDialogFunctionGenerationCondition(project.Id, functionGenerationConditionCollection);
 
-            await _timelineService.AddTimelineEntry(TimelineEvent.ExportDialogFunctionGenerationConditionsUpdated);
+            await _timelineService.AddTimelineEntry(project.Id, TimelineEvent.ExportDialogFunctionGenerationConditionsUpdated);
 
             return Ok();
         }
@@ -1296,7 +1328,8 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetCustomizedTemplatesByType(TemplateType templateType)
         {
-            List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetCustomizedObjectTemplatesByType(templateType);
+            GoNorthProject userProject = await _userProjectAccess.GetUserProject();
+            List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetCustomizedObjectTemplatesByType(userProject.Id, templateType);
             List<ObjectUsingTemplate> objectsUsingTemplate = new List<ObjectUsingTemplate>();
 
             if(templateType == TemplateType.ObjectNpc)
@@ -1358,7 +1391,33 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetCustomizedTemplatesByParentObject(string customizedObjectId, TemplateType templateType)
         {
-            List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetCustomizedObjectTemplatesByType(templateType);
+            FlexFieldObject flexFieldObject = null;
+            string projectId = string.Empty;
+            if(templateType == TemplateType.ObjectNpc)
+            {
+                flexFieldObject = await _npcTemplateDbAccess.GetFlexFieldObjectById(customizedObjectId);
+            }
+            else if(templateType == TemplateType.ObjectItem)
+            {
+                flexFieldObject = await _itemTemplateDbAccess.GetFlexFieldObjectById(customizedObjectId);
+            }
+            else if(templateType == TemplateType.ObjectSkill)
+            {
+                flexFieldObject = await _skillTemplateDbAccess.GetFlexFieldObjectById(customizedObjectId);
+            }
+
+            if(flexFieldObject != null)
+            {
+                projectId = flexFieldObject.ProjectId;
+            }
+            
+            if(string.IsNullOrEmpty(projectId))
+            {
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
+                projectId = project.Id;
+            }
+
+            List<ExportTemplate> exportTemplates = await _exportTemplateDbAccess.GetCustomizedObjectTemplatesByType(projectId, templateType);
             List<FlexFieldObject> childObjects = new List<FlexFieldObject>();
             if(templateType == TemplateType.ObjectNpc)
             {
@@ -1566,7 +1625,7 @@ namespace GoNorth.Controllers.Api
         [HttpDelete]
         public async Task<IActionResult> DeleteLanguageKeysByGroupId(string groupId)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             await _languageKeyDbAccess.DeleteAllLanguageKeysInGroup(project.Id, groupId);
 

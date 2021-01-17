@@ -102,6 +102,25 @@ namespace GoNorth.Data.Exporting
             await _ObjectExportSnippetCollection.DeleteManyAsync(t => t.ObjectId == objectId);
         }
         
+        /// <summary>
+        /// Returns all snippets an object is referenced
+        /// </summary>
+        /// <param name="objectId">Object Id</param>
+        /// <returns>All snippets the object is referenced in without details</returns>
+        public async Task<List<ObjectExportSnippet>> GetExportSnippetsObjectIsReferenced(string objectId)
+        {
+            List<ObjectExportSnippet> exportSnippets = await _ObjectExportSnippetCollection.AsQueryable().Where(o => o.ScriptNodeGraph.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || o.ScriptNodeGraph.Condition.Any(c => c.Conditions.Any(co => co.DependsOnObjects.Any(doo => doo.ObjectId == objectId))) ||
+                                                                                                                     o.ScriptNodeGraph.Reference.Any(a => a.ReferencedObjects.Any(r => r.ObjectId == objectId))).Select(o => new ObjectExportSnippet {
+                Id = o.Id,
+                ProjectId = o.ProjectId,
+                ObjectId = o.ObjectId,
+                SnippetName = o.SnippetName,
+                ScriptType = o.ScriptType,
+                ScriptName = o.ScriptName
+            }).ToListAsync();
+
+            return exportSnippets;
+        }
 
         /// <summary>
         /// Returns all invalid export snippet objects

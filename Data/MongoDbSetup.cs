@@ -34,6 +34,26 @@ namespace GoNorth.Data
 
 
         /// <summary>
+        /// Project Db Access
+        /// </summary>
+        private readonly IProjectDbAccess _projectDbAccess;
+
+        /// <summary>
+        /// Npc Tag Db Access
+        /// </summary>
+        private readonly IKortistoNpcTagDbAccess _npcTagDbAccess;
+
+        /// <summary>
+        /// Item Tag Db Access
+        /// </summary>
+        private readonly IStyrItemTagDbAccess _itemTagDbAccess;
+
+        /// <summary>
+        /// Skill Tag Db Access
+        /// </summary>
+        private readonly IEvneSkillTagDbAccess _skillTagDbAccess;
+
+        /// <summary>
         /// Timeline Db Access
         /// </summary>
         private readonly ITimelineDbAccess _timelineDbAccess;
@@ -46,11 +66,20 @@ namespace GoNorth.Data
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="npcTagDbAccess">Npc Tag Db Access</param>
+        /// <param name="itemTagDbAccess">Item Tag Db Access</param>
+        /// <param name="skillTagDbAccess">Skill Tag Db Access</param>
         /// <param name="timelineDbAccess">Timeline Db Access</param>
         /// <param name="lockServiceDbAccess">Lock Service Db Access</param>
         /// <param name="configuration">Configuration</param>
-        public MongoDbSetup(ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockServiceDbAccess, IOptions<ConfigurationData> configuration) : base(configuration)
+        public MongoDbSetup(IProjectDbAccess projectDbAccess, IKortistoNpcTagDbAccess npcTagDbAccess, IStyrItemTagDbAccess itemTagDbAccess, IEvneSkillTagDbAccess skillTagDbAccess, ITimelineDbAccess timelineDbAccess, 
+                            ILockServiceDbAccess lockServiceDbAccess, IOptions<ConfigurationData> configuration) : base(configuration)
         {
+            _projectDbAccess = projectDbAccess;
+            _npcTagDbAccess = npcTagDbAccess;
+            _itemTagDbAccess = itemTagDbAccess;
+            _skillTagDbAccess = skillTagDbAccess;
             _timelineDbAccess = timelineDbAccess;
             _lockServiceDbAccess = lockServiceDbAccess;
         }
@@ -70,6 +99,7 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(RoleMongoDbAccess.RoleCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(ProjectMongoDbAccess.ProjectCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(ProjectMongoDbAccess.UserSelectedProjectCollectionName, collectionNames);
             
             await CreateCollectionIfNotExists(ProjectConfigMongoDbAccess.JsonConfigCollectionName, collectionNames);
             await CreateCollectionIfNotExists(ProjectConfigMongoDbAccess.MiscConfigCollectionName, collectionNames);
@@ -190,6 +220,7 @@ namespace GoNorth.Data
             await CreateIndices();
             List<string> collectionNames = await GetExistingCollections();
             await RenameLegacyCollections(collectionNames);
+            await SetTagProjectIds();
         }
 
         /// <summary>
@@ -213,6 +244,23 @@ namespace GoNorth.Data
             {
                 await _Database.RenameCollectionAsync(LegacyCollection_TaleConfig, ProjectConfigMongoDbAccess.JsonConfigCollectionName);
             }
+        }
+        
+        /// <summary>
+        /// Sets the project ids for tags
+        /// </summary>
+        /// <returns>Task</returns>
+        private async Task SetTagProjectIds()
+        {
+            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            if(project == null)
+            {
+                return;
+            }
+
+            await _npcTagDbAccess.SetProjectIdForLegacyTags(project.Id);
+            await _itemTagDbAccess.SetProjectIdForLegacyTags(project.Id);
+            await _skillTagDbAccess.SetProjectIdForLegacyTags(project.Id);
         }
     }
 }

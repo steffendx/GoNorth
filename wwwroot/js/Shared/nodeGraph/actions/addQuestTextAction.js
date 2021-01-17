@@ -200,10 +200,7 @@
             Actions.AddQuestTextAction.prototype.loadObject = function(questId) {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + questId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + questId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

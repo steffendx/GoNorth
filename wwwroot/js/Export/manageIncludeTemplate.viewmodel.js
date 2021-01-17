@@ -168,10 +168,7 @@
                  */
                 loadIncludeTemplate: function() {
                     var self = this;
-                    var def = jQuery.ajax({
-                        url: "/api/ExportApi/GetIncludeExportTemplateById?id=" + this.id(),
-                        type: "GET"
-                    });
+                    var def = GoNorth.HttpClient.get("/api/ExportApi/GetIncludeExportTemplateById?id=" + this.id());
                     def.done(function(template) {
                         self.templateName(template.name);
                         self.templateCode(template.code);
@@ -186,10 +183,7 @@
                  */
                 loadReferencedInTemplates: function() {
                     var self = this;
-                    var def = jQuery.ajax({
-                        url: "/api/ExportApi/GetExportTemplatesReferencingIncludeTemplate?id=" + this.id(),
-                        type: "GET"
-                    });
+                    var def = GoNorth.HttpClient.get("/api/ExportApi/GetExportTemplatesReferencingIncludeTemplate?id=" + this.id());
                     def.done(function(references) {
                         self.referencedInTemplates(references);
                     })
@@ -220,13 +214,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        url: url,
-                        type: "POST",
-                        data: JSON.stringify(saveRequest),
-                        contentType: "application/json"
-                    }).done(function(id) {
+                    GoNorth.HttpClient.post(url, saveRequest).done(function(id) {
                         self.isLoading(false);
                         if(!self.id())
                         {
@@ -274,11 +262,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ExportApi/DeleteIncludeExportTemplate?id=" + this.id(), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/ExportApi/DeleteIncludeExportTemplate?id=" + this.id()).done(function(data) {
                         self.closeDeleteTemplateDialog();
                         self.redirectToObjectPage();
                     }).fail(function(xhr) {

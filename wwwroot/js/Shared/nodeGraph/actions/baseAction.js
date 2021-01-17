@@ -24,6 +24,9 @@
             /// Actions that are related to a daily routine
             Actions.RelatedToObjectDailyRoutine = "NpcDailyRoutineEvent";
 
+            /// Actions that are related to a daily routine
+            Actions.RelatedToWikiPage = "WikiPage";
+
             /**
              * Base Action
              * @class

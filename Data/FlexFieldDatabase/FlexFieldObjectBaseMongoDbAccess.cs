@@ -267,11 +267,12 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <summary>
         /// Returns all flex field objects that are not part of an id list. This means that they are not part of the list themselfs and or their template
         /// </summary>
+        /// <param name="projectId">Id of the project</param>
         /// <param name="idList">List of ids</param>
         /// <returns>Flex field objects</returns>
-        public async Task<List<T>> GetFlexFieldObjectsNotPartOfIdList(IEnumerable<string> idList)
+        public async Task<List<T>> GetFlexFieldObjectsNotPartOfIdList(string projectId, IEnumerable<string> idList)
         {
-            return await _ObjectCollection.AsQueryable().Where(n => !idList.Contains(n.TemplateId) && !idList.Contains(n.Id)).Select(c => new T() {
+            return await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && !idList.Contains(n.TemplateId) && !idList.Contains(n.Id)).Select(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
             }).ToListAsync();
@@ -280,11 +281,12 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <summary>
         /// Returns all flex field objects that are part of an id list. This means that they are not part of the list themselfs and or their template
         /// </summary>
+        /// <param name="projectId">Id of the project</param>
         /// <param name="idList">List of ids</param>
         /// <returns>Flex field objects</returns>
-        public async Task<List<T>> GetFlexFieldObjectsPartOfIdList(IEnumerable<string> idList)
+        public async Task<List<T>> GetFlexFieldObjectsPartOfIdList(string projectId, IEnumerable<string> idList)
         {
-            return await _ObjectCollection.AsQueryable().Where(n => idList.Contains(n.TemplateId) || idList.Contains(n.Id)).Select(c => new T() {
+            return await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && idList.Contains(n.TemplateId) || idList.Contains(n.Id)).Select(c => new T() {
                 Id = c.Id,
                 Name = c.Name,
             }).ToListAsync();
@@ -368,12 +370,13 @@ namespace GoNorth.Data.FlexFieldDatabase
         /// <summary>
         /// Checks if any Flex Field Object use a tag
         /// </summary>
+        /// <param name="projectId">Id of the proejct</param>
         /// <param name="tag">Tag</param>
         /// <returns>true if tag is used, else false</returns>
-        public async Task<bool> AnyFlexFieldObjectUsingTag(string tag)
+        public async Task<bool> AnyFlexFieldObjectUsingTag(string projectId, string tag)
         {
             tag = tag.ToLowerInvariant();
-            return await _ObjectCollection.AsQueryable().Where(n => n.Tags.Any(s => s.ToLowerInvariant() == tag)).AnyAsync();
+            return await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && n.Tags.Any(s => s.ToLowerInvariant() == tag)).AnyAsync();
         }
 
 

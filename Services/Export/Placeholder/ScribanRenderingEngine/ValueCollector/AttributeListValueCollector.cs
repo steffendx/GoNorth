@@ -83,11 +83,11 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
 
             _languageKeyGenerator.SetErrorCollection(_errorCollection);
             
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             ExportSettings exportSettings = await _cachedDbAccess.GetExportSettings(project.Id);
             
-            scriptObject.Add(ObjectKey, FlexFieldValueCollectorUtil.ExtractScribanFields(exportable, exportSettings, _errorCollection));
-            scriptObject.Add(ExportConstants.ScribanLanguageKeyName, _languageKeyGenerator);
+            scriptObject.AddOrUpdate(ObjectKey, FlexFieldValueCollectorUtil.ExtractScribanFields(exportable, exportSettings, _errorCollection));
+            scriptObject.AddOrUpdate(ExportConstants.ScribanLanguageKeyName, _languageKeyGenerator);
         }
 
         /// <summary>

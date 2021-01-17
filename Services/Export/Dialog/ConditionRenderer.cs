@@ -161,12 +161,7 @@ namespace GoNorth.Services.Export.Dialog
 
             ExportTemplate andTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.GeneralLogicAnd);
 
-            JsonSerializerOptions jsonOptions = new JsonSerializerOptions();
-            jsonOptions.Converters.Add(new JsonStringEnumConverter());
-            jsonOptions.Converters.Add(new JsonConditionDataParser());
-            jsonOptions.PropertyNameCaseInsensitive = true;
-
-            List<ParsedConditionData> parsedConditionData = JsonSerializer.Deserialize<List<ParsedConditionData>>(condition.ConditionElements, jsonOptions);
+            List<ParsedConditionData> parsedConditionData = ConditionParsingUtil.ParseConditionElements(condition.ConditionElements);
             return await RenderConditionElements(project, parsedConditionData, andTemplate.Code, errorCollection, flexFieldObject, exportSettings);
         }
 

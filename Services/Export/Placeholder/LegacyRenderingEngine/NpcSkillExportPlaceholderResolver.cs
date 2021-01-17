@@ -159,7 +159,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Skill List</returns>
         private async Task<string> RenderSkillList(ExportObjectData data, string indent)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             ExportTemplate skillTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.ObjectSkillList);
 
             ExportPlaceholderFillResult fillResult = await _placeholderResolver.FillPlaceholders(TemplateType.ObjectSkillList, skillTemplate.Code, data, skillTemplate.RenderingEngine);

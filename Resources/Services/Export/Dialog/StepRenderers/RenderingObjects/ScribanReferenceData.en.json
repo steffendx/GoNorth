@@ -1,0 +1,11 @@
+{
+    "PlaceholderDesc_ReferenceText": "Description text of the reference.",
+    "PlaceholderDesc_ObjectType": "Type of the object. Can be Npc, Item, Skill, Quest, WikiPage, MapMarker or NpcDailyRoutineEvent.",
+    "PlaceholderDesc_Npc": "Npc which is referenced. Is only filled if the type is Npc or NpcDailyRoutineEvent.",
+    "PlaceholderDesc_Item": "Item which is referenced. Is only filled if the type is Item.",
+    "PlaceholderDesc_Skill": "Skill which is referenced. Is only filled if the type is Skill.",
+    "PlaceholderDesc_Quest": "Quest which is referenced. Is only filled if the type is Quest.",
+    "PlaceholderDesc_WikiPage": "Wiki page which is referenced. Is only filled if the type is WikiPage.",
+    "PlaceholderDesc_DailyRoutineEvent": "Daily routine event which is referenced. Is only filled if the type is NpcDailyRoutineEvent.",
+    "PlaceholderDesc_Marker": "Map marker which is referenced. Is only filled if the type is MapMarker."
+}

@@ -55,7 +55,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Include
         /// <returns>Code of the template</returns>
         private async Task<string> LoadTemplate(string templateName, SourceSpan callerSpan)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             IncludeExportTemplate includeExportTemplate = await _cachedDbAccess.GetIncludeTemplateByName(project.Id, templateName);
             if(includeExportTemplate == null)
             {

@@ -22,6 +22,8 @@ using GoNorth.Services.Security;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using GoNorth.Services.CsvHandling;
+using GoNorth.Services.Project;
+using GoNorth.Services.Export.ExportSnippets;
 
 namespace GoNorth.Controllers.Api
 {
@@ -149,7 +151,6 @@ namespace GoNorth.Controllers.Api
         /// <param name="folderDbAccess">Folder Db Access</param>
         /// <param name="templateDbAccess">Template Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
-        /// <param name="projectDbAccess">User Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="importFieldValuesLogDbAccess">Import field values log Db Access</param>
@@ -157,12 +158,14 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
+        /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="imageAccess">Skill Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db ACcess</param>
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
+        /// <param name="userProjectAccess">User project Access</param>
         /// <param name="csvGenerator">CSV Generator</param>
         /// <param name="csvReader">CSV Reader</param>
         /// <param name="userManager">User Manager</param>
@@ -171,12 +174,12 @@ namespace GoNorth.Controllers.Api
         /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public EvneApiController(IEvneFolderDbAccess folderDbAccess, IEvneSkillTemplateDbAccess templateDbAccess, IEvneSkillDbAccess skillDbAccess, IProjectDbAccess projectDbAccess, IEvneSkillTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, IEvneImportFieldValuesLogDbAccess importFieldValuesLogDbAccess,
-                                 IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IEvneSkillImageAccess imageAccess, IEvneThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, 
-                                 ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, ICsvGenerator csvGenerator, ICsvParser csvReader, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, 
-                                 IXssChecker xssChecker, ILogger<EvneApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, projectDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, imageAccess, thumbnailService, csvGenerator, csvReader, 
-                                            userManager, implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
+        public EvneApiController(IEvneFolderDbAccess folderDbAccess, IEvneSkillTemplateDbAccess templateDbAccess, IEvneSkillDbAccess skillDbAccess, IEvneSkillTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, IEvneImportFieldValuesLogDbAccess importFieldValuesLogDbAccess,
+                                 IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IEvneSkillImageAccess imageAccess, 
+                                 IEvneThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IUserProjectAccess userProjectAccess, ICsvGenerator csvGenerator, ICsvParser csvReader, UserManager<GoNorthUser> userManager, 
+                                 IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<EvneApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, exportSnippetRelatedObjectNameResolver, userProjectAccess, imageAccess, 
+                                            thumbnailService, csvGenerator, csvReader, userManager, implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;
             _taleDbAccess = taleDbAccess;
@@ -299,6 +302,13 @@ namespace GoNorth.Controllers.Api
                 return _localizer["CanNotDeleteSkillUsedInDailyRoutine", usedInDailyRoutines].Value;
             }
 
+            List<EvneSkill> referencedInSkills = await ((IEvneSkillDbAccess)_objectDbAccess).GetSkillsObjectIsReferencedIn(id);
+            if(referencedInSkills.Count > 0)
+            {
+                string referencedInSkillsString = string.Join(", ", referencedInSkills.Select(n => n.Name));
+                return _localizer["CanNotDeleteSkillUsedInSkill", referencedInSkillsString].Value;
+            }
+
             return string.Empty;
         }
 
@@ -324,6 +334,7 @@ namespace GoNorth.Controllers.Api
             loadedFlexFieldObject.Action = flexFieldObject.Action != null ? flexFieldObject.Action : new List<ActionNode>();
             loadedFlexFieldObject.Condition = flexFieldObject.Condition != null ? flexFieldObject.Condition : new List<ConditionNode>();
             loadedFlexFieldObject.Link = flexFieldObject.Link != null ? flexFieldObject.Link : new List<NodeLink>();
+            loadedFlexFieldObject.Reference = flexFieldObject.Reference != null ? flexFieldObject.Reference : new List<ReferenceNode>();
 
             return Task.FromResult(loadedFlexFieldObject);
         }
@@ -361,7 +372,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetNotImplementedSkills(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<EvneSkill>> queryTask;
             Task<int> countTask;
             queryTask = _objectDbAccess.GetNotImplementedFlexFieldObjects(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
@@ -372,6 +383,19 @@ namespace GoNorth.Controllers.Api
             queryResult.FlexFieldObjects = queryTask.Result;
             queryResult.HasMore = start + queryResult.FlexFieldObjects.Count < countTask.Result;
             return Ok(queryResult);
+        }
+
+        /// <summary>
+        /// Returns all skills an object is referenced in (excluding the skill itselfs)
+        /// </summary>
+        /// <param name="objectId">Object id</param>
+        /// <returns>Skills</returns>
+        [ProducesResponseType(typeof(List<EvneSkill>), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> GetSkillsObjectIsReferencedIn(string objectId)
+        {
+            List<EvneSkill> skills = await ((IEvneSkillDbAccess)_objectDbAccess).GetSkillsObjectIsReferencedIn(objectId);
+            return Ok(skills);
         }
 
     }

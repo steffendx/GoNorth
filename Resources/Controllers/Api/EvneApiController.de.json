@@ -1,17 +1,21 @@
 {
     "FolderNotEmpty": "Der Ordner ist nicht leer.",
 
-    "CanNotDeleteSkillReferencedInAikaQuest": "Die Fähigkeit wird in den Aika Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.", 
-    "CanNotDeleteSkillReferencedInTaleDialog": "Die Fähigkeit ist in den Tale Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
-    "CanNotDeleteSkillMentionedInKirjaPage": "Die Fähigkeit wird in den Kirja Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteSkillReferencedInAikaQuest": "Die Fähigkeit wird in den Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.", 
+    "CanNotDeleteSkillReferencedInTaleDialog": "Die Fähigkeit ist in den Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteSkillMentionedInKirjaPage": "Die Fähigkeit wird in den Wiki-Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeleteSkillLearnedByNpc": "Die Npcs \"{0}\" beherrschen die Fähigkeit. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeleteSkillUsedInDailyRoutine": "Die Fähigkeit ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteObjectUsedInExportSnippet": "Das Objekt ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteSkillUsedInSkill": "Die Fähigkeit ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",
     "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt.",
 
-    "DuplicateFieldNameExist": "Es existitieren mehrere Felder mit gleichem Namen.",
+    "DuplicateFieldNameExist": "Es existieren mehrere Felder mit gleichem Namen.",
+
+    "TemplateIsForDifferentProject": "Das hinterlegte Template gehört einem anderen Projekt. Bitte wechsel zu diesem Projekt.",
 
     "ImportFieldValuesObjectNotFound": "Die Fähigkeit wurde nicht gefunden.",
     "ImportFieldValuesFieldNotFoundInTemplate": "Das Feld {0} wurde weder im Template noch in der Fähigkeit gefunden. Der Wert kann nicht importiert werden.",

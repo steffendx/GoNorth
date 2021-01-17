@@ -4,6 +4,7 @@ using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Karta;
+using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
@@ -17,10 +18,10 @@ namespace GoNorth.Services.Export.Data
     public interface IExportCachedDbAccess
     {
         /// <summary>
-        /// Returns the project
+        /// Returns the user project
         /// </summary>
         /// <returns>Project</returns>
-        Task<GoNorthProject> GetDefaultProject();
+        Task<GoNorthProject> GetUserProject();
 
         /// <summary>
         /// Returns the export settings for a project
@@ -85,6 +86,13 @@ namespace GoNorth.Services.Export.Data
         /// <param name="markerId">Marker Id</param>
         /// <returns>Marker</returns>
         Task<KartaMapNamedMarkerQueryResult> GetMarkerById(string mapId, string markerId);
+
+        /// <summary>
+        /// Returns a wiki page by its id
+        /// </summary>
+        /// <param name="pageId">Page Id</param>
+        /// <returns>Wiki page</returns>
+        Task<KirjaPage> GetWikiPageById(string pageId);
 
         /// <summary>
         /// Returns the misc project config

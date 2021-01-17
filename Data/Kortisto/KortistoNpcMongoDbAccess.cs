@@ -92,7 +92,8 @@ namespace GoNorth.Data.Kortisto
         {
             // Required to use non Linq syntax here as Linq does not seem to support deep enough queries for this
             List<KortistoNpc> npcs = await _ObjectCollection.Find(Builders<KortistoNpc>.Filter.Ne(n => n.Id, objectId) & Builders<KortistoNpc>.Filter.ElemMatch(n => n.DailyRoutine, 
-                                                d => d.ScriptNodeGraph.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || d.ScriptNodeGraph.Condition.Any(c => c.Conditions.Any(co => co.DependsOnObjects.Any(doo => doo.ObjectId == objectId))))).Project(n => new KortistoNpc {
+                                                d => d.ScriptNodeGraph.Action.Any(a => a.ActionRelatedToObjectId == objectId || (a.ActionRelatedToAdditionalObjects != null && a.ActionRelatedToAdditionalObjects.Any(e => e.ObjectId == objectId))) || d.ScriptNodeGraph.Condition.Any(c => c.Conditions.Any(co => co.DependsOnObjects.Any(doo => doo.ObjectId == objectId))) ||
+                                                     d.ScriptNodeGraph.Reference.Any(a => a.ReferencedObjects.Any(r => r.ObjectId == objectId)))).Project(n => new KortistoNpc {
                                                     Id = n.Id,
                                                     Name = n.Name
                                                 }).ToListAsync();

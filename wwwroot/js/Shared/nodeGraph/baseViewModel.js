@@ -114,6 +114,39 @@
 
 
             /**
+             * Focuses a node if a node is specified in the url
+             */
+            focusNodeFromUrl: function() {
+                var nodeId = GoNorth.Util.getParameterFromUrl("nodeFocusId");
+                if(!nodeId)
+                {
+                    return;
+                }
+
+                GoNorth.Util.removeUrlParameter("nodeFocusId");
+                var targetNode = this.nodeGraph().getCell(nodeId);
+                if(!targetNode) 
+                {
+                    return;
+                }
+
+                var targetPosition = targetNode.position();
+                var targetSize = targetNode.size();
+                var paper = this.nodePaper();
+                var viewBoundingBox;
+                if(paper.el && paper.el.parentElement)
+                {
+                    viewBoundingBox = paper.el.parentElement.getBoundingClientRect()
+                }
+                else
+                {
+                    viewBoundingBox = paper.getContentBBox();
+                }
+                paper.translate(-targetPosition.x - targetSize.width * 0.5 + viewBoundingBox.width * 0.5, -targetPosition.y - targetSize.width * 0.5 + viewBoundingBox.height * 0.5);
+            },
+
+
+            /**
              * Delete Callback if a user wants to delete a node
              * 
              * @param {object} node Node to delete

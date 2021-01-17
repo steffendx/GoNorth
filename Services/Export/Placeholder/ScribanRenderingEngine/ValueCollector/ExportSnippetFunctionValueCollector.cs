@@ -55,7 +55,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
                 return Task.CompletedTask;
             }
             
-            scriptObject.Add(ExportConstants.ScribanExportSnippetFunctionObjectKey, new ScribanExportSnippetFunction(inputFunction));
+            scriptObject.AddOrUpdate(ExportConstants.ScribanExportSnippetFunctionObjectKey, new ScribanExportSnippetFunction(inputFunction));
             return Task.CompletedTask;
         }
 

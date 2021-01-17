@@ -40,7 +40,7 @@
                 this.errorOccured(false);
                 this.isLoading(true);
 
-                jQuery.ajax("/api/TimelineApi/Entries?start=" + startIndex + "&pageSize=" + pageSize).done(function(data) {
+                GoNorth.HttpClient.get("/api/TimelineApi/Entries?start=" + startIndex + "&pageSize=" + pageSize).done(function(data) {
                     self.dayEntries(self.parseDayEntries(data.entries));
                     self.hasMore(data.hasMore);
                     if(pushIndices) 

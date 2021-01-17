@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Project;
 using GoNorth.Data.User;
+using GoNorth.Services.Project;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -45,9 +46,9 @@ namespace GoNorth.Controllers.Api
         private readonly IExportSettingsDbAccess _exportSettingsDbAccess;
         
         /// <summary>
-        /// Project Db Access
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// User Manager
@@ -64,15 +65,15 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="userPreferencesDbAccess">User Preferences Db Access</param>
         /// <param name="exportSettingsDbAccess">Export settings Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="logger">Logger</param>
-        public UserPreferencesApiController(IUserPreferencesDbAccess userPreferencesDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager, 
+        public UserPreferencesApiController(IUserPreferencesDbAccess userPreferencesDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, IUserProjectAccess userProjectAccess, UserManager<GoNorthUser> userManager, 
                                             ILogger<UtilApiController> logger)
         {
             _userPreferencesDbAccess = userPreferencesDbAccess;
             _exportSettingsDbAccess = exportSettingsDbAccess;
-            _projectDbAccess = projectDbAccess;
+            _userProjectAccess = userProjectAccess;
             _userManager = userManager;
             _logger = logger;
         }
@@ -119,7 +120,7 @@ namespace GoNorth.Controllers.Api
             GoNorthUser currentUser = await _userManager.GetUserAsync(this.User);
             UserPreferences userPreferences = await _userPreferencesDbAccess.GetUserPreferences(currentUser.Id);
 
-            GoNorthProject defaultProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject defaultProject = await _userProjectAccess.GetUserProject();
             ExportSettings settings = await _exportSettingsDbAccess.GetExportSettings(defaultProject.Id);
 
             UserCodeEditorPreferences codeEditorPreferences = new UserCodeEditorPreferences();

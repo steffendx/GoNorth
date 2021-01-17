@@ -219,26 +219,56 @@
                                     <div>@Localizer["MentionedInPages"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedInPages"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedInPagesError"></i></div>
                                     <ul data-bind="foreach: mentionedInPages" class="gn-kirjaSidebarList">
                                         <li>
-                                            <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                            <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                            <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
                                         </li>
                                     </ul>
 
                                     @if(User.IsInRole(RoleNames.Aika))
                                     {
-                                        <div>@Localizer["Quests"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedQuestsError"></i></div>
-                                        <ul data-bind="foreach: mentionedQuests" class="gn-kirjaSidebarList">
+                                        <div>@Localizer["Quests"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedQuests() || loadingReferencedInQuests()"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedQuestsError() || loadingReferencedInQuestsError()"></i></div>
+                                        <ul class="gn-kirjaSidebarList">
+                                            <!-- ko foreach: mentionedQuests -->
                                             <li>
-                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["OnPage"]</span>
                                             </li>
+                                            <!-- /ko -->
+                                            <!-- ko foreach: referencedInQuests -->
+                                            <li>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
+                                            </li>
+                                            <!-- /ko -->
                                         </ul>
                                     }
 
                                     @if(User.IsInRole(RoleNames.Kortisto))
                                     {
-                                        <div>@Localizer["Npcs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedNpcs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedNpcsError"></i></div>
-                                        <ul data-bind="foreach: mentionedNpcs" class="gn-kirjaSidebarList">
+                                        <div>@Localizer["Npcs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedNpcs() || loadingReferencedInDailyRoutines()"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedNpcsError() || loadingReferencedInDailyRoutinesError()"></i></div>
+                                        <ul class="gn-kirjaSidebarList">
+                                            <!-- ko foreach: mentionedNpcs -->
                                             <li>
-                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["OnPage"]</span>
+                                            </li>
+                                            <!-- /ko -->
+                                            <!-- ko foreach: referencedInDailyRoutines -->
+                                            <li>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
+                                            </li>
+                                            <!-- /ko -->
+                                        </ul>
+                                    }
+
+                                    @if(User.IsInRole(RoleNames.Kortisto) && User.IsInRole(RoleNames.Tale))
+                                    {
+                                        <div data-bind="visible: referencedInDialogs().length > 0 || loadingReferencedInDialogsError()">@Localizer["Dialogs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInDialogs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingReferencedInDialogsError"></i></div>
+                                        <ul data-bind="foreach: referencedInDialogs, visible: referencedInDialogs().length > 0 || loadingReferencedInDialogsError()" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
                                             </li>
                                         </ul>
                                     }
@@ -248,18 +278,28 @@
                                         <div>@Localizer["Items"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedItems"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedItemsError"></i></div>
                                         <ul data-bind="foreach: mentionedItems" class="gn-kirjaSidebarList">
                                             <li>
-                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["OnPage"]</span>
                                             </li>
                                         </ul>
                                     }
 
                                     @if(User.IsInRole(RoleNames.Evne))
                                     {
-                                        <div>@Localizer["Skills"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedSkills"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedSkillsError"></i></div>
-                                        <ul data-bind="foreach: mentionedSkills" class="gn-kirjaSidebarList">
+                                        <div>@Localizer["Skills"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMentionedSkills() || loadingReferencedSkills()"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMentionedSkillsError() || loadingReferencedSkillsError()"></i></div>
+                                        <ul class="gn-kirjaSidebarList">
+                                            <!-- ko foreach: mentionedSkills -->
                                             <li>
-                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["OnPage"]</span>
                                             </li>
+                                            <!-- /ko -->
+                                            <!-- ko foreach: referencedInSkills -->
+                                            <li>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
+                                            </li>
+                                            <!-- /ko -->
                                         </ul>
                                     }
 
@@ -268,8 +308,21 @@
                                         <div>@Localizer["Maps"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingMarkedInMaps"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingMarkedInMapsError"></i></div>
                                         <ul data-bind="foreach: markedInMaps" class="gn-kirjaSidebarList">
                                             <li>
-                                                <a data-bind="attr: { href: openLink }, text: name" target="_blank"></a>
-                                                <span data-bind="visible: markerCount > 1, attr: { title: tooltip }" style="display: none"> (<span data-bind="text: markerCount"></span>)</span>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank">
+                                                    <span data-bind="visible: markerCount > 1, attr: { title: tooltip }" style="display: none"> (<span data-bind="text: markerCount"></span>)</span>
+                                                </a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
+                                            </li>
+                                        </ul>
+                                    }
+
+                                    @if(User.IsInRole(RoleNames.ExportObjects))
+                                    {
+                                        <div data-bind="visible: referencedInExportSnippets().length > 0 || loadingReferencedInExportSnippetsError()">@Localizer["ExportSnippets"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInExportSnippets"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: loadingReferencedInExportSnippetsError"></i></div>
+                                        <ul data-bind="foreach: referencedInExportSnippets, visible: referencedInExportSnippets().length > 0 || loadingReferencedInExportSnippetsError()" class="gn-kirjaSidebarList">
+                                            <li>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
                                             </li>
                                         </ul>
                                     }
@@ -424,6 +477,19 @@
             </text>
         }
 
+        @if(User.IsInRole(RoleNames.Tale))
+        {
+            <text>
+            GoNorth.Kirja.Page.hasTaleRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Page.hasTaleRights = false;
+            </text>
+        }
+
         @if(User.IsInRole(RoleNames.Styr))
         {
             <text>
@@ -460,6 +526,19 @@
         {
             <text>
             GoNorth.Kirja.Page.hasKartaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.ExportObjects))
+        {
+            <text>
+            GoNorth.Kirja.Page.hasExportObjectsRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Page.hasExportObjectsRights = false;
             </text>
         }
 

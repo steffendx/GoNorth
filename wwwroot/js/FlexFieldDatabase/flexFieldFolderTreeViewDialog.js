@@ -92,7 +92,7 @@
                     }
 
                     var self = this;
-                    jQuery.ajax("/api/" + this.apiControllerName + "/Folders?start=0&pageSize=500" + additionalParameter).done(function(folders) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/Folders?start=0&pageSize=500" + additionalParameter).done(function(folders) {
                         if(parentObject)
                         {
                             parentObject.isLoading(false);

@@ -48,7 +48,11 @@ namespace GoNorth.Config
         /// <summary>
         /// CSV Delimiter
         /// </summary>
-        /// <value></value>
         public string CsvDelimiter { get; set; }
+
+        /// <summary>
+        /// Timeout for locks
+        /// </summary>
+        public int? ResourceLockTimespan { get; set;}
     }
 }

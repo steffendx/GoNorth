@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Placeholder;
+using GoNorth.Services.Project;
 
 namespace GoNorth.Services.Export.Script
 {
@@ -16,9 +17,9 @@ namespace GoNorth.Services.Export.Script
         private readonly IExportTemplatePlaceholderResolver _placeholderResolver;
 
         /// <summary>
-        /// Project Db Access
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Export Settings Db Access
@@ -29,13 +30,13 @@ namespace GoNorth.Services.Export.Script
         /// Constructor
         /// </summary>
         /// <param name="placeholderResolver">Pkaceholder Resolver</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
         /// <param name="exportSettingsDbAccess">Export Settings Db Accesss</param>
-        public ScriptExporter(IExportTemplatePlaceholderResolver placeholderResolver, IProjectDbAccess projectDbAccess, IExportSettingsDbAccess exportSettingsDbAccess)
+        /// <param name="userProjectAccess">User project access</param>
+        public ScriptExporter(IExportTemplatePlaceholderResolver placeholderResolver, IExportSettingsDbAccess exportSettingsDbAccess, IUserProjectAccess userProjectAccess)
         {
-            _projectDbAccess = projectDbAccess;
             _placeholderResolver = placeholderResolver;
             _exportSettingsDbAccess = exportSettingsDbAccess;
+            _userProjectAccess = userProjectAccess;
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace GoNorth.Services.Export.Script
         /// <returns>Export Result</returns>
         public async Task<ExportObjectResult> ExportObject(ExportTemplate template, ExportObjectData objectData)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             ExportSettings exportSettings = await _exportSettingsDbAccess.GetExportSettings(project.Id);
 
             ExportObjectResult result = new ExportObjectResult();

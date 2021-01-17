@@ -132,10 +132,7 @@
                     this.errorOccured(false);
                     this.difference([]);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ImplementationStatusApi/" + urlPostfix, 
-                        type: "GET"
-                    }).done(function(compareResult) {
+                    GoNorth.HttpClient.get("/api/ImplementationStatusApi/" + urlPostfix).done(function(compareResult) {
                         self.isLoading(false);
                         self.addExpandedObservable(compareResult.compareDifference);
                         self.doesSnapshotExists(compareResult.doesSnapshotExist);
@@ -187,11 +184,7 @@
                     this.isLoading(true);
                     this.errorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ImplementationStatusApi/" + this.flagAsImplementedMethodUrlPostfix, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/ImplementationStatusApi/" + this.flagAsImplementedMethodUrlPostfix, {}).done(function() {
                         if(window.refreshImplementationStatusList)
                         {
                             window.refreshImplementationStatusList();
@@ -484,10 +477,7 @@
             Overview.ImplementationStatusNpcList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/GetNotImplementedNpcs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/GetNotImplementedNpcs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.flexFieldObjects,
                       hasMore: data.hasMore
@@ -550,10 +540,7 @@
             Overview.ImplementationStatusDialogList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/GetNotImplementedDialogs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/TaleApi/GetNotImplementedDialogs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.dialogs,
                       hasMore: data.hasMore
@@ -616,10 +603,7 @@
             Overview.ImplementationStatusItemList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/GetNotImplementedItems?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/StyrApi/GetNotImplementedItems?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.flexFieldObjects,
                       hasMore: data.hasMore
@@ -682,10 +666,7 @@
             Overview.ImplementationStatusSkillList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/EvneApi/GetNotImplementedSkills?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/EvneApi/GetNotImplementedSkills?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.flexFieldObjects,
                       hasMore: data.hasMore
@@ -748,10 +729,7 @@
             Overview.ImplementationStatusQuestList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetNotImplementedQuests?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetNotImplementedQuests?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.quests,
                       hasMore: data.hasMore
@@ -816,10 +794,7 @@
             Overview.ImplementationStatusMarkerList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/GetNotImplementedMarkers?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/GetNotImplementedMarkers?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.markers,
                       hasMore: data.hasMore

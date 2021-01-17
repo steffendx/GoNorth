@@ -38,7 +38,7 @@
                     this.errorOccured(false);
                     this.isLoading(true);
     
-                    jQuery.ajax("/api/" + this.apiControllerName + "/FlexFieldTemplates?start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
+                    GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/FlexFieldTemplates?start=" + (this.currentPage() * pageSize) + "&pageSize=" + pageSize).done(function(data) {
                         self.templates(data.flexFieldObjects);
                         self.hasMore(data.hasMore);
 

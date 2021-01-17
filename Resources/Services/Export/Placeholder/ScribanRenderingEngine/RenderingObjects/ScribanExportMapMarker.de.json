@@ -1,0 +1,7 @@
+{
+    "PlaceholderDesc_MapId": "Id der Karte zu der der Marker gehört.",
+    "PlaceholderDesc_MapName": "Name der Karte zu der der Marker gehört.",
+    "PlaceholderDesc_MarkerType": "Art des Markers.",
+    "PlaceholderDesc_MarkerId": "Id des Markers.",
+    "PlaceholderDesc_MarkerName": "Name des Markers."
+}

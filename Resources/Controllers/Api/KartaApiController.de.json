@@ -6,14 +6,18 @@
     "MarkerTypeMapChange": "Karta",
     "MarkerTypeNote": "Notiz",
 
-    "CanNotDeleteMapMarkedInKartaMap": "Die Karte ist in den Karta Karten \"{0}\" markiert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
-    "CanNotDeleteMapReferencedInTaleDialog": "Die Karte ist in den Tale Dialogen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMapMarkedInKartaMap": "Die Karte ist in den Karten \"{0}\" markiert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMapReferencedInTaleDialog": "Die Karte ist in den Dialogen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeleteMapReferencedInNpc": "Die Karte ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
-    "CanNotDeleteMapReferencedInAikaQuest": "Die Karte ist in den Aika Quests von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMapReferencedInAikaQuest": "Die Karte ist in den Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMapReferencedInSkill": "Die Karte ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMapReferencedInExportSnippet": "Die Karte ist in den Export Snippets \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
 
-    "CanNotDeleteMarkerReferencedInTaleDialog": "Die Markierung ist in den Tale Dialogen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMarkerReferencedInTaleDialog": "Die Markierung ist in den Dialogen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeleteMarkerReferencedInNpc": "Die Markierung ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
-    "CanNotDeleteMarkerReferencedInAikaQuest": "Die Markierung ist in den Aika Quests von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMarkerReferencedInAikaQuest": "Die Markierung ist in den Quests von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMarkerReferencedInSkill": "Die Markierung ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeleteMarkerReferencedInExportSnippet": "Die Markierung ist in den Export Snippets \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
 
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",

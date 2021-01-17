@@ -111,6 +111,16 @@
                 this.referencedInDailyRoutines = new ko.observableArray();
                 this.loadingReferencedInDailyRoutines = new ko.observable(false);
                 this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
+
+                this.referencedInEvneSkills = new ko.observableArray();
+                this.loadingReferencedInEvneSkills = new ko.observable(false);
+                this.errorLoadingReferencedInEvneSkills = new ko.observable(false);
+
+                this.referencedInExportSnippets = new ko.observableArray();
+                this.loadingReferencedInExportSnippets = new ko.observable(false);
+                this.errorLoadingReferencedInExportSnippets = new ko.observable(false);
+                
+                this.extendedReferenceCallout = new ko.observable(null);
                 
                 this.exportSnippetManager = new ObjectForm.ExportSnippetManager(objectType, this.isImplemented);
 
@@ -187,9 +197,19 @@
                         this.loadTaleDialogs();
                     } 
 
+                    if(GoNorth.FlexFieldDatabase.ObjectForm.hasEvneRights && !this.isTemplateMode())
+                    {
+                        this.loadUsedInEvneSkills();
+                    } 
+
                     if(GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights && !this.isTemplateMode())
                     {
                         this.loadUsedInDailyRoutines();
+                    } 
+
+                    if(GoNorth.FlexFieldDatabase.ObjectForm.hasExportObjectsRights && !this.isTemplateMode())
+                    {
+                        this.loadUsedInExportSnippets();
                     } 
 
                     this.loadAdditionalDependencies();
@@ -213,10 +233,7 @@
                 }
                 
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/ExportApi/DoesExportTemplateExistForObjectId?id=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/ExportApi/DoesExportTemplateExistForObjectId?id=" + this.id()).done(function(data) {
                     self.showCustomizedExportTemplateWarningOnDelete(data.doesTemplateExist);
                 }).fail(function(xhr) {
                     self.errorOccured(true);
@@ -237,10 +254,7 @@
              */
             ObjectForm.BaseViewModel.prototype.loadExistingObjectTags = function() {
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/" + this.apiControllerName + "/FlexFieldObjectTags", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/" + this.apiControllerName + "/FlexFieldObjectTags").done(function(data) {
                     self.existingObjectTags(data);
                 }).fail(function(xhr) {
                     self.errorOccured(true);
@@ -264,10 +278,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: url, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get(url).done(function(data) {
                     self.isLoading(false);
                     if(!data)
                     {
@@ -405,13 +416,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: url, 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify(requestObject), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post(url, requestObject).done(function(data) {
                     if(!self.id())
                     {
                         self.id(data.id);
@@ -485,12 +490,7 @@
              */
             ObjectForm.BaseViewModel.prototype.distributeFields = function() {
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/" + this.apiControllerName + "/DistributeFlexFieldTemplateFields?id=" + this.id(), 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post("/api/" + this.apiControllerName + "/DistributeFlexFieldTemplateFields?id=" + this.id(), {}).done(function(data) {
                     self.isLoading(false);
                 }).fail(function(xhr) {
                     self.isLoading(false);
@@ -526,11 +526,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: url, 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    type: "DELETE"
-                }).done(function(data) {
+                GoNorth.HttpClient.delete(url).done(function(data) {
                     self.callObjectGridRefresh();
                     self.closeConfirmObjectDeleteDialog();
                     window.location = self.rootPage;
@@ -685,10 +681,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/ExportApi/ExportObject?exportFormat=" + exportFormat + "&id=" + this.id() + "&templateType=" + templateType, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/ExportApi/ExportObject?exportFormat=" + exportFormat + "&id=" + this.id() + "&templateType=" + templateType).done(function(data) {
                     self.isLoading(false);
                     self.showExportResultDialog(true);
                     self.exportResultContent(data.code);
@@ -804,11 +797,7 @@
                 this.isLoading(true);
                 this.resetErrorState();
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/ExportApi/DeleteLanguageKeysByGroupId?groupId=" + this.id(), 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    type: "DELETE"
-                }).done(function(data) {
+                GoNorth.HttpClient.delete("/api/ExportApi/DeleteLanguageKeysByGroupId?groupId=" + this.id()).done(function(data) {
                     self.isLoading(false);
                     self.closeConfirmRegenerateLanguageKeysDialog();
                 }).fail(function(xhr) {
@@ -833,10 +822,7 @@
                 this.loadingReferencedInQuests(true);
                 this.errorLoadingReferencedInQuests(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuestsObjectIsReferenced?objectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuestsObjectIsReferenced?objectId=" + this.id()).done(function(data) {
                     self.referencedInQuests(data);
                     self.loadingReferencedInQuests(false);
                 }).fail(function(xhr) {
@@ -849,10 +835,21 @@
              * Builds the url for an Aika quest
              * 
              * @param {object} quest Quest to build the url
+             * @param {object} detailedReference Detailed reference to build the object reference for
              * @returns {string} Url for quest
              */
-            ObjectForm.BaseViewModel.prototype.buildAikaQuestUrl = function(quest) {
-                return "/Aika/Quest?id=" + quest.id;
+            ObjectForm.BaseViewModel.prototype.buildAikaQuestUrl = function(quest, detailedReference) {
+                var url = "/Aika/Quest?id=" + quest.objectId;
+                if(!detailedReference && quest.detailedReferences && quest.detailedReferences.length == 1)
+                {
+                    detailedReference = quest.detailedReferences[0];
+                }
+
+                if(detailedReference)
+                {
+                    url += "&nodeFocusId=" + detailedReference.objectId;
+                }
+                return url;
             };
 
 
@@ -863,10 +860,7 @@
                 this.loadingMentionedInKirjaPages(true);
                 this.errorLoadingMentionedInKirjaPages(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KirjaApi/" + this.kirjaApiMentionedMethod + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KirjaApi/" + this.kirjaApiMentionedMethod + this.id()).done(function(data) {
                     self.mentionedInKirjaPages(data);
                     self.loadingMentionedInKirjaPages(false);
                 }).fail(function(xhr) {
@@ -898,10 +892,7 @@
                 this.loadingMarkedInKartaMaps(true);
                 this.errorLoadingMarkedInKartaMaps(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KartaApi/" + this.kartaApiMarkedMethod + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KartaApi/" + this.kartaApiMarkedMethod + this.id()).done(function(data) {
                     for(var curMap = 0; curMap < data.length; ++curMap)
                     {
                         data[curMap].tooltip = self.buildKartaMapMarkerCountTooltip(data[curMap]);
@@ -947,40 +938,9 @@
                 this.loadingReferencedInTaleDialogs(true);
                 this.errorLoadingReferencedInTaleDialogs(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/GetDialogsObjectIsReferenced?objectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(dialogs) {
-                    var npcIds = [];
-                    for(var curDialog = 0; curDialog < dialogs.length; ++curDialog)
-                    {
-                        if(dialogs[curDialog].relatedObjectId != self.id())
-                        {
-                            npcIds.push(dialogs[curDialog].relatedObjectId);
-                        }
-                    }
-
-                    if(npcIds.length == 0)
-                    {
-                        self.referencedInTaleDialogs([]);
-                        self.loadingReferencedInTaleDialogs(false);
-                        return;
-                    }
-
-                    // Get Npc names of the dialog npcs
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(npcIds), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(npcNames) {
-                        self.referencedInTaleDialogs(npcNames);
-                        self.loadingReferencedInTaleDialogs(false);
-                    }).fail(function(xhr) {
-                        self.errorLoadingReferencedInTaleDialogs(true);
-                        self.loadingReferencedInTaleDialogs(false);
-                    });
+                GoNorth.HttpClient.get("/api/TaleApi/GetDialogsObjectIsReferenced?objectId=" + this.id()).done(function(dialogs) {
+                    self.referencedInTaleDialogs(dialogs);
+                    self.loadingReferencedInTaleDialogs(false);
                 }).fail(function(xhr) {
                     self.errorLoadingReferencedInTaleDialogs(true);
                     self.loadingReferencedInTaleDialogs(false);
@@ -990,25 +950,33 @@
             /**
              * Builds the url for a Tale dialog
              * 
-             * @param {object} dialogNpc Npc for which to open the dialog
+             * @param {object} dialogRef Dialog in which the object is referenced
+             * @param {object} detailedReference Detailed reference to build the object reference for
              * @returns {string} Url for the dialog
              */
-            ObjectForm.BaseViewModel.prototype.buildTaleDialogUrl = function(dialogNpc) {
-                return "/Tale?npcId=" + dialogNpc.id;
+            ObjectForm.BaseViewModel.prototype.buildTaleDialogUrl = function(dialogRef, detailedReference) {
+                var url = "/Tale?npcId=" + dialogRef.objectId;
+                if(!detailedReference && dialogRef.detailedReferences && dialogRef.detailedReferences.length == 1)
+                {
+                    detailedReference = dialogRef.detailedReferences[0];
+                }
+
+                if(detailedReference)
+                {
+                    url += "&nodeFocusId=" + detailedReference.objectId;
+                }
+                return url;
             };
 
 
             /**
-             * Loads the npcs in which the daily routines are used
+             * Loads the npcs in daily routines the object is are used
              */
             ObjectForm.BaseViewModel.prototype.loadUsedInDailyRoutines = function() {
                 this.loadingReferencedInDailyRoutines(true);
                 this.errorLoadingReferencedInDailyRoutines(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id()).done(function(data) {
                     self.referencedInDailyRoutines(data);
                     self.loadingReferencedInDailyRoutines(false);
                 }).fail(function(xhr) {
@@ -1025,6 +993,110 @@
              */
             ObjectForm.BaseViewModel.prototype.buildDailyRoutineNpcUrl = function(npc) {
                 return "/Kortisto/Npc?id=" + npc.id;
+            };
+
+
+            /**
+             * Loads the skills in which the object is used
+             */
+            ObjectForm.BaseViewModel.prototype.loadUsedInEvneSkills = function() {
+                this.loadingReferencedInEvneSkills(true);
+                this.errorLoadingReferencedInEvneSkills(false);
+                var self = this;
+                GoNorth.HttpClient.get("/api/EvneApi/GetSkillsObjectIsReferencedIn?objectId=" + this.id()).done(function(data) {
+                    self.referencedInEvneSkills(data);
+                    self.loadingReferencedInEvneSkills(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInEvneSkills(true);
+                    self.loadingReferencedInEvneSkills(false);
+                });
+            };
+
+            /**
+             * Builds the url for a Skill
+             * 
+             * @param {object} skill Skill to build the url for
+             * @returns {string} Url for the skill
+             */
+            ObjectForm.BaseViewModel.prototype.buildEvneSkillUrl = function(npc) {
+                return "/Evne/Skill?id=" + npc.id;
+            };
+
+
+            /**
+             * Loads export snippets in which the object is used
+             */
+            ObjectForm.BaseViewModel.prototype.loadUsedInExportSnippets = function() {
+                this.loadingReferencedInExportSnippets(true);
+                this.errorLoadingReferencedInExportSnippets(false);
+                var self = this;
+                GoNorth.HttpClient.get("/api/ExportApi/GetSnippetsObjectIsReferencedIn?id=" + this.id()).done(function(data) {
+                    self.referencedInExportSnippets(data);
+                    self.loadingReferencedInExportSnippets(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInExportSnippets(true);
+                    self.loadingReferencedInExportSnippets(false);
+                });
+            };
+
+            /**
+             * Builds the reference name for a used export snippet
+             * 
+             * @param {object} snippet Snippet to build the name for
+             * @returns {string} Name for the snippet
+             */
+            ObjectForm.BaseViewModel.prototype.buildUsedExportSnippetName = function(snippet) {
+                var objectType = "";
+                if(snippet.objectType == "npc")
+                {
+                    objectType = GoNorth.FlexFieldDatabase.ObjectForm.Localization.Npc;
+                }
+                else if(snippet.objectType == "item")
+                {
+                    objectType = GoNorth.FlexFieldDatabase.ObjectForm.Localization.Item;
+                }
+                else if(snippet.objectType == "skill")
+                {
+                    objectType = GoNorth.FlexFieldDatabase.ObjectForm.Localization.Skill;
+                }
+                
+                return snippet.objectName + " (" + objectType + ")";
+            };
+
+            /**
+             * Builds the url for a snippet
+             * 
+             * @param {object} snippet Snippet to build the url for
+             * @returns {string} Url for the snippet
+             */
+            ObjectForm.BaseViewModel.prototype.buildUsedExportSnippetUrl = function(snippet) {
+                if(snippet.objectType == "npc")
+                {
+                    return "/Kortisto/Npc?id=" + snippet.objectId;
+                }
+                else if(snippet.objectType == "item")
+                {
+                    return "/Styr/Item?id=" + snippet.objectId;
+                }
+                else if(snippet.objectType == "skill")
+                {
+                    return "/Evne/Skill?id=" + snippet.objectId;
+                }
+                
+                return "";
+            };
+
+
+            /**
+             * Sets the extended reference callout
+             * @param {object} refObj Reference callout to extend
+             */
+            ObjectForm.BaseViewModel.prototype.setExtendedReferenceCallout = function(refObj) {
+                if(this.extendedReferenceCallout() == refObj)
+                {
+                    refObj = null;
+                }
+                this.extendedReferenceCallout(refObj);
             };
 
 

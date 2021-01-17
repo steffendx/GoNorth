@@ -11,7 +11,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
     /// <summary>
     /// Function to indent multiple lines of text to match the same indentation
     /// </summary>
-    public class IndentMultiLineRenderer : IScriptCustomFunction
+    public class IndentMultiLineRenderer : ScribanBaseStringRenderingFunction<object>
     {
         /// <summary>
         /// Name of the function
@@ -44,7 +44,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Indented text value</returns>
-        public object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return IndentValue(context, callerContext, arguments).Result;
         }
@@ -57,7 +57,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Indented text value</returns>
-        public async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return await IndentValue(context, callerContext, arguments);
         }

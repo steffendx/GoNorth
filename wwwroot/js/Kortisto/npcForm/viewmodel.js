@@ -92,10 +92,7 @@
              */
             Npc.ViewModel.prototype.loadDialogImplementationState = function() {
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/IsDialogImplementedByRelatedObjectId?relatedObjectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/TaleApi/IsDialogImplementedByRelatedObjectId?relatedObjectId=" + this.id()).done(function(data) {
                     self.dialogExists(data.exists);
                     self.dialogImplemented(data.isImplemented);
                 }).fail(function(xhr) {

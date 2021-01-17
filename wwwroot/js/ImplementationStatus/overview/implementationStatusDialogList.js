@@ -26,10 +26,7 @@
             Overview.ImplementationStatusDialogList.prototype.loadObjects = function() {
                 var def = new jQuery.Deferred();
 
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/GetNotImplementedDialogs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/TaleApi/GetNotImplementedDialogs?&start=" + (this.currentPage() * this.pageSize) + "&pageSize=" + this.pageSize).done(function(data) {
                    def.resolve({
                       objects: data.dialogs,
                       hasMore: data.hasMore

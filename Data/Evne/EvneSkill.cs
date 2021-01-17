@@ -13,7 +13,6 @@ namespace GoNorth.Data.Evne
     /// </summary>
     public class EvneSkill : FlexFieldObject, IExportSnippetExportable, ICloneable
     {
-        
         /// <summary>
         /// Text Nodes
         /// </summary>
@@ -33,6 +32,12 @@ namespace GoNorth.Data.Evne
         public List<ActionNode> Action { get; set; } 
 
         /// <summary>
+        /// Reference nodes
+        /// </summary>
+        [ListCompareAttribute(LabelKey = "NodeReferenceChanged")]
+        public List<ReferenceNode> Reference {get ; set; }
+
+        /// <summary>
         /// Node Links
         /// </summary>
         [ListCompareAttribute(LabelKey = "NodeLinksChanged")]
@@ -50,6 +55,7 @@ namespace GoNorth.Data.Evne
             clonedSkill.Condition = Condition.Select(t => t.Clone()).Cast<ConditionNode>().ToList();
             clonedSkill.Action = Action.Select(t => t.Clone()).Cast<ActionNode>().ToList();
             clonedSkill.Link = Link.Select(t => t.Clone()).Cast<NodeLink>().ToList();
+            clonedSkill.Reference = Reference != null ? Reference.Select(t => t.Clone()).Cast<ReferenceNode>().ToList() : new List<ReferenceNode>();
 
             return clonedSkill;
         }

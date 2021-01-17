@@ -5,6 +5,7 @@ using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKeyGenerator;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFunctions;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingObjects;
+using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util;
 using Microsoft.Extensions.Localization;
 using Scriban;
 using Scriban.Runtime;
@@ -66,8 +67,8 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
         /// <param name="data">Export Data</param>
         protected override void AddAdditionalScriptObjectValues(TemplateType templateType, Template parsedTemplate, ScriptObject scriptObject, ExportObjectData data)
         {
-            scriptObject.Add(InventoryListRenderer.InventoryListFunctionName, new InventoryListRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
-            scriptObject.Add(SkillListRenderer.SkillListFunctionName, new SkillListRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
+            scriptObject.AddOrUpdate(InventoryListRenderer.InventoryListFunctionName, new InventoryListRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
+            scriptObject.AddOrUpdate(SkillListRenderer.SkillListFunctionName, new SkillListRenderer(_templatePlaceholderResolver, _exportCachedDbAccess, _defaultTemplateProvider, _errorCollection, data));
         }
 
         /// <summary>

@@ -320,10 +320,7 @@
                     var def = new jQuery.Deferred();
 
                     var selectMarkerAction = this.contentElement.find(".gn-actionNodeMarkerSelect");
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid"), 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/KartaApi/GetMarker?mapId=" + selectMarkerAction.data("mapid") + "&markerId=" + selectMarkerAction.data("markerid")).done(function(data) {
                         def.resolve(data);
                     }).fail(function(xhr) {
                         def.reject();

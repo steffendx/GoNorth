@@ -208,6 +208,12 @@ namespace GoNorth.Controllers.Api
             /// Lock Entries
             /// </summary>
             public List<TrimmedLockEntry> LockEntries { get; set; }
+
+            /// <summary>
+            /// Selected project of the user
+            /// </summary>
+            /// <value></value>
+            public UserSelectedProject SelectedProject { get; set; }
         }
 
         /// <summary>
@@ -873,6 +879,8 @@ namespace GoNorth.Controllers.Api
                 Name = p.Name,
                 ModifiedDate = p.ModifiedOn
             }));
+
+            response.SelectedProject = await _projectDbAccess.GetUserSelectedProject(currentUser.Id);
         }
 
         /// <summary>

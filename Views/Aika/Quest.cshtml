@@ -143,7 +143,17 @@
         <h5>@Localizer["UsedInAikaQuest"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingUsedInAikaQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingUsedInAikaQuests"></i></h5>
         <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: usedInAikaQuests">
             <li>
-                <a class="gn-clickable" data-bind="text: name, href: $root.buildAikaQuestUrl" target="_blank"></a>
+                <a class="gn-clickable" data-bind="text: objectName, href: function(q) { return $root.buildAikaQuestUrl(q); }" target="_blank"></a>
+                <span class="gn-detaildReferenceContainer">
+                    <span style="display: none" data-bind="visible: detailedReferences && detailedReferences.length > 1, click: function(r) { $root.setExtendedReferenceCallout(r); }, text: detailedReferences.length" title="@Localizer["ClickHereForDetailedReferences"]" class="gn-detailedReferenceCount badge">
+                    </span>
+                    <div style="display: none" class="gn-detaildReferenceCallout" data-bind="visible: $data == $root.extendedReferenceCallout()">
+                        <span title="@Localizer["ClickHereToCloseDetailedReferences"]" class="gn-detaildReferenceCalloutClose" data-bind="click: function() { $root.setExtendedReferenceCallout(null); }"><a><i class="glyphicon glyphicon-remove"></i></a></span>
+                        <!-- ko foreach: detailedReferences -->
+                        <div><a data-bind="text: objectName, href: function(q) { return $root.buildAikaQuestUrl($parent, q); }" target="_blank"></a></div>
+                        <!-- /ko -->
+                    </div>
+                </span>
             </li>
         </ul>
 
@@ -162,7 +172,17 @@
             <h5>@Localizer["ReferencedInTaleDialogs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInTaleDialogs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInTaleDialogs"></i></h5>
             <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: referencedInTaleDialogs">
                 <li>
-                    <a class="gn-clickable" data-bind="text: name, href: $root.buildTaleDialogUrl" target="_blank"></a>
+                    <a class="gn-clickable" data-bind="text: objectName, href: function(r) { return $root.buildTaleDialogUrl(r); }" target="_blank"></a>
+                    <span class="gn-detaildReferenceContainer">
+                        <span style="display: none" data-bind="visible: detailedReferences && detailedReferences.length > 1, click: function(r) { $root.setExtendedReferenceCallout(r); }, text: detailedReferences.length" title="@Localizer["ClickHereForDetailedReferences"]" class="gn-detailedReferenceCount badge">
+                        </span>
+                        <div style="display: none" class="gn-detaildReferenceCallout" data-bind="visible: $data == $root.extendedReferenceCallout()">
+                            <span title="@Localizer["ClickHereToCloseDetailedReferences"]" class="gn-detaildReferenceCalloutClose" data-bind="click: function() { $root.setExtendedReferenceCallout(null); }"><a><i class="glyphicon glyphicon-remove"></i></a></span>
+                            <!-- ko foreach: detailedReferences -->
+                            <div><a data-bind="text: objectName, href: function(r) { return $root.buildTaleDialogUrl($parent, r); }" target="_blank"></a></div>
+                            <!-- /ko -->
+                        </div>
+                    </span>
                 </li>
             </ul>
         }
@@ -183,6 +203,26 @@
             <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: referencedInDailyRoutines">
                 <li>
                     <a class="gn-clickable" data-bind="text: name, href: $root.buildDailyRoutineNpcUrl" target="_blank"></a>
+                </li>
+            </ul>
+        }
+
+        @if(User.IsInRole(RoleNames.Evne))
+        {
+            <h5>@Localizer["ReferencedInEvneSkills"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInEvneSkills"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInEvneSkills"></i></h5>
+            <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInEvneSkills">
+                <li>
+                    <a class="gn-clickable" data-bind="text: name, href: $root.buildEvneSkillUrl" target="_blank"></a>
+                </li>
+            </ul>
+        }
+        
+        @if(User.IsInRole(RoleNames.ExportObjects))
+        {
+            <h5>@Localizer["ReferencedInExportSnippets"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInExportSnippets"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInExportSnippets"></i></h5>
+            <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInExportSnippets">
+                <li>
+                    <a class="gn-clickable" data-bind="text: $root.buildUsedExportSnippetName($data), href: $root.buildUsedExportSnippetUrl" target="_blank"></a>
                 </li>
             </ul>
         }
@@ -214,6 +254,11 @@
             <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeFinish" data-nodetype="aika.Finish">
                 <div class="gn-nodeInsert">
                     <div class="gn-labelInsert">@Localizer["FinishNode"]</div>
+                </div>
+            </div>
+            <div data-bind="draggableElement: 'clone'" class="gn-nodeInsertContainer gn-nodeReference" data-nodetype="default.Reference">
+                <div class="gn-nodeInsert">
+                    <div class="gn-labelInsert">@Localizer["ReferenceNode"]</div>
                 </div>
             </div>
         </div>
@@ -264,6 +309,13 @@
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldScriptLocalization.cshtml")
 
     <script type="text/javascript">
+        GoNorth.Aika.Quest.Localization = {
+            Npc: "@Localizer["Npc"]",
+            Item: "@Localizer["Item"]",
+            Skill: "@Localizer["Skill"]"
+        };
+
+
         @if(User.IsInRole(RoleNames.Kortisto))
         {
             <text>
@@ -313,6 +365,32 @@
         {
             <text>
             GoNorth.Aika.Quest.hasKartaRights = false;
+            </text>
+        }
+            
+        @if(User.IsInRole(RoleNames.Evne))
+        {
+            <text>
+            GoNorth.Aika.Quest.hasEvneRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Quest.hasEvneRights = false;
+            </text>
+        }
+    
+        @if(User.IsInRole(RoleNames.ExportObjects))
+        {
+            <text>
+            GoNorth.Aika.Quest.hasExportObjectsRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Quest.hasExportObjectsRights = false;
             </text>
         }
 

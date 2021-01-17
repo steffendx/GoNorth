@@ -67,6 +67,18 @@
                     return conditionDialogDeferred;
                 };
 
+                // Opens the general object search dialog 
+                GoNorth.DefaultNodeShapes.openGeneralObjectSearchDialog = function() {
+                    if(self.isReadonly())
+                    {
+                        var readonlyDeferred = new jQuery.Deferred();
+                        readonlyDeferred.reject();
+                        return readonlyDeferred.promise();
+                    }
+
+                    return self.objectDialog.openGeneralObjectSearch(Tale.Localization.ViewModel.ChooseGeneralObject);                    
+                };
+                
                 // Add access to object dialog
                 GoNorth.DefaultNodeShapes.openItemSearchDialog = function() {
                     if(self.isReadonly())
@@ -165,14 +177,15 @@
             Dialog.ViewModel.prototype.loadNpcName = function() {
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify([ this.id() ]), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(npcNames) {
-                    self.headerName(npcNames[0].name);
+                GoNorth.HttpClient.post("/api/KortistoApi/ResolveFlexFieldObjectNames", [ this.id() ]).done(function(npcNames) {
+                    if(npcNames && npcNames.length == 1)
+                    {
+                        self.headerName(npcNames[0].name);
+                    }
+                    else
+                    {
+                        self.errorOccured(true);
+                    }
                 }).fail(function(xhr) {
                     self.errorOccured(true);
                 });
@@ -192,13 +205,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/SaveDialog?relatedObjectId=" + this.id(), 
-                    headers: GoNorth.Util.generateAntiForgeryHeader(),
-                    data: JSON.stringify(serializedGraph), 
-                    type: "POST",
-                    contentType: "application/json"
-                }).done(function(data) {
+                GoNorth.HttpClient.post("/api/TaleApi/SaveDialog?relatedObjectId=" + this.id(), serializedGraph).done(function(data) {
                     self.isLoading(false);
 
                     if(!self.dialogId())
@@ -229,10 +236,7 @@
                 this.isLoading(true);
                 this.errorOccured(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/TaleApi/GetDialogByRelatedObjectId?relatedObjectId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/TaleApi/GetDialogByRelatedObjectId?relatedObjectId=" + this.id()).done(function(data) {
                     self.isLoading(false);
 
                     // Only deserialize data if a dialog already exists, will be null before someone saves a dialog
@@ -241,7 +245,8 @@
                         self.dialogId(data.id);
                         self.isImplemented(data.isImplemented);
 
-                        GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().deserializeGraph(self.nodeGraph(), data, function(newNode) { self.setupNewNode(newNode); });
+                        GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().deserializeGraph(self.nodeGraph(), data, function(newNode) { self.setupNewNode(newNode); }, self.nodePaper());
+                        self.focusNodeFromUrl();
 
                         if(self.isReadonly())
                         {

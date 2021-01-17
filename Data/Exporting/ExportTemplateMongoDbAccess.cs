@@ -119,11 +119,12 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Returns all export templates for a template type which are associated to an object
         /// </summary>
+        /// <param name="projectId">Project Id</param>
         /// <param name="templateType">Template Type</param>
         /// <returns>Customized object export templates</returns>
-        public async Task<List<ExportTemplate>> GetCustomizedObjectTemplatesByType(TemplateType templateType)
+        public async Task<List<ExportTemplate>> GetCustomizedObjectTemplatesByType(string projectId, TemplateType templateType)
         {
-            List<ExportTemplate> templates = await _TemplateCollection.AsQueryable().Where(t => t.TemplateType == templateType && !string.IsNullOrEmpty(t.CustomizedObjectId)).Select(t => new ExportTemplate {
+            List<ExportTemplate> templates = await _TemplateCollection.AsQueryable().Where(t => t.TemplateType == templateType && t.ProjectId == projectId && !string.IsNullOrEmpty(t.CustomizedObjectId)).Select(t => new ExportTemplate {
                 Id = t.Id,
                 CustomizedObjectId = t.CustomizedObjectId,
                 TemplateType = t.TemplateType,

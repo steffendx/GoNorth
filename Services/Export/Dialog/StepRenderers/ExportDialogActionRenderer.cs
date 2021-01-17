@@ -12,7 +12,6 @@ using GoNorth.Services.Export.Dialog.ActionRendering;
 using GoNorth.Services.Export.Dialog.ActionRendering.LegacyRenderingEngine;
 using GoNorth.Services.Export.Dialog.ActionRendering.Localization;
 using GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine;
-using GoNorth.Services.Export.Dialog.ActionRendering.SharedRendering;
 using GoNorth.Services.Export.Dialog.StepRenderers.ActionRenderer;
 using GoNorth.Services.Export.LanguageKeyGeneration;
 using GoNorth.Services.Export.Placeholder;

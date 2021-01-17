@@ -134,9 +134,21 @@
                 this.loadingMentionedQuests = new ko.observable(false);
                 this.loadingMentionedQuestsError = new ko.observable(false);
 
+                this.referencedInQuests = new ko.observableArray();
+                this.loadingReferencedInQuests = new ko.observable(false);
+                this.loadingReferencedInQuestsError = new ko.observable(false);
+
                 this.mentionedNpcs = new ko.observableArray();
                 this.loadingMentionedNpcs = new ko.observable(false);
                 this.loadingMentionedNpcsError = new ko.observable(false);
+
+                this.referencedInDailyRoutines = new ko.observableArray();
+                this.loadingReferencedInDailyRoutines = new ko.observable(false);
+                this.loadingReferencedInDailyRoutinesError = new ko.observable(false);
+
+                this.referencedInDialogs = new ko.observableArray();
+                this.loadingReferencedInDialogs = new ko.observable(false);
+                this.loadingReferencedInDialogsError = new ko.observable(false);
 
                 this.mentionedItems = new ko.observableArray();
                 this.loadingMentionedItems = new ko.observable(false);
@@ -146,9 +158,17 @@
                 this.loadingMentionedSkills = new ko.observable(false);
                 this.loadingMentionedSkillsError = new ko.observable(false);
 
+                this.referencedInSkills = new ko.observableArray();
+                this.loadingReferencedSkills = new ko.observable(false);
+                this.loadingReferencedSkillsError = new ko.observable(false);
+
                 this.markedInMaps = new ko.observableArray();
                 this.loadingMarkedInMaps = new ko.observable(false);
                 this.loadingMarkedInMapsError = new ko.observable(false);
+
+                this.referencedInExportSnippets = new ko.observableArray();
+                this.loadingReferencedInExportSnippets = new ko.observable(false);
+                this.loadingReferencedInExportSnippetsError = new ko.observable(false);
 
                 this.errorOccured = new ko.observable(false);
                 this.additionalErrorDetails = new ko.observable("");
@@ -288,10 +308,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get(url).done(function(data) {
                         self.isLoading(false);
                         if(!data)
                         {
@@ -315,7 +332,12 @@
                         self.loadMentionedNpcs(data.mentionedNpcs);
                         self.loadMentionedItems(data.mentionedItems);
                         self.loadMentionedSkills(data.mentionedSkills);
+                        self.loadReferencedInDailyRoutines();
+                        self.loadReferencedInQuests();
+                        self.loadReferencedInSkills();
+                        self.loadReferencedInDialogs();
                         self.loadMarkedInMaps();
+                        self.loadReferencedInExportSnippets();
 
                         self.attachmentFiles(data.attachments ? data.attachments : []);
 
@@ -728,11 +750,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KirjaApi/DeleteAttachment?pageId=" + this.id() + "&attachmentFile=" + encodeURIComponent(attachment.filename), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE",
-                    }).done(function(savedPage) {
+                    GoNorth.HttpClient.delete("/api/KirjaApi/DeleteAttachment?pageId=" + this.id() + "&attachmentFile=" + encodeURIComponent(attachment.filename)).done(function(savedPage) {
                         self.attachmentFiles.remove(attachment);
                         self.isLoading(false);
                     }).fail(function() {
@@ -776,13 +794,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(savedPage) {
+                    GoNorth.HttpClient.post(url, request).done(function(savedPage) {
                         if(!self.id())
                         {
                             self.setId(savedPage.id);
@@ -797,6 +809,11 @@
                         self.loadMentionedNpcs(savedPage.mentionedNpcs);
                         self.loadMentionedItems(savedPage.mentionedItems);
                         self.loadMentionedSkills(savedPage.mentionedSkills);
+                        self.loadReferencedInDailyRoutines();
+                        self.loadReferencedInQuests();
+                        self.loadReferencedInSkills();
+                        self.loadReferencedInDialogs();
+                        self.loadReferencedInExportSnippets();
                         self.pageModifiedOn(savedPage.modifiedOn);
                         self.callPageRefreshGrid();
                         self.isDirty(false);
@@ -887,10 +904,7 @@
                     this.loadingVersions(true);
                     this.versionDialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KirjaApi/GetPageVersions?pageId=" + this.id() + "&start=" + startPageIndex + "&pageSize=" + pageSizeToLoad, 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/KirjaApi/GetPageVersions?pageId=" + this.id() + "&start=" + startPageIndex + "&pageSize=" + pageSizeToLoad).done(function(data) {
                         self.loadingVersions(false);
                         self.hasMoreVersions(data.hasMore);
                         self.versionDialogMostRecentVersion(data.mostRecentVersion);
@@ -1063,10 +1077,7 @@
                     this.confirmRestoreDialogLoading(true);
                     this.confirmRestoreDialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/KirjaApi/ValidateVersionReferences?versionId=" + this.displayVersionId(),
-                        type: "GET"
-                    }).done(function(compareResult) {
+                    GoNorth.HttpClient.get("/api/KirjaApi/ValidateVersionReferences?versionId=" + this.displayVersionId()).done(function(compareResult) {
                         self.confirmRestoreDialogLoading(false);
 
                         var compareHtml = jQuery("<div>" + self.displayVersionHtml() + "</div>");
@@ -1152,10 +1163,7 @@
                  * @returns {jQuery.Deferred} Deferred
                  */
                 loadPageVersion: function(id) {
-                    return jQuery.ajax({
-                        url: "/api/KirjaApi/PageVersion?versionId=" + id,
-                        type: "GET"
-                    });
+                    return GoNorth.HttpClient.get("/api/KirjaApi/PageVersion?versionId=" + id);
                 },
 
 
@@ -1171,10 +1179,7 @@
                     this.loadingMentionedInPages(true);
                     this.loadingMentionedInPagesError(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KirjaApi/GetPagesByPage?pageId=" + this.id(), 
-                        type: "GET"
-                    }).done(function(pages) {
+                    GoNorth.HttpClient.get("/api/KirjaApi/GetPagesByPage?pageId=" + this.id()).done(function(pages) {
                         var loadedPages = [];
                         for(var curPage = 0; curPage < pages.length; ++curPage)
                         {
@@ -1205,13 +1210,7 @@
                     this.loadingMentionedQuests(true);
                     this.loadingMentionedQuestsError(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/AikaApi/ResolveQuestNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(questIds), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(questNames) {
+                    GoNorth.HttpClient.post("/api/AikaApi/ResolveQuestNames", questIds).done(function(questNames) {
                         var loadedQuestNames = [];
                         for(var curQuest = 0; curQuest < questNames.length; ++curQuest)
                         {
@@ -1230,6 +1229,36 @@
                 },
 
                 /**
+                 * Loads the quests in which the wiki page is referenced
+                 */
+                loadReferencedInQuests: function() {
+                    if(!GoNorth.Kirja.Page.hasAikaRights || !this.id())
+                    {
+                        return;
+                    }
+
+                    this.loadingReferencedInQuests(true);
+                    this.loadingReferencedInQuestsError(false);
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/AikaApi/GetQuestsObjectIsReferenced?objectId=" + this.id()).done(function(quests) {
+                        var loadedQuests = [];
+                        for(var curQuest = 0; curQuest < quests.length; ++curQuest)
+                        {
+                            loadedQuests.push({
+                                openLink: "/Aika/Quest?id=" + quests[curQuest].objectId,
+                                name: quests[curQuest].objectName
+                            });
+                        }
+                        self.referencedInQuests(loadedQuests);
+                        self.loadingReferencedInQuests(false);
+                    }).fail(function(xhr) {
+                        self.referencedInQuests([]);
+                        self.loadingReferencedInQuests(false);
+                        self.loadingReferencedInQuestsError(true);
+                    });
+                },
+
+                /**
                  * Loads the mentioned npcs
                  * @param {string[]} npcIds Npc Ids
                  */
@@ -1242,13 +1271,7 @@
                     this.loadingMentionedNpcs(true);
                     this.loadingMentionedNpcsError(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KortistoApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(npcIds), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(npcNames) {
+                    GoNorth.HttpClient.post("/api/KortistoApi/ResolveFlexFieldObjectNames", npcIds).done(function(npcNames) {
                         var loadedNpcNames = [];
                         for(var curNpc = 0; curNpc < npcNames.length; ++curNpc)
                         {
@@ -1267,6 +1290,67 @@
                 },
 
                 /**
+                 * Loads the daily routines in which the page is referenced
+                 */
+                loadReferencedInDailyRoutines: function() {
+                    if(!GoNorth.Kirja.Page.hasKortistoRights || !this.id())
+                    {
+                        return;
+                    }
+
+                    this.loadingReferencedInDailyRoutines(true);
+                    this.loadingReferencedInDailyRoutinesError(false);
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/KortistoApi/GetNpcsObjectIsReferencedInDailyRoutine?objectId=" + this.id()).done(function(npcs) {
+                        var loadedDailyRoutines = [];
+                        for(var curDailyRoutine = 0; curDailyRoutine < npcs.length; ++curDailyRoutine)
+                        {
+                            loadedDailyRoutines.push({
+                                openLink: "/Kortisto/Npc?id=" + npcs[curDailyRoutine].id,
+                                name: npcs[curDailyRoutine].name
+                            });
+                        }
+                        self.referencedInDailyRoutines(loadedDailyRoutines);
+                        self.loadingReferencedInDailyRoutines(false);
+                    }).fail(function(xhr) {
+                        self.referencedInDailyRoutines([]);
+                        self.loadingReferencedInDailyRoutines(false);
+                        self.loadingReferencedInDailyRoutinesError(true);
+                    });
+                },
+
+                /**
+                 * Loads the dialogs in which the wiki page is referenced
+                 */
+                loadReferencedInDialogs: function() {
+                    if(!GoNorth.Kirja.Page.hasTaleRights || !GoNorth.Kirja.Page.hasKortistoRights || !this.id())
+                    {
+                        return;
+                    }
+
+                    this.loadingReferencedInDialogs(true);
+                    this.loadingReferencedInDialogsError(false);
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/TaleApi/GetDialogsObjectIsReferenced?objectId=" + this.id()).done(function(dialogs) {
+                        var loadedDialogs = [];
+                        for(var curDialog = 0; curDialog < dialogs.length; ++curDialog)
+                        {
+                            loadedDialogs.push({
+                                openLink: "/Tale?npcId=" + dialogs[curDialog].objectId,
+                                name: dialogs[curDialog].objectName
+                            });
+                        }
+
+                        self.referencedInDialogs(loadedDialogs);
+                        self.loadingReferencedInDialogs(false);
+                    }).fail(function(xhr) {
+                        self.referencedInDialogs([]);
+                        self.loadingReferencedInDialogs(false);
+                        self.loadingReferencedInDialogsError(true);
+                    });
+                },
+
+                /**
                  * Loads the mentioned items
                  * @param {string[]} itemIds Item Ids
                  */
@@ -1279,13 +1363,7 @@
                     this.loadingMentionedItems(true);
                     this.loadingMentionedItemsError(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/StyrApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(itemIds), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(itemNames) {
+                    GoNorth.HttpClient.post("/api/StyrApi/ResolveFlexFieldObjectNames", itemIds).done(function(itemNames) {
                         var loadedItemNames = [];
                         for(var curItem = 0; curItem < itemNames.length; ++curItem)
                         {
@@ -1302,7 +1380,7 @@
                         self.loadingMentionedItemsError(true);
                     });
                 },
-
+               
                 /**
                  * Loads the mentioned skills
                  * @param {string[]} skillIds Skill Ids
@@ -1316,13 +1394,7 @@
                     this.loadingMentionedSkills(true);
                     this.loadingMentionedSkillsError(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/EvneApi/ResolveFlexFieldObjectNames", 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(skillIds), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(skillNames) {
+                    GoNorth.HttpClient.post("/api/EvneApi/ResolveFlexFieldObjectNames", skillIds).done(function(skillNames) {
                         var loadedSkillNames = [];
                         for(var curSkill = 0; curSkill < skillNames.length; ++curSkill)
                         {
@@ -1341,6 +1413,36 @@
                 },
 
                 /**
+                 * Loads the skills in which the wiki page is referenced
+                 */
+                loadReferencedInSkills: function() {
+                    if(!GoNorth.Kirja.Page.hasEvneRights || !this.id())
+                    {
+                        return;
+                    }
+
+                    this.loadingReferencedSkills(true);
+                    this.loadingReferencedSkillsError(false);
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/EvneApi/GetSkillsObjectIsReferencedIn?objectId=" + this.id()).done(function(skills) {
+                        var loadedSkills = [];
+                        for(var curSkill = 0; curSkill < skills.length; ++curSkill)
+                        {
+                            loadedSkills.push({
+                                openLink: "/Evne/Skill?id=" + skills[curSkill].id,
+                                name: skills[curSkill].name
+                            });
+                        }
+                        self.referencedInSkills(loadedSkills);
+                        self.loadingReferencedSkills(false);
+                    }).fail(function(xhr) {
+                        self.referencedInSkills([]);
+                        self.loadingReferencedSkills(false);
+                        self.loadingReferencedSkillsError(true);
+                    });
+                },
+
+                /**
                  * Loads the maps in which the pages was marked
                  */
                 loadMarkedInMaps: function() {
@@ -1353,10 +1455,7 @@
                     this.loadingMarkedInMaps(true);
                     this.loadingMarkedInMapsError(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KartaApi/GetMapsByKirjaPageId?pageId=" + this.id(), 
-                        type: "GET"
-                    }).done(function(maps) {
+                    GoNorth.HttpClient.get("/api/KartaApi/GetMapsByKirjaPageId?pageId=" + this.id()).done(function(maps) {
                         var loadedMaps = [];
                         for(var curMap = 0; curMap < maps.length; ++curMap)
                         {
@@ -1378,6 +1477,59 @@
                     }).fail(function(xhr) {
                         self.loadingMarkedInMaps(false);
                         self.loadingMarkedInMapsError(true);
+                    });
+                },
+
+                /**
+                 * Loads the export snippets in which the page is referenced
+                 */
+                loadReferencedInExportSnippets: function() {
+                    if(!GoNorth.Kirja.Page.hasExportObjectsRights || !this.id())
+                    {
+                        return;
+                    }
+
+                    this.loadingReferencedInExportSnippets(true);
+                    this.loadingReferencedInExportSnippetsError(false);
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/ExportApi/GetSnippetsObjectIsReferencedIn?id=" + this.id()).done(function(exportSnippets) {
+                        var loadedExportSnippets = [];
+                        for(var curExportSnippet = 0; curExportSnippet < exportSnippets.length; ++curExportSnippet)
+                        {
+                            var url = ""; 
+                            var objectType = "";
+                            var snippet = exportSnippets[curExportSnippet];
+                            if(snippet.objectType == "npc")
+                            {
+                                url = "/Kortisto/Npc?id=" + snippet.objectId;
+                                objectType = GoNorth.Kirja.Page.Npc;
+                            }
+                            else if(snippet.objectType == "item")
+                            {
+                                url = "/Styr/Item?id=" + snippet.objectId;
+                                objectType = GoNorth.Kirja.Page.Item;
+                            }
+                            else if(snippet.objectType == "skill")
+                            {
+                                url = "/Evne/Skill?id=" + snippet.objectId;
+                                objectType = GoNorth.Kirja.Page.Skill;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            loadedExportSnippets.push({
+                                openLink: url,
+                                name: snippet.objectName + " (" + objectType + ")"
+                            });
+                        }
+                        self.referencedInExportSnippets(loadedExportSnippets);
+                        self.loadingReferencedInExportSnippets(false);
+                    }).fail(function(xhr) {
+                        self.referencedInExportSnippets([]);
+                        self.loadingReferencedInExportSnippets(false);
+                        self.loadingReferencedInExportSnippetsError(true);
                     });
                 },
 
@@ -1424,11 +1576,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/KirjaApi/DeletePage?id=" + this.id(), 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete("/api/KirjaApi/DeletePage?id=" + this.id()).done(function(data) {
                         self.isLoading(false);
                         if(self.callPageRefreshGrid())
                         {

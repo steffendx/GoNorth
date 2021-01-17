@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GoNorth.Config;
 using GoNorth.Data.Karta.Marker;
@@ -549,6 +548,19 @@ namespace GoNorth.Data.Karta
                 curMap.QuestMarker = curMap.QuestMarker.Where(m => m.QuestId != questId).ToList();
                 await UpdateMap(curMap);
             }
+        }
+
+        /// <summary>
+        /// Resolves the names of a list of maps
+        /// </summary>
+        /// <param name="mapIds">Id of maps to load</param>
+        /// <returns>Maps with filled names only</returns>
+        public async Task<List<KartaMap>> ResolveMapNames(List<string> mapIds)
+        {
+            return await  _MapCollection.AsQueryable().Where(m => mapIds.Contains(m.Id)).Select(m => new KartaMap() {
+                Id = m.Id,
+                Name = m.Name
+            }).ToListAsync();
         }
 
         /// <summary>

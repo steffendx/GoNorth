@@ -62,6 +62,12 @@ namespace GoNorth.Data.Tale
         [ListCompareAttribute(LabelKey = "NodeConditionsChanged")]
         public List<ConditionNode> Condition { get; set; } 
 
+        /// <summary>
+        /// Reference nodes
+        /// </summary>
+        [ListCompareAttribute(LabelKey = "NodeReferenceChanged")]
+        public List<ReferenceNode> Reference {get ; set; }
+
 
         /// <summary>
         /// true if the object is implemented, else false

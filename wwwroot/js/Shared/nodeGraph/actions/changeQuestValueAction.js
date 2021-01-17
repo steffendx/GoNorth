@@ -105,11 +105,7 @@
             Actions.ChangeQuestValueAction.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
 
-                var self = this;
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + this.nodeModel.get("objectId"), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + this.nodeModel.get("objectId")).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

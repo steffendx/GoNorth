@@ -1,21 +1,27 @@
 {
     "FolderNotEmpty": "The folder is not empty.",
 
-    "CanNotDeleteNpcReferencedInAikaQuest": "The npc is referenced in the Aika quests \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteNpcMentionedInKirjaPage": "The npc is mentioned in the Kirja pages \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteNpcMarkedInKartaMap": "The npc is marked in the Karta maps \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteNpcReferencedInTaleDialog": "The npc is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteNpcReferencedInAikaQuest": "The npc is referenced in the quests \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteNpcMentionedInKirjaPage": "The npc is mentioned in the wiki pages \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteNpcMarkedInKartaMap": "The npc is marked in the maps \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteNpcReferencedInTaleDialog": "The npc is referenced in the dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteNpcUsedInDailyRoutine": "The npc is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteObjectUsedInExportSnippet": "The object is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteNpcUsedInSkill": "The npc is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
 
-    "CanNotDeleteDailyRoutineEventReferencedInNpc": "A deleted daily routine event is referenced in the daily routines of the Npcs \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteDailyRoutineEventReferencedInTaleDialog": "A deleted daily routine event is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteDailyRoutineEventReferencedInAikaQuest": "A deleted daily routine event is referenced in the Aika quests \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventReferencedInNpc": "The deleted daily routine event {0} is referenced in the daily routines of the npcs \"{1}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventReferencedInTaleDialog": "The deleted daily routine event {0} routine event is referenced in the dialogs \"{1}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventReferencedInAikaQuest": "The deleted daily routine event {0} is referenced in the quests \"{1}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventReferencedInSkill": "The deleted daily routine event {0} is referenced in the skills \"{1}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventUsedInExportSnippet": "The deleted daily routine event {0} is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",
     "ImageFormatNotSupported": "The image format is not supported.",
 
     "DuplicateFieldNameExist": "Multiple fields with the same name exist.",
+
+    "TemplateIsForDifferentProject": "The specified template belongs to a different project. Please switch to that project.",
 
     "ImportFieldValuesObjectNotFound": "Npc not found.",
     "ImportFieldValuesFieldNotFoundInTemplate": "The field {0} was not found in the template nor in the npc. The value cannot be imported.",
@@ -24,5 +30,7 @@
     "ImportFieldValuesObjectCouldNotBeUpdated": "Npc could not be updated.",
     "ImportFieldValuesObjectCouldNotBeCreated": "Npc could not be created.",
     "ImportFieldValuesNoValidTemplateSpecified": "No valid template id was specified in the CSV file. Please export a CSV template using the CSV export functionality for an import.",
-    "ImportFieldValuesNoValidRows": "No valid rows to import. Please enter some rows to import."
+    "ImportFieldValuesNoValidRows": "No valid rows to import. Please enter some rows to import.",
+
+    "TimeFormat": "hh:mm"
 }

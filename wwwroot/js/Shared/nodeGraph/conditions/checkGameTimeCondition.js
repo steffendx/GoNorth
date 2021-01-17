@@ -102,10 +102,7 @@
             Conditions.CheckGameTimeCondition.prototype.loadObject = function() {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/ProjectConfigApi/GetMiscConfig", 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/ProjectConfigApi/GetMiscConfig").done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

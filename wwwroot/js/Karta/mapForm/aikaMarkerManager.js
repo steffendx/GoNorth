@@ -31,10 +31,7 @@
              */
             Map.AikaMarkerManager.prototype.sendEntriesRequest = function() {
                 var def = new jQuery.Deferred();
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuests?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * aikaPageSize) + "&pageSize=" + aikaPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuests?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * aikaPageSize) + "&pageSize=" + aikaPageSize).done(function(data) {
                     def.resolve({
                         entries: data.quests,
                         hasMore: data.hasMore
@@ -56,10 +53,7 @@
             Map.AikaMarkerManager.prototype.loadPreSelectionObject = function(preSelectType, preSelectId) {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + preSelectId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + preSelectId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

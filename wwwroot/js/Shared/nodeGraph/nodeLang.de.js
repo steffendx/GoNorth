@@ -249,6 +249,15 @@
             Localization.Actions.ChooseItemLabel = "&lt;Item auswählen&gt;";
             Localization.Actions.OpenItemTooltip = "Öffnet das ausgewählte Item";
 
+            // Reference
+            Localization.TypeNames["default.Reference"] = "Referenz";
+
+            Localization.Reference = {};
+            Localization.Reference.ReferenceText = "Beschreibung";
+            Localization.Reference.ChooseObject = "<Objekt wählen>";
+            Localization.Reference.OpenObjectTooltip = "Objekt öffnen";
+            Localization.Reference.TimeFormat = "hh:mm";
+
         }(DefaultNodeShapes.Localization = DefaultNodeShapes.Localization || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
 }(window.GoNorth = window.GoNorth || {}));

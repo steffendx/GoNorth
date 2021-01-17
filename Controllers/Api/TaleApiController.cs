@@ -14,6 +14,8 @@ using GoNorth.Data.Project;
 using System.Linq;
 using GoNorth.Services.ImplementationStatusCompare;
 using Microsoft.AspNetCore.Http;
+using GoNorth.Services.Project;
+using GoNorth.Services.ReferenceAnalyzer;
 
 namespace GoNorth.Controllers.Api
 {
@@ -90,14 +92,19 @@ namespace GoNorth.Controllers.Api
         private readonly IKortistoNpcDbAccess _npcDbAccess;
 
         /// <summary>
-        /// Project Db Service
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Implementation status comparer
         /// </summary>
         private readonly IImplementationStatusComparer _implementationStatusComparer;
+
+        /// <summary>
+        /// Interface to analyze references
+        /// </summary>
+        private readonly IReferenceAnalyzer _referenceAnalyzer;
 
         /// <summary>
         /// Timeline Service
@@ -119,19 +126,21 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation status comparer</param>
+        /// <param name="referenceAnalyzer">Reference analyzer</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="logger">Logger</param>
-        public TaleApiController(ITaleDbAccess taleDbAccess, IKortistoNpcDbAccess npcDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager, 
-                                 IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, ILogger<TaleApiController> logger)
+        public TaleApiController(ITaleDbAccess taleDbAccess, IKortistoNpcDbAccess npcDbAccess, IUserProjectAccess userProjectAccess, UserManager<GoNorthUser> userManager, 
+                                 IImplementationStatusComparer implementationStatusComparer, IReferenceAnalyzer referenceAnalyzer, ITimelineService timelineService, ILogger<TaleApiController> logger)
         {
             _taleDbAccess = taleDbAccess;
             _npcDbAccess = npcDbAccess;
-            _projectDbAccess = projectDbAccess;
+            _userProjectAccess = userProjectAccess;
             _userManager = userManager;
             _implementationStatusComparer = implementationStatusComparer;
+            _referenceAnalyzer = referenceAnalyzer;
             _timelineService = timelineService;
             _logger = logger;
         }
@@ -177,12 +186,21 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <param name="objectId">Object id</param>
         /// <returns>Dialogs</returns>
-        [ProducesResponseType(typeof(List<TaleDialog>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ObjectReference>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetDialogsObjectIsReferenced(string objectId)
         {
             List<TaleDialog> dialogs = await _taleDbAccess.GetDialogsObjectIsReferenced(objectId);
-            return Ok(dialogs);
+            List<KortistoNpc> npcs = await _npcDbAccess.ResolveFlexFieldObjectNames(dialogs.Select(d => d.RelatedObjectId).ToList());
+            Dictionary<string, string> npcNames = npcs.ToDictionary(n => n.Id, n => n.Name);
+            List<ObjectReference> objectReferences = dialogs.Select(d => {
+                if(!npcNames.ContainsKey(d.RelatedObjectId))
+                {
+                    return null;
+                }
+                return _referenceAnalyzer.BuildObjectReferences(objectId, d.RelatedObjectId, npcNames[d.RelatedObjectId], d.Action, d.Condition, d.Reference, d.Choice);
+            }).Where(o => o != null).ToList();
+            return Ok(objectReferences);
         }
 
         /// <summary>
@@ -210,25 +228,26 @@ namespace GoNorth.Controllers.Api
             }
             string npcName = npcNames[0].Name;
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
-
             // Update or create dialog
             TaleDialog existingDialog = await _taleDbAccess.GetDialogByRelatedObjectId(relatedObjectId);
             bool isCreate = false;
             if(existingDialog == null)
             {
+                KortistoNpc npc = await _npcDbAccess.GetFlexFieldObjectById(relatedObjectId);
+
                 existingDialog = new TaleDialog();
                 existingDialog.RelatedObjectId = relatedObjectId;
+                existingDialog.ProjectId = npc.ProjectId;
                 isCreate = true;
             }
 
-            existingDialog.ProjectId = project.Id;
             existingDialog.Link = dialog.Link != null ? dialog.Link : new List<NodeLink>();
             existingDialog.PlayerText = dialog.PlayerText != null ? dialog.PlayerText : new List<TextNode>();
             existingDialog.NpcText = dialog.NpcText != null ? dialog.NpcText : new List<TextNode>();
             existingDialog.Choice = dialog.Choice != null ? dialog.Choice : new List<TaleChoiceNode>();
             existingDialog.Action = dialog.Action != null ? dialog.Action : new List<ActionNode>();
             existingDialog.Condition = dialog.Condition != null ? dialog.Condition : new List<ConditionNode>();
+            existingDialog.Reference = dialog.Reference != null ? dialog.Reference : new List<ReferenceNode>();
 
             await this.SetModifiedData(_userManager, existingDialog);
 
@@ -236,7 +255,7 @@ namespace GoNorth.Controllers.Api
             if(isCreate)
             {
                 existingDialog = await _taleDbAccess.CreateDialog(existingDialog);
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaleDialogCreated, relatedObjectId, npcName);
+                await _timelineService.AddTimelineEntry(existingDialog.ProjectId, TimelineEvent.TaleDialogCreated, relatedObjectId, npcName);
             }
             else
             {
@@ -251,7 +270,7 @@ namespace GoNorth.Controllers.Api
                 }
 
                 await _taleDbAccess.UpdateDialog(existingDialog);
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaleDialogUpdated, relatedObjectId, npcName);
+                await _timelineService.AddTimelineEntry(existingDialog.ProjectId, TimelineEvent.TaleDialogUpdated, relatedObjectId, npcName);
             }
 
             return Ok(existingDialog);
@@ -270,7 +289,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetNotImplementedDialogs(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<TaleDialog>> queryTask;
             Task<int> countTask;
             queryTask = _taleDbAccess.GetNotImplementedDialogs(project.Id, start, pageSize);

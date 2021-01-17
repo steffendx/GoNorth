@@ -30,10 +30,7 @@
              */
             Map.StyrMarkerManager.prototype.sendEntriesRequest = function() {
                 var def = new jQuery.Deferred();
-                jQuery.ajax({ 
-                    url: "/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * styrPageSize) + "&pageSize=" + styrPageSize, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/StyrApi/SearchFlexFieldObjects?searchPattern=" + this.searchTerm() + "&start=" + (this.currentPage() * styrPageSize) + "&pageSize=" + styrPageSize).done(function(data) {
                     def.resolve({
                         entries: data.flexFieldObjects,
                         hasMore: data.hasMore

@@ -26,7 +26,7 @@
                  */
                 acquireLock: function() {
                     var self = this;
-                    GoNorth.LockService.acquireLock("ProjectConfig", "").done(function(isLocked, lockedUsername) { 
+                    GoNorth.LockService.acquireLock("ProjectConfig", "Config", true).done(function(isLocked, lockedUsername) { 
                         if(isLocked)
                         {
                             self.isReadonly(true);

@@ -73,18 +73,12 @@
                     var availableSnippets = null;
                     var existingSnippets = null;
 
-                    var templateSnippetsDef = jQuery.ajax({ 
-                        url: "/api/ExportApi/GetExportTemplateSnippetsByObjectId?id=" + id + "&templateType=" + templateType, 
-                        type: "GET"
-                    });
+                    var templateSnippetsDef = GoNorth.HttpClient.get("/api/ExportApi/GetExportTemplateSnippetsByObjectId?id=" + id + "&templateType=" + templateType);
                     templateSnippetsDef.done(function(data) {
                         availableSnippets = data;
                     })
 
-                    var existingSnippetsDef = jQuery.ajax({ 
-                        url: "/api/ExportApi/GetFilledExportTemplateSnippetsByObjectId?id=" + id, 
-                        type: "GET"
-                    });
+                    var existingSnippetsDef = GoNorth.HttpClient.get("/api/ExportApi/GetFilledExportTemplateSnippetsByObjectId?id=" + id);
                     existingSnippetsDef.done(function(data) {
                         existingSnippets = data;
                     })
@@ -237,13 +231,7 @@
                     this.snippetManagerDialogLoading(false);
                     this.snippetManagerDialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(requestData), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(result) {
+                    GoNorth.HttpClient.post(url, requestData).done(function(result) {
                         self.snippetManagerDialogLoading(false);
                         
                         if(!snippet.id) 
@@ -286,12 +274,7 @@
                     this.snippetManagerDialogLoading(false);
                     this.snippetManagerDialogErrorOccured(false);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/ExportApi/DeleteObjectExportSnippet?id=" + this.snippetToDelete.id + "&objectType=" + this.objectType, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE",
-                        contentType: "application/json"
-                    }).done(function(result) {
+                    GoNorth.HttpClient.delete("/api/ExportApi/DeleteObjectExportSnippet?id=" + this.snippetToDelete.id + "&objectType=" + this.objectType).done(function(result) {
                         self.snippetManagerDialogLoading(false);
 
                         self.resetSnippet(self.snippetToDelete);

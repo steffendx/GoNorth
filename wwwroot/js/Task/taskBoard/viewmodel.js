@@ -196,17 +196,11 @@
                  */
                 loadAllTaskTypes: function() {
                     var self = this;
-                    var taskGroupTypesDef = jQuery.ajax({ 
-                        url: "/api/TaskApi/GetTaskGroupTypes", 
-                        type: "GET"
-                    }).done(function(data) {
+                    var taskGroupTypesDef = GoNorth.HttpClient.get("/api/TaskApi/GetTaskGroupTypes").done(function(data) {
                         self.taskGroupTypes(data);
                     });
 
-                    var taskTypesDef = jQuery.ajax({ 
-                        url: "/api/TaskApi/GetTaskTypes", 
-                        type: "GET"
-                    }).done(function(data) {
+                    var taskTypesDef = GoNorth.HttpClient.get("/api/TaskApi/GetTaskTypes").done(function(data) {
                         self.taskTypes(data);
                     });
 
@@ -223,10 +217,7 @@
                     var def = new jQuery.Deferred();
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/GetTaskBoardCategories", 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetTaskBoardCategories").done(function(data) {
                         self.allBoardCategories(data);
                         def.resolve();
                     }).fail(function() {
@@ -243,10 +234,7 @@
                     this.resetErrorState();
                     this.isLoading(true);
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/GetOpenTaskBoards?start=0&pageSize=100", 
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetOpenTaskBoards?start=0&pageSize=100").done(function(data) {
                         self.allBoards(data.boards);
                         self.isLoading(false);
 
@@ -283,10 +271,7 @@
                     var def = new jQuery.Deferred();
 
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/UtilApi/GetAllUsers", 
-                        type: "GET"
-                    }).done(function(users) {
+                    GoNorth.HttpClient.get("/api/UtilApi/GetAllUsers").done(function(users) {
                         self.allUsers(users);
                         def.resolve();
                     }).fail(function() {
@@ -412,10 +397,7 @@
                     this.isLoading(true);
                     this.setId(id);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(id),
-                        method: "GET"
-                    }).done(function(board) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(id)).done(function(board) {
                         // If a user has a reference to a board that can no longer be loaded we must fall back to an old board
                         if(!board)
                         {
@@ -513,10 +495,7 @@
                  */
                 getLastOpenedBoardId: function() {
                     var def = new jQuery.Deferred();
-                    jQuery.ajax({
-                        url: "/api/TaskApi/GetLastOpenedTaskBoard",
-                        method: "GET"
-                    }).done(function(boardId) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetLastOpenedTaskBoard").done(function(boardId) {
                         def.resolve(boardId);
                     }).fail(function() {
                         def.reject();
@@ -531,11 +510,7 @@
                  * @param {string} boardId Id of the board
                  */
                 saveLastOpenedBoardId: function(boardId) {
-                    jQuery.ajax({
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        url: "/api/TaskApi/SetLastOpenedTaskBoard?boardId=" + encodeURIComponent(boardId),
-                        method: "POST"
-                    });
+                    GoNorth.HttpClient.post("/api/TaskApi/SetLastOpenedTaskBoard?boardId=" + encodeURIComponent(boardId), {});
                 },
 
 
@@ -795,13 +770,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post(url, request).done(function(data) {
                         if(self.editTaskGroup)
                         {
                             self.editTaskGroup.parseFromServerResponse(data);
@@ -900,13 +869,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        data: JSON.stringify(request), 
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post(url, request).done(function(data) {
                         self.isLoading(false);
                         def.resolve();
                     }).fail(function(xhr) {
@@ -1136,11 +1099,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "DELETE",
-                    }).done(function(data) {
+                    GoNorth.HttpClient.delete(url).done(function(data) {
                         if(self.editTaskGroup)
                         {
                             self.taskGroups.remove(self.editTaskGroup);
@@ -1201,10 +1160,7 @@
                     this.isLoadingMoveTaskGroups(true);
                     this.errorOccuredLoadingMoveTaskGroups(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(this.moveTargetTaskBoard()),
-                        method: "GET"
-                    }).done(function(board) {
+                    GoNorth.HttpClient.get("/api/TaskApi/GetTaskBoard?id=" + encodeURIComponent(this.moveTargetTaskBoard())).done(function(board) {
                         if(board.taskGroups)
                         {
                             self.targetTaskBoardGroups(board.taskGroups)
@@ -1267,11 +1223,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: url, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST",
-                    }).done(function() {
+                    GoNorth.HttpClient.post(url, {}).done(function() {
                         if(self.editTaskGroup)
                         {
                             self.taskGroups.remove(self.editTaskGroup);
@@ -1304,12 +1256,7 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    jQuery.ajax({ 
-                        url: "/api/TaskApi/ReorderTaskGroup?boardId=" + this.id() + "&groupId=" + sortArg.item.id + "&targetIndex=" + sortArg.targetIndex, 
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        type: "POST",
-                        contentType: "application/json"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.post("/api/TaskApi/ReorderTaskGroup?boardId=" + this.id() + "&groupId=" + sortArg.item.id + "&targetIndex=" + sortArg.targetIndex, {}).done(function(data) {
                         self.isLoading(false);
                     }).fail(function(xhr) {
                         self.isLoading(false);

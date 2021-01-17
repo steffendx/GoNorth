@@ -53,6 +53,11 @@
                     return conditionDialogDeferred;
                 };
 
+                // Opens the general object search dialog 
+                GoNorth.DefaultNodeShapes.openGeneralObjectSearchDialog = function() {
+                    return self.chooseObjectDialog.openGeneralObjectSearch(ScriptDialog.Localization.NodeScripts.ChooseGeneralObject);
+                };
+
                 // Opens the item search dialog
                 GoNorth.DefaultNodeShapes.openItemSearchDialog = function() {
                     return self.chooseObjectDialog.openItemSearch(GoNorth.DefaultNodeShapes.Localization.Dialogs.ChooseItem);

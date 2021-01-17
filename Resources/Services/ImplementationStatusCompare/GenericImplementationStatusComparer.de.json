@@ -4,8 +4,12 @@
 
     "BlankValue": "<leer>",
 
+    "NpcWasDeleted": "<Npc wurde gelöscht>",
     "ItemWasDeleted": "<Item wurde gelöscht>",
     "SkillWasDeleted": "<Fähigkeit wurde gelöscht>",
+    "QuestWasDeleted": "<Quest wurde gelöscht>",
+    "WikiPageWasDeleted": "<Wiki-Seite wurde gelöscht>",
+    "MapWasDeleted": "<Karte wurde gelöscht>",
 
     "PropertyNameName": "Name",
     "PropertyNameIsPlayerNpc": "Ist Spieler",
@@ -27,6 +31,7 @@
     "PropertyNameAddedInChapter": "In Kapitel hinzugefügt",
     "PropertyNameDeletedInChapter": "In Kapitel gelöscht",
     "PropertyNameGeoData": "Geometrie Daten",
+    "PropertyNameReferenceText": "Beschreibung",
 
     "EntryRemoved": "Eintrag '{0}' entfernt.",
     "EntryAdded": "Eintrag '{0}' hinzugefügt.",
@@ -42,11 +47,14 @@
     "NodeChoicesChanged": "Auswahl Knoten geändert:",
     "NodeActionsChanged": "Aktionsknoten geändert:",
     "NodeConditionsChanged": "Bedingungsknoten geändert:",
+    "NodeReferenceChanged": "Referenzknoten geändert:",
     "ActionTypeChanged": "Aktionsart geändert",
     "ActionDataChanged": "Aktionsdaten geändert",
     "ConditionsChanged": "Bedingungen geändert:",
     "ConditionDataChanged": "Bedingungsdaten geändert",
     "Condition": "Bedingung",
+    "ReferencedObjectChanged": "Referenziertes Objekt geändert",
+    "ReferenceTextChanged": "Verbindungstext geändert",
     "Node": "Knoten",
     "NodeConnection": "Knoten Verbindung",
     "ChoicesChanged": "Auswahlmöglichkeiten geändert:",

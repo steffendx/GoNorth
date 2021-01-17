@@ -111,7 +111,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             _languageKeyGenerator.SetErrorCollection(_errorCollection);
             
 
-            GoNorthProject project = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _exportCachedDbAccess.GetUserProject();
             ExportSettings exportSettings = await _exportCachedDbAccess.GetExportSettings(project.Id);
 
             ExportClass exportObject = BuildExportObject(parsedTemplate, inputObject, exportSettings);

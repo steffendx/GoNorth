@@ -22,6 +22,8 @@ using System.Globalization;
 using System.Text;
 using GoNorth.Services.CsvHandling;
 using System.Text.Json;
+using GoNorth.Services.Project;
+using GoNorth.Services.Export.ExportSnippets;
 
 namespace GoNorth.Controllers.Api
 {
@@ -285,11 +287,6 @@ namespace GoNorth.Controllers.Api
         protected readonly IFlexFieldObjectDbAccess<T> _objectDbAccess;
 
         /// <summary>
-        /// Project Db Service
-        /// </summary>
-        protected readonly IProjectDbAccess _projectDbAccess;
-
-        /// <summary>
         /// Flex Field Object Tag Db Access
         /// </summary>
         private readonly IFlexFieldObjectTagDbAccess _tagDbAccess;
@@ -317,12 +314,22 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Object export snippet Db Access
         /// </summary>
-        private readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
+        protected readonly IObjectExportSnippetDbAccess _objectExportSnippetDbAccess;
 
         /// <summary>
         /// Object export snippet snapshot Db Access
         /// </summary>
         private readonly IObjectExportSnippetSnapshotDbAccess _objectExportSnippetSnapshotDbAccess;
+
+        /// <summary>
+        /// Service that will resolve export snippet related object names
+        /// </summary>
+        protected readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
+
+        /// <summary>
+        /// User project access
+        /// </summary>
+        protected readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Image Access
@@ -380,7 +387,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="folderDbAccess">Folder Db Access</param>
         /// <param name="templateDbAccess">Template Db Access</param>
         /// <param name="objectDbAccess">Object Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="userProjectAccess">Project Db Access</param>
         /// <param name="tagDbAccess">Tag Db Access</param>
         /// <param name="exportTemplateDbAccess">Export Template Db Access</param>
         /// <param name="importFieldValuesLogDbAccess">Import field values log Db Access</param>
@@ -388,6 +395,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportFunctionIdDbAccess">Export Function Id Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
+        /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="imageAccess">Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="csvGenerator">CSV Generator</param>
@@ -398,15 +406,15 @@ namespace GoNorth.Controllers.Api
         /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public FlexFieldBaseApiController(IFlexFieldFolderDbAccess folderDbAccess, IFlexFieldObjectDbAccess<T> templateDbAccess, IFlexFieldObjectDbAccess<T> objectDbAccess, IProjectDbAccess projectDbAccess, IFlexFieldObjectTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
+        public FlexFieldBaseApiController(IFlexFieldFolderDbAccess folderDbAccess, IFlexFieldObjectDbAccess<T> templateDbAccess, IFlexFieldObjectDbAccess<T> objectDbAccess, IFlexFieldObjectTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
                                           IFlexFieldImportFieldValuesLogDbAccess importFieldValuesLogDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
-                                          IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IFlexFieldObjectImageAccess imageAccess, IFlexFieldThumbnailService thumbnailService, ICsvGenerator csvGenerator, ICsvParser csvParser, UserManager<GoNorthUser> userManager, 
-                                          IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, IStringLocalizerFactory localizerFactory)
+                                          IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IUserProjectAccess userProjectAccess, IFlexFieldObjectImageAccess imageAccess, 
+                                          IFlexFieldThumbnailService thumbnailService, ICsvGenerator csvGenerator, ICsvParser csvParser, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, 
+                                          IStringLocalizerFactory localizerFactory)
         {
             _folderDbAccess = folderDbAccess;
             _templateDbAccess = templateDbAccess;
             _objectDbAccess = objectDbAccess;
-            _projectDbAccess = projectDbAccess;
             _tagDbAccess = tagDbAccess;
             _exportTemplateDbAccess = exportTemplateDbAccess;
             _importFieldValuesLogDbAccess = importFieldValuesLogDbAccess;
@@ -414,6 +422,8 @@ namespace GoNorth.Controllers.Api
             _exportFunctionIdDbAccess = exportFunctionIdDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _objectExportSnippetSnapshotDbAccess = objectExportSnippetSnapshotDbAccess;
+            _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
+            _userProjectAccess = userProjectAccess;
             _imageAccess = imageAccess;
             _thumbnailService = thumbnailService;
             _csvGenerator = csvGenerator;
@@ -443,7 +453,7 @@ namespace GoNorth.Controllers.Api
             Task<int> countTask;
             if(string.IsNullOrEmpty(parentId))
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 queryTask = _folderDbAccess.GetRootFoldersForProject(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 countTask = _folderDbAccess.GetRootFolderCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
@@ -483,7 +493,7 @@ namespace GoNorth.Controllers.Api
 
             try
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 FlexFieldFolder newFolder = new FlexFieldFolder {
                     ProjectId = project.Id,
                     ParentFolderId = folder.ParentId,
@@ -491,7 +501,7 @@ namespace GoNorth.Controllers.Api
                     Description = folder.Description
                 };
                 newFolder = await _folderDbAccess.CreateFolder(newFolder);
-                await _timelineService.AddTimelineEntry(FolderCreatedEvent, folder.Name, newFolder.Id);
+                await _timelineService.AddTimelineEntry(newFolder.ProjectId, FolderCreatedEvent, folder.Name, newFolder.Id);
                 return Ok(newFolder.Id);
             }
             catch(Exception ex)
@@ -532,7 +542,7 @@ namespace GoNorth.Controllers.Api
                 _imageAccess.CheckAndDeleteUnusedImage(folder.ThumbnailImageFile);
             }
 
-            await _timelineService.AddTimelineEntry(FolderDeletedEvent, folder.Name);
+            await _timelineService.AddTimelineEntry(folder.ProjectId, FolderDeletedEvent, folder.Name);
             return Ok(id);
         }
 
@@ -569,7 +579,7 @@ namespace GoNorth.Controllers.Api
 
             await _folderDbAccess.UpdateFolder(loadedFolder);
             _logger.LogInformation("Folder was updated.");
-            await _timelineService.AddTimelineEntry(FolderUpdatedEvent, folder.Name, loadedFolder.Id);
+            await _timelineService.AddTimelineEntry(loadedFolder.ProjectId, FolderUpdatedEvent, folder.Name, loadedFolder.Id);
 
             return Ok(id);
         }
@@ -622,7 +632,7 @@ namespace GoNorth.Controllers.Api
                 {
                     eventToUse = FolderMovedToRootEvent;
                 }
-                await _timelineService.AddTimelineEntry(eventToUse, folderToMove.Name, folderToMove.Id, folderToMoveTo != null ? folderToMoveTo.Name : string.Empty, folderToMoveTo != null ? folderToMoveTo.Id : string.Empty);
+                await _timelineService.AddTimelineEntry(folderToMove.ProjectId, eventToUse, folderToMove.Name, folderToMove.Id, folderToMoveTo != null ? folderToMoveTo.Name : string.Empty, folderToMoveTo != null ? folderToMoveTo.Id : string.Empty);
 
                 return Ok(id);
             }
@@ -734,7 +744,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<ActionResult<FlexFieldObjectQueryResult>> FlexFieldTemplates(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<T>> queryTask;
             Task<int> countTask;
             queryTask = _templateDbAccess.GetFlexFieldObjectsInRootFolderForProject(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
@@ -787,7 +797,7 @@ namespace GoNorth.Controllers.Api
 
             try
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 template.ProjectId = project.Id;
 
                 template = await RunAdditionalUpdates(template, template);
@@ -795,8 +805,8 @@ namespace GoNorth.Controllers.Api
                 await this.SetModifiedData(_userManager, template);
 
                 template = await _templateDbAccess.CreateFlexFieldObject(template);
-                await AddNewTags(template.Tags);
-                await _timelineService.AddTimelineEntry(TemplateCreatedEvent, template.Name, template.Id);
+                await AddNewTags(template.ProjectId, template.Tags);
+                await _timelineService.AddTimelineEntry(template.ProjectId, TemplateCreatedEvent, template.Name, template.Id);
                 return Ok(template);
             }
             catch(Exception ex)
@@ -817,7 +827,7 @@ namespace GoNorth.Controllers.Api
             await _templateDbAccess.DeleteFlexFieldObject(template);
             _logger.LogInformation("Template was deleted.");
 
-            await RemoveUnusedTags(template.Tags);
+            await RemoveUnusedTags(template.ProjectId, template.Tags);
 
             if(!string.IsNullOrEmpty(template.ImageFile))
             {
@@ -831,7 +841,7 @@ namespace GoNorth.Controllers.Api
 
             await DeleteExportTemplateIfExists(id);
 
-            await _timelineService.AddTimelineEntry(TemplateDeletedEvent, template.Name);
+            await _timelineService.AddTimelineEntry(template.ProjectId, TemplateDeletedEvent, template.Name);
             return Ok(id);
         }
 
@@ -842,7 +852,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Task</returns>
         private async Task DeleteExportTemplateIfExists(string id)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             ExportTemplate exportTemplate = await _exportTemplateDbAccess.GetTemplateByCustomizedObjectId(project.Id, id);
             if(exportTemplate != null)
             {
@@ -887,11 +897,11 @@ namespace GoNorth.Controllers.Api
             await _templateDbAccess.UpdateFlexFieldObject(loadedTemplate);
             _logger.LogInformation("Template was updated.");
 
-            await AddNewTags(template.Tags.Except(oldTags, StringComparer.OrdinalIgnoreCase).ToList());
-            await RemoveUnusedTags(oldTags.Except(template.Tags, StringComparer.OrdinalIgnoreCase).ToList());
+            await AddNewTags(loadedTemplate.ProjectId, template.Tags.Except(oldTags, StringComparer.OrdinalIgnoreCase).ToList());
+            await RemoveUnusedTags(loadedTemplate.ProjectId, oldTags.Except(template.Tags, StringComparer.OrdinalIgnoreCase).ToList());
             _logger.LogInformation("Tags were updated.");
 
-            await _timelineService.AddTimelineEntry(TemplateUpdatedEvent, loadedTemplate.Name, loadedTemplate.Id);
+            await _timelineService.AddTimelineEntry(loadedTemplate.ProjectId, TemplateUpdatedEvent, loadedTemplate.Name, loadedTemplate.Id);
 
             return Ok(loadedTemplate);
         }
@@ -937,7 +947,7 @@ namespace GoNorth.Controllers.Api
                 await _objectDbAccess.UpdateFlexFieldObject(curObject);
             }
 
-            await _timelineService.AddTimelineEntry(TemplateFieldsDistributedEvent, template.Name, template.Id);
+            await _timelineService.AddTimelineEntry(template.ProjectId, TemplateFieldsDistributedEvent, template.Name, template.Id);
 
             return Ok(id);
         }
@@ -982,7 +992,7 @@ namespace GoNorth.Controllers.Api
             Task<int> countTask;
             if(string.IsNullOrEmpty(parentId))
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 queryTask = _objectDbAccess.GetFlexFieldObjectsInRootFolderForProject(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 countTask = _objectDbAccess.GetFlexFieldObjectsInRootFolderCount(project.Id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
             }
@@ -1011,7 +1021,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<ActionResult<FlexFieldObjectQueryResult>> SearchFlexFieldObjects(string searchPattern, int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
 
             Task<List<T>> queryTask;
             Task<int> countTask;
@@ -1072,7 +1082,7 @@ namespace GoNorth.Controllers.Api
 
             try
             {
-                GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 flexFieldObject.ProjectId = project.Id;
 
                 flexFieldObject = await RunAdditionalUpdates(flexFieldObject, flexFieldObject);
@@ -1080,8 +1090,8 @@ namespace GoNorth.Controllers.Api
                 await this.SetModifiedData(_userManager, flexFieldObject);
 
                 flexFieldObject = await _objectDbAccess.CreateFlexFieldObject(flexFieldObject);
-                await AddNewTags(flexFieldObject.Tags);
-                await _timelineService.AddTimelineEntry(ObjectCreatedEvent, flexFieldObject.Name, flexFieldObject.Id);
+                await AddNewTags(flexFieldObject.ProjectId, flexFieldObject.Tags);
+                await _timelineService.AddTimelineEntry(flexFieldObject.ProjectId, ObjectCreatedEvent, flexFieldObject.Name, flexFieldObject.Id);
                 return Ok(flexFieldObject);
             }
             catch(Exception ex)
@@ -1122,6 +1132,14 @@ namespace GoNorth.Controllers.Api
                 return BadRequest(referenceError);
             }
 
+            List<ObjectExportSnippet> referencedInSnippets = await _objectExportSnippetDbAccess.GetExportSnippetsObjectIsReferenced(id);
+            if(referencedInSnippets.Count > 0)
+            {
+                List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
+                string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
+                return BadRequest(_localizer["CanNotDeleteObjectUsedInExportSnippet", usedInDailyRoutines].Value);
+            }
+
             // Delete Object and dialog
             T flexFieldObject = await _objectDbAccess.GetFlexFieldObjectById(id);
             await _objectDbAccess.DeleteFlexFieldObject(flexFieldObject);
@@ -1134,7 +1152,7 @@ namespace GoNorth.Controllers.Api
 
             await DeleteAdditionalFlexFieldObjectDependencies(flexFieldObject);
 
-            await RemoveUnusedTags(flexFieldObject.Tags);
+            await RemoveUnusedTags(flexFieldObject.ProjectId, flexFieldObject.Tags);
 
             if(!string.IsNullOrEmpty(flexFieldObject.ImageFile))
             {
@@ -1148,7 +1166,7 @@ namespace GoNorth.Controllers.Api
 
             await DeleteExportTemplateIfExists(id);
 
-            await _timelineService.AddTimelineEntry(ObjectDeletedEvent, flexFieldObject.Name);
+            await _timelineService.AddTimelineEntry(flexFieldObject.ProjectId, ObjectDeletedEvent, flexFieldObject.Name);
             return Ok(id);
         }
 
@@ -1255,8 +1273,8 @@ namespace GoNorth.Controllers.Api
             await _objectDbAccess.UpdateFlexFieldObject(loadedFlexFieldObject);
             _logger.LogInformation("Flex field object was updated.");
 
-            await AddNewTags(flexFieldObject.Tags.Except(oldTags, StringComparer.OrdinalIgnoreCase).ToList());
-            await RemoveUnusedTags(oldTags.Except(flexFieldObject.Tags, StringComparer.OrdinalIgnoreCase).ToList());
+            await AddNewTags(loadedFlexFieldObject.ProjectId, flexFieldObject.Tags.Except(oldTags, StringComparer.OrdinalIgnoreCase).ToList());
+            await RemoveUnusedTags(loadedFlexFieldObject.ProjectId, oldTags.Except(flexFieldObject.Tags, StringComparer.OrdinalIgnoreCase).ToList());
             _logger.LogInformation("Tags were updated.");
 
             if(nameChanged)
@@ -1264,7 +1282,7 @@ namespace GoNorth.Controllers.Api
                 await RunMarkerUpdates(loadedFlexFieldObject);
             }
 
-            await _timelineService.AddTimelineEntry(ObjectUpdatedEvent, loadedFlexFieldObject.Name, loadedFlexFieldObject.Id);
+            await _timelineService.AddTimelineEntry(loadedFlexFieldObject.ProjectId, ObjectUpdatedEvent, loadedFlexFieldObject.Name, loadedFlexFieldObject.Id);
 
             return Ok(loadedFlexFieldObject);
         }
@@ -1351,7 +1369,7 @@ namespace GoNorth.Controllers.Api
                     _imageAccess.CheckAndDeleteUnusedImage(oldThumbnailImageFile);
                 }
 
-                await _timelineService.AddTimelineEntry(timelineEvent, targetFlexFieldObject.Name, targetFlexFieldObject.Id);
+                await _timelineService.AddTimelineEntry(targetFlexFieldObject.ProjectId, timelineEvent, targetFlexFieldObject.Name, targetFlexFieldObject.Id);
             }
             catch(Exception ex)
             {
@@ -1443,7 +1461,7 @@ namespace GoNorth.Controllers.Api
                 }
 
                 await _objectDbAccess.MoveToFolder(id, newParentId);
-                await _timelineService.AddTimelineEntry(eventToUse, objectToMove.Name, objectToMove.Id, folderToMoveTo != null ? folderToMoveTo.Name : string.Empty, folderToMoveTo != null ? folderToMoveTo.Id : string.Empty);
+                await _timelineService.AddTimelineEntry(objectToMove.ProjectId, eventToUse, objectToMove.Name, objectToMove.Id, folderToMoveTo != null ? folderToMoveTo.Name : string.Empty, folderToMoveTo != null ? folderToMoveTo.Id : string.Empty);
                 return Ok(id);
             }
             catch(Exception ex)
@@ -1462,23 +1480,25 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> FlexFieldObjectTags()
         {
-            List<string> allTags = await _tagDbAccess.GetAllTags();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
+            List<string> allTags = await _tagDbAccess.GetAllTags(project.Id);
             return Ok(allTags);
         }
 
         /// <summary>
         /// Adds new tags
         /// </summary>
+        /// <param name="projectId">Id of the project</param>
         /// <param name="tagsToCheck">Tags to check</param>
         /// <returns>Task</returns>
-        private async Task AddNewTags(List<string> tagsToCheck)
+        private async Task AddNewTags(string projectId, List<string> tagsToCheck)
         {
             if(tagsToCheck == null || tagsToCheck.Count == 0)
             {
                 return;
             }
 
-            List<string> existingTags = await _tagDbAccess.GetAllTags();
+            List<string> existingTags = await _tagDbAccess.GetAllTags(projectId);
             if(existingTags == null)
             {
                 existingTags = new List<string>();
@@ -1487,16 +1507,17 @@ namespace GoNorth.Controllers.Api
             List<string> newTags = tagsToCheck.Except(existingTags, StringComparer.OrdinalIgnoreCase).ToList();
             foreach(string curNewTag in newTags)
             {
-                await _tagDbAccess.AddTag(curNewTag);
+                await _tagDbAccess.AddTag(projectId, curNewTag);
             }
         }
 
         /// <summary>
         /// Removes unused tags
         /// </summary>
+        /// <param name="projectId">Id of the project</param>
         /// <param name="tagsToCheck">Tags to check</param>
         /// <returns>Task</returns>
-        private async Task RemoveUnusedTags(List<string> tagsToCheck)
+        private async Task RemoveUnusedTags(string projectId, List<string> tagsToCheck)
         {
             if(tagsToCheck == null || tagsToCheck.Count == 0)
             {
@@ -1505,15 +1526,15 @@ namespace GoNorth.Controllers.Api
 
             foreach(string curDeleteTag in tagsToCheck)
             {
-                Task<bool> objectUsingTag = _objectDbAccess.AnyFlexFieldObjectUsingTag(curDeleteTag);
-                Task<bool> templateUsingTag = _templateDbAccess.AnyFlexFieldObjectUsingTag(curDeleteTag);
+                Task<bool> objectUsingTag = _objectDbAccess.AnyFlexFieldObjectUsingTag(projectId, curDeleteTag);
+                Task<bool> templateUsingTag = _templateDbAccess.AnyFlexFieldObjectUsingTag(projectId, curDeleteTag);
                 Task.WaitAll(objectUsingTag, templateUsingTag);
                 if(objectUsingTag.Result || templateUsingTag.Result)
                 {
                     continue;
                 }
 
-                await _tagDbAccess.DeleteTag(curDeleteTag);
+                await _tagDbAccess.DeleteTag(projectId, curDeleteTag);
             }
         }
 
@@ -1541,8 +1562,7 @@ namespace GoNorth.Controllers.Api
             List<T> objects = await _objectDbAccess.GetFlexFieldObjectsByTemplate(exportRequest.SelectedTemplate);
             if(!string.IsNullOrEmpty(exportRequest.FolderId))
             {
-                GoNorthProject curProject = await _projectDbAccess.GetDefaultProject();
-                List<FlexFieldFolder> folders = await _folderDbAccess.GetFoldersForHierarchy(curProject.Id);
+                List<FlexFieldFolder> folders = await _folderDbAccess.GetFoldersForHierarchy(template.ProjectId);
                 objects = FilterObjectsByFolder(objects, folders, exportRequest.FolderId);
             }
 
@@ -1664,12 +1684,19 @@ namespace GoNorth.Controllers.Api
             }
 
             List<T> objectsToUpdate = await LoadObjectsFromCsv(csvReadResult);
-            FlexFieldImportValuePreCheckResult preCheckResult = await BuildCsvPreCheckResult(uploadFile.FileName, csvReadResult, objectsToUpdate);
-            if(preCheckResult == null)
+            try
+            {
+                FlexFieldImportValuePreCheckResult preCheckResult = await BuildCsvPreCheckResult(uploadFile.FileName, csvReadResult, objectsToUpdate);
+                return Ok(preCheckResult);
+            }
+            catch(KeyNotFoundException)
             {
                 return BadRequest(_localizer["ImportFieldValuesNoValidTemplateSpecified"]);
             }
-            return Ok(preCheckResult);
+            catch(InvalidDataException)
+            {
+                return BadRequest(_localizer["TemplateIsForDifferentProject"]);
+            }
         }
 
         /// <summary>
@@ -1708,14 +1735,20 @@ namespace GoNorth.Controllers.Api
             string headerTemplateValue = csvReadResult.Columns.FirstOrDefault(c => c.StartsWith(CsvHeaderTemplateIdPrefix));
             if(string.IsNullOrEmpty(headerTemplateValue))
             {
-                return null;
+                throw new KeyNotFoundException();
             }
             
             string templateId = headerTemplateValue.Replace(CsvHeaderTemplateIdPrefix, string.Empty);
             T template = await _templateDbAccess.GetFlexFieldObjectById(templateId);
             if(template == null)
             {
-                return null;
+                throw new KeyNotFoundException();
+            }
+
+            GoNorthProject curProject = await _userProjectAccess.GetUserProject();
+            if(curProject.Id != template.ProjectId)
+            {
+                throw new InvalidDataException();
             }
 
             preCheckResult.TemplateId = template.Id;
@@ -1802,7 +1835,11 @@ namespace GoNorth.Controllers.Api
                 return BadRequest();
             }
 
-            GoNorthProject curProject = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject curProject = await _userProjectAccess.GetUserProject();
+            if(curProject.Id != template.ProjectId)
+            {
+                return BadRequest();
+            }
 
             FlexFieldImportFieldValuesResultLog importResult = new FlexFieldImportFieldValuesResultLog();
             importResult.FileName = importRows.Filename;
@@ -1817,7 +1854,7 @@ namespace GoNorth.Controllers.Api
 
             if(importResult.ExistingRows.Any(e => e.Result == FlexFieldImportValueRowResult.Success) || importResult.NewRows.Any(e => e.Result == FlexFieldImportValueRowResult.Success))
             {
-                await _timelineService.AddTimelineEntry(ValueFileImportEvent, importResult.ExistingRows.Where(e => e.Result == FlexFieldImportValueRowResult.Success).Count().ToString(), 
+                await _timelineService.AddTimelineEntry(importResult.ProjectId, ValueFileImportEvent, importResult.ExistingRows.Where(e => e.Result == FlexFieldImportValueRowResult.Success).Count().ToString(), 
                                                         importResult.NewRows.Where(e => e.Result == FlexFieldImportValueRowResult.Success).Count().ToString());
             }
 
@@ -2195,7 +2232,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<ActionResult<ImportFieldValuesLogQueryResult>> GetFlexFieldValueImportLogs(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<FlexFieldImportFieldValuesResultLog>> queryTask;
             Task<int> countTask;
             queryTask = _importFieldValuesLogDbAccess.GetImportLogsByProject(project.Id, start, pageSize);

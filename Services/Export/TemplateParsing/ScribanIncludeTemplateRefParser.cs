@@ -77,7 +77,7 @@ namespace GoNorth.Services.Export.TemplateParsing
                     continue;
                 }
 
-                string templateName = functionCall.Arguments[0].ToString();
+                string templateName = functionCall.Arguments[0].ToString().Trim('\"').Trim('\'');
                 IncludeExportTemplate existingTemplate = await _cachedDbAccess.GetIncludeTemplateByName(template.ProjectId, templateName);
                 if(existingTemplate != null && !includeTemplateRefs.Any(e => e.IncludeTemplateId == existingTemplate.Id))
                 {

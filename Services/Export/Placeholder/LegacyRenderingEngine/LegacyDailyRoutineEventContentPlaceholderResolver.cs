@@ -133,7 +133,7 @@ namespace GoNorth.Services.Export.Placeholder.LegacyRenderingEngine
         /// <returns>Code with resolved placeholders</returns>
         public async Task<string> ResolveDailyRoutineEventContentPlaceholders(string code, KortistoNpc npc, KortistoNpcDailyRoutineEvent dailyRoutineEvent, ExportPlaceholderErrorCollection errorCollection)
         {
-            GoNorthProject project = await _cachedDbAccess.GetDefaultProject();
+            GoNorthProject project = await _cachedDbAccess.GetUserProject();
             ExportTemplate dailyRoutineFunctionTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.ObjectDailyRoutineFunction);
 
             List<DailyRoutineFunction> functions = await this.RenderDailyRoutineFunctions(dailyRoutineEvent, npc, errorCollection);

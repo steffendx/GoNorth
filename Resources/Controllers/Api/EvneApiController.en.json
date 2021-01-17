@@ -1,17 +1,21 @@
 {
     "FolderNotEmpty": "The folder is not empty.",
 
-    "CanNotDeleteSkillReferencedInAikaQuest": "The skill is referenced in the Aika quests \"{0}\". To prevent errors in the story it must be deleted there first.", 
-    "CanNotDeleteSkillReferencedInTaleDialog": "The skill is referenced in the Tale dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteSkillMentionedInKirjaPage": "The skill is mentioned in the Kirja pages \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteSkillReferencedInAikaQuest": "The skill is referenced in the quests \"{0}\". To prevent errors in the story it must be deleted there first.", 
+    "CanNotDeleteSkillReferencedInTaleDialog": "The skill is referenced in the dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteSkillMentionedInKirjaPage": "The skill is mentioned in the wiki pages \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteSkillLearnedByNpc": "The Npcs \"{0}\" have learned the skill. To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteSkillUsedInDailyRoutine": "The skill is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteObjectUsedInExportSnippet": "The object is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteSkillUsedInSkill": "The skill is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",
     "ImageFormatNotSupported": "The image format is not supported.",
 
     "DuplicateFieldNameExist": "Multiple fields with the same name exist.",
+
+    "TemplateIsForDifferentProject": "The specified template belongs to a different project. Please switch to that project.",
 
     "ImportFieldValuesObjectNotFound": "Skill not found.",
     "ImportFieldValuesFieldNotFoundInTemplate": "The field {0} was not found in the template nor in the skill. The value cannot be imported.",

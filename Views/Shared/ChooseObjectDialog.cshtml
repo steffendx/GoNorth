@@ -6,7 +6,16 @@
     window.GoNorth = window.GoNorth || {};
     window.GoNorth.ChooseObjectDialog = window.GoNorth.ChooseObjectDialog || {};
     window.GoNorth.ChooseObjectDialog.Localization = {
-        TimeFormat: "@Localizer["TimeFormat"]"
+        TimeFormat: "@Localizer["TimeFormat"]",
+
+        ObjectTypeNpc: "@Localizer["ObjectTypeNpc"]",
+        ObjectTypeItem: "@Localizer["ObjectTypeItem"]",
+        ObjectTypeSkill: "@Localizer["ObjectTypeSkill"]",
+        ObjectTypeQuest: "@Localizer["ObjectTypeQuest"]",
+        ObjectTypeWikiPage: "@Localizer["ObjectTypeWikiPage"]",
+        ObjectTypeChapterDetail: "@Localizer["ObjectTypeChapterDetail"]",
+        ObjectTypeDailyRoutine: "@Localizer["ObjectTypeDailyRoutine"]",
+        ObjectTypeMarker: "@Localizer["ObjectTypeMarker"]"
     }
 </script>
 
@@ -24,6 +33,12 @@
 
                 <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
                     <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"]</span> 
+                </div>
+
+                <div class="form-group" data-bind="visible: showObjectTypeSelection" style="display: none">
+                    <label for="gn-objectSelectionType">@Localizer["ObjectType"]</label>
+                    <select class="form-control" id="gn-objectSelectionType" data-bind="options: availableObjectTypes, value: selectedObjectType, optionsText: 'objectLabel'">
+                    </select>
                 </div>
 
                 <div class="input-group gn-commandWidgetTopMargin">

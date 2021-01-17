@@ -91,10 +91,7 @@
             Conditions.CheckChooseQuestValueCondition.prototype.loadObject = function(objectId) {
                 var def = new jQuery.Deferred();
                 
-                jQuery.ajax({ 
-                    url: "/api/AikaApi/GetQuest?id=" + objectId, 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/AikaApi/GetQuest?id=" + objectId).done(function(data) {
                     def.resolve(data);
                 }).fail(function(xhr) {
                     def.reject();

@@ -154,6 +154,7 @@
 
             // Create throttled version of update mini map
             var throttledUpdatedMiniMap = GoNorth.Util.throttle(updateMiniMap, 35);
+            var throttledupdatePositionZoomDisplay = GoNorth.Util.throttle(updatePositionZoomDisplay, 35);
             var debouncedUpdatePositionZoomUrl = GoNorth.Util.debounce(updatePositionZoomUrl, 250);
 
             /**
@@ -233,7 +234,7 @@
                     graph.on("remove", function() {
                         throttledUpdatedMiniMap(element, paper, showMiniMap);
                     });
-                    jQuery(window).resize(function() {
+                    jQuery(window).on("resize", function() {
                         throttledUpdatedMiniMap(element, paper, showMiniMap);
                     });
 
@@ -263,7 +264,6 @@
                         if(newScale >= minScale)
                         {
                             paper.scale(newScale, newScale);
-                            updatePositionZoomDisplay(element, paper);
                             if(enableNodeGraphPositionZoomUrl) {
                                 debouncedUpdatePositionZoomUrl(paper);
                             }
@@ -293,7 +293,6 @@
                         if(dragStartPosition)
                         {
                             paper.translate(event.offsetX - dragStartPosition.x, event.offsetY - dragStartPosition.y);
-                            updatePositionZoomDisplay(element, paper);
                             if(enableNodeGraphPositionZoomUrl) {
                                 debouncedUpdatePositionZoomUrl(paper);
                             }
@@ -331,7 +330,6 @@
                         if(dragStartPosition && event.originalEvent.touches && event.originalEvent.touches.length == 1)
                         {
                             paper.translate(event.originalEvent.touches[0].screenX - dragStartPosition.x + dragStartTransform.x, event.originalEvent.touches[0].screenY - dragStartPosition.y + dragStartTransform.y);
-                            updatePositionZoomDisplay(element, paper);
                             if(enableNodeGraphPositionZoomUrl) {
                                 debouncedUpdatePositionZoomUrl(paper);
                             }
@@ -344,7 +342,6 @@
                             if(newScale >= minScale)
                             {
                                 paper.scale(newScale, newScale);
-                                updatePositionZoomDisplay(element, paper);
                                 if(enableNodeGraphPositionZoomUrl) {
                                     debouncedUpdatePositionZoomUrl(paper);
                                 }
@@ -400,6 +397,12 @@
                     if(enableNodeGraphPositionZoomUrl) {
                         debouncedUpdatePositionZoomUrl(paper);
                     }
+                    paper.on("translate", function() {
+                        throttledupdatePositionZoomDisplay(element, paper);
+                    });
+                    paper.on("scale", function() {
+                        throttledupdatePositionZoomDisplay(element, paper);
+                    });
                 },
                 update: function (element, valueAccessor) {
                 }

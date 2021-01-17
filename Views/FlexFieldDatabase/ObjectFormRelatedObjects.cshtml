@@ -7,7 +7,17 @@
     <h4>@Model.Localizer["ReferencedInAikaQuests"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInQuests"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInQuests"></i></h4>
     <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInQuests">
         <li>
-            <a class="gn-clickable" data-bind="text: name, href: $root.buildAikaQuestUrl" target="_blank"></a>
+            <a class="gn-clickable" data-bind="text: objectName, href: function(q) { return $root.buildAikaQuestUrl(q); }" target="_blank"></a>
+            <span class="gn-detaildReferenceContainer">
+                <span style="display: none" data-bind="visible: detailedReferences && detailedReferences.length > 1, click: function(r) { $root.setExtendedReferenceCallout(r); }, text: detailedReferences.length" title="@Model.Localizer["ClickHereForDetailedReferences"]" class="gn-detailedReferenceCount badge">
+                </span>
+                <div style="display: none" class="gn-detaildReferenceCallout" data-bind="visible: $data == $root.extendedReferenceCallout()">
+                    <span title="@Model.Localizer["ClickHereToCloseDetailedReferences"]" class="gn-detaildReferenceCalloutClose" data-bind="click: function() { $root.setExtendedReferenceCallout(null); }"><a><i class="glyphicon glyphicon-remove"></i></a></span>
+                    <!-- ko foreach: detailedReferences -->
+                    <div><a data-bind="text: objectName, href: function(q) { return $root.buildAikaQuestUrl($parent, q); }" target="_blank"></a></div>
+                    <!-- /ko -->
+                </div>
+            </span>
         </li>
     </ul>
 }
@@ -38,7 +48,17 @@
     <h4>@Model.Localizer["ReferencedInTaleDialogs"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInTaleDialogs"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInTaleDialogs"></i></h4>
     <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInTaleDialogs">
         <li>
-            <a class="gn-clickable" data-bind="text: name, href: $root.buildTaleDialogUrl" target="_blank"></a>
+            <a class="gn-clickable" data-bind="text: objectName, href: function(r) { return $root.buildTaleDialogUrl(r); }" target="_blank"></a>
+            <span class="gn-detaildReferenceContainer">
+                <span style="display: none" data-bind="visible: detailedReferences && detailedReferences.length > 1, click: function(r) { $root.setExtendedReferenceCallout(r); }, text: detailedReferences.length" title="@Model.Localizer["ClickHereForDetailedReferences"]" class="gn-detailedReferenceCount badge">
+                </span>
+                <div style="display: none" class="gn-detaildReferenceCallout" data-bind="visible: $data == $root.extendedReferenceCallout()">
+                    <span title="@Model.Localizer["ClickHereToCloseDetailedReferences"]" class="gn-detaildReferenceCalloutClose" data-bind="click: function() { $root.setExtendedReferenceCallout(null); }"><a><i class="glyphicon glyphicon-remove"></i></a></span>
+                    <!-- ko foreach: detailedReferences -->
+                    <div><a data-bind="text: objectName, href: function(r) { return $root.buildTaleDialogUrl($parent, r); }" target="_blank"></a></div>
+                    <!-- /ko -->
+                </div>
+            </span>
         </li>
     </ul>
 }
@@ -49,6 +69,26 @@
     <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInDailyRoutines">
         <li>
             <a class="gn-clickable" data-bind="text: name, href: $root.buildDailyRoutineNpcUrl" target="_blank"></a>
+        </li>
+    </ul>
+}
+
+@if(User.IsInRole(RoleNames.Evne))
+{
+    <h4>@Model.Localizer["ReferencedInEvneSkills"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInEvneSkills"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInEvneSkills"></i></h4>
+    <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInEvneSkills">
+        <li>
+            <a class="gn-clickable" data-bind="text: name, href: $root.buildEvneSkillUrl" target="_blank"></a>
+        </li>
+    </ul>
+}
+
+@if(User.IsInRole(RoleNames.ExportObjects))
+{
+    <h4>@Model.Localizer["ReferencedInExportSnippets"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInExportSnippets"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInExportSnippets"></i></h4>
+    <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInExportSnippets">
+        <li>
+            <a class="gn-clickable" data-bind="text: $root.buildUsedExportSnippetName($data), href: $root.buildUsedExportSnippetUrl" target="_blank"></a>
         </li>
     </ul>
 }

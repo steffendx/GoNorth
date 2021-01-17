@@ -1882,10 +1882,7 @@
                     this.errorOccured(false);
                     this.hasUnknownConditionType(false);
                     var self = this;
-                    jQuery.ajax({
-                        url: "/api/ExportApi/GetDialogFunctionGenerationConditions",
-                        type: "GET"
-                    }).done(function(data) {
+                    GoNorth.HttpClient.get("/api/ExportApi/GetDialogFunctionGenerationConditions").done(function(data) {
                         var generateRulesNameDef = self.generateDisplayNameForRules(data.generateRules);
                         var preventGenerationRulesNameDef = self.generateDisplayNameForRules(data.preventGenerationRules);
                         jQuery.when(generateRulesNameDef, preventGenerationRulesNameDef).then(function(generateRules, preventGenerationRules) {
@@ -2112,13 +2109,7 @@
                     this.errorOccured(false);
                     this.hasUnknownConditionType(false);
                     var self = this;
-                    jQuery.ajax({
-                        headers: GoNorth.Util.generateAntiForgeryHeader(),
-                        url: "/api/ExportApi/SaveDialogFunctionGenerationConditions",
-                        type: "POST",
-                        data: JSON.stringify(saveData),
-                        contentType: "application/json"
-                    }).done(function() {
+                    GoNorth.HttpClient.post("/api/ExportApi/SaveDialogFunctionGenerationConditions", saveData).done(function() {
                         self.loadFunctionGenerationConditions();
                     }).fail(function() {
                         self.isLoading(false);

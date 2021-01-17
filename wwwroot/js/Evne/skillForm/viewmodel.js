@@ -152,10 +152,7 @@
                 this.loadingLearnedByNpcs(true);
                 this.errorLoadingLearnedByNpcs(false);
                 var self = this;
-                jQuery.ajax({ 
-                    url: "/api/KortistoApi/GetNpcsByLearnedSkill?skillId=" + this.id(), 
-                    type: "GET"
-                }).done(function(data) {
+                GoNorth.HttpClient.get("/api/KortistoApi/GetNpcsByLearnedSkill?skillId=" + this.id()).done(function(data) {
                     self.learnedByNpcs(data);
                     self.loadingLearnedByNpcs(false);
                 }).fail(function(xhr) {

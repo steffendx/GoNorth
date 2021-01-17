@@ -51,7 +51,7 @@
                         </div>
                         <div class="form-group">
                             <label for="gn-mapDisplayName">@Localizer["Name"]</label>
-                            <input type="text" class="form-control" id="gn-mapDisplayName" placeholder="@Localizer["Name"]" name="mapDisplayName" data-bind="value: createEditName, disable: dialogLoading" required/>
+                            <input type="text" class="form-control" id="gn-mapDisplayName" placeholder="@Localizer["Name"]" name="mapDisplayName" data-bind="value: createEditName, enterPressed: saveMap, disable: dialogLoading" required/>
                         </div>
                         <div data-bind="dropzone: createEditUrl, dropzoneAutoProcess: false, dropzoneAcceptedFiles: 'image/*', dropzoneMaxFiles: 1, dropzoneHoverClass: 'gn-dropzoneFileHover', dropzoneTimeout: 600000, dropzoneAddedFile: mapImageAdded, dropzoneSuccess: mapSaveSuccess, dropzoneError: mapSaveError, dropzoneReceiveTriggerFunctions: receiveDropzoneTriggers, visible: !dialogLoading()" class="gn-kartaMapDropzone" title="@Localizer["DropMapImageHere"]">
                         </div>
@@ -62,8 +62,8 @@
                             <i class="glyphicon glyphicon-refresh spinning"></i>
                             <div class="gn-kartaMapProcessingText">@Localizer["ProcessingMap"]</div>
                         </div>
-                        <div data-bind="visible: mapImageIsMissing" class="text-danger" style="display: none">@Localizer["MapImageIsRequired"]</div>
                     </form>
+                    <div data-bind="visible: mapImageIsMissing" class="text-danger" style="display: none">@Localizer["MapImageIsRequired"]</div>
                 </div>
                 
                 <!-- Modal Footer -->

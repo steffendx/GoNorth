@@ -18,6 +18,7 @@ using System.IO;
 using GoNorth.Services.TaskManagement;
 using GoNorth.Services.Security;
 using System.Globalization;
+using GoNorth.Services.Project;
 
 namespace GoNorth.Controllers.Api
 {
@@ -77,9 +78,9 @@ namespace GoNorth.Controllers.Api
         private readonly IUserTaskBoardHistoryDbAccess _userTaskBoardHistoryDbAccess;
 
         /// <summary>
-        /// Project Db Access
+        /// User project access
         /// </summary>
-        private readonly IProjectDbAccess _projectDbAccess;
+        private readonly IUserProjectAccess _userProjectAccess;
 
         /// <summary>
         /// Task Image Access
@@ -130,7 +131,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="taskBoardCategoryDbAccess">Task Board category Db Access</param>
         /// <param name="taskNumberDbAccess">Task Number Db Access</param>
         /// <param name="userTaskBoardHistoryDbAccess">User Task Board History Db Access</param>
-        /// <param name="projectDbAccess">Project Db Access</param>
+        /// <param name="userProjectAccess">User project access</param>
         /// <param name="taskImageAccess">Task Image Access</param>
         /// <param name="taskImageParser">Task Image Parser</param>
         /// <param name="taskTypeDefaultProvider">Task type default provider</param>
@@ -140,7 +141,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public TaskApiController(ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, ITaskBoardCategoryDbAccess taskBoardCategoryDbAccess, ITaskNumberDbAccess taskNumberDbAccess, 
-                                 IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITaskImageAccess taskImageAccess, ITaskImageParser taskImageParser,  ITaskTypeDefaultProvider taskTypeDefaultProvider, 
+                                 IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IUserProjectAccess userProjectAccess, ITaskImageAccess taskImageAccess, ITaskImageParser taskImageParser,  ITaskTypeDefaultProvider taskTypeDefaultProvider, 
                                  UserManager<GoNorthUser> userManager, ITimelineService timelineService, IXssChecker xssChecker, ILogger<TaskApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _taskBoardDbAccess = taskBoardDbAccess;
@@ -149,7 +150,7 @@ namespace GoNorth.Controllers.Api
             _taskBoardCategoryDbAccess = taskBoardCategoryDbAccess;
             _taskNumberDbAccess = taskNumberDbAccess;
             _userTaskBoardHistoryDbAccess = userTaskBoardHistoryDbAccess;
-            _projectDbAccess = projectDbAccess;
+            _userProjectAccess = userProjectAccess;
             _taskImageAccess = taskImageAccess;
             _taskImageParser = taskImageParser;
             _taskTypeDefaultProvider = taskTypeDefaultProvider;
@@ -183,7 +184,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetOpenTaskBoards(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<TaskBoard>> queryTask;
             Task<int> countTask;
             queryTask = _taskBoardDbAccess.GetOpenTaskBoards(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
@@ -206,7 +207,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetClosedTaskBoards(int start, int pageSize)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             Task<List<TaskBoard>> queryTask;
             Task<int> countTask;
             queryTask = _taskBoardDbAccess.GetClosedTaskBoards(project.Id, start, pageSize, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
@@ -249,7 +250,7 @@ namespace GoNorth.Controllers.Api
 
             await this.SetModifiedData(_userManager, newBoard);
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             newBoard.ProjectId = project.Id;
 
             try
@@ -265,7 +266,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardCreated, newBoard.Id, newBoard.Name);
+                await _timelineService.AddTimelineEntry(newBoard.ProjectId, TimelineEvent.TaskBoardCreated, newBoard.Id, newBoard.Name);
             }
             catch(Exception ex)
             {
@@ -322,7 +323,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name);
+            await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, TimelineEvent.TaskBoardUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name);
 
             return Ok(updatedTaskBoard.Id);
         }
@@ -374,7 +375,7 @@ namespace GoNorth.Controllers.Api
             {
                 timelineEvent = TimelineEvent.TaskBoardReopened;
             }
-            await _timelineService.AddTimelineEntry(timelineEvent, updatedTaskBoard.Id, updatedTaskBoard.Name);
+            await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, timelineEvent, updatedTaskBoard.Id, updatedTaskBoard.Name);
 
             return Ok(updatedTaskBoard.Id);
         }
@@ -422,7 +423,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardDeleted, updatedTaskBoard.Name);
+            await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, TimelineEvent.TaskBoardDeleted, updatedTaskBoard.Name);
 
             return Ok(id);
         }
@@ -489,7 +490,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskGroupCreated, updatedTaskBoard.Id, updatedTaskBoard.Name, newGroup.Name);
+                await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, TimelineEvent.TaskGroupCreated, updatedTaskBoard.Id, updatedTaskBoard.Name, newGroup.Name);
             }
             catch(Exception ex)
             {
@@ -572,7 +573,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskGroupUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name);
+                await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, TimelineEvent.TaskGroupUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name);
             }
             catch(Exception ex)
             {
@@ -642,7 +643,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskGroupMoved, targetBoard.Id, targetBoard.Name, moveGroup.Name);
+                await _timelineService.AddTimelineEntry(sourceBoard.ProjectId, TimelineEvent.TaskGroupMoved, targetBoard.Id, targetBoard.Name, moveGroup.Name);
             }
             catch(Exception ex)
             {
@@ -704,7 +705,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskGroupUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name);
+                await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, TimelineEvent.TaskGroupUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name);
             }
             catch(Exception ex)
             {
@@ -782,7 +783,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskGroupDeleted, taskBoard.Id, taskBoard.Name, deletedGroup.Name);
+                await _timelineService.AddTimelineEntry(taskBoard.ProjectId, TimelineEvent.TaskGroupDeleted, taskBoard.Id, taskBoard.Name, deletedGroup.Name);
             }
             catch(Exception ex)
             {
@@ -862,7 +863,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskCreated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name, newTask.Name);
+                await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, TimelineEvent.TaskCreated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name, newTask.Name);
             }
             catch(Exception ex)
             {
@@ -1019,7 +1020,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name, updatedTask.Name);
+                await _timelineService.AddTimelineEntry(updatedTaskBoard.ProjectId, TimelineEvent.TaskUpdated, updatedTaskBoard.Id, updatedTaskBoard.Name, updatedGroup.Name, updatedTask.Name);
             }
             catch(Exception ex)
             {
@@ -1103,7 +1104,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskMoved, targetBoard.Id, targetBoard.Name, targetGroup.Name, moveTask.Name);
+                await _timelineService.AddTimelineEntry(sourceBoard.ProjectId, TimelineEvent.TaskMoved, targetBoard.Id, targetBoard.Name, targetGroup.Name, moveTask.Name);
             }
             catch(Exception ex)
             {
@@ -1183,7 +1184,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskDeleted, taskBoard.Id, taskBoard.Name, taskGroup.Name, deleteTask.Name);
+                await _timelineService.AddTimelineEntry(taskBoard.ProjectId, TimelineEvent.TaskDeleted, taskBoard.Id, taskBoard.Name, taskGroup.Name, deleteTask.Name);
             }
             catch(Exception ex)
             {
@@ -1284,7 +1285,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetLastOpenedTaskBoard()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             string userId = _userManager.GetUserId(this.User);
 
             string boardId = await _userTaskBoardHistoryDbAccess.GetLastOpenBoardForUser(project.Id, userId);
@@ -1301,7 +1302,7 @@ namespace GoNorth.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SetLastOpenedTaskBoard(string boardId)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             string userId = _userManager.GetUserId(this.User);
 
             await _userTaskBoardHistoryDbAccess.SetLastOpenBoardForUser(project.Id, userId, boardId);
@@ -1318,7 +1319,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetTaskBoardCategories()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             List<TaskBoardCategory> categoeries = await _taskBoardCategoryDbAccess.GetTaskBoardCategories(project.Id);
             return Ok(categoeries);
         }
@@ -1348,7 +1349,7 @@ namespace GoNorth.Controllers.Api
 
             await this.SetModifiedData(_userManager, newCategory);
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             newCategory.ProjectId = project.Id;
 
             try
@@ -1364,7 +1365,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardCategoryCreated, newCategory.Id, newCategory.Name);
+                await _timelineService.AddTimelineEntry(newCategory.ProjectId, TimelineEvent.TaskBoardCategoryCreated, newCategory.Id, newCategory.Name);
             }
             catch(Exception ex)
             {
@@ -1419,7 +1420,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardCategoryUpdated, updatedTaskBoardCategory.Id, updatedTaskBoardCategory.Name);
+            await _timelineService.AddTimelineEntry(updatedTaskBoardCategory.ProjectId, TimelineEvent.TaskBoardCategoryUpdated, updatedTaskBoardCategory.Id, updatedTaskBoardCategory.Name);
 
             return Ok(updatedTaskBoardCategory.Id);
         }
@@ -1485,7 +1486,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(TimelineEvent.TaskBoardCategoryDeleted, updatedTaskBoardCategory.Name);
+            await _timelineService.AddTimelineEntry(updatedTaskBoardCategory.ProjectId, TimelineEvent.TaskBoardCategoryDeleted, updatedTaskBoardCategory.Name);
 
             return Ok(id);
         }
@@ -1499,7 +1500,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Task Types</returns>
         private async Task<IActionResult> GetTaskTypesFromDb(ITaskTypeBaseDbAccess dbSource, Func<List<GoNorthTaskType>> defaultTaskTypeFunction)
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             List<GoNorthTaskType> taskTypes = await dbSource.GetTaskTypes(project.Id);
             if(taskTypes == null || !taskTypes.Any())
             {
@@ -1548,7 +1549,7 @@ namespace GoNorth.Controllers.Api
 
             if(project == null)
             {
-                project = await _projectDbAccess.GetDefaultProject();
+                project = await _userProjectAccess.GetUserProject();
             }
 
             GoNorthTaskType defaultTaskType = await dbTarget.GetDefaultTaskType(project.Id);
@@ -1583,7 +1584,7 @@ namespace GoNorth.Controllers.Api
 
             await this.SetModifiedData(_userManager, newTaskType);
 
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             newTaskType.ProjectId = project.Id;
 
             try
@@ -1609,7 +1610,7 @@ namespace GoNorth.Controllers.Api
             // Add Timeline entry
             try
             {
-                await _timelineService.AddTimelineEntry(timelineEvent, newTaskType.Id, newTaskType.Name);
+                await _timelineService.AddTimelineEntry(newTaskType.ProjectId, timelineEvent, newTaskType.Id, newTaskType.Name);
             }
             catch(Exception ex)
             {
@@ -1700,7 +1701,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(timelineEvent, updatedTaskType.Id, updatedTaskType.Name);
+            await _timelineService.AddTimelineEntry(updatedTaskType.ProjectId, timelineEvent, updatedTaskType.Id, updatedTaskType.Name);
 
             return Ok(updatedTaskType.Id);
         }
@@ -1816,7 +1817,7 @@ namespace GoNorth.Controllers.Api
             }
 
             // Add Timeline entry
-            await _timelineService.AddTimelineEntry(timelineEvent, deleteTaskType.Name);
+            await _timelineService.AddTimelineEntry(deleteTaskType.ProjectId, timelineEvent, deleteTaskType.Name);
 
             return Ok(id);
         }
@@ -1860,7 +1861,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> AnyTaskBoardHasTaskGroupsWithoutType()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             bool anyWithoutType = await _taskBoardDbAccess.AnyTaskBoardHasTaskGroupsWithoutType(project.Id);
             return Ok(anyWithoutType);
         }
@@ -1874,7 +1875,7 @@ namespace GoNorth.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> AnyTaskBoardHasTasksWithoutType()
         {
-            GoNorthProject project = await _projectDbAccess.GetDefaultProject();
+            GoNorthProject project = await _userProjectAccess.GetUserProject();
             bool anyWithoutType = await _taskBoardDbAccess.AnyTaskBoardHasTasksWithoutType(project.Id);
             return Ok(anyWithoutType);
         }

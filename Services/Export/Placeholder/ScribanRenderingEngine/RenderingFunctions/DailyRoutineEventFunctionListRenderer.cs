@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
-using GoNorth.Data.Kortisto;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingObjects;
@@ -17,7 +16,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
     /// <summary>
     /// Class to render daily routine event function list
     /// </summary>
-    public class DailyRoutineEventFunctionListRenderer : IScriptCustomFunction
+    public class DailyRoutineEventFunctionListRenderer : ScribanBaseStringRenderingFunction<List<ScribanExportDailyRoutineFunction>>
     {
         /// <summary>
         /// Name of the function
@@ -59,7 +58,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
             _defaultTemplateProvider = defaultTemplateProvider;
             _errorCollection = errorCollection;
         }
-
+        
         /// <summary>
         /// Renders an daily routine function list
         /// </summary>
@@ -76,7 +75,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
                 return "<<DID NOT PROVIDE VALID FUNCTION LIST>>";
             }
 
-            GoNorthProject curProject = await _exportCachedDbAccess.GetDefaultProject();
+            GoNorthProject curProject = await _exportCachedDbAccess.GetUserProject();
             ExportTemplate functionListTemplate = await _defaultTemplateProvider.GetDefaultTemplateByType(curProject.Id, TemplateType.ObjectDailyRoutineFunctionList);
 
             ExportObjectData objectData =  new ExportObjectData();
@@ -96,7 +95,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Daily routine function list</returns>
-        public object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override object Invoke(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return RenderDailyRoutineFunctionList(context, callerContext, arguments).Result;
         }
@@ -109,7 +108,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
         /// <param name="arguments">Arguments</param>
         /// <param name="blockStatement">Block Statement</param>
         /// <returns>Daily routine function list</returns>
-        public async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
+        public override async ValueTask<object> InvokeAsync(TemplateContext context, ScriptNode callerContext, ScriptArray arguments, ScriptBlockStatement blockStatement)
         {
             return await RenderDailyRoutineFunctionList(context, callerContext, arguments);
         }
