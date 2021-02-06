@@ -300,6 +300,10 @@ footer {
     left: 18px;
 }
 
+.gn-statisticsSubValue {
+    padding-left: 20px;
+}
+
 /** Home **/
 .gn-homeTileContainer {
     padding: 10px;
@@ -1274,6 +1278,13 @@ footer {
 .gn-kirjaSidebarOpenOverview {
     position: absolute;
     bottom: 10px;
+    width: calc(100% - 20px);
+}
+
+.gn-kirjaSidebarWordCount {
+    float: right;
+    font-size: 12px;
+    line-height: 20px;
 }
 
 gn-kirjaTableOfContent {
@@ -1681,6 +1692,109 @@ path.leaflet-interactive {
 
 .gn-actionNodeTimeContainer .gn-timePickerInput {
     margin-bottom: 8px;
+}
+
+/** State Machine **/
+.stateNode {
+    fill: #666;
+    stroke-width: 3px;
+    stroke: #333;
+}
+
+.stateNode:hover {
+    opacity: 1 !important;
+}
+
+.stateStartNodeDragHandle {
+    transform: translate(42px, 40px) scale(1.2);
+    stroke: white;
+    stroke-width: 1px;
+}
+
+.stateNodeDragHandle {
+    transform: translate(60px, 50px) scale(1.1);
+    stroke: white;
+    stroke-width: 1px;
+}
+
+.stateNodeView {
+    position: absolute;
+    background-color: transparent;
+	/* Make sure events are propagated to the JointJS element so, e.g. dragging works.*/
+	pointer-events: none;
+	-webkit-user-select: none;
+	box-sizing: border-box;
+	z-index: 2;
+	overflow: hidden;
+}
+
+.stateNodeText {
+    pointer-events: all;
+    background-color: transparent;
+    border: 0;
+    appearance: none;
+    border:none;
+    text-align: center;
+    color: white;
+    background-color: #456;
+    width: calc(100% - 10px);
+    margin-left: 5px;
+    margin-top: calc(50% - 10px);
+}
+
+.stateEndNodeOuter {
+    fill: none;
+    stroke-width: 3px;
+    stroke: #333;
+}
+
+.stateNodeView .delete {
+    color: white;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.stateNodeEndView .delete {
+    margin-left: calc(50% - 7px);
+    margin-top: calc(50% - 9px);
+}
+
+.stateNodeStateView .delete {
+    position: absolute;
+    top: calc(50% + 25px);
+    right: calc(50% - 7px);
+}
+
+.stateNodeStateView .settings {
+    position: absolute;
+    right: calc(50% - 32px);
+    top: calc(50% - 36px);
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.gn-stateDescription {
+    resize: vertical;
+}
+
+.gn-stateMachineInfoIcon {
+    font-size: 18px;
+}
+
+.gn-stateMachineChildObjectsList {
+    max-height: 260px;
+    overflow: auto;
+}
+
+/* Hide vertex link drag */
+#gn-stateMachineContainer .marker-vertex-group {
+    display: none !important;
+}
+
+#gn-stateMachineContainer .connection-wrap {
+	cursor: pointer;
 }
 
 /** Project Config **/

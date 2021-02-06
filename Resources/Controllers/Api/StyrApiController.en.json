@@ -7,7 +7,8 @@
     "CanNotDeleteItemReferencedInTaleDialog": "The item is referenced in the dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteItemUsedInInventory": "The item is used in the npc inventories \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteItemUsedInDailyRoutine": "The item is referenced in daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteObjectUsedInExportSnippet": "The object is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteObjectUsedInExportSnippet": "The item is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteItemUsedInStateMachines": "The item is referenced in the state machine of \"{0}\" referenziert. To prevent errors while exporting it must be deleted there first.",
     "CanNotDeleteItemUsedInSkill": "The item is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",

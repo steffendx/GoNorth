@@ -391,6 +391,25 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var conditions = this.model.get("conditions");
+                        var conditionCount = 0;
+                        for(var curCondition = 0; curCondition < conditions.length; ++curCondition) {
+                            if(conditions[curCondition].conditionElements && conditions[curCondition].conditionElements.length > 0) {
+                                ++conditionCount;
+                            }
+                        }
+
+                        return {
+                            conditionCount: conditionCount
+                        };
                     }
                 });
             }

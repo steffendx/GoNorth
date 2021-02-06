@@ -18,7 +18,7 @@ using Microsoft.Extensions.Localization;
 namespace GoNorth.Services.Export.DailyRoutine
 {
     /// <summary>
-    /// Interface for generating Export Daily Routine Function Names
+    /// Class for generating Export Daily Routine Function Names
     /// </summary>
     public class DailyRoutineFunctionRenderer : NodeGraphBaseRenderer, IDailyRoutineFunctionRenderer
     {

@@ -7,7 +7,8 @@
     "CanNotDeleteItemReferencedInTaleDialog": "Das Item ist in den Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemUsedInInventory": "Das Item wird in den Inventaren der Npcs \"{0}\" benutzt. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemUsedInDailyRoutine": "Das Item ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
-    "CanNotDeleteObjectUsedInExportSnippet": "Das Objekt ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteObjectUsedInExportSnippet": "Das Item ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteItemUsedInStateMachines": "Das Item ist in der State Machine von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteItemUsedInSkill": "Das Item ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
 
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",

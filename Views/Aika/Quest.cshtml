@@ -53,6 +53,92 @@
         </div>
     </div>
 
+    <!-- Statistics dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showStatisticsDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["QuestStatistics"]</h4>
+                </div>
+                <div class="modal-body" data-bind="if: questStatistics">
+                    <div class="form-group">
+                        <label for="gn-totalWordCount" class="gn-clickable" data-bind="click: toggleQuestStatisticsWordCount">
+                            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !questStatisticsWordCountExpanded()"></i>
+                            <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: questStatisticsWordCountExpanded()"></i>
+                            @Localizer["TotalWordCount"]</label>
+                        <input type="text" class="form-control" id="gn-totalWordCount" placeholder="@Localizer["TotalWordCount"]" name="totalWordCount" data-bind="value: questStatistics().totalWordCount + questStatisticsDescriptionWordCount()" readonly/>
+                    </div>
+                    <div class="gn-statisticsSubValue" data-bind="visible: questStatisticsWordCountExpanded">
+                        <div class="form-group">
+                            <label for="gn-descriptionWordCount">@Localizer["DescriptionWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-descriptionWordCount" placeholder="@Localizer["DescriptionWordCount"]" name="descriptionWordCount" data-bind="value: questStatisticsDescriptionWordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-textWordCount">@Localizer["TextWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-textWordCount" placeholder="@Localizer["TextWordCount"]" name="textWordCount" data-bind="value: questStatistics()['aika.Text'].wordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-referenceWordCount">@Localizer["ReferenceWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-referenceWordCount" placeholder="@Localizer["ReferenceWordCount"]" name="referenceWordCount" data-bind="value: questStatistics()['default.Reference'].wordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-actionWordCount">@Localizer["ActionWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-actionWordCount" placeholder="@Localizer["ActionWordCount"]" name="actionWordCount" data-bind="value: questStatistics()['default.Action'].wordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-finishWordCount">@Localizer["FinishWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-finishWordCount" placeholder="@Localizer["FinishWordCount"]" name="finishWordCount" data-bind="value: questStatistics()['aika.Finish'].wordCount" readonly/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="gn-totalConditionCount">
+                            @Localizer["TotalConditionCount"]
+                        </label>
+                        <input type="text" class="form-control" id="gn-totalConditionCount" placeholder="@Localizer["TotalConditionCount"]" name="totalConditionCount" data-bind="value: questStatistics().totalConditionCount" readonly/>
+                    </div>
+                    <div class="form-group">
+                        <label for="gn-totalNodeCount" class="gn-clickable" data-bind="click: toggleQuestStatisticsNodeCount">
+                            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !questStatisticsNodeCountExpanded()"></i>
+                            <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: questStatisticsNodeCountExpanded()"></i>
+                            @Localizer["TotalNodeCount"]
+                        </label>
+                        <input type="text" class="form-control" id="gn-totalNodeCount" placeholder="@Localizer["TotalNodeCount"]" name="totalNodeCount" data-bind="value: questStatistics().totalNodeCount - 1" readonly/>
+                    </div>
+                    <div class="gn-statisticsSubValue" data-bind="visible: questStatisticsNodeCountExpanded">
+                        <div class="form-group">
+                            <label for="gn-textNodeCount">@Localizer["TextNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-textNodeCount" placeholder="@Localizer["TextNodeCount"]" name="textNodeCount" data-bind="value: questStatistics()['aika.Text'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-actionNodeCount">@Localizer["ActionNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-actionNodeCount" placeholder="@Localizer["ActionNodeCount"]" name="actionNodeCount" data-bind="value: questStatistics()['default.Action'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-conditionNodeCount">@Localizer["ConditionNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-conditionNodeCount" placeholder="@Localizer["ConditionNodeCount"]" name="conditionNodeCount" data-bind="value: questStatistics()['default.Condition'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-referenceNodeCount">@Localizer["ReferenceNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-referenceNodeCount" placeholder="@Localizer["ReferenceNodeCount"]" name="referenceNodeCount" data-bind="value: questStatistics()['default.Reference'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-finishNodeCount">@Localizer["FinishNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-finishNodeCount" placeholder="@Localizer["FinishNodeCount"]" name="finishNodeCount" data-bind="value: questStatistics()['aika.Finish'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-allDoneNodeCount">@Localizer["AllDoneNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-allDoneNodeCount" placeholder="@Localizer["AllDoneNodeCount"]" name="allDoneNodeCount" data-bind="value: questStatistics()['aika.AllDone'].nodeCount" readonly/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">   
+                    <button type="button" class="btn btn-default" data-bind="click: closeStatisticsDialog">@Localizer["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
     {
         <!-- ko with: compareDialog -->
@@ -74,6 +160,10 @@
             <span data-bind="visible: !isImplemented()" title="@Localizer["IsNotImplementedTooltip"]"><i class="glyphicon glyphicon-remove text-danger"></i> @Localizer["MarkAsImplemented"]</span>
         </button>
     }
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openStatisticsDialog">
+        <i class="glyphicon glyphicon-stats"></i> @Localizer["ShowStatistics"]
+    </button>
 
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openQuestList">
         <i class="glyphicon glyphicon-king"></i> @Localizer["OpenQuestList"]
@@ -203,6 +293,13 @@
             <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: referencedInDailyRoutines">
                 <li>
                     <a class="gn-clickable" data-bind="text: name, href: $root.buildDailyRoutineNpcUrl" target="_blank"></a>
+                </li>
+            </ul>
+            
+            <h5>@Localizer["ReferencedInStateMachines"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInStateMachines"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInStateMachines"></i></h5>
+            <ul class="gn-aikaQuestFormRelatedList" data-bind="foreach: referencedInStateMachines">
+                <li>
+                    <a class="gn-clickable" data-bind="text: objectName, href: $root.buildStateMachineUrl" target="_blank"></a>
                 </li>
             </ul>
         }

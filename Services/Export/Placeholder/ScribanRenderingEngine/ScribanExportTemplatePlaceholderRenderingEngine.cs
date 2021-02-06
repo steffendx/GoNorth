@@ -14,6 +14,7 @@ using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKeyGene
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFunctions;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollector;
+using GoNorth.Services.Export.StateMachines;
 using Microsoft.Extensions.Localization;
 using Scriban;
 using Scriban.Runtime;
@@ -54,12 +55,15 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine
         /// <param name="dailyRoutineFunctionNameGenerator">Daily routine function name generator</param>
         /// <param name="dailyRoutineFunctionRenderer">Daily routine function renderer</param>
         /// <param name="exportSnippetFunctionRenderer">Export snippet function renderer</param>
+        /// <param name="stateMachineFunctionNameGenerator">State machine function name generator</param>
+        /// <param name="stateMachineFunctionRenderer">State machine function renderer</param>
         /// <param name="languageKeyDbAccess">Language key Database access</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ScribanExportTemplatePlaceholderRenderingEngine(IExportTemplatePlaceholderResolver exportTemplatePlaceholderResolver, IExportCachedDbAccess exportCachedDbAccess, ITaleDbAccess taleDbAccess, 
                                                                ICachedExportDefaultTemplateProvider defaultTemplateProvider, IScribanLanguageKeyGenerator languageKeyGenerator, IExportDialogParser dialogParser,
                                                                IExportDialogFunctionGenerator dialogFunctionGenerator, IExportDialogRenderer dialogRenderer, IDailyRoutineFunctionNameGenerator dailyRoutineFunctionNameGenerator, 
-                                                               IDailyRoutineFunctionRenderer dailyRoutineFunctionRenderer, IExportSnippetFunctionRenderer exportSnippetFunctionRenderer, ILanguageKeyDbAccess languageKeyDbAccess,
+                                                               IDailyRoutineFunctionRenderer dailyRoutineFunctionRenderer, IExportSnippetFunctionRenderer exportSnippetFunctionRenderer, 
+                                                               IStateMachineFunctionNameGenerator stateMachineFunctionNameGenerator, IStateMachineFunctionRenderer stateMachineFunctionRenderer, ILanguageKeyDbAccess languageKeyDbAccess,
                                                                IStringLocalizerFactory localizerFactory)
         {
             _exportCachedDbAccess = exportCachedDbAccess;
@@ -76,6 +80,8 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine
                 new DialogValueCollector(exportTemplatePlaceholderResolver, exportCachedDbAccess, defaultTemplateProvider, taleDbAccess, languageKeyGenerator, dialogParser, dialogFunctionGenerator, dialogRenderer, localizerFactory),
                 new DialogFunctionValueCollector(localizerFactory),
                 new NpcDailyRoutineExportValueCollector(exportTemplatePlaceholderResolver, exportCachedDbAccess, dailyRoutineFunctionNameGenerator, dailyRoutineFunctionRenderer, defaultTemplateProvider, localizerFactory),
+                new NpcStateMachineExportValueCollector(exportTemplatePlaceholderResolver, exportCachedDbAccess, stateMachineFunctionNameGenerator, stateMachineFunctionRenderer, defaultTemplateProvider, localizerFactory),
+                new StateMachineFunctionValueCollector(localizerFactory),
                 new DailyRoutineEventListValueCollector(exportCachedDbAccess, dailyRoutineFunctionNameGenerator, localizerFactory),
                 new DailyRoutineFunctionValueCollector(localizerFactory),
                 new DailyRoutineFunctionListValueCollector(exportTemplatePlaceholderResolver, exportCachedDbAccess, defaultTemplateProvider, localizerFactory),

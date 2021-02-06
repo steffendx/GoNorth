@@ -6,7 +6,8 @@
     "CanNotDeleteNpcMarkedInKartaMap": "The npc is marked in the maps \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteNpcReferencedInTaleDialog": "The npc is referenced in the dialogs \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteNpcUsedInDailyRoutine": "The npc is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteObjectUsedInExportSnippet": "The object is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteObjectUsedInExportSnippet": "The npc is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteNpcUsedInStateMachines": "The npc is referenced in the state machine of \"{0}\". To prevent errors while exporting it must be deleted there first.",
     "CanNotDeleteNpcUsedInSkill": "The npc is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
 
     "CanNotDeleteDailyRoutineEventReferencedInNpc": "The deleted daily routine event {0} is referenced in the daily routines of the npcs \"{1}\". To prevent errors in the story it must be deleted there first.",
@@ -14,6 +15,7 @@
     "CanNotDeleteDailyRoutineEventReferencedInAikaQuest": "The deleted daily routine event {0} is referenced in the quests \"{1}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteDailyRoutineEventReferencedInSkill": "The deleted daily routine event {0} is referenced in the skills \"{1}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteDailyRoutineEventUsedInExportSnippet": "The deleted daily routine event {0} is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteDailyRoutineEventUsedInStateMachine": "The deleted daily routine event {0} is referenced in the state machine of \"{0}\". To prevent errors while exporting it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Kortisto;
+using GoNorth.Data.StateMachines;
 using GoNorth.Data.Tale;
 
 namespace GoNorth.Services.Export.Json
@@ -25,6 +26,11 @@ namespace GoNorth.Services.Export.Json
         /// Dialog of the Npc
         /// </summary>
         public TaleDialog Dialog { get; set; }
+
+        /// <summary>
+        /// State Machine
+        /// </summary>
+        public StateMachine StateMachine { get; set; }        
 
         /// <summary>
         /// Filled export snippets of the Npc

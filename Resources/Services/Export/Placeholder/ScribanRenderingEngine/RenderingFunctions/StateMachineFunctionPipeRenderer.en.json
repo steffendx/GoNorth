@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_StateMachineFunction": "Renders a state machine function based on the shared template for state machine functions. You must pass a state machine function object, like an entry from state_machine.states[0].all_functions array, as &lt;STATE_MACHINE_FUNCTION&gt;."
+}

@@ -1,12 +1,13 @@
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
+using GoNorth.Services.Export.NodeGraphExport;
 
 namespace GoNorth.Services.Export.DailyRoutine
 {
     /// <summary>
     /// Class for generating Export Daily routine Function Names
     /// </summary>
-    public class DailyRoutineFunctionNameGenerator : IDailyRoutineFunctionNameGenerator
+    public class DailyRoutineFunctionNameGenerator : NodeGraphFunctionNameGeneratorBase, IDailyRoutineFunctionNameGenerator
     {
         /// <summary>
         /// Template for the function
@@ -18,19 +19,13 @@ namespace GoNorth.Services.Export.DailyRoutine
         /// </summary>
         private const string DailyRoutineIdCounterSubCategory = "DailyRoutine";
         
-
-        /// <summary>
-        /// Function Id Db Access
-        /// </summary>
-        private readonly IExportFunctionIdDbAccess _functionIdDbAccess;
-
+        
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="functionIdDbAccess">Export Function Id Db Access</param>
-        public DailyRoutineFunctionNameGenerator(IExportFunctionIdDbAccess functionIdDbAccess)
+        public DailyRoutineFunctionNameGenerator(IExportFunctionIdDbAccess functionIdDbAccess) : base(functionIdDbAccess, FunctionTemplate, DailyRoutineIdCounterSubCategory)
         {
-            _functionIdDbAccess = functionIdDbAccess;
         }
 
         /// <summary>
@@ -42,18 +37,7 @@ namespace GoNorth.Services.Export.DailyRoutine
         /// <returns>New Daily Routine Step Function</returns>
         public async Task<string> GetNewDailyRoutineStepFunction(string projectId, string npcId, string dailyRoutineEventId)
         {
-            ExportFunctionId functionId = await _functionIdDbAccess.GetExportFunctionId(projectId, npcId, dailyRoutineEventId);
-            if(functionId == null)
-            {
-                functionId = new ExportFunctionId();
-                functionId.ProjectId = projectId;
-                functionId.ObjectId = npcId;
-                functionId.FunctionObjectId = dailyRoutineEventId;
-                functionId.FunctionId = await _functionIdDbAccess.GetNewExportFuntionIdForObjectAndSubCategory(projectId, npcId, DailyRoutineIdCounterSubCategory);
-                await _functionIdDbAccess.SaveNewExportFunctionId(functionId);
-            }
-
-            return string.Format(FunctionTemplate, functionId.FunctionId);
+            return await GetNewFunctionName(projectId, npcId, dailyRoutineEventId);
         }
     }
 }

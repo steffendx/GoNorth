@@ -1,0 +1,37 @@
+{
+    "StateMachine": "State machine",
+    "Template": "(Template)",
+
+    "StateMachineBasedOnParent": "No custom state machine is saved for this object. The parent state machine will be used. Click here to load the parent state machine.",
+
+    "Save": "Save",
+    "ReturnToNpc": "Back to npc",
+
+    "StateNode": "State",
+    "EndNode": "Endpoint",
+
+    "ChildObjectsHavingCustomizedStateMachine": "The following child objects have a customized state machine. You might need to update these as well.",
+
+    "SetTransitionLabel": "State transition label",
+    "SetTransitionTextBoxLabel": "Label",
+    "Ok": "Ok",
+    "Cancel": "Cancel",
+
+    "StateSettings": "State settings",
+    "StateDescription": "Description",
+    "StateScript": "Script",
+    "ClickHereToAddScript": "<Click here to add script>",
+    "DeleteScriptTooltip": "Click here to remove the script",
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToRemoveTheScript": "Are you sure you want to remove the script?",
+    "StateDontExportToScript": "Do not export to script",
+
+    "Error": "Error",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedPrefix": "The state machine is currently being edited by ",
+    "LockedPostfix": ".",
+
+    "NodeLang": "en"
+}

@@ -8,7 +8,8 @@
     "CanNotDeletePageReferencedInNpc": "Die Seite ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeletePageReferencedInQuest": "Die Seite ist in den Quests \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeletePageReferencedInSkill": "Die Seite ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
-    "CanNotDeletePageReferencedInExportSnippet": "Die Seite ist in den Export Snippets \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeletePageReferencedInExportSnippet": "Die Seite ist in den Export Snippets \"{0}\" referenziert. Um Export Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
+    "CanNotDeletePageUsedInStateMachines": "Die Seite ist in der State Machine von \"{0}\" referenziert. Um Export Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",        
     "CanNotDeleteRootPage": "Die Wiki Startseite kann nicht gelöscht werden",
 
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",

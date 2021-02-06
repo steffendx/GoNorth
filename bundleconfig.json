@@ -932,6 +932,8 @@
 
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
 
+      "wwwroot/js/Shared/nodeGraph/nodeStatisticsAnalyzer.js",
+
       "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
       "wwwroot/js/Shared/nodeGraph/questStates.js",
       "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
@@ -1087,6 +1089,173 @@
     },
     "sourceMap": false
   },
+
+  {
+    "outputFileName": "wwwroot/js/StateMachine/stateMachine.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+
+      "wwwroot/js/Shared/dailyRoutines/utilFunctions.js",
+
+      "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
+      "wwwroot/js/Shared/nodeGraph/questStates.js",
+      "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
+      
+      "wwwroot/js/Shared/scriptDialog/codeEditor.bindingHandler.js",
+      "wwwroot/js/Shared/scriptDialog/codeScriptDialog.js",
+      "wwwroot/js/Shared/scriptDialog/nodeScriptDialog.js",
+      "wwwroot/js/Shared/chooseScriptTypeDialog.js",
+
+      "wwwroot/js/Shared/flexFieldUtil.js",
+      "wwwroot/js/Shared/timePicker.bindings.js",
+      
+      "wwwroot/js/ProjectConfig/shared/configKeys.js",
+
+      "wwwroot/js/Shared/nodeGraph/actionNode.js",
+
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/multiLineFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/numberFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/optionFlexField.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/fieldGroup.js",
+      
+      "wwwroot/js/Shared/nodeGraph/actions/baseAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeValueChooseObjectAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changePlayerValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeNpcValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeInventoryChooseNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/spawnItemInPlayerInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/spawnItemInNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/spawnItemInChooseNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/transferItemToPlayerInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/transferItemToNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/removeItemFromNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/removeItemFromPlayerInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/removeItemFromChooseNpcInventoryAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/objectUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/npcUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/chooseNpcUseItemAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeQuestValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setQuestStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/addQuestTextAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/waitAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setObjectStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setPlayerStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setNpcStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/learnForgetSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerLearnSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playerForgetSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/npcLearnSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/npcForgetSkillAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeSkillValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changePlayerSkillValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/changeNpcSkillValueAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playAnimationAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playNpcAnimationAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/playPlayerAnimationAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/codeAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/showFloatingTextAboveObjectAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/showFloatingTextAboveNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/showFloatingTextAbovePlayerAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/showFloatingTextAboveChooseNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/fadeToFromBlackBaseAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/fadeToBlackAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/fadeFromBlackAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setGameTimeAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/setDailyRoutineEventStateAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/disableDailyRoutineEventAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/enableDailyRoutineEventAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/moveObjectAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/teleportNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/teleportPlayerAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/moveChooseObjectAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/teleportChooseNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/walkNpcToMarkerAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/walkChooseNpcToMarkerAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/moveObjectToNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/teleportNpcToNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/moveChooseObjectToNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/teleportChooseNpcToNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/walkNpcToNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/walkChooseNpcToNpcAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/spawnObjectAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/spawnNpcAtMarkerAction.js",
+      "wwwroot/js/Shared/nodeGraph/actions/spawnItemAtMarkerAction.js",
+
+      "wwwroot/js/Shared/nodeGraph/conditions/conditionManager.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/baseCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/groupCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcAliveStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkInventoryCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerInventoryCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcInventoryCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseObjectValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseQuestValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkQuestStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkGameTimeCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChoosePlayerSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkChooseNpcSkillValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkPlayerNotLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkNpcNotLearnedSkillCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkRandomValueCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkDailyRoutineEventStateCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkDailyRoutineEventIsDisabledCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkDailyRoutineEventIsActiveCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditions/checkCodeCondition.js",
+      "wwwroot/js/Shared/nodeGraph/conditionNode.js",
+      "wwwroot/js/Shared/nodeGraph/conditionDialog.js",
+
+      "wwwroot/js/Shared/nodeGraph/referenceNode.js",
+
+      "wwwroot/js/StateMachine/viewmodel/stateNodeMoveCrossMarkup.js",
+      "wwwroot/js/StateMachine/viewmodel/stateStartNode.js",
+      "wwwroot/js/StateMachine/viewmodel/stateNode.js",
+      "wwwroot/js/StateMachine/viewmodel/stateEndNode.js",
+      "wwwroot/js/StateMachine/viewmodel/stateTransition.js",
+
+      "wwwroot/js/StateMachine/viewmodel/stateMachineLayouter.js",
+      "wwwroot/js/StateMachine/viewmodel/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/StateMachine/stateMachineLang.de.js",
+    "inputFiles": [
+      "wwwroot/js/StateMachine/viewmodel/stateMachineLang.de.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/StateMachine/stateMachineLang.en.js",
+    "inputFiles": [
+      "wwwroot/js/StateMachine/viewmodel/stateMachineLang.en.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+
   {
     "outputFileName": "wwwroot/js/ProjectConfig/config.viewmodel.js",
     "inputFiles": [
@@ -1169,6 +1338,8 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/exportSnippetManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
 
+      "wwwroot/js/Shared/nodeGraph/nodeStatisticsAnalyzer.js",
+      
       "wwwroot/js/Shared/nodeGraph/questStates.js",
       "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
       "wwwroot/js/Shared/nodeGraph/baseViewModel.js",

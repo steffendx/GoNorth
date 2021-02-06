@@ -23,6 +23,7 @@ using GoNorth.Services.Project;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Export.ExportSnippets;
+using GoNorth.Data.StateMachines;
 
 namespace GoNorth.Controllers.Api
 {
@@ -125,6 +126,11 @@ namespace GoNorth.Controllers.Api
         private readonly IKortistoNpcDbAccess _kortistoNpcDbAccess;
 
         /// <summary>
+        /// Npc Template Db Access
+        /// </summary>
+        private readonly IKortistoNpcTemplateDbAccess _npcTemplateDbAccess;
+
+        /// <summary>
         /// Tale Db Access
         /// </summary>
         private readonly ITaleDbAccess _taleDbAccess;
@@ -165,6 +171,11 @@ namespace GoNorth.Controllers.Api
         private readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
 
         /// <summary>
+        /// State Machine Db Access
+        /// </summary>
+        private readonly IStateMachineDbAccess _stateMachineDbAccess;
+
+        /// <summary>
         /// Timeline Service
         /// </summary>
         private readonly ITimelineService _timelineService;
@@ -190,10 +201,12 @@ namespace GoNorth.Controllers.Api
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="markerImplementationSnapshotDbAccess">Marker Implementation Snapshot Db Access</param>
         /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
+        /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="stateMachineDbAccess">State Machine Db Access</param>
         /// <param name="userProjectAccess">User project access</param>
         /// <param name="mapImageAccess">Map Image Access</param>
         /// <param name="imageProcessor">Map Image Processor</param>
@@ -202,18 +215,20 @@ namespace GoNorth.Controllers.Api
         /// <param name="userManager">User Manager</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
-        public KartaApiController(IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerImplementationSnapshotDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, ITaleDbAccess taleDbAccess, 
-                                  IAikaQuestDbAccess questDbAccess, IEvneSkillDbAccess skillDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IUserProjectAccess userProjectAccess, 
-                                  IKartaImageAccess mapImageAccess, IKartaImageProcessor imageProcessor, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, ITimelineService timelineService, 
-                                  UserManager<GoNorthUser> userManager, ILogger<KartaApiController> logger, IStringLocalizerFactory localizerFactory)
+        public KartaApiController(IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerImplementationSnapshotDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, 
+                                  ITaleDbAccess taleDbAccess, IAikaQuestDbAccess questDbAccess, IEvneSkillDbAccess skillDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IStateMachineDbAccess stateMachineDbAccess, 
+                                  IUserProjectAccess userProjectAccess, IKartaImageAccess mapImageAccess, IKartaImageProcessor imageProcessor, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, 
+                                  ITimelineService timelineService, UserManager<GoNorthUser> userManager, ILogger<KartaApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _mapDbAccess = mapDbAccess;
             _markerImplementationSnapshotDbAccess = markerImplementationSnapshotDbAccess;
             _kortistoNpcDbAccess = kortistoNpcDbAccess;
+            _npcTemplateDbAccess = npcTemplateDbAccess;
             _taleDbAccess = taleDbAccess;
             _questDbAccess = questDbAccess;
             _skillDbAccess = skillDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _stateMachineDbAccess = stateMachineDbAccess;
             _userProjectAccess = userProjectAccess;
             _mapImageAccess = mapImageAccess;
             _imageProcessor = imageProcessor;
@@ -711,6 +726,15 @@ namespace GoNorth.Controllers.Api
                 return _localizer["CanNotDeleteMapReferencedInExportSnippet", usedInDailyRoutines].Value;
             }
 
+            List<StateMachine> referencedInStateMachine = await _stateMachineDbAccess.GetStateMachinesObjectIsReferenced(id);
+            if(referencedInStateMachine.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _kortistoNpcDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachine.Select(t => t.RelatedObjectId).ToList());
+                List<KortistoNpc> npcTemplates = await _npcTemplateDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachine.Select(t => t.RelatedObjectId).ToList());
+                string usedInStateMachines = string.Join(", ", npcs.Union(npcTemplates).Select(n => n.Name));
+                return _localizer["CanNotDeleteMapReferencedInStateMachines", usedInStateMachines].Value;
+            }
+
             return null;
         }
 
@@ -1010,6 +1034,15 @@ namespace GoNorth.Controllers.Api
                 List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
                 string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
                 return _localizer["CanNotDeleteMarkerReferencedInExportSnippet", usedInDailyRoutines].Value;
+            }
+
+            List<StateMachine> referencedInStateMachine = await _stateMachineDbAccess.GetStateMachinesObjectIsReferenced(markerId);
+            if(referencedInStateMachine.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _kortistoNpcDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachine.Select(t => t.RelatedObjectId).ToList());
+                List<KortistoNpc> npcTemplates = await _npcTemplateDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachine.Select(t => t.RelatedObjectId).ToList());
+                string usedInStateMachines = string.Join(", ", npcs.Union(npcTemplates).Select(n => n.Name));
+                return _localizer["CanNotDeleteMarkerReferencedInStateMachines", usedInStateMachines].Value;
             }
 
             return null;

@@ -115,12 +115,13 @@ namespace GoNorth.Data.Kortisto
         /// <summary>
         /// Returns the npcs which have a daily routine event that is later than a given time
         /// </summary>
+        /// <param name="projectId">Id of the project to check</param>
         /// <param name="hours">Hours</param>
         /// <param name="minutes">Minutes</param>
         /// <returns>Npcs</returns>
-        public async Task<List<KortistoNpc>> GetNpcsWithDailyRoutineAfterTime(int hours, int minutes)
+        public async Task<List<KortistoNpc>> GetNpcsWithDailyRoutineAfterTime(string projectId, int hours, int minutes)
         {
-            return await _ObjectCollection.AsQueryable().Where(n => n.DailyRoutine != null && n.DailyRoutine.Any(d => d.EarliestTime.Hours > hours || d.EarliestTime.Minutes > minutes)).OrderBy(n => n.Name).Select(n => new KortistoNpc {
+            return await _ObjectCollection.AsQueryable().Where(n => n.ProjectId == projectId && n.DailyRoutine != null && n.DailyRoutine.Any(d => d.EarliestTime.Hours > hours || d.EarliestTime.Minutes > minutes)).OrderBy(n => n.Name).Select(n => new KortistoNpc {
                 Id = n.Id,
                 Name = n.Name
             }).ToListAsync();

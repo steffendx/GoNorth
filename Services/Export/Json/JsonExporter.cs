@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Kortisto;
+using GoNorth.Data.StateMachines;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 
@@ -44,6 +45,7 @@ namespace GoNorth.Services.Export.Json
             {
                 NpcJsonExportObject exportObject = new NpcJsonExportObject((KortistoNpc)objectData.ExportData[ExportConstants.ExportDataObject]);
                 exportObject.Dialog = objectData.ExportData[ExportConstants.ExportDataDialog] as TaleDialog;
+                exportObject.StateMachine = objectData.ExportData[ExportConstants.ExportDataStateMachine] as StateMachine;
                 exportObject.ExportSnippets = await _objectExportSnippetDbAccess.GetExportSnippets(exportObject.Id);
                 exportResult = exportObject;
             }

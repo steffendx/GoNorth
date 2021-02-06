@@ -319,6 +319,17 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            wordCount: GoNorth.Util.getWordCount(this.model.get('referenceText'))
+                        };
                     }
                 });
                 baseView.prototype = jQuery.extend(baseView.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);

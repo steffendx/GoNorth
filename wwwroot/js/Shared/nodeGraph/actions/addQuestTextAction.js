@@ -209,6 +209,17 @@
                 return def.promise();
             };
 
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.AddQuestTextAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.questText)
+                };
+            };
+
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.AddQuestTextAction());
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));

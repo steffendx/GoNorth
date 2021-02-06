@@ -199,6 +199,17 @@
                 return def.promise();
             };
 
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.floatingText)
+                };
+            };
+
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ShowFloatingTextAboveChooseNpcAction());
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));

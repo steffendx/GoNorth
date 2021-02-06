@@ -29,6 +29,7 @@
     "NameGenUnexpectedPointyBracketInInput": "Unerwartete '<' Klammer in Eingabe",
     "NameGenUnexpectedRoundBracketInInput": "Unerwartete '(' Klammer in Eingabe",
     "NameGenUnknownError": "Unbekannter Fehler",
+    "StateMachine": "State Machine",
     "ManageTemplate": "Export Template",
     "Export": "Exportieren",
     "Script": "Skript",
@@ -113,6 +114,8 @@
 
     "ReferencedInDailyRoutines": "Referenziert in Tagesabläufen:",
     "ReferencedInExportSnippets": "Referenziert in Export Snippets:",
+
+    "ReferencedInStateMachines": "Referenziert in State Machines:",
 
     "ReferencedInEvneSkills": "Referenziert in Fähigkeiten:",
 

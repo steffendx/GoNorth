@@ -174,6 +174,30 @@
                         enableNodeGraphPositionZoomUrl = !allBindings.get("nodeGraphDisablePositionZoomUrl");
                     }
 
+                    var markAvailable = true;
+                    if(allBindings.get("nodeGraphDontMarkAvailablePorts"))
+                    {
+                        markAvailable = false;
+                    }
+
+                    var allowSelfLink = false;
+                    if(allBindings.get("nodeGraphAllowSelfLink"))
+                    {
+                        allowSelfLink = true;
+                    }
+
+                    var disableLinkVertexEdit = false;
+                    if(allBindings.get("nodeGraphDisableLinkVertexEdit"))
+                    {
+                        disableLinkVertexEdit = true;
+                    }
+
+                    var linkCreationCallback = null;
+                    if(allBindings.get("nodeGraphLinkCreationCallback"))
+                    {
+                        linkCreationCallback = allBindings.get("nodeGraphLinkCreationCallback");
+                    }
+
                     var graph = new joint.dia.Graph();
                     var paper = new joint.dia.Paper(
                     {
@@ -182,22 +206,22 @@
                         height: 8000,
                         gridSize: 1,
                         model: graph,
-                        defaultLink: GoNorth.DefaultNodeShapes.Connections.createDefaultLink(),
+                        defaultLink: linkCreationCallback ? linkCreationCallback() : GoNorth.DefaultNodeShapes.Connections.createDefaultLink(),
                         snapLinks: { radius: 75 }, 
-                        markAvailable: true,
+                        markAvailable: markAvailable,
                         linkPinning: false,
                         validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
                           // Prevent linking from output ports to input ports within one element.
-                          if (cellViewS === cellViewT) 
+                          if (cellViewS === cellViewT && !allowSelfLink) 
                           {
                               return false;
                           }
 
                           // Prevent linking to output ports.
-                          return magnetT.getAttribute("port-type") === "input";
+                          return magnetT && magnetT.getAttribute("port-type") === "input";
                         },
                         validateMagnet: function(cellView, magnet) {
-                            if(allowMultipleOutboundForNodes)
+                            if(allowMultipleOutboundForNodes && !cellView.model.get("allowSingleConnectionOnly"))
                             {
                                 return magnet.getAttribute("magnet") !== "passive";
                             }
@@ -214,6 +238,12 @@
                                 }
                             }
                             return magnet.getAttribute("magnet") !== "passive";
+                        },
+                        interactive: function(cellView) {
+                            if (disableLinkVertexEdit && cellView.model.isLink()) {
+                                return { vertexAdd: false, vertexMove: false, labelMove: false };
+                            }
+                            return true;
                         }
                     });
 

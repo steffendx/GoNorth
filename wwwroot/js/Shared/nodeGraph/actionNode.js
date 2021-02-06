@@ -330,6 +330,30 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var action = this.getCurrentAction();
+                        if(!action)
+                        {
+                            return;
+                        }
+
+                        var currentAction = action.buildAction();
+                        currentAction.setNodeModel(this.model);
+
+                        var actionData = this.model.get("actionData");
+                        if(!actionData) {
+                            return {};
+                        }
+
+                        var parsedActionData = JSON.parse(actionData);
+                        return currentAction.getStatistics(parsedActionData);
                     }
                 });
             }

@@ -8,6 +8,7 @@
     "CanNotDeleteQuestUsedInDailyRoutine": "The quest is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteQuestUsedInSkill": "The quest is referenced in the skill \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteQuestUsedInExportSnippet": "The quest is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteQuestUsedInStateMachines": "The quest is referenced in the state machine of \"{0}\". To prevent errors while exporting it must be deleted there first.",
 
     "DuplicateFieldNameExist": "Multiple fields with the same name exist."
 }

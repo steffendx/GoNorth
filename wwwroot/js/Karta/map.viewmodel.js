@@ -2144,6 +2144,9 @@
             this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
+            this.nodeDropOffsetX = 0;
+            this.nodeDropOffsetY = 0;
+
             this.errorOccured = new ko.observable(false);
         };
 
@@ -2176,7 +2179,7 @@
                 var scale = this.nodePaper().scale();
                 var translate = this.nodePaper().translate();
                 var initOptions = {
-                    position: { x: (x - translate.tx) / scale.sx, y: (y - translate.ty) / scale.sy }
+                    position: { x: (x - translate.tx) / scale.sx + this.nodeDropOffsetX, y: (y - translate.ty) / scale.sy + this.nodeDropOffsetY }
                 };
                 return initOptions;
             },
@@ -3594,6 +3597,30 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var action = this.getCurrentAction();
+                        if(!action)
+                        {
+                            return;
+                        }
+
+                        var currentAction = action.buildAction();
+                        currentAction.setNodeModel(this.model);
+
+                        var actionData = this.model.get("actionData");
+                        if(!actionData) {
+                            return {};
+                        }
+
+                        var parsedActionData = JSON.parse(actionData);
+                        return currentAction.getStatistics(parsedActionData);
                     }
                 });
             }
@@ -3816,6 +3843,15 @@
                  */
                 deserialize: function(serializedData) {
 
+                },
+
+                /**
+                 * Returns statistics for the action
+                 * @param {object} parsedActionData Parsed action data
+                 * @returns Node statistics
+                 */
+                getStatistics: function(parsedActionData) {
+                    return {};
                 }
             };
 
@@ -6351,6 +6387,17 @@
                 });
 
                 return def.promise();
+            };
+
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.AddQuestTextAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.questText)
+                };
             };
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.AddQuestTextAction());
@@ -14691,6 +14738,25 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var conditions = this.model.get("conditions");
+                        var conditionCount = 0;
+                        for(var curCondition = 0; curCondition < conditions.length; ++curCondition) {
+                            if(conditions[curCondition].conditionElements && conditions[curCondition].conditionElements.length > 0) {
+                                ++conditionCount;
+                            }
+                        }
+
+                        return {
+                            conditionCount: conditionCount
+                        };
                     }
                 });
             }
@@ -15496,6 +15562,17 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            wordCount: GoNorth.Util.getWordCount(this.model.get('referenceText'))
+                        };
                     }
                 });
                 baseView.prototype = jQuery.extend(baseView.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);

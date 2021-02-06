@@ -27,6 +27,7 @@ using GoNorth.Data.Exporting;
 using GoNorth.Services.Export.ExportSnippets;
 using GoNorth.Data.Evne;
 using GoNorth.Services.ReferenceAnalyzer;
+using GoNorth.Data.StateMachines;
 
 namespace GoNorth.Controllers.Api
 {
@@ -141,6 +142,11 @@ namespace GoNorth.Controllers.Api
         /// Kortisto DB Access
         /// </summary>
         private readonly IKortistoNpcDbAccess _kortistoNpcDbAccess;
+    
+        /// <summary>
+        /// Npc Template DB Access
+        /// </summary>
+        private readonly IKortistoNpcTemplateDbAccess _npcTemplateDbAccess;
 
         /// <summary>
         /// Kortisto DB Access
@@ -183,6 +189,11 @@ namespace GoNorth.Controllers.Api
         private readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
 
         /// <summary>
+        /// State machine Db Access
+        /// </summary>
+        private readonly IStateMachineDbAccess _stateMachineDbAccess;
+
+        /// <summary>
         /// Logger
         /// </summary>
         private readonly ILogger _logger;
@@ -202,10 +213,12 @@ namespace GoNorth.Controllers.Api
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
+        /// <param name="npcTemplateDbAccess">Kortisto Npc Template Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
         /// <param name="userProjectAccess">User project Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
+        /// <param name="stateMachineDbAccess">State machine Db Access</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="implementationStatusComparer">Implementation status comparer</param>
         /// <param name="referenceAnalyzer">Reference analyzer</param>
@@ -213,9 +226,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public AikaApiController(IAikaChapterOverviewDbAccess chapterOverviewDbAccess, IAikaChapterDetailDbAccess chapterDetailDbAccess, IAikaQuestDbAccess questDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IEvneSkillDbAccess skillDbAccess,
-                                 ITaleDbAccess taleDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IKartaMapDbAccess kartaMapDbAccess, IUserProjectAccess userProjectAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess,
-                                 IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, IReferenceAnalyzer referenceAnalyzer, 
-                                 ITimelineService timelineService, ILogger<AikaApiController> logger, IStringLocalizerFactory localizerFactory)
+                                 ITaleDbAccess taleDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IKartaMapDbAccess kartaMapDbAccess, IUserProjectAccess userProjectAccess, 
+                                 IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IStateMachineDbAccess stateMachineDbAccess, UserManager<GoNorthUser> userManager, 
+                                 IImplementationStatusComparer implementationStatusComparer, IReferenceAnalyzer referenceAnalyzer, ITimelineService timelineService, ILogger<AikaApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _chapterOverviewDbAccess = chapterOverviewDbAccess;
             _chapterDetailDbAccess = chapterDetailDbAccess;
@@ -224,10 +237,12 @@ namespace GoNorth.Controllers.Api
             _skillDbAccess = skillDbAccess;
             _taleDbAccess = taleDbAccess;
             _kortistoNpcDbAccess = kortistoNpcDbAccess;
+            _npcTemplateDbAccess = npcTemplateDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
             _userProjectAccess = userProjectAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
+            _stateMachineDbAccess = stateMachineDbAccess;
             _userManager = userManager;
             _implementationStatusComparer = implementationStatusComparer;
             _referenceAnalyzer = referenceAnalyzer;
@@ -1181,6 +1196,15 @@ namespace GoNorth.Controllers.Api
             {
                 string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
                 return BadRequest(_localizer["CanNotDeleteQuestUsedInDailyRoutine", usedInDailyRoutines].Value);
+            }
+
+            List<StateMachine> referencedInStateMachines = await _stateMachineDbAccess.GetStateMachinesObjectIsReferenced(id);
+            if(referencedInStateMachines.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _kortistoNpcDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachines.Select(t => t.RelatedObjectId).ToList());
+                List<KortistoNpc> npcTemplates = await _npcTemplateDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachines.Select(t => t.RelatedObjectId).ToList());
+                string usedInStateMachines = string.Join(", ", npcs.Union(npcTemplates).Select(n => n.Name));
+                return BadRequest(_localizer["CanNotDeleteQuestUsedInStateMachines", usedInStateMachines].Value);
             }
             
             List<EvneSkill> referencedInSkills = await _skillDbAccess.GetSkillsObjectIsReferencedIn(id);

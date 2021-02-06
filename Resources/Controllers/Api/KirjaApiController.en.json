@@ -9,6 +9,7 @@
     "CanNotDeletePageReferencedInQuest": "The page is referenced in the quests \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeletePageReferencedInSkill": "The page is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeletePageReferencedInExportSnippet": "The page is referenced in the export snippets \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeletePageUsedInStateMachines": "The page is referenced in the state machine of \"{0}\". To prevent errors while exporting it must be deleted there first.",
     "CanNotDeleteRootPage": "The root page can not be deleted",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file..",

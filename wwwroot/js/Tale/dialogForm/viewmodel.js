@@ -29,6 +29,12 @@
                 this.isImplemented = new ko.observable(false);
                 this.compareDialog = new GoNorth.ImplementationStatus.CompareDialog.ViewModel();
 
+                this.dialogStatistics = new ko.observable(null);
+                this.dialogStatisticsWordCountExpanded = new ko.observable(false);
+                this.dialogStatisticsConditionCountExpanded = new ko.observable(false);
+                this.dialogStatisticsNodeCountExpanded = new ko.observable(false);
+                this.showStatisticsDialog = new ko.observable(false);
+
                 this.showReturnToNpcButton = new ko.observable(false);
                 
                 var npcId = GoNorth.Util.getParameterFromUrl("npcId");
@@ -245,7 +251,7 @@
                         self.dialogId(data.id);
                         self.isImplemented(data.isImplemented);
 
-                        GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().deserializeGraph(self.nodeGraph(), data, function(newNode) { self.setupNewNode(newNode); }, self.nodePaper());
+                        GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().deserializeGraph(self.nodeGraph(), data, function(newNode) { self.setupNewNode(newNode); });
                         self.focusNodeFromUrl();
 
                         if(self.isReadonly())
@@ -272,6 +278,50 @@
                 this.compareDialog.openDialogCompare(this.dialogId(), this.headerName()).done(function() {
                     self.isImplemented(true);
                 });
+            };
+
+            /**
+             * Opens the statistics dialog
+             */
+            Dialog.ViewModel.prototype.openStatisticsDialog = function() {
+                var graph = this.nodeGraph();
+                var paper = this.nodePaper();
+
+                var statistics = GoNorth.DefaultNodeShapes.getNodeStatistics(graph, paper);
+                
+                this.dialogStatistics(statistics);
+                this.dialogStatisticsWordCountExpanded(false);
+                this.dialogStatisticsConditionCountExpanded(false);
+                this.dialogStatisticsNodeCountExpanded(false);
+                this.showStatisticsDialog(true);
+            };
+
+            /**
+             * Toggles the visibility of the detailed word count statistics
+             */
+            Dialog.ViewModel.prototype.toggleDialogStatisticsWordCount = function() {
+                this.dialogStatisticsWordCountExpanded(!this.dialogStatisticsWordCountExpanded());
+            }
+            
+            /**
+             * Toggles the visibility of the detailed condition count statistics
+             */
+            Dialog.ViewModel.prototype.toggleDialogStatisticsConditionCount = function() {
+                this.dialogStatisticsConditionCountExpanded(!this.dialogStatisticsConditionCountExpanded());
+            }
+            
+            /**
+             * Toggles the visibility of the detailed node count statistics
+             */
+            Dialog.ViewModel.prototype.toggleDialogStatisticsNodeCount = function() {
+                this.dialogStatisticsNodeCountExpanded(!this.dialogStatisticsNodeCountExpanded());
+            }
+
+            /**
+             * Closes the statistics dialog
+             */
+            Dialog.ViewModel.prototype.closeStatisticsDialog = function() {
+                this.showStatisticsDialog(false);
             };
 
             /**

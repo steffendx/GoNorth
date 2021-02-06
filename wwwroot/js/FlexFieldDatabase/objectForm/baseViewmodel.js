@@ -107,10 +107,14 @@
                 this.referencedInTaleDialogs = new ko.observableArray();
                 this.loadingReferencedInTaleDialogs = new ko.observable(false);
                 this.errorLoadingReferencedInTaleDialogs = new ko.observable(false);
-                
+
                 this.referencedInDailyRoutines = new ko.observableArray();
                 this.loadingReferencedInDailyRoutines = new ko.observable(false);
                 this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
+
+                this.referencedInStateMachines = new ko.observableArray();
+                this.loadingReferencedInStateMachines = new ko.observable(false);
+                this.errorLoadingReferencedInStateMachines = new ko.observable(false);
 
                 this.referencedInEvneSkills = new ko.observableArray();
                 this.loadingReferencedInEvneSkills = new ko.observable(false);
@@ -205,6 +209,7 @@
                     if(GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights && !this.isTemplateMode())
                     {
                         this.loadUsedInDailyRoutines();
+                        this.loadUsedInStateMachines();
                     } 
 
                     if(GoNorth.FlexFieldDatabase.ObjectForm.hasExportObjectsRights && !this.isTemplateMode())
@@ -993,6 +998,44 @@
              */
             ObjectForm.BaseViewModel.prototype.buildDailyRoutineNpcUrl = function(npc) {
                 return "/Kortisto/Npc?id=" + npc.id;
+            };
+
+
+            /**
+             * Loads the npcs in which the quest is used in state machines
+             */
+            ObjectForm.BaseViewModel.prototype.loadUsedInStateMachines = function() {
+                this.loadingReferencedInStateMachines(true);
+                this.errorLoadingReferencedInStateMachines(false);
+                var self = this;
+                GoNorth.HttpClient.get("/api/StateMachineApi/GetStateMachineObjectIsReferenced?objectId=" + this.id()).done(function(data) {
+                    self.referencedInStateMachines(data);
+                    self.loadingReferencedInStateMachines(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInStateMachines(true);
+                    self.loadingReferencedInStateMachines(false);
+                });
+            };
+
+            /**
+             * Builds the url for a state machine
+             * 
+             * @param {object} stateMachine State Machine to build the url for
+             * @returns {string} Url for the state machine
+             */
+            ObjectForm.BaseViewModel.prototype.buildStateMachineUrl = function(stateMachine) {
+                var url = "/StateMachine?";
+                if(stateMachine.objectType == "NpcTemplate") {
+                    url += "npcTemplateId="
+                } else if(stateMachine.objectType == "Npc") {
+                    url += "npcId=";
+                } else {
+                    throw "Unknown state machine object";
+                }
+                
+                url += stateMachine.objectId;
+
+                return url;
             };
 
 

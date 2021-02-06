@@ -87,7 +87,7 @@ namespace GoNorth.Controllers.Api
         private readonly ITaleDbAccess _taleDbAccess;
 
         /// <summary>
-        /// Tale Db Service
+        /// Npc Db Service
         /// </summary>
         private readonly IKortistoNpcDbAccess _npcDbAccess;
 

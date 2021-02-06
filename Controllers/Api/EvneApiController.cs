@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Http;
 using GoNorth.Services.CsvHandling;
 using GoNorth.Services.Project;
 using GoNorth.Services.Export.ExportSnippets;
+using GoNorth.Data.StateMachines;
 
 namespace GoNorth.Controllers.Api
 {
@@ -144,6 +145,10 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         private readonly IKortistoNpcDbAccess _kortistoNpcDbAccess;
 
+        /// <summary>
+        /// Npc Template Db Access
+        /// </summary>
+        private readonly IKortistoNpcTemplateDbAccess _npcTemplateDbAccess;
 
         /// <summary>
         /// Constructor
@@ -159,12 +164,14 @@ namespace GoNorth.Controllers.Api
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
+        /// <param name="stateMachineDbAccess">State machine Db Access</param>
         /// <param name="imageAccess">Skill Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="aikaQuestDbAccess">Aika Quest Db ACcess</param>
         /// <param name="kirjaPageDbAccess">Kirja Page Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="kortistoNpcDbAccess">Kortisto Npc Db Access</param>
+        /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
         /// <param name="userProjectAccess">User project Access</param>
         /// <param name="csvGenerator">CSV Generator</param>
         /// <param name="csvReader">CSV Reader</param>
@@ -175,16 +182,17 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public EvneApiController(IEvneFolderDbAccess folderDbAccess, IEvneSkillTemplateDbAccess templateDbAccess, IEvneSkillDbAccess skillDbAccess, IEvneSkillTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, IEvneImportFieldValuesLogDbAccess importFieldValuesLogDbAccess,
-                                 IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IEvneSkillImageAccess imageAccess, 
-                                 IEvneThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IUserProjectAccess userProjectAccess, ICsvGenerator csvGenerator, ICsvParser csvReader, UserManager<GoNorthUser> userManager, 
-                                 IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<EvneApiController> logger, IStringLocalizerFactory localizerFactory) 
-                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, exportSnippetRelatedObjectNameResolver, userProjectAccess, imageAccess, 
+                                 IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IStateMachineDbAccess stateMachineDbAccess,
+                                 IEvneSkillImageAccess imageAccess, IEvneThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IUserProjectAccess userProjectAccess, 
+                                 ICsvGenerator csvGenerator, ICsvParser csvReader, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<EvneApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                     : base(folderDbAccess, templateDbAccess, skillDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, exportSnippetRelatedObjectNameResolver, stateMachineDbAccess, userProjectAccess, imageAccess, 
                                             thumbnailService, csvGenerator, csvReader, userManager, implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
             _aikaQuestDbAccess = aikaQuestDbAccess;
             _taleDbAccess = taleDbAccess;
             _kirjaPageDbAccess = kirjaPageDbAccess;
             _kortistoNpcDbAccess = kortistoNpcDbAccess;
+            _npcTemplateDbAccess = npcTemplateDbAccess;
         }
 
         /// <summary>
@@ -300,6 +308,15 @@ namespace GoNorth.Controllers.Api
             {
                 string usedInDailyRoutines = string.Join(", ", referencedInDailyRoutines.Select(m => m.Name));
                 return _localizer["CanNotDeleteSkillUsedInDailyRoutine", usedInDailyRoutines].Value;
+            }
+
+            List<StateMachine> referencedInStateMachines = await _stateMachineDbAccess.GetStateMachinesObjectIsReferenced(id);
+            if(referencedInStateMachines.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _kortistoNpcDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachines.Select(t => t.RelatedObjectId).ToList());
+                List<KortistoNpc> npcTemplates = await _npcTemplateDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachines.Select(t => t.RelatedObjectId).ToList());
+                string usedInStateMachines = string.Join(", ", npcs.Union(npcTemplates).Select(n => n.Name));
+                return _localizer["CanNotDeleteSkillUsedInStateMachines", usedInStateMachines].Value;
             }
 
             List<EvneSkill> referencedInSkills = await ((IEvneSkillDbAccess)_objectDbAccess).GetSkillsObjectIsReferencedIn(id);

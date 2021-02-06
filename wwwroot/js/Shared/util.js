@@ -422,5 +422,32 @@
             return checkBootstrapSize("visible-md-block", ":visible");
         };
 
+        /**
+         * Returns the word count for a string
+         * @param {string} str String to count
+         * @returns {number} Word count
+         */
+        Util.getWordCount = function(str) {
+            if(!str) {
+                return 0;
+            }
+
+            return str.trim().split(/\s+/gi).length;
+        };
+        
+        /**
+         * Returns the word count for a html string
+         * @param {string} str String to count
+         * @returns {number} Word count
+         */
+        Util.getHtmlWordCount = function(str) {
+            if(!str) {
+                return 0;
+            }
+
+            str = str.replace(/<[^>]*>/g," ");
+            return Util.getWordCount(str);
+        };
+
     }(GoNorth.Util = GoNorth.Util || {}));
 }(window.GoNorth = window.GoNorth || {}));

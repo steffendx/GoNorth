@@ -181,6 +181,16 @@
                  */
                 validateDelete: function() {
                     return null;
+                },
+
+                /**
+                 * Returns statistics for the node
+                 * @returns Node statistics
+                 */
+                getStatistics: function() {
+                    return {
+                        wordCount: GoNorth.Util.getWordCount(this.model.get('nodeText'))
+                    };
                 }
             });
 
@@ -291,10 +301,8 @@
     (function(DefaultNodeShapes) {
         (function(Serialize) {
 
-
             /// Link Name
             var linkName = "link";
-
 
             /**
              * Serializer
@@ -373,8 +381,9 @@
                  * @param {object} targetGraph Graph to fill
                  * @param {object} serializedData Serialized Data
                  * @param {function} nodeAddCallback Optional Callback function which gets called for each new node added to the graph
+                 * @param {function} linkCreationCallback Optional Callback function for creating a link, if non is provided the default will be used
                  */
-                deserializeGraph: function(targetGraph, serializedData, nodeAddCallback) {
+                deserializeGraph: function(targetGraph, serializedData, nodeAddCallback, linkCreationCallback) {
                     targetGraph.clear();
                     for(var curNodeCollection in serializedData)
                     {
@@ -405,7 +414,7 @@
                     {
                         for(var curLink = 0; curLink < linkCollection.length; ++curLink)
                         {
-                            var newLink = this.deserializeLink(linkCollection[curLink]);
+                            var newLink = this.deserializeLink(linkCollection[curLink], linkCreationCallback);
                             targetGraph.addCell(newLink);
                         }
                     }
@@ -415,7 +424,8 @@
                 /**
                  * Serializes a link
                  * 
-                 * @param {object} linkObject
+                 * @param {object} linkObject Link object to serialize
+                 * @returns {object} Serialized link
                  */
                 serializeLink: function(linkObject) {
                     var serializedLink = {
@@ -426,16 +436,21 @@
                         vertices: linkObject.vertices
                     };
 
+                    if(linkObject.labels && linkObject.labels.length > 0 && linkObject.labels[0].attrs && linkObject.labels[0].attrs.text) {
+                        serializedLink["label"] = linkObject.labels[0].attrs.text.text ? linkObject.labels[0].attrs.text.text : "";
+                    }
+
                     return serializedLink;
                 },
 
                 /**
                  * Deserializes a link
                  * 
-                 * @param {object} linkObject
+                 * @param {object} serializedLink Serialized link
+                 * @param {function} linkCreationCallback Optional Callback function for creating a link, if non is provided the default will be used
                  */
-                deserializeLink: function(serializedLink) {
-                    var linkObject = DefaultNodeShapes.Connections.createDefaultLink({
+                deserializeLink: function(serializedLink, linkCreationCallback) {
+                    var linkData = {
                         source: 
                         { 
                             id: serializedLink.sourceNodeId,
@@ -447,7 +462,21 @@
                             port: serializedLink.targetNodePort
                         },
                         vertices: serializedLink.vertices
-                    });
+                    };
+
+                    if(serializedLink.label) {
+                        linkData.labels = [
+                            {
+                                attrs: {
+                                    text: {
+                                        text: serializedLink.label
+                                    }
+                                }
+                            }
+                        ]
+                    }
+
+                    var linkObject = linkCreationCallback ? linkCreationCallback(linkData) : DefaultNodeShapes.Connections.createDefaultLink(linkData);
 
                     return linkObject;
                 },
@@ -468,6 +497,14 @@
                     }
 
                     return this.nodeSerializer[type].createNewNode(initOptions);
+                },
+
+                /**
+                 * Returns the known node types
+                 * @returns {string[]} Node types
+                 */
+                getKnownNodeTypes: function() {
+                    return Object.keys(this.nodeSerializer);
                 }
             };
 
@@ -662,6 +699,30 @@
                         enableNodeGraphPositionZoomUrl = !allBindings.get("nodeGraphDisablePositionZoomUrl");
                     }
 
+                    var markAvailable = true;
+                    if(allBindings.get("nodeGraphDontMarkAvailablePorts"))
+                    {
+                        markAvailable = false;
+                    }
+
+                    var allowSelfLink = false;
+                    if(allBindings.get("nodeGraphAllowSelfLink"))
+                    {
+                        allowSelfLink = true;
+                    }
+
+                    var disableLinkVertexEdit = false;
+                    if(allBindings.get("nodeGraphDisableLinkVertexEdit"))
+                    {
+                        disableLinkVertexEdit = true;
+                    }
+
+                    var linkCreationCallback = null;
+                    if(allBindings.get("nodeGraphLinkCreationCallback"))
+                    {
+                        linkCreationCallback = allBindings.get("nodeGraphLinkCreationCallback");
+                    }
+
                     var graph = new joint.dia.Graph();
                     var paper = new joint.dia.Paper(
                     {
@@ -670,22 +731,22 @@
                         height: 8000,
                         gridSize: 1,
                         model: graph,
-                        defaultLink: GoNorth.DefaultNodeShapes.Connections.createDefaultLink(),
+                        defaultLink: linkCreationCallback ? linkCreationCallback() : GoNorth.DefaultNodeShapes.Connections.createDefaultLink(),
                         snapLinks: { radius: 75 }, 
-                        markAvailable: true,
+                        markAvailable: markAvailable,
                         linkPinning: false,
                         validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
                           // Prevent linking from output ports to input ports within one element.
-                          if (cellViewS === cellViewT) 
+                          if (cellViewS === cellViewT && !allowSelfLink) 
                           {
                               return false;
                           }
 
                           // Prevent linking to output ports.
-                          return magnetT.getAttribute("port-type") === "input";
+                          return magnetT && magnetT.getAttribute("port-type") === "input";
                         },
                         validateMagnet: function(cellView, magnet) {
-                            if(allowMultipleOutboundForNodes)
+                            if(allowMultipleOutboundForNodes && !cellView.model.get("allowSingleConnectionOnly"))
                             {
                                 return magnet.getAttribute("magnet") !== "passive";
                             }
@@ -702,6 +763,12 @@
                                 }
                             }
                             return magnet.getAttribute("magnet") !== "passive";
+                        },
+                        interactive: function(cellView) {
+                            if (disableLinkVertexEdit && cellView.model.isLink()) {
+                                return { vertexAdd: false, vertexMove: false, labelMove: false };
+                            }
+                            return true;
                         }
                     });
 

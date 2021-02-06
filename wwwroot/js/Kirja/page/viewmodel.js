@@ -46,6 +46,10 @@
                 this.pageContent.subscribe(function() {
                     self.isDirty(true);
                 });
+                this.pageWordCount = new ko.observable(0);
+                this.pageContent.subscribe(GoNorth.Util.debounce(function(newVal) {
+                    self.pageWordCount(GoNorth.Util.getHtmlWordCount(newVal));
+                }, 600));
 
                 this.displayVersionId = new ko.observable(null);
                 this.displayVersionName = new ko.observable(null);
@@ -145,6 +149,10 @@
                 this.referencedInDailyRoutines = new ko.observableArray();
                 this.loadingReferencedInDailyRoutines = new ko.observable(false);
                 this.loadingReferencedInDailyRoutinesError = new ko.observable(false);
+
+                this.referencedInStateMachines = new ko.observableArray();
+                this.loadingReferencedInStateMachines = new ko.observable(false);
+                this.loadingReferencedInStateMachinesError = new ko.observable(false);
 
                 this.referencedInDialogs = new ko.observableArray();
                 this.loadingReferencedInDialogs = new ko.observable(false);
@@ -333,6 +341,7 @@
                         self.loadMentionedItems(data.mentionedItems);
                         self.loadMentionedSkills(data.mentionedSkills);
                         self.loadReferencedInDailyRoutines();
+                        self.loadReferencedInStateMachines();
                         self.loadReferencedInQuests();
                         self.loadReferencedInSkills();
                         self.loadReferencedInDialogs();
@@ -810,6 +819,7 @@
                         self.loadMentionedItems(savedPage.mentionedItems);
                         self.loadMentionedSkills(savedPage.mentionedSkills);
                         self.loadReferencedInDailyRoutines();
+                        self.loadReferencedInStateMachines();
                         self.loadReferencedInQuests();
                         self.loadReferencedInSkills();
                         self.loadReferencedInDialogs();
@@ -1316,6 +1326,46 @@
                         self.referencedInDailyRoutines([]);
                         self.loadingReferencedInDailyRoutines(false);
                         self.loadingReferencedInDailyRoutinesError(true);
+                    });
+                },
+
+                /**
+                 * Loads the state machines the page in referenced in
+                 */
+                loadReferencedInStateMachines: function() {
+                    if(!GoNorth.Kirja.Page.hasKortistoRights || !this.id())
+                    {
+                        return;
+                    }
+
+                    this.loadingReferencedInStateMachines(true);
+                    this.loadingReferencedInStateMachinesError(false);
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/StateMachineApi/GetStateMachineObjectIsReferenced?objectId=" + this.id()).done(function(stateMachines) {
+                        var loadedStateMachines = [];
+                        for(var curStateMachine = 0; curStateMachine < stateMachines.length; ++curStateMachine)
+                        {
+                            var url = "/StateMachine?";
+                            if(stateMachines[curStateMachine].objectType == "NpcTemplate") {
+                                url += "npcTemplateId="
+                            } else if(stateMachines[curStateMachine].objectType == "Npc") {
+                                url += "npcId=";
+                            } else {
+                                throw "Unknown state machine object";
+                            }
+                            url += stateMachines[curStateMachine].objectId;
+
+                            loadedStateMachines.push({
+                                openLink: url,
+                                name: stateMachines[curStateMachine].objectName
+                            });
+                        }
+                        self.referencedInStateMachines(loadedStateMachines);
+                        self.loadingReferencedInStateMachines(false);
+                    }).fail(function(xhr) {
+                        self.referencedInStateMachines([]);
+                        self.loadingReferencedInStateMachines(false);
+                        self.loadingReferencedInStateMachinesError(true);
                     });
                 },
 

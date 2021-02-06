@@ -32,6 +32,9 @@
     "PropertyNameDeletedInChapter": "In Kapitel gelöscht",
     "PropertyNameGeoData": "Geometrie Daten",
     "PropertyNameReferenceText": "Beschreibung",
+    "PropertyNameScriptNodeGraph": "Skript Knotensystem",
+    "PropertyNameActionData": "Aktionsdaten",
+    "PropertyNameLabel": "Beschriftung",
 
     "EntryRemoved": "Eintrag '{0}' entfernt.",
     "EntryAdded": "Eintrag '{0}' hinzugefügt.",
@@ -70,6 +73,11 @@
     "GeometryCircle": "Kreis",
     "GeometryLineString": "Linie",
     "GeometryRectangle": "Rechteck",
+    "StateMachineChanged": "State Machine geändert:",
+    "StateMachineChangedWasNeverImplemented": "Die State Machine wurde noch nie implementiert.",
+    "StartChanged": "Start Knoten geändert:",
+    "EndChanged": "End Knoten geändert:",
+    "StateChanged": "Zustands Knoten geändert:",
 
     "DailyRoutineChanged": "Tagesablauf geändert:",
     "DailyRoutineEntryNameSingleTime": "{0}:{1}",
@@ -84,6 +92,9 @@
     "PropertyNameScriptName": "Skriptname",
     "PropertyNameScriptCode": "Skriptcode",
     "ScriptCodeChanged": "Skriptcode geändert",
+    "NodeSystemChanged": "Knotensystem geändert",
+
+    "EmptyText": "",
 
     "ExportSnippetsChanged": "Export Snippets geändert"
 }

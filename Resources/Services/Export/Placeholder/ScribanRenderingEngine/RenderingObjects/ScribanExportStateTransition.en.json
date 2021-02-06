@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Label": "Description of the transition",
+    "PlaceholderDesc_IsConnectedToEnd": "true if the transition leads to an end node of the state machine.",
+    "PlaceholderDesc_TargetState": "Target node of the transition. Has the same values as <i>cur_state</i>."
+}

@@ -59,6 +59,10 @@
                 this.loadingReferencedInDailyRoutines = new ko.observable(false);
                 this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
 
+                this.referencedInStateMachines = new ko.observableArray();
+                this.loadingReferencedInStateMachines = new ko.observable(false);
+                this.errorLoadingReferencedInStateMachines = new ko.observable(false);
+
                 this.referencedInEvneSkills = new ko.observableArray();
                 this.loadingReferencedInEvneSkills = new ko.observable(false);
                 this.errorLoadingReferencedInEvneSkills = new ko.observable(false);
@@ -68,6 +72,12 @@
                 this.errorLoadingReferencedInExportSnippets = new ko.observable(false);
                 
                 this.showDeleteDialog = new ko.observable(false);
+
+                this.questStatistics = new ko.observable(null);
+                this.questStatisticsDescriptionWordCount = new ko.observable(0);
+                this.questStatisticsWordCountExpanded = new ko.observable(false);
+                this.questStatisticsNodeCountExpanded = new ko.observable(false);
+                this.showStatisticsDialog = new ko.observable(false);
 
                 this.isLoading = new ko.observable(false);
                 this.isReadonly = new ko.observable(false);
@@ -114,6 +124,7 @@
                     if(GoNorth.Aika.Quest.hasKortistoRights)
                     {
                         this.loadUsedInDailyRoutines();
+                        this.loadUsedInStateMachines();
                     }
 
                     if(GoNorth.Aika.Quest.hasExportObjectsRights)
@@ -456,7 +467,7 @@
 
 
             /**
-             * Loads the npcs in which the daily routines are used
+             * Loads the npcs in which the quest is used in the daily routines are used
              */
             Quest.ViewModel.prototype.loadUsedInDailyRoutines = function() {
                 this.loadingReferencedInDailyRoutines(true);
@@ -482,6 +493,44 @@
             };
 
             
+            /**
+             * Loads the npcs in which the quest is used in state machines
+             */
+            Quest.ViewModel.prototype.loadUsedInStateMachines = function() {
+                this.loadingReferencedInStateMachines(true);
+                this.errorLoadingReferencedInStateMachines(false);
+                var self = this;
+                GoNorth.HttpClient.get("/api/StateMachineApi/GetStateMachineObjectIsReferenced?objectId=" + this.id()).done(function(data) {
+                    self.referencedInStateMachines(data);
+                    self.loadingReferencedInStateMachines(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInStateMachines(true);
+                    self.loadingReferencedInStateMachines(false);
+                });
+            };
+
+            /**
+             * Builds the url for a state machine
+             * 
+             * @param {object} stateMachine State Machine to build the url for
+             * @returns {string} Url for the state machine
+             */
+            Quest.ViewModel.prototype.buildStateMachineUrl = function(stateMachine) {
+                var url = "/StateMachine?";
+                if(stateMachine.objectType == "NpcTemplate") {
+                    url += "npcTemplateId="
+                } else if(stateMachine.objectType == "Npc") {
+                    url += "npcId=";
+                } else {
+                    throw "Unknown state machine object";
+                }
+                
+                url += stateMachine.objectId;
+
+                return url;
+            };
+            
+
             /**
              * Loads the skills in which the quest is used
              */
@@ -690,6 +739,44 @@
                     self.isLoading(false);
                     self.errorOccured(true);
                 });
+            };
+
+
+            /**
+             * Opens the statistics dialog
+             */
+            Quest.ViewModel.prototype.openStatisticsDialog = function() {
+                var graph = this.nodeGraph();
+                var paper = this.nodePaper();
+
+                var statistics = GoNorth.DefaultNodeShapes.getNodeStatistics(graph, paper);
+
+                this.questStatistics(statistics);
+                this.questStatisticsDescriptionWordCount(GoNorth.Util.getWordCount(this.description()));
+                this.questStatisticsWordCountExpanded(false);
+                this.questStatisticsNodeCountExpanded(false);
+                this.showStatisticsDialog(true);
+            };
+
+            /**
+             * Toggles the visibility of the detailed word count statistics
+             */
+            Quest.ViewModel.prototype.toggleQuestStatisticsWordCount = function() {
+                this.questStatisticsWordCountExpanded(!this.questStatisticsWordCountExpanded());
+            }
+
+            /**
+             * Toggles the visibility of the detailed node count statistics
+             */
+            Quest.ViewModel.prototype.toggleQuestStatisticsNodeCount = function() {
+                this.questStatisticsNodeCountExpanded(!this.questStatisticsNodeCountExpanded());
+            }
+
+            /**
+             * Closes the statistics dialog
+             */
+            Quest.ViewModel.prototype.closeStatisticsDialog = function() {
+                this.showStatisticsDialog(false);
             };
 
 

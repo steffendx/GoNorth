@@ -18,6 +18,9 @@
             this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
+            this.nodeDropOffsetX = 0;
+            this.nodeDropOffsetY = 0;
+
             this.errorOccured = new ko.observable(false);
         };
 
@@ -50,7 +53,7 @@
                 var scale = this.nodePaper().scale();
                 var translate = this.nodePaper().translate();
                 var initOptions = {
-                    position: { x: (x - translate.tx) / scale.sx, y: (y - translate.ty) / scale.sy }
+                    position: { x: (x - translate.tx) / scale.sx + this.nodeDropOffsetX, y: (y - translate.ty) / scale.sy + this.nodeDropOffsetY }
                 };
                 return initOptions;
             },

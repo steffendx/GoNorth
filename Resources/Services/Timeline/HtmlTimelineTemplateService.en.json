@@ -91,6 +91,9 @@
     "TaleDialogCreated": "A new dialog was created for the npc <a href='/Tale?npcId={0}'>{1}</a>.",
     "TaleDialogUpdated": "The dialog of the npc <a href='/Tale?npcId={0}'>{1}</a> was updated.",
 
+    "StateMachineCreated": "A new state machine was created for the npc <a href='/StateMachine?npcId={0}'>{1}</a>.",
+    "StateMachineUpdated": "The state machine of the npc <a href='/StateMachine?npcId={0}'>{1}</a> was updated.",
+
     "AikaChapterOverviewUpdated": "The <a href='/Aika'>chapter overview</a> was updated.",
     "AikaChapterDetailCreated": "A new chapter <a href='/Aika/Detail?id={0}'>detail view</a> was created.",
     "AikaChapterDetailUpdated": "A chapter <a href='/Aika/Detail?id={0}'>detail view</a> was updated.",

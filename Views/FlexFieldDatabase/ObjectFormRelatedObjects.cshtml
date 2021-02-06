@@ -71,6 +71,13 @@
             <a class="gn-clickable" data-bind="text: name, href: $root.buildDailyRoutineNpcUrl" target="_blank"></a>
         </li>
     </ul>
+
+    <h4>@Model.Localizer["ReferencedInStateMachines"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingReferencedInStateMachines"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Model.Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingReferencedInStateMachines"></i></h4>
+    <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: referencedInStateMachines">
+        <li>
+            <a class="gn-clickable" data-bind="text: objectName, href: $root.buildStateMachineUrl" target="_blank"></a>
+        </li>
+    </ul>
 }
 
 @if(User.IsInRole(RoleNames.Evne))

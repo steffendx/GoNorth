@@ -11,11 +11,11 @@
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
-    <PackageReference Include="CsvHelper" Version="19.0.0" />
-    <PackageReference Include="MongoDB.Bson" Version="2.11.5" />
-    <PackageReference Include="MongoDB.Driver" Version="2.11.5" />
-    <PackageReference Include="MongoDB.Driver.Core" Version="2.11.5" />
-    <PackageReference Include="Scriban" Version="3.3.3" />
+    <PackageReference Include="CsvHelper" Version="22.1.2" />
+    <PackageReference Include="MongoDB.Bson" Version="2.11.6" />
+    <PackageReference Include="MongoDB.Driver" Version="2.11.6" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.11.6" />
+    <PackageReference Include="Scriban" Version="3.4.2" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>

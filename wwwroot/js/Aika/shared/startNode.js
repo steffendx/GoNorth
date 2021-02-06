@@ -54,7 +54,18 @@
                         '<div class="node">',
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                         '</div>',
-                    ].join('')
+                    ].join(''),
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: 0
+                        };
+                    }
                 });
             }
 

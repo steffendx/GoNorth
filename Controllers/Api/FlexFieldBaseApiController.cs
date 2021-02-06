@@ -24,6 +24,7 @@ using GoNorth.Services.CsvHandling;
 using System.Text.Json;
 using GoNorth.Services.Project;
 using GoNorth.Services.Export.ExportSnippets;
+using GoNorth.Data.StateMachines;
 
 namespace GoNorth.Controllers.Api
 {
@@ -279,7 +280,7 @@ namespace GoNorth.Controllers.Api
         /// <summary>
         /// Flex Field Object Template Db Service
         /// </summary>
-        private readonly IFlexFieldObjectDbAccess<T> _templateDbAccess;
+        protected readonly IFlexFieldObjectDbAccess<T> _templateDbAccess;
 
         /// <summary>
         /// Object Db Service
@@ -325,6 +326,11 @@ namespace GoNorth.Controllers.Api
         /// Service that will resolve export snippet related object names
         /// </summary>
         protected readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
+
+        /// <summary>
+        /// State machine Db Access
+        /// </summary>
+        protected readonly IStateMachineDbAccess _stateMachineDbAccess;
 
         /// <summary>
         /// User project access
@@ -396,6 +402,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
         /// <param name="objectExportSnippetSnapshotDbAccess">Object export snippet snapshot Db Access</param>
         /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
+        /// <param name="stateMachineDbAccess">State machine Db Access</param>
         /// <param name="imageAccess">Image Access</param>
         /// <param name="thumbnailService">Thumbnail Service</param>
         /// <param name="csvGenerator">CSV Generator</param>
@@ -408,9 +415,9 @@ namespace GoNorth.Controllers.Api
         /// <param name="localizerFactory">Localizer Factory</param>
         public FlexFieldBaseApiController(IFlexFieldFolderDbAccess folderDbAccess, IFlexFieldObjectDbAccess<T> templateDbAccess, IFlexFieldObjectDbAccess<T> objectDbAccess, IFlexFieldObjectTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, 
                                           IFlexFieldImportFieldValuesLogDbAccess importFieldValuesLogDbAccess, ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
-                                          IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IUserProjectAccess userProjectAccess, IFlexFieldObjectImageAccess imageAccess, 
-                                          IFlexFieldThumbnailService thumbnailService, ICsvGenerator csvGenerator, ICsvParser csvParser, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, 
-                                          IStringLocalizerFactory localizerFactory)
+                                          IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IStateMachineDbAccess stateMachineDbAccess, IUserProjectAccess userProjectAccess, 
+                                          IFlexFieldObjectImageAccess imageAccess, IFlexFieldThumbnailService thumbnailService, ICsvGenerator csvGenerator, ICsvParser csvParser, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, 
+                                          ITimelineService timelineService, IXssChecker xssChecker, ILogger<FlexFieldBaseApiController<T>> logger, IStringLocalizerFactory localizerFactory)
         {
             _folderDbAccess = folderDbAccess;
             _templateDbAccess = templateDbAccess;
@@ -423,6 +430,7 @@ namespace GoNorth.Controllers.Api
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
             _objectExportSnippetSnapshotDbAccess = objectExportSnippetSnapshotDbAccess;
             _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
+            _stateMachineDbAccess = stateMachineDbAccess;
             _userProjectAccess = userProjectAccess;
             _imageAccess = imageAccess;
             _thumbnailService = thumbnailService;

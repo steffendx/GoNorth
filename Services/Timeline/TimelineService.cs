@@ -180,6 +180,10 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.TaleDialogCreated, new List<string>() { RoleNames.Tale });
             _entryRoleFilter.Add(TimelineEvent.TaleDialogUpdated, new List<string>() { RoleNames.Tale });
 
+            // State Machine
+            _entryRoleFilter.Add(TimelineEvent.StateMachineCreated, new List<string>() { RoleNames.Kortisto });
+            _entryRoleFilter.Add(TimelineEvent.StateMachineUpdated, new List<string>() { RoleNames.Kortisto });
+
             // Aika
             _entryRoleFilter.Add(TimelineEvent.AikaChapterOverviewUpdated, new List<string>() { RoleNames.Aika });
             _entryRoleFilter.Add(TimelineEvent.AikaChapterDetailCreated, new List<string>() { RoleNames.Aika });

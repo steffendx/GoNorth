@@ -33,6 +33,104 @@
         <!-- /ko -->
     }
 
+    <!-- Statistics dialog -->
+    <div class="modal fade" role="dialog" data-bind="modal: showStatisticsDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">@Localizer["DialogStatistics"]</h4>
+                </div>
+                <div class="modal-body" data-bind="if: dialogStatistics">
+                    <div class="form-group">
+                        <label for="gn-totalWordCount" class="gn-clickable" data-bind="click: toggleDialogStatisticsWordCount">
+                            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !dialogStatisticsWordCountExpanded()"></i>
+                            <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: dialogStatisticsWordCountExpanded()"></i>
+                            @Localizer["TotalWordCount"]</label>
+                        <input type="text" class="form-control" id="gn-totalWordCount" placeholder="@Localizer["TotalWordCount"]" name="totalWordCount" data-bind="value: dialogStatistics().totalWordCount" readonly/>
+                    </div>
+                    <div class="gn-statisticsSubValue" data-bind="visible: dialogStatisticsWordCountExpanded">
+                        <div class="form-group">
+                            <label for="gn-playerWordCount">@Localizer["PlayerWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-playerWordCount" placeholder="@Localizer["PlayerWordCount"]" name="playerWordCount" data-bind="value: dialogStatistics()['tale.PlayerText'].wordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-npcWordCount">@Localizer["NpcWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-npcWordCount" placeholder="@Localizer["NpcWordCount"]" name="npcWordCount" data-bind="value: dialogStatistics()['tale.NpcText'].wordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-choiceWordCount">@Localizer["ChoiceWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-choiceWordCount" placeholder="@Localizer["ChoiceWordCount"]" name="choiceWordCount" data-bind="value: dialogStatistics()['tale.Choice'].wordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-referenceWordCount">@Localizer["ReferenceWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-referenceWordCount" placeholder="@Localizer["ReferenceWordCount"]" name="referenceWordCount" data-bind="value: dialogStatistics()['default.Reference'].wordCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-actionWordCount">@Localizer["ActionWordCount"]</label>
+                            <input type="text" class="form-control" id="gn-actionWordCount" placeholder="@Localizer["ActionWordCount"]" name="actionWordCount" data-bind="value: dialogStatistics()['default.Action'].wordCount" readonly/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="gn-totalConditionCount" class="gn-clickable" data-bind="click: toggleDialogStatisticsConditionCount">
+                            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !dialogStatisticsConditionCountExpanded()"></i>
+                            <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: dialogStatisticsConditionCountExpanded()"></i>
+                            @Localizer["TotalConditionCount"]
+                        </label>
+                        <input type="text" class="form-control" id="gn-totalConditionCount" placeholder="@Localizer["TotalConditionCount"]" name="totalConditionCount" data-bind="value: dialogStatistics().totalConditionCount" readonly/>
+                    </div>
+                    <div class="gn-statisticsSubValue" data-bind="visible: dialogStatisticsConditionCountExpanded">
+                        <div class="form-group">
+                            <label for="gn-conditionsFromNodeCount">@Localizer["ConditionsFromNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-conditionsFromNodeCount" placeholder="@Localizer["ConditionsFromNodeCount"]" name="conditionsFromNodeCount" data-bind="value: dialogStatistics()['default.Condition'].conditionCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-choiceConditionCount">@Localizer["ChoiceConditionCount"]</label>
+                            <input type="text" class="form-control" id="gn-choiceConditionCount" placeholder="@Localizer["ChoiceConditionCount"]" name="choiceConditionCount" data-bind="value: dialogStatistics()['tale.Choice'].conditionCount" readonly/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="gn-totalNodeCount" class="gn-clickable" data-bind="click: toggleDialogStatisticsNodeCount">
+                            <i class="glyphicon glyphicon-triangle-right" data-bind="visible: !dialogStatisticsNodeCountExpanded()"></i>
+                            <i class="glyphicon glyphicon-triangle-bottom" data-bind="visible: dialogStatisticsNodeCountExpanded()"></i>
+                            @Localizer["TotalNodeCount"]
+                        </label>
+                        <input type="text" class="form-control" id="gn-totalNodeCount" placeholder="@Localizer["TotalNodeCount"]" name="totalNodeCount" data-bind="value: dialogStatistics().totalNodeCount" readonly/>
+                    </div>
+                    <div class="gn-statisticsSubValue" data-bind="visible: dialogStatisticsNodeCountExpanded">
+                        <div class="form-group">
+                            <label for="gn-playerNodeCount">@Localizer["PlayerNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-playerNodeCount" placeholder="@Localizer["PlayerNodeCount"]" name="playerNodeCount" data-bind="value: dialogStatistics()['tale.PlayerText'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-npcNodeCount">@Localizer["NpcNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-npcNodeCount" placeholder="@Localizer["NpcNodeCount"]" name="npcNodeCount" data-bind="value: dialogStatistics()['tale.NpcText'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-choiceNodeCount">@Localizer["ChoiceNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-choiceNodeCount" placeholder="@Localizer["ChoiceNodeCount"]" name="choiceNodeCount" data-bind="value: dialogStatistics()['tale.Choice'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-actionNodeCount">@Localizer["ActionNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-actionNodeCount" placeholder="@Localizer["ActionNodeCount"]" name="actionNodeCount" data-bind="value: dialogStatistics()['default.Action'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-conditionNodeCount">@Localizer["ConditionNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-conditionNodeCount" placeholder="@Localizer["ConditionNodeCount"]" name="conditionNodeCount" data-bind="value: dialogStatistics()['default.Condition'].nodeCount" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <label for="gn-referenceNodeCount">@Localizer["ReferenceNodeCount"]</label>
+                            <input type="text" class="form-control" id="gn-referenceNodeCount" placeholder="@Localizer["ReferenceNodeCount"]" name="referenceNodeCount" data-bind="value: dialogStatistics()['default.Reference'].nodeCount" readonly/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">   
+                    <button type="button" class="btn btn-default" data-bind="click: closeStatisticsDialog">@Localizer["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Command Buttons -->
     <button type="button" class="btn btn-primary gn-commandWidgetTopMargin" data-bind="click: save, disable: isLoading() || isReadonly() || !nodeGraph()">
         <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["Save"]
@@ -45,6 +143,10 @@
             <span data-bind="visible: !isImplemented()" title="@Localizer["IsNotImplementedTooltip"]"><i class="glyphicon glyphicon-remove text-danger"></i> @Localizer["MarkAsImplemented"]</span>
         </button>
     }
+
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openStatisticsDialog, visible: dialogId">
+        <i class="glyphicon glyphicon-stats"></i> @Localizer["ShowStatistics"]
+    </button>
 
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: returnToNpc, visible: showReturnToNpcButton">
         <i class="glyphicon glyphicon-level-up"></i> @Localizer["ReturnToNpc"]

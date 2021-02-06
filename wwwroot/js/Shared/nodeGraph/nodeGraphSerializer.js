@@ -3,10 +3,8 @@
     (function(DefaultNodeShapes) {
         (function(Serialize) {
 
-
             /// Link Name
             var linkName = "link";
-
 
             /**
              * Serializer
@@ -85,8 +83,9 @@
                  * @param {object} targetGraph Graph to fill
                  * @param {object} serializedData Serialized Data
                  * @param {function} nodeAddCallback Optional Callback function which gets called for each new node added to the graph
+                 * @param {function} linkCreationCallback Optional Callback function for creating a link, if non is provided the default will be used
                  */
-                deserializeGraph: function(targetGraph, serializedData, nodeAddCallback) {
+                deserializeGraph: function(targetGraph, serializedData, nodeAddCallback, linkCreationCallback) {
                     targetGraph.clear();
                     for(var curNodeCollection in serializedData)
                     {
@@ -117,7 +116,7 @@
                     {
                         for(var curLink = 0; curLink < linkCollection.length; ++curLink)
                         {
-                            var newLink = this.deserializeLink(linkCollection[curLink]);
+                            var newLink = this.deserializeLink(linkCollection[curLink], linkCreationCallback);
                             targetGraph.addCell(newLink);
                         }
                     }
@@ -127,7 +126,8 @@
                 /**
                  * Serializes a link
                  * 
-                 * @param {object} linkObject
+                 * @param {object} linkObject Link object to serialize
+                 * @returns {object} Serialized link
                  */
                 serializeLink: function(linkObject) {
                     var serializedLink = {
@@ -138,16 +138,21 @@
                         vertices: linkObject.vertices
                     };
 
+                    if(linkObject.labels && linkObject.labels.length > 0 && linkObject.labels[0].attrs && linkObject.labels[0].attrs.text) {
+                        serializedLink["label"] = linkObject.labels[0].attrs.text.text ? linkObject.labels[0].attrs.text.text : "";
+                    }
+
                     return serializedLink;
                 },
 
                 /**
                  * Deserializes a link
                  * 
-                 * @param {object} linkObject
+                 * @param {object} serializedLink Serialized link
+                 * @param {function} linkCreationCallback Optional Callback function for creating a link, if non is provided the default will be used
                  */
-                deserializeLink: function(serializedLink) {
-                    var linkObject = DefaultNodeShapes.Connections.createDefaultLink({
+                deserializeLink: function(serializedLink, linkCreationCallback) {
+                    var linkData = {
                         source: 
                         { 
                             id: serializedLink.sourceNodeId,
@@ -159,7 +164,21 @@
                             port: serializedLink.targetNodePort
                         },
                         vertices: serializedLink.vertices
-                    });
+                    };
+
+                    if(serializedLink.label) {
+                        linkData.labels = [
+                            {
+                                attrs: {
+                                    text: {
+                                        text: serializedLink.label
+                                    }
+                                }
+                            }
+                        ]
+                    }
+
+                    var linkObject = linkCreationCallback ? linkCreationCallback(linkData) : DefaultNodeShapes.Connections.createDefaultLink(linkData);
 
                     return linkObject;
                 },
@@ -180,6 +199,14 @@
                     }
 
                     return this.nodeSerializer[type].createNewNode(initOptions);
+                },
+
+                /**
+                 * Returns the known node types
+                 * @returns {string[]} Node types
+                 */
+                getKnownNodeTypes: function() {
+                    return Object.keys(this.nodeSerializer);
                 }
             };
 

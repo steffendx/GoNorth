@@ -11,6 +11,7 @@ using GoNorth.Services.Export.NodeGraphExport;
 using GoNorth.Services.Export.Placeholder.LegacyRenderingEngine;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.LanguageKeyGenerator;
+using GoNorth.Services.Export.StateMachines;
 using Microsoft.Extensions.Localization;
 
 namespace GoNorth.Services.Export.Placeholder
@@ -43,12 +44,15 @@ namespace GoNorth.Services.Export.Placeholder
         /// <param name="dailyRoutineFunctionRenderer">Daily routine function renderer</param>
         /// <param name="nodeGraphExporter">Node Graph Exporter</param>
         /// <param name="exportSnippetFunctionRenderer">Export snippet function renderer</param>
+        /// <param name="stateMachineFunctionNameGenerator">State machine function name generator</param>
+        /// <param name="stateMachineFunctionRenderer">State machine function renderer</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public ExportTemplatePlaceholderResolver(ICachedExportDefaultTemplateProvider defaultTemplateProvider, IExportCachedDbAccess cachedDbAccess, ILanguageKeyGenerator languageKeyGenerator, IScribanLanguageKeyGenerator scribanLanguageKeyGenerator, 
                                                  ILanguageKeyDbAccess languageKeyDbAccess, ITaleDbAccess taleDbAccess, IExportDialogParser dialogParser, IExportDialogFunctionGenerator dialogFunctionGenerator, IExportDialogRenderer dialogRenderer, 
                                                  ILegacyDailyRoutineEventPlaceholderResolver legacyDailyRoutineEventPlaceholderResolver, ILegacyDailyRoutineEventContentPlaceholderResolver legacyDailyRoutineEventContentPlaceholderResolver, 
                                                  IDailyRoutineFunctionNameGenerator dailyRoutineFunctionNameGenerator, IDailyRoutineFunctionRenderer dailyRoutineFunctionRenderer, INodeGraphExporter nodeGraphExporter, 
-                                                 IExportSnippetFunctionRenderer exportSnippetFunctionRenderer, IStringLocalizerFactory localizerFactory)
+                                                 IExportSnippetFunctionRenderer exportSnippetFunctionRenderer, IStateMachineFunctionNameGenerator stateMachineFunctionNameGenerator, IStateMachineFunctionRenderer stateMachineFunctionRenderer,
+                                                 IStringLocalizerFactory localizerFactory)
         {
             dialogRenderer.SetExportTemplatePlaceholderResolver(this);
 
@@ -57,8 +61,8 @@ namespace GoNorth.Services.Export.Placeholder
                                                                                                                           dialogFunctionGenerator, dialogRenderer, legacyDailyRoutineEventPlaceholderResolver, legacyDailyRoutineEventContentPlaceholderResolver,
                                                                                                                           dailyRoutineFunctionRenderer, nodeGraphExporter, exportSnippetFunctionRenderer, localizerFactory));
             _renderingEngine.Add(ExportTemplateRenderingEngine.Scriban, new ScribanExportTemplatePlaceholderRenderingEngine(this, cachedDbAccess, taleDbAccess, defaultTemplateProvider, scribanLanguageKeyGenerator, dialogParser, dialogFunctionGenerator, 
-                                                                                                                            dialogRenderer, dailyRoutineFunctionNameGenerator, dailyRoutineFunctionRenderer, exportSnippetFunctionRenderer, languageKeyDbAccess,
-                                                                                                                            localizerFactory));
+                                                                                                                            dialogRenderer, dailyRoutineFunctionNameGenerator, dailyRoutineFunctionRenderer, exportSnippetFunctionRenderer, stateMachineFunctionNameGenerator,
+                                                                                                                            stateMachineFunctionRenderer, languageKeyDbAccess, localizerFactory));
         }
 
         /// <summary>

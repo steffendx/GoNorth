@@ -31,6 +31,7 @@ using GoNorth.Services.Project;
 using GoNorth.Data.Tale;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Export.ExportSnippets;
+using GoNorth.Data.StateMachines;
 
 namespace GoNorth.Controllers.Api
 {
@@ -169,6 +170,11 @@ namespace GoNorth.Controllers.Api
         private readonly IKortistoNpcDbAccess _npcDbAccess;
 
         /// <summary>
+        /// Npc Db Access
+        /// </summary>
+        private readonly IKortistoNpcTemplateDbAccess _npcTemplateDbAccess;
+
+        /// <summary>
         /// Item Db Access
         /// </summary>
         private readonly IStyrItemDbAccess _itemDbAccess;
@@ -214,6 +220,11 @@ namespace GoNorth.Controllers.Api
         private readonly IExportSnippetRelatedObjectNameResolver _exportSnippetRelatedObjectNameResolver;
 
         /// <summary>
+        /// State machine Db Access
+        /// </summary>
+        private readonly IStateMachineDbAccess _stateMachineDbAccess;
+
+        /// <summary>
         /// User Manager
         /// </summary>
         private readonly UserManager<GoNorthUser> _userManager;
@@ -255,11 +266,13 @@ namespace GoNorth.Controllers.Api
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
+        /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
         /// <param name="itemDbAccess">Item Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="dialogDbAccess">Dialog Db Access</param>
         /// <param name="objectExportSnippetDbAccess">Object export snippet Db Access</param>
+        /// <param name="stateMachineDbAccess">State Machine Db Access</param>
         /// <param name="userProjectAccess">User project access</param>
         /// <param name="fileAccess">File Access</param>
         /// <param name="timelineService">Timeline Service</param>
@@ -270,20 +283,22 @@ namespace GoNorth.Controllers.Api
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         /// <param name="configuration">Config Data</param>
-        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess npcDbAccess, IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, 
-                                  IAikaQuestDbAccess questDbAccess, ITaleDbAccess dialogDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IUserProjectAccess userProjectAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, 
-                                  IKirjaPageParserService pageParserService, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, UserManager<GoNorthUser> userManager, IXssChecker xssChecker, 
-                                  ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
+        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IStyrItemDbAccess itemDbAccess, 
+                                  IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, ITaleDbAccess dialogDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IStateMachineDbAccess stateMachineDbAccess, IUserProjectAccess userProjectAccess, 
+                                  IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, UserManager<GoNorthUser> userManager, 
+                                  IXssChecker xssChecker, ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
         {
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
             _npcDbAccess = npcDbAccess;
+            _npcTemplateDbAccess = npcTemplateDbAccess;
             _itemDbAccess = itemDbAccess;
             _skillDbAccess = skillDbAccess;
             _questDbAccess = questDbAccess;
             _dialogDbAccess = dialogDbAccess;
             _objectExportSnippetDbAccess = objectExportSnippetDbAccess;
+            _stateMachineDbAccess = stateMachineDbAccess;
             _userProjectAccess = userProjectAccess;
             _fileAccess = fileAccess;
             _timelineService = timelineService;
@@ -786,6 +801,15 @@ namespace GoNorth.Controllers.Api
                 List<ObjectExportSnippetReference> references = await _exportSnippetRelatedObjectNameResolver.ResolveExportSnippetReferences(referencedInSnippets, true, true, true);
                 string usedInDailyRoutines = string.Join(", ", references.Select(m => string.Format("{0} ({1})", m.ObjectName, m.ExportSnippet)));
                 return BadRequest(_localizer["CanNotDeletePageReferencedInExportSnippet", usedInDailyRoutines].Value);
+            }
+
+            List<StateMachine> referencedInStateMachines = await _stateMachineDbAccess.GetStateMachinesObjectIsReferenced(id);
+            if(referencedInStateMachines.Count > 0)
+            {
+                List<KortistoNpc> npcs = await _npcDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachines.Select(t => t.RelatedObjectId).ToList());
+                List<KortistoNpc> npcTemplates = await _npcTemplateDbAccess.ResolveFlexFieldObjectNames(referencedInStateMachines.Select(t => t.RelatedObjectId).ToList());
+                string usedInStateMachines = string.Join(", ", npcs.Union(npcTemplates).Select(n => n.Name));
+                return BadRequest(_localizer["CanNotDeletePageUsedInStateMachines", usedInStateMachines].Value);
             }
 
             KirjaPage page = await _pageDbAccess.GetPageById(id);

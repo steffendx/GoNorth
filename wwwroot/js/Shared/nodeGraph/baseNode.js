@@ -153,6 +153,16 @@
                  */
                 validateDelete: function() {
                     return null;
+                },
+
+                /**
+                 * Returns statistics for the node
+                 * @returns Node statistics
+                 */
+                getStatistics: function() {
+                    return {
+                        wordCount: GoNorth.Util.getWordCount(this.model.get('nodeText'))
+                    };
                 }
             });
 

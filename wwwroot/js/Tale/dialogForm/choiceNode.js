@@ -349,6 +349,28 @@
                             self.deleteChoice(jQuery(this).data("choiceid"));
                         });
 
+                    },
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var choices = this.model.get("choices");
+                        var conditionCount = 0;
+                        var totalWordCount = 0;
+                        for(var curChoice = 0; curChoice < choices.length; ++curChoice)
+                        {
+                            if(choices[curChoice].condition) {
+                                ++conditionCount;
+                            }
+                            totalWordCount += GoNorth.Util.getWordCount(choices[curChoice].text)
+                        }
+                        
+                        return {
+                            conditionCount: conditionCount,
+                            wordCount: totalWordCount
+                        };
                     }
                 });
             }

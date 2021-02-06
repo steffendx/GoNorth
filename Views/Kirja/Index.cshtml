@@ -259,6 +259,12 @@
                                                 <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
                                             </li>
                                             <!-- /ko -->
+                                            <!-- ko foreach: referencedInStateMachines -->
+                                            <li>
+                                                <a class="gn-kirjaSidebarListLink" data-bind="attr: { href: openLink, title: name }, text: name" target="_blank"></a>
+                                                <span class="gn-kirjaSidebarReferenceType">@Localizer["ReferencedIn"]</span>
+                                            </li>
+                                            <!-- /ko -->
                                         </ul>
                                     }
 
@@ -351,6 +357,8 @@
                                         <a class="gn-clickable" data-bind="click: openVersionDialog, visible: id">@Localizer["ShowVersionsOfPage"]</a><br/>
                                     }
                                     <a href="/Kirja/Pages">@Localizer["OpenPageOverview"]</a>
+
+                                    <div class="gn-kirjaSidebarWordCount">@Localizer["WordCountPrefix"] <span data-bind="text: pageWordCount"></span></div>
                                 </div>
                             </div>
                         </div>

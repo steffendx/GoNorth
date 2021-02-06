@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Kortisto;
-using GoNorth.Data.Project;
-using GoNorth.Data.ProjectConfig;
 using GoNorth.Services.Export.DailyRoutine;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFunctions;

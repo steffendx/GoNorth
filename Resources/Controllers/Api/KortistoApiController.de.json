@@ -6,7 +6,8 @@
     "CanNotDeleteNpcMarkedInKartaMap": "Der Npc ist in den Karten \"{0}\" markiert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
     "CanNotDeleteNpcReferencedInTaleDialog": "Der Npc ist in den Dialogen \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
     "CanNotDeleteNpcUsedInDailyRoutine": "Der Npc ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
-    "CanNotDeleteObjectUsedInExportSnippet": "Das Objekt ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteObjectUsedInExportSnippet": "Der Npc ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteNpcUsedInStateMachines": "Der Npc ist in der State Machine \"{0}\" referenziert. Um Export Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
     "CanNotDeleteNpcUsedInSkill": "Der Npc ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss er hier erst entfernt werden bevor er gelöscht werden kann.",
 
     "CanNotDeleteDailyRoutineEventReferencedInNpc": "Das gelöschte Tagesablauf Ereignis {0} ist in den Tagesabläufen des Npcs \"{1}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
@@ -14,6 +15,7 @@
     "CanNotDeleteDailyRoutineEventReferencedInAikaQuest": "Das gelöschte Tagesablauf Ereignis {0} ist in den Quests \"{1}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteDailyRoutineEventReferencedInSkill": "Das gelöschte Tagesablauf Ereignis {0} ist in den Fähigkeiten \"{1}\" referenziert. Um Story Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteDailyRoutineEventUsedInExportSnippet": "Das gelöschte Tagesablauf Ereignis {0} ist in Export Snippets von \"{1}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteDailyRoutineEventUsedInStateMachine": "Das gelöschte Tagesablauf Ereignis {0} ist in der State Machine von \"{1}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
 
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",

@@ -11,6 +11,7 @@ using GoNorth.Data.Karta;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Kirja;
 using GoNorth.Data.Kortisto;
+using GoNorth.Data.StateMachines;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using Microsoft.Extensions.Localization;
@@ -63,6 +64,16 @@ namespace GoNorth.Services.ImplementationStatusCompare
         private readonly ITaleDialogImplementationSnapshotDbAccess _dialogSnapshotDbAccess;
 
         /// <summary>
+        /// State machine Db Access
+        /// </summary>
+        private readonly IStateMachineDbAccess _stateMachineDbAccess;
+
+        /// <summary>
+        /// State machine Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IStateMachineImplementationSnapshotDbAccess _stateMachineSnapshotDbAccess;
+
+        /// <summary>
         /// Quest Db Access
         /// </summary>
         private readonly IAikaQuestDbAccess _questDbAccess;
@@ -113,6 +124,8 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="skillSnapshotDbAccess">Skill Implementation Snapshot Db Access</param>
         /// <param name="dialogDbAccess">Dialog Db Access</param>
         /// <param name="dialogSnapshotDbAccess">Dialog Implementation Snapshot Db Access</param>
+        /// <param name="stateMachineDbAccess">State machine Db Access</param>
+        /// <param name="stateMachineSnapshotDbAccess">State machine Snapshot Db Access</param>
         /// <param name="questDbAccess">Quest Db Access</param>
         /// <param name="questSnapshotDbAccess">Quest Implementation Snapshot Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
@@ -123,8 +136,9 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="localizerFactory">Localizer Factory</param>
         public GenericImplementationStatusComparer(IKortistoNpcDbAccess npcDbAccess, IKortistoNpcImplementationSnapshotDbAccess npcSnapshotDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemImplementationSnapshotDbAccess itemSnapshotDbAccess, 
                                                    IEvneSkillDbAccess skillDbAccess, IEvneSkillImplementationSnapshotDbAccess skillSnapshotDbAccess, ITaleDbAccess dialogDbAccess, ITaleDialogImplementationSnapshotDbAccess dialogSnapshotDbAccess, 
-                                                   IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, 
-                                                   IKirjaPageDbAccess pageDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
+                                                   IStateMachineDbAccess stateMachineDbAccess, IStateMachineImplementationSnapshotDbAccess stateMachineSnapshotDbAccess, IAikaQuestDbAccess questDbAccess, IAikaQuestImplementationSnapshotDbAccess questSnapshotDbAccess, 
+                                                   IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerSnapshotDbAccess, IKirjaPageDbAccess pageDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, 
+                                                   IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IStringLocalizerFactory localizerFactory)
         {
             _npcDbAccess = npcDbAccess;
             _npcSnapshotDbAccess = npcSnapshotDbAccess;
@@ -134,6 +148,8 @@ namespace GoNorth.Services.ImplementationStatusCompare
             _skillSnapshotDbAccess = skillSnapshotDbAccess;
             _dialogDbAccess = dialogDbAccess;
             _dialogSnapshotDbAccess = dialogSnapshotDbAccess;
+            _stateMachineDbAccess = stateMachineDbAccess;
+            _stateMachineSnapshotDbAccess = stateMachineSnapshotDbAccess;
             _questDbAccess = questDbAccess;
             _questSnapshotDbAccess = questSnapshotDbAccess;
             _mapDbAccess = mapDbAccess;
@@ -161,6 +177,7 @@ namespace GoNorth.Services.ImplementationStatusCompare
             
             CompareResult result = CompareObjects(currentNpc, oldNpc);
             await CompareExportSnippets(npcId, result);
+            await CompareStateMachines(npcId, result);
             return result;
         }
 
@@ -220,6 +237,51 @@ namespace GoNorth.Services.ImplementationStatusCompare
             TaleDialog oldDialog = await _dialogSnapshotDbAccess.GetSnapshotById(dialogId);
             
             return CompareObjects(currentDialog, oldDialog);
+        }
+
+        /// <summary>
+        /// Compares the state machines of objects
+        /// </summary>
+        /// <param name="relatedObjectId">Id of the related object</param>
+        /// <param name="result">Result to fill</param>
+        /// <returns>Task</returns>
+        private async Task CompareStateMachines(string relatedObjectId, CompareResult result)
+        {
+            StateMachine stateMachine = await _stateMachineDbAccess.GetStateMachineByRelatedObjectId(relatedObjectId);
+            if(stateMachine == null)
+            {
+                return;
+            }
+
+            CompareResult stateMachineResult = await CompareStateMachine(stateMachine.Id, stateMachine);
+            if(stateMachineResult.CompareDifference.Count > 0 || !stateMachineResult.DoesSnapshotExist)
+            {
+                CompareDifference stateMachineDiff = BuildCompareDifference("StateMachineChanged", null, null, "StateMachineChanged", string.Empty);
+                stateMachineDiff.SubDifferences.AddRange(stateMachineResult.CompareDifference);
+                if(!stateMachineResult.DoesSnapshotExist)
+                {
+                    stateMachineDiff.SubDifferences.Add(BuildCompareDifference("StateMachineChangedWasNeverImplemented", null, null, "StateMachineChangedWasNeverImplemented", "EmptyText"));
+                }
+                result.CompareDifference.Add(stateMachineDiff);
+            }
+        }
+
+        /// <summary>
+        /// Compares a state machine
+        /// </summary>
+        /// <param name="stateMachineId">Id of the state machine</param>
+        /// <param name="currentStateMachine">Current state machine, if null the state machine will be loaded</param>
+        /// <returns>Compare Result</returns>
+        public async Task<CompareResult> CompareStateMachine(string stateMachineId, StateMachine currentStateMachine = null)
+        {
+            if(currentStateMachine == null)
+            {
+                currentStateMachine = await _stateMachineDbAccess.GetStateMachineById(stateMachineId);
+            }
+
+            StateMachine oldStateMachine = await _stateMachineSnapshotDbAccess.GetSnapshotById(stateMachineId);
+            
+            return CompareObjects(currentStateMachine, oldStateMachine);
         }
 
         /// <summary>

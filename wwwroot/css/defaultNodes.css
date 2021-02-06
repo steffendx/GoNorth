@@ -63,7 +63,7 @@
 /*
  * Node styles
  */
- .gn-nodeInsertContainer 
+ .gn-nodeInsertContainer, .gn-stateNodeInsertContainer
  {
 	z-index: 10;
 	margin-bottom: 15px;

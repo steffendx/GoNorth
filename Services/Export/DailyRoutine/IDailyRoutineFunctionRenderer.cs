@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Kortisto;
-using GoNorth.Services.Export.NodeGraphExport;
 using GoNorth.Services.Export.Placeholder;
 
 namespace GoNorth.Services.Export.DailyRoutine
 {
     /// <summary>
-    /// Interface for generating Export Daily Routine Function Names
+    /// Interface for rendering Export Daily Routine Functions
     /// </summary>
     public interface IDailyRoutineFunctionRenderer
     {

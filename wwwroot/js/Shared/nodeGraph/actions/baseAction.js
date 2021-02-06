@@ -144,6 +144,15 @@
                  */
                 deserialize: function(serializedData) {
 
+                },
+
+                /**
+                 * Returns statistics for the action
+                 * @param {object} parsedActionData Parsed action data
+                 * @returns Node statistics
+                 */
+                getStatistics: function(parsedActionData) {
+                    return {};
                 }
             };
 

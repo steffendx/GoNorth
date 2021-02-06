@@ -15,6 +15,7 @@
     "TemplateTypeObjectDailyRoutineFunctionList": "Daily routine function list",
     "TemplateTypeObjectDailyRoutineFunction": "Daily routine function",
     "TemplateTypeObjectExportSnippetFunction": "Export Snippet function",
+    "TemplateTypeObjectStateFunction": "State machine function",
 
 
     "TemplateTypeTaleDialogFunction": "Dialog function",

@@ -70,7 +70,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util
             convertedEvent.MovementTarget = EscapeValueIfExist(convertedEvent.UnescapedMovementTarget, exportSettings);
             convertedEvent.MovementTargetExportName = EscapeValueIfExist(convertedEvent.UnescapedMovementTargetExportName, exportSettings);
             convertedEvent.MovementTargetExportNameOrName = EscapeValueIfExist(convertedEvent.UnescapedMovementTargetExportNameOrName, exportSettings);
-            convertedEvent.ScriptType = ConvertScriptType(exportEvent.ScriptType);
+            convertedEvent.ScriptType = ScribanScriptUtil.ConvertScriptType(exportEvent.ScriptType);
             if(exportEvent.ScriptType != ExportConstants.ScriptType_None)
             {
                 convertedEvent.ScriptName = exportEvent.ScriptName;
@@ -116,25 +116,6 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util
                 Minutes = eventTime.Minutes,
                 TotalMinutes = (eventTime.Hours * projectConfig.MinutesPerHour + eventTime.Minutes)
             };
-        }
-
-        /// <summary>
-        /// Converts the script type
-        /// </summary>
-        /// <param name="scriptType">Script type to export</param>
-        /// <returns>Export script type</returns>
-        private static string ConvertScriptType(int scriptType)
-        {
-            if(scriptType == ExportConstants.ScriptType_Code)
-            {
-                return "Code";
-            }
-            else if(scriptType == ExportConstants.ScriptType_NodeGraph)
-            {
-                return "NodeGraph";
-            }
-
-            return "None";
         }
 
         /// <summary>

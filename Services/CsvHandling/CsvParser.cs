@@ -32,8 +32,10 @@ namespace GoNorth.Services.CsvHandling
             {
                 string delimiter = await DetectDelimiter(csvStream, streamReader);
 
-                CsvConfiguration configuration = new CsvConfiguration(CultureInfo.CurrentUICulture);
-                configuration.Delimiter = delimiter;
+                CsvConfiguration configuration = new CsvConfiguration(CultureInfo.CurrentUICulture)
+                {
+                    Delimiter = delimiter
+                };
                 using (CsvReader csvReader = new CsvReader(streamReader, configuration))
                 {
                     while (await csvReader.ReadAsync())

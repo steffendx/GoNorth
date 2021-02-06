@@ -193,7 +193,7 @@ namespace GoNorth.Services.Export.Dialog.StepRenderers
         {
             ReferenceNodeData referenceNodeData = new ReferenceNodeData();
             referenceNodeData.ReferenceText = referenceNode.ReferenceText;
-            referenceNodeData.ObjectType = referenceNode.ReferencedObjects[0].ObjectType;
+            referenceNodeData.ObjectType = referenceNode.ReferencedObjects.Any() ? referenceNode.ReferencedObjects[0].ObjectType : ExportConstants.ExportObjectTypeNone;
             switch(referenceNodeData.ObjectType.ToLowerInvariant())
             {
             case ExportConstants.ExportObjectTypeNpc:

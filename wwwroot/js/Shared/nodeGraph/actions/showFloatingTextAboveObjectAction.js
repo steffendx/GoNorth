@@ -70,6 +70,17 @@
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
             }
+            
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.ShowFloatingTextAboveObjectAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.floatingText)
+                };
+            };
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));

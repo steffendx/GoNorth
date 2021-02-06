@@ -11,6 +11,7 @@ using GoNorth.Data.Kortisto;
 using GoNorth.Data.LockService;
 using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
+using GoNorth.Data.StateMachines;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using GoNorth.Data.TaskManagement;
@@ -146,6 +147,16 @@ namespace GoNorth.Services.User
         private readonly ITaleDialogImplementationSnapshotDbAccess _taleImplementationSnapshotDbAccess;
 
         /// <summary>
+        /// State Machine Db Access
+        /// </summary>
+        private readonly IStateMachineDbAccess _stateMachineDbAccess;
+
+        /// <summary>
+        /// State Machine Snapshot Db Access
+        /// </summary>
+        private readonly IStateMachineImplementationSnapshotDbAccess _stateMachineSnapshotDbAccess;
+
+        /// <summary>
         /// Project Config Db Access
         /// </summary>
         private readonly IProjectConfigDbAccess _projectConfigDbAccess;
@@ -217,6 +228,8 @@ namespace GoNorth.Services.User
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="taleImplementationSnapshotDbAccess">Tale Implementation Snapshot Db Access</param>
+        /// <param name="stateMachineDbAccess">State Machine Db Access</param>
+        /// <param name="stateMachineSnapshotDbAccess">State Machine Snapshot Db Access</param>
         /// <param name="projectConfigDbAccess">Project Config Db Access</param>
         /// <param name="taskBoardDbAccess">Task Bord Db Access</param>
         /// <param name="taskGroupTypeDbAccess">Task Group Type Db Access</param>
@@ -231,8 +244,8 @@ namespace GoNorth.Services.User
                            IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, IKortistoImportFieldValuesLogDbAccess npcImportFieldValuesLogDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, 
                            IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IStyrImportFieldValuesLogDbAccess itemImportFieldValuesLogDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
                            IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, 
-                           IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, ILockServiceDbAccess lockDbService, 
-                           ITimelineDbAccess timelineDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager)
+                           IStateMachineDbAccess stateMachineDbAccess, IStateMachineImplementationSnapshotDbAccess stateMachineSnapshotDbAccess, IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, 
+                           IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, ILockServiceDbAccess lockDbService, ITimelineDbAccess timelineDbAccess, IProjectDbAccess projectDbAccess, UserManager<GoNorthUser> userManager)
         {
             _questDbAccess = questDbAccess;
             _questImplementationSnapshotDbAccess = questImplementationSnapshotDbAccess;
@@ -258,6 +271,8 @@ namespace GoNorth.Services.User
             _pageVersionDbAccess = pageVersionDbAccess;
             _taleDbAccess = taleDbAccess;
             _taleImplementationSnapshotDbAccess = taleImplementationSnapshotDbAccess;
+            _stateMachineDbAccess = stateMachineDbAccess;
+            _stateMachineSnapshotDbAccess = stateMachineSnapshotDbAccess;
             _projectConfigDbAccess = projectConfigDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
             _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
@@ -460,6 +475,10 @@ namespace GoNorth.Services.User
             await _taleDbAccess.ResetRecycleBinFlexFieldObjectsByModifiedUser(user.Id);
 
             await _taleImplementationSnapshotDbAccess.ResetSnapshotsByModifiedUser(user.Id);
+
+            await _stateMachineDbAccess.ResetStateMachinesByModifiedUser(user.Id);
+
+            await _stateMachineSnapshotDbAccess.ResetSnapshotsByModifiedUser(user.Id);
 
             List<JsonConfigEntry> jsonConfigEntries = await _projectConfigDbAccess.GetJsonConfigEntriesByModifiedUser(user.Id);
             foreach(JsonConfigEntry curConfig in jsonConfigEntries)

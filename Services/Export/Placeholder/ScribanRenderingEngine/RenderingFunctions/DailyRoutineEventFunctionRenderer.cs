@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Project;
-using GoNorth.Services.Export.DailyRoutine;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingObjects;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util;

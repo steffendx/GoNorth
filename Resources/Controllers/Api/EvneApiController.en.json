@@ -6,8 +6,9 @@
     "CanNotDeleteSkillMentionedInKirjaPage": "The skill is mentioned in the wiki pages \"{0}\". To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteSkillLearnedByNpc": "The Npcs \"{0}\" have learned the skill. To prevent errors in the story it must be deleted there first.",
     "CanNotDeleteSkillUsedInDailyRoutine": "The skill is referenced in the daily routines of \"{0}\". To prevent errors in the story it must be deleted there first.",
-    "CanNotDeleteObjectUsedInExportSnippet": "The object is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
+    "CanNotDeleteObjectUsedInExportSnippet": "The skill is referenced in export snippets of \"{0}\". To prevent errors while exporting it must be deleted there first.",
     "CanNotDeleteSkillUsedInSkill": "The skill is referenced in the skills \"{0}\". To prevent errors in the story it must be deleted there first.",
+    "CanNotDeleteSkillUsedInStateMachines": "The skill is referenced in the state machine of \"{0}\". To prevent errors while exporting it must be deleted there first.",
 
     "OnlyOneFileAllowed": "You must upload exactly one image file.",
     "CouldNotUploadImage": "Image could not be uploaded.",

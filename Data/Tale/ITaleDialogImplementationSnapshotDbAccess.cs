@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using GoNorth.Data.ImplementationSnapshot;
 
 namespace GoNorth.Data.Tale

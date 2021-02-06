@@ -16,6 +16,7 @@ using GoNorth.Data.Kortisto;
 using GoNorth.Data.LockService;
 using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
+using GoNorth.Data.StateMachines;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using GoNorth.Data.TaskManagement;
@@ -337,6 +338,16 @@ namespace GoNorth.Controllers.Api
         private readonly ITaleDialogImplementationSnapshotDbAccess _taleImplementationSnapshotDbAccess;
 
         /// <summary>
+        /// State Machine Db Access
+        /// </summary>
+        private readonly IStateMachineDbAccess _stateMachineDbAccess;
+
+        /// <summary>
+        /// State Machine Implementation Snapshot Db Access
+        /// </summary>
+        private readonly IStateMachineImplementationSnapshotDbAccess _stateMachineSnapsshotDbAccess;
+
+        /// <summary>
         /// Project Config Db Access
         /// </summary>
         private readonly IProjectConfigDbAccess _projectConfigDbAccess;
@@ -416,9 +427,11 @@ namespace GoNorth.Controllers.Api
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
-        /// <param name="projectConfigDbAccess">Project Config Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="taleImplementationSnapshotDbAccess">Tale Implementation Snapshot Db Access</param>
+        /// <param name="projectConfigDbAccess">Project Config Db Access</param>
+        /// <param name="stateMachineDbAccess">State Machine Db Access</param>
+        /// <param name="stateMachineSnapsshotDbAccess">State Machine Implementation Snapshot Db Access</param>
         /// <param name="taskBoardDbAccess">Task Bord Db Access</param>
         /// <param name="taskGroupTypeDbAccess">Task Group Type Db Access</param>
         /// <param name="taskTypeDbAccess">Task Type Db Access</param>
@@ -434,8 +447,8 @@ namespace GoNorth.Controllers.Api
                                          IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, IKortistoImportFieldValuesLogDbAccess npcImportFieldValuesLogDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, 
                                          IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IStyrImportFieldValuesLogDbAccess itemImportFieldValuesLogDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
                                          IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, 
-                                         IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, 
-                                         ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
+                                         IStateMachineDbAccess stateMachineDbAccess, IStateMachineImplementationSnapshotDbAccess stateMachineSnapsshotDbAccess, IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, 
+                                         IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
         {
             _questDbAccess = questDbAccess;
             _questImplementationSnapshotDbAccess = questImplementationSnapshotDbAccess;
@@ -461,6 +474,8 @@ namespace GoNorth.Controllers.Api
             _pageVersionDbAccess = pageVersionDbAccess;
             _taleDbAccess = taleDbAccess;
             _taleImplementationSnapshotDbAccess = taleImplementationSnapshotDbAccess;
+            _stateMachineDbAccess = stateMachineDbAccess;
+            _stateMachineSnapsshotDbAccess = stateMachineSnapsshotDbAccess;
             _projectConfigDbAccess = projectConfigDbAccess;
             _taskBoardDbAccess = taskBoardDbAccess;
             _taskGroupTypeDbAccess = taskGroupTypeDbAccess;
@@ -818,6 +833,39 @@ namespace GoNorth.Controllers.Api
                     ModifiedDate = curDialogSnapshot.ModifiedOn
                 });
             }
+
+            List<StateMachine> stateMachines = await _stateMachineDbAccess.GetStateMachinesByModifiedUser(currentUser.Id);
+            Dictionary<string, KortistoNpc> stateMachineNpcs = (await _npcDbAccess.ResolveFlexFieldObjectNames(stateMachines.Select(n => n.RelatedObjectId).ToList())).ToDictionary(n => n.Id);
+            foreach(StateMachine curStateMachine in stateMachines)
+            {
+                string npcName = "DELETED";
+                if(stateMachineNpcs.ContainsKey(curStateMachine.RelatedObjectId))
+                {
+                    npcName = stateMachineNpcs[curStateMachine.RelatedObjectId].Name;
+                }
+                response.ModifiedData.Add(new TrimmedModifiedData {
+                    ObjectType = "StateMachine",
+                    Name = npcName,
+                    ModifiedDate = curStateMachine.ModifiedOn
+                });
+            }
+            
+            List<StateMachine> stateMachineSnapshots = await _stateMachineSnapsshotDbAccess.GetSnapshotsModifiedByUsers(currentUser.Id);
+            Dictionary<string, KortistoNpc> stateMachineSnapshotNpcs = (await _npcDbAccess.ResolveFlexFieldObjectNames(stateMachineSnapshots.Select(n => n.RelatedObjectId).ToList())).ToDictionary(n => n.Id);
+            foreach(StateMachine curStateMachine in stateMachineSnapshots)
+            {
+                string npcName = "DELETED";
+                if(stateMachineSnapshotNpcs.ContainsKey(curStateMachine.RelatedObjectId))
+                {
+                    npcName = stateMachineSnapshotNpcs[curStateMachine.RelatedObjectId].Name;
+                }
+                response.ModifiedData.Add(new TrimmedModifiedData {
+                    ObjectType = "StateMachineSnapshot",
+                    Name = npcName,
+                    ModifiedDate = curStateMachine.ModifiedOn
+                });
+            }
+            
 
             List<JsonConfigEntry> jsonConfigEntries = await _projectConfigDbAccess.GetJsonConfigEntriesByModifiedUser(currentUser.Id);
             response.ModifiedData.AddRange(jsonConfigEntries.Select(p => new TrimmedModifiedData {

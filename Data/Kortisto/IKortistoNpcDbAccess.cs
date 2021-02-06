@@ -57,9 +57,10 @@ namespace GoNorth.Data.Kortisto
         /// <summary>
         /// Returns the npcs which have a daily routine event that is later than a given time
         /// </summary>
+        /// <param name="projectId">Id of the project to check</param>
         /// <param name="hours">Hours</param>
         /// <param name="minutes">Minutes</param>
         /// <returns>Npcs</returns>
-        Task<List<KortistoNpc>> GetNpcsWithDailyRoutineAfterTime(int hours, int minutes);
+        Task<List<KortistoNpc>> GetNpcsWithDailyRoutineAfterTime(string projectId, int hours, int minutes);
     }
 }

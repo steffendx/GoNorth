@@ -1,0 +1,13 @@
+{
+    "PlaceholderDesc_Id": "Id of the state.",
+    "PlaceholderDesc_Name": "Name of the state.",
+    "PlaceholderDesc_Description": "Description of the state.",
+    "PlaceholderDesc_IsInitialState": "true if the state is the initiale state of the state machine.",
+    "PlaceholderDesc_HasEndConnection": "true if the state has a connection to an end node of the state machine.",
+    "PlaceholderDesc_Transitions": "Transitions of the state. For details check <i>cur_state_transition</i>.",
+    "PlaceholderDesc_ScriptType": "Type of the script. Can be <i>None</i>, <i>Code</i> or <i>NodeGraph</i> sein..",
+    "PlaceholderDesc_ScriptName": "Name of the script function.",
+    "PlaceholderDesc_InitialFunction": "Initial function of the state. Can be null if no script is added.",
+    "PlaceholderDesc_AdditionalFunctions": "Additional functions of the state. Can be iterated using <i>for</i>.",
+    "PlaceholderDesc_AllFunctions": "All functions of the state. Can be iterated using <i>for</i>."
+}

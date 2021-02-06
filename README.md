@@ -44,12 +44,18 @@ Each object will display the different maps in which the Npc or Item is marked, 
 To help with balancing and moving data, GoNorth supports bulk exporting and importing of values and objects.  
 More details can be found in the wiki for [npcs](https://github.com/steffendx/GoNorth/wiki/Kortisto), [items](https://github.com/steffendx/GoNorth/wiki/Styr) and [skills](https://github.com/steffendx/GoNorth/wiki/Evne).
 
+### NPC State Machines
+GoNorth supports the creation of state machines to aid in developing the AI of different monsters and Npcs:  
+![State Machine](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/StateMachine.png?raw=true)
+
+In addition to defining states and transitions you can also associate a script with each state in order to export the State Machine later on. More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/State-Machine).
+
 ### Dialog Planning (Tale)
 Using the dialog planning module a user can create the branching dialogs for the different game characters as a node system:
 
 ![Dialog planning](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Tale.PNG?raw=true)
 
-GoNorth provides different dialog nodes for player or npc lines, player choices, conditions or actions.  
+GoNorth provides different dialog nodes for player or npc lines, player choices, conditions or actions. Statistics such as word count are also supported.  
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Tale).
 
 ### Daily routine planning

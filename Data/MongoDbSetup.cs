@@ -11,6 +11,7 @@ using GoNorth.Data.LockService;
 using GoNorth.Data.Project;
 using GoNorth.Data.ProjectConfig;
 using GoNorth.Data.Role;
+using GoNorth.Data.StateMachines;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 using GoNorth.Data.TaskManagement;
@@ -146,6 +147,9 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleDialogImplementationSnapshotMongoDbAccess.TaleDialogImplementationSnapshotCollectionName, collectionNames);
+
+            await CreateCollectionIfNotExists(StateMachineMongoDbAccess.StateMachineCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(StateMachineImplementationSnapshotMongoDbAccess.StateMachineImplementationSnapshotCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(AikaChapterOverviewMongoDbAccess.AikaChapterOverviewCollectionName, collectionNames);
             await CreateCollectionIfNotExists(AikaChapterOverviewMongoDbAccess.AikaChapterOverviewRecyclingBinCollectionName, collectionNames);

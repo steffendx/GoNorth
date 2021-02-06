@@ -3043,6 +3043,91 @@
 (function(GoNorth) {
     "use strict";
     (function(DefaultNodeShapes) {
+        
+        /**
+         * Returns the node statistics for 
+         * @param {object} nodeGraph Node graph
+         * @param {object} nodePaper Node paper
+         * @returns {object} Statistics
+         */
+        DefaultNodeShapes.getNodeStatistics = function(nodeGraph, nodePaper) {
+            var statisticsByNode = {};
+            var knownNodeTypes = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().getKnownNodeTypes();
+            for(var curNodeType = 0; curNodeType < knownNodeTypes.length; ++curNodeType)
+            {
+                statisticsByNode[knownNodeTypes[curNodeType]] = {
+                    nodeCount: 0,
+                    wordCount: 0,
+                    conditionCount: 0
+                };
+            }
+
+            var elements = nodeGraph.getElements();
+            for(var curElement = 0; curElement < elements.length; ++curElement)
+            {
+                var model = nodePaper.findViewByModel(elements[curElement].id);
+                if(!model || !model.getStatistics) {
+                    continue;
+                }
+
+                var nodeType = elements[curElement].attributes["type"];
+                if(!statisticsByNode[nodeType]) {
+                    statisticsByNode[nodeType] = {
+                        nodeCount: 0,
+                        wordCount: 0,
+                        conditionCount: 0
+                    };
+                }
+
+                ++statisticsByNode[nodeType].nodeCount;
+                
+                var statistics = model.getStatistics();
+                for(var curProp in statistics) {
+                    if(!statistics.hasOwnProperty(curProp)) {
+                        continue;
+                    }
+
+                    if(!statisticsByNode[nodeType][curProp]) {
+                        statisticsByNode[nodeType][curProp] = 0;
+                    }
+
+                    statisticsByNode[nodeType][curProp] += statistics[curProp];
+                }
+            }
+
+            var totalNodeCount = 0;
+            var totalWordCount = 0;
+            var totalConditionCount = 0;
+            for(var curElement in statisticsByNode) {
+                if(!statisticsByNode.hasOwnProperty(curElement)) {
+                    continue;
+                }
+
+                if(statisticsByNode[curElement].nodeCount) {
+                    totalNodeCount += statisticsByNode[curElement].nodeCount;
+                }
+
+                if(statisticsByNode[curElement].wordCount) {
+                    totalWordCount += statisticsByNode[curElement].wordCount;
+                }
+
+                if(statisticsByNode[curElement].conditionCount) {
+                    totalConditionCount += statisticsByNode[curElement].conditionCount;
+                }
+            }
+
+            statisticsByNode["totalNodeCount"] = totalNodeCount;
+            statisticsByNode["totalWordCount"] = totalWordCount;
+            statisticsByNode["totalConditionCount"] = totalConditionCount;
+
+            return statisticsByNode;
+        }
+
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
         (function(Shapes) {
 
             /// Quest state not started
@@ -3299,6 +3384,9 @@
             this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
+            this.nodeDropOffsetX = 0;
+            this.nodeDropOffsetY = 0;
+
             this.errorOccured = new ko.observable(false);
         };
 
@@ -3331,7 +3419,7 @@
                 var scale = this.nodePaper().scale();
                 var translate = this.nodePaper().translate();
                 var initOptions = {
-                    position: { x: (x - translate.tx) / scale.sx, y: (y - translate.ty) / scale.sy }
+                    position: { x: (x - translate.tx) / scale.sx + this.nodeDropOffsetX, y: (y - translate.ty) / scale.sy + this.nodeDropOffsetY }
                 };
                 return initOptions;
             },
@@ -7092,6 +7180,25 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var conditions = this.model.get("conditions");
+                        var conditionCount = 0;
+                        for(var curCondition = 0; curCondition < conditions.length; ++curCondition) {
+                            if(conditions[curCondition].conditionElements && conditions[curCondition].conditionElements.length > 0) {
+                                ++conditionCount;
+                            }
+                        }
+
+                        return {
+                            conditionCount: conditionCount
+                        };
                     }
                 });
             }
@@ -7908,6 +8015,30 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var action = this.getCurrentAction();
+                        if(!action)
+                        {
+                            return;
+                        }
+
+                        var currentAction = action.buildAction();
+                        currentAction.setNodeModel(this.model);
+
+                        var actionData = this.model.get("actionData");
+                        if(!actionData) {
+                            return {};
+                        }
+
+                        var parsedActionData = JSON.parse(actionData);
+                        return currentAction.getStatistics(parsedActionData);
                     }
                 });
             }
@@ -8130,6 +8261,15 @@
                  */
                 deserialize: function(serializedData) {
 
+                },
+
+                /**
+                 * Returns statistics for the action
+                 * @param {object} parsedActionData Parsed action data
+                 * @returns Node statistics
+                 */
+                getStatistics: function(parsedActionData) {
+                    return {};
                 }
             };
 
@@ -9261,6 +9401,17 @@
                 });
 
                 return def.promise();
+            };
+
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.AddQuestTextAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.questText)
+                };
             };
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.AddQuestTextAction());
@@ -13572,6 +13723,17 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            wordCount: GoNorth.Util.getWordCount(this.model.get('referenceText'))
+                        };
                     }
                 });
                 baseView.prototype = jQuery.extend(baseView.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
@@ -13855,6 +14017,17 @@
                             self.model.set("finishColor", finishColor.val());
                         });
                         finishColor.find("option[value='" + this.model.get("finishColor") + "']").prop("selected", true);
+                    },
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: GoNorth.Util.getWordCount(this.model.get("finishName"))
+                        };
                     }
                 });
             }
@@ -13985,7 +14158,18 @@
                         '<div class="node">',
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                         '</div>',
-                    ].join('')
+                    ].join(''),
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: 0
+                        };
+                    }
                 });
             }
 
@@ -14111,7 +14295,18 @@
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                             '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
                         '</div>',
-                    ].join('')
+                    ].join(''),
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: 0
+                        };
+                    }
                 });
             }
 
@@ -14368,6 +14563,10 @@
                 this.loadingReferencedInDailyRoutines = new ko.observable(false);
                 this.errorLoadingReferencedInDailyRoutines = new ko.observable(false);
 
+                this.referencedInStateMachines = new ko.observableArray();
+                this.loadingReferencedInStateMachines = new ko.observable(false);
+                this.errorLoadingReferencedInStateMachines = new ko.observable(false);
+
                 this.referencedInEvneSkills = new ko.observableArray();
                 this.loadingReferencedInEvneSkills = new ko.observable(false);
                 this.errorLoadingReferencedInEvneSkills = new ko.observable(false);
@@ -14377,6 +14576,12 @@
                 this.errorLoadingReferencedInExportSnippets = new ko.observable(false);
                 
                 this.showDeleteDialog = new ko.observable(false);
+
+                this.questStatistics = new ko.observable(null);
+                this.questStatisticsDescriptionWordCount = new ko.observable(0);
+                this.questStatisticsWordCountExpanded = new ko.observable(false);
+                this.questStatisticsNodeCountExpanded = new ko.observable(false);
+                this.showStatisticsDialog = new ko.observable(false);
 
                 this.isLoading = new ko.observable(false);
                 this.isReadonly = new ko.observable(false);
@@ -14423,6 +14628,7 @@
                     if(GoNorth.Aika.Quest.hasKortistoRights)
                     {
                         this.loadUsedInDailyRoutines();
+                        this.loadUsedInStateMachines();
                     }
 
                     if(GoNorth.Aika.Quest.hasExportObjectsRights)
@@ -14765,7 +14971,7 @@
 
 
             /**
-             * Loads the npcs in which the daily routines are used
+             * Loads the npcs in which the quest is used in the daily routines are used
              */
             Quest.ViewModel.prototype.loadUsedInDailyRoutines = function() {
                 this.loadingReferencedInDailyRoutines(true);
@@ -14791,6 +14997,44 @@
             };
 
             
+            /**
+             * Loads the npcs in which the quest is used in state machines
+             */
+            Quest.ViewModel.prototype.loadUsedInStateMachines = function() {
+                this.loadingReferencedInStateMachines(true);
+                this.errorLoadingReferencedInStateMachines(false);
+                var self = this;
+                GoNorth.HttpClient.get("/api/StateMachineApi/GetStateMachineObjectIsReferenced?objectId=" + this.id()).done(function(data) {
+                    self.referencedInStateMachines(data);
+                    self.loadingReferencedInStateMachines(false);
+                }).fail(function(xhr) {
+                    self.errorLoadingReferencedInStateMachines(true);
+                    self.loadingReferencedInStateMachines(false);
+                });
+            };
+
+            /**
+             * Builds the url for a state machine
+             * 
+             * @param {object} stateMachine State Machine to build the url for
+             * @returns {string} Url for the state machine
+             */
+            Quest.ViewModel.prototype.buildStateMachineUrl = function(stateMachine) {
+                var url = "/StateMachine?";
+                if(stateMachine.objectType == "NpcTemplate") {
+                    url += "npcTemplateId="
+                } else if(stateMachine.objectType == "Npc") {
+                    url += "npcId=";
+                } else {
+                    throw "Unknown state machine object";
+                }
+                
+                url += stateMachine.objectId;
+
+                return url;
+            };
+            
+
             /**
              * Loads the skills in which the quest is used
              */
@@ -14999,6 +15243,44 @@
                     self.isLoading(false);
                     self.errorOccured(true);
                 });
+            };
+
+
+            /**
+             * Opens the statistics dialog
+             */
+            Quest.ViewModel.prototype.openStatisticsDialog = function() {
+                var graph = this.nodeGraph();
+                var paper = this.nodePaper();
+
+                var statistics = GoNorth.DefaultNodeShapes.getNodeStatistics(graph, paper);
+
+                this.questStatistics(statistics);
+                this.questStatisticsDescriptionWordCount(GoNorth.Util.getWordCount(this.description()));
+                this.questStatisticsWordCountExpanded(false);
+                this.questStatisticsNodeCountExpanded(false);
+                this.showStatisticsDialog(true);
+            };
+
+            /**
+             * Toggles the visibility of the detailed word count statistics
+             */
+            Quest.ViewModel.prototype.toggleQuestStatisticsWordCount = function() {
+                this.questStatisticsWordCountExpanded(!this.questStatisticsWordCountExpanded());
+            }
+
+            /**
+             * Toggles the visibility of the detailed node count statistics
+             */
+            Quest.ViewModel.prototype.toggleQuestStatisticsNodeCount = function() {
+                this.questStatisticsNodeCountExpanded(!this.questStatisticsNodeCountExpanded());
+            }
+
+            /**
+             * Closes the statistics dialog
+             */
+            Quest.ViewModel.prototype.closeStatisticsDialog = function() {
+                this.showStatisticsDialog(false);
             };
 
 

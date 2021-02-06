@@ -746,6 +746,9 @@
             this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
+            this.nodeDropOffsetX = 0;
+            this.nodeDropOffsetY = 0;
+
             this.errorOccured = new ko.observable(false);
         };
 
@@ -778,7 +781,7 @@
                 var scale = this.nodePaper().scale();
                 var translate = this.nodePaper().translate();
                 var initOptions = {
-                    position: { x: (x - translate.tx) / scale.sx, y: (y - translate.ty) / scale.sy }
+                    position: { x: (x - translate.tx) / scale.sx + this.nodeDropOffsetX, y: (y - translate.ty) / scale.sy + this.nodeDropOffsetY }
                 };
                 return initOptions;
             },
@@ -1312,6 +1315,17 @@
                             self.model.set("finishColor", finishColor.val());
                         });
                         finishColor.find("option[value='" + this.model.get("finishColor") + "']").prop("selected", true);
+                    },
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: GoNorth.Util.getWordCount(this.model.get("finishName"))
+                        };
                     }
                 });
             }
@@ -1442,7 +1456,18 @@
                         '<div class="node">',
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                         '</div>',
-                    ].join('')
+                    ].join(''),
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: 0
+                        };
+                    }
                 });
             }
 
@@ -1568,7 +1593,18 @@
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                             '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
                         '</div>',
-                    ].join('')
+                    ].join(''),
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: 0
+                        };
+                    }
                 });
             }
 

@@ -1,0 +1,5 @@
+{
+    "PlaceholderDesc_Label": "Beschriftung des Übergangs",
+    "PlaceholderDesc_IsConnectedToEnd": "true wenn der Übergang zu einem Endknoten der State Machine führt.",
+    "PlaceholderDesc_TargetState": "Zielzustand des Übergangs. Hat die selben Werte wie <i>cur_state</i>."
+}

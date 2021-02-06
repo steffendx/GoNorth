@@ -32,6 +32,9 @@
     "PropertyNameDeletedInChapter": "Deleted in chapter",
     "PropertyNameGeoData": "Geometry data",
     "PropertyNameReferenceText": "Description",
+    "PropertyNameScriptNodeGraph": "Script node system",
+    "PropertyNameActionData": "Action config",
+    "PropertyNameLabel": "Label",
 
     "EntryRemoved": "Entry '{0}' removed.",
     "EntryAdded": "Entry '{0}' added.",
@@ -70,6 +73,11 @@
     "GeometryCircle": "Circle",
     "GeometryLineString": "Line",
     "GeometryRectangle": "Rectangle",
+    "StateMachineChanged": "State Machine changed:",
+    "StateMachineChangedWasNeverImplemented": "The state machine was never implemented.",
+    "StartChanged": "Start node changed:",
+    "EndChanged": "End nodes changed:",
+    "StateChanged": "State nodes changed:",
 
     "DailyRoutineChanged": "Daily routine changed:",
     "DailyRoutineEntryNameSingleTime": "{0}:{1}",
@@ -84,6 +92,9 @@
     "PropertyNameScriptName": "Script name",
     "PropertyNameScriptCode": "Script code",
     "ScriptCodeChanged": "Changed script code",
+    "NodeSystemChanged": "Changed node system",
+
+    "EmptyText": "",
 
     "ExportSnippetsChanged": "Export Snippets geändert"
 }

@@ -4,6 +4,7 @@ using GoNorth.Data.Aika;
 using GoNorth.Data.Evne;
 using GoNorth.Data.Karta.Marker;
 using GoNorth.Data.Kortisto;
+using GoNorth.Data.StateMachines;
 using GoNorth.Data.Styr;
 using GoNorth.Data.Tale;
 
@@ -45,6 +46,14 @@ namespace GoNorth.Services.ImplementationStatusCompare
         /// <param name="currentDialog">Current dialog, if null the dialog will be loaded</param>
         /// <returns>Compare Result</returns>
         Task<CompareResult> CompareDialog(string dialogId, TaleDialog currentDialog = null);
+
+        /// <summary>
+        /// Compares a state machine
+        /// </summary>
+        /// <param name="stateMachineId">Id of the state machine</param>
+        /// <param name="currentStateMachine">Current state machine, if null the state machine will be loaded</param>
+        /// <returns>Compare Result</returns>
+        Task<CompareResult> CompareStateMachine(string stateMachineId, StateMachine currentStateMachine = null);
 
         /// <summary>
         /// Compares a quest

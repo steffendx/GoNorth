@@ -395,6 +395,17 @@ namespace GoNorth.Services.Timeline
 
 
         /// <summary>
+        /// A state machine was created
+        /// </summary>
+        StateMachineCreated = 118,
+
+        /// <summary>
+        /// A state machine was updated
+        /// </summary>
+        StateMachineUpdated = 119,
+
+
+        /// <summary>
         /// Aika Chapter Overview updated
         /// </summary>
         AikaChapterOverviewUpdated = 39,

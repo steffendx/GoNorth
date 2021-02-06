@@ -65,6 +65,8 @@ using GoNorth.Services.Project;
 using GoNorth.Services.ReferenceAnalyzer;
 using GoNorth.Services.TimerJob;
 using GoNorth.Services.TimerJob.JobDefinitions;
+using GoNorth.Data.StateMachines;
+using GoNorth.Services.Export.StateMachines;
 
 namespace GoNorth
 {
@@ -212,11 +214,14 @@ namespace GoNorth
             services.AddTransient<IScribanLanguageKeyGenerator, ScribanLanguageKeyGenerator>();
             services.AddScoped<IExportDialogFunctionNameGenerator, ExportDialogFunctionNameGenerator>();
             services.AddScoped<IDailyRoutineFunctionNameGenerator, DailyRoutineFunctionNameGenerator>();
+            services.AddScoped<IStateMachineFunctionNameGenerator, StateMachineFunctionNameGenerator>();
             services.AddTransient<IConditionRenderer, ConditionRenderer>();
             services.AddTransient<ILegacyDailyRoutineEventPlaceholderResolver, LegacyDailyRoutineEventPlaceholderResolver>();
             services.AddTransient<ILegacyDailyRoutineEventContentPlaceholderResolver, LegacyDailyRoutineEventContentPlaceholderResolver>();
             services.AddTransient<IDailyRoutineNodeGraphFunctionGenerator, DailyRoutineNodeGraphFunctionGenerator>();
+            services.AddTransient<IStateMachineNodeGraphFunctionGenerator, StateMachineNodeGraphFunctionGenerator>();
             services.AddTransient<IDailyRoutineFunctionRenderer, DailyRoutineFunctionRenderer>();
+            services.AddTransient<IStateMachineFunctionRenderer, StateMachineFunctionRenderer>();
             services.AddScoped<IExportCachedDbAccess, ExportCachedDbAccess>();
             services.AddTransient<INodeGraphExporter, NodeGraphExporter>();
             services.AddTransient<INodeGraphParser, NodeGraphParser>();
@@ -283,6 +288,9 @@ namespace GoNorth
 
             services.AddScoped<ITaleDbAccess, TaleMongoDbAccess>();
             services.AddScoped<ITaleDialogImplementationSnapshotDbAccess, TaleDialogImplementationSnapshotMongoDbAccess>();
+
+            services.AddScoped<IStateMachineDbAccess, StateMachineMongoDbAccess>();
+            services.AddScoped<IStateMachineImplementationSnapshotDbAccess, StateMachineImplementationSnapshotMongoDbAccess>();
 
             services.AddScoped<IAikaChapterOverviewDbAccess, AikaChapterOverviewMongoDbAccess>();
             services.AddScoped<IAikaChapterDetailDbAccess, AikaChapterDetailMongoDbAccess>();

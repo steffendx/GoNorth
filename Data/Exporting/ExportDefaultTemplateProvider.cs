@@ -78,6 +78,7 @@ namespace GoNorth.Data.Exporting
             new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectDailyRoutineFunctionList),
             new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectDailyRoutineFunction),
             new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectExportSnippetFunction),
+            new DefaultTemplateEntry(TemplateCategory.Object, TemplateType.ObjectStateFunction),
 
             // Tale
             new DefaultTemplateEntry(TemplateCategory.Tale, TemplateType.TaleDialogFunction),

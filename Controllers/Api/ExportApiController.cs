@@ -31,6 +31,7 @@ using GoNorth.Services.Export.ExportSnippets;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using GoNorth.Services.Project;
+using GoNorth.Data.StateMachines;
 
 namespace GoNorth.Controllers.Api
 {
@@ -274,6 +275,11 @@ namespace GoNorth.Controllers.Api
         private readonly IEvneSkillTemplateDbAccess _skillTemplateDbAccess;
 
         /// <summary>
+        /// State Machine Db Access
+        /// </summary>
+        private readonly IStateMachineDbAccess _stateMachineDbAccess;
+
+        /// <summary>
         /// Template Placeholder Resolver
         /// </summary>
         private readonly IExportTemplatePlaceholderResolver _templatePlaceholderResolver;
@@ -348,6 +354,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="itemTemplateDbAccess">Item Template Db Access</param>
         /// <param name="skillDbAccess">Skill Db Access</param>
         /// <param name="skillTemplateDbAccess">Skill Template Db Access</param>
+        /// <param name="stateMachineDbAccess">State Machine Db Access</param>
         /// <param name="userProjectAccess">User project access</param>
         /// <param name="templatePlaceholderResolver">Template Placeholder Resolver</param>
         /// <param name="exportTemplateParser">Export template parser</param>
@@ -363,10 +370,10 @@ namespace GoNorth.Controllers.Api
         /// <param name="localizerFactory">Localizer Factory</param>
         public ExportApiController(IExportDefaultTemplateProvider defaultTemplateProvider, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, IExportSettingsDbAccess exportSettingsDbAccess, 
                                    IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, ITaleDbAccess dialogDbAccess, IStyrItemDbAccess itemDbAccess, 
-                                   IStyrItemTemplateDbAccess itemTemplateDbAccess, IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess skillTemplateDbAccess, IUserProjectAccess userProjectAccess, IExportTemplatePlaceholderResolver templatePlaceholderResolver, 
-                                   IExportTemplateParser exportTemplateParser, IExportSnippetRelatedObjectUpdater exportSnippetRelatedObjectUpdater, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, IDialogFunctionGenerationConditionDbAccess dialogFunctionDbAccess, 
-                                   IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector, ITimelineService timelineService, 
-                                   UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                   IStyrItemTemplateDbAccess itemTemplateDbAccess, IEvneSkillDbAccess skillDbAccess, IEvneSkillTemplateDbAccess skillTemplateDbAccess, IStateMachineDbAccess stateMachineDbAccess, IUserProjectAccess userProjectAccess, 
+                                   IExportTemplatePlaceholderResolver templatePlaceholderResolver, IExportTemplateParser exportTemplateParser, IExportSnippetRelatedObjectUpdater exportSnippetRelatedObjectUpdater, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, 
+                                   IDialogFunctionGenerationConditionDbAccess dialogFunctionDbAccess, IDialogFunctionGenerationConditionProvider dialogFunctionGenerationConditionProvider, ILanguageKeyDbAccess languageKeyDbAccess, ILanguageKeyReferenceCollector languageKeyReferenceCollector, 
+                                   ITimelineService timelineService, UserManager<GoNorthUser> userManager, ILogger<ExportApiController> logger, IStringLocalizerFactory localizerFactory) 
         {
             _defaultTemplateProvider = defaultTemplateProvider;
             _exportTemplateDbAccess = exportTemplateDbAccess;
@@ -381,6 +388,7 @@ namespace GoNorth.Controllers.Api
             _itemTemplateDbAccess = itemTemplateDbAccess;
             _skillDbAccess = skillDbAccess;
             _skillTemplateDbAccess = skillTemplateDbAccess;
+            _stateMachineDbAccess = stateMachineDbAccess;
             _templatePlaceholderResolver = templatePlaceholderResolver;
             _exportTemplateParser = exportTemplateParser;
             _exportSnippetRelatedObjectUpdater = exportSnippetRelatedObjectUpdater;
@@ -559,6 +567,8 @@ namespace GoNorth.Controllers.Api
                 {
                     childObjects = (await _skillDbAccess.GetFlexFieldObjectsPartOfIdList(projectId, objectId)).Cast<FlexFieldObject>().ToList();
                 }
+
+                childObjects = childObjects.Where(c => !exportTemplates.Any(e => e.CustomizedObjectId == c.Id)).ToList();
             }
 
             List<ExportTemplateSnippet> exportSnippets = template.Template.ExportSnippets;
@@ -1567,6 +1577,13 @@ namespace GoNorth.Controllers.Api
                     
                     TaleDialog dialog = await _dialogDbAccess.GetDialogByRelatedObjectId(id);
                     objectData.ExportData.Add(ExportConstants.ExportDataDialog, dialog);
+
+                    StateMachine stateMachine = await _stateMachineDbAccess.GetStateMachineByRelatedObjectId(id);
+                    if(stateMachine == null)
+                    {
+                        stateMachine = await _stateMachineDbAccess.GetStateMachineByRelatedObjectId(npc.TemplateId);
+                    }
+                    objectData.ExportData.Add(ExportConstants.ExportDataStateMachine, stateMachine);
 
                     objectFound = true;
                 }

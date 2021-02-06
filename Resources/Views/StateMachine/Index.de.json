@@ -1,0 +1,37 @@
+{
+    "StateMachine": "State Machine",
+    "Template": "(Template)",
+
+    "StateMachineBasedOnParent": "Für dieses Objekt ist noch keine eigene State Machine gespeichert. Es wird die übergeordnete State Machine verwendet. Hier klicken um die übergeordnete State Machine zu laden.",
+
+    "Save": "Speichern",
+    "ReturnToNpc": "Zurück zum Npc",
+
+    "StateNode": "Zustand",
+    "EndNode": "Endpunkt",
+
+    "ChildObjectsHavingCustomizedStateMachine": "Die folgendene Kindobjekte verwenden eine eigene State Machine. Es könnte sein das du hier Änderungen ebenfalls anpassen musst.",
+    
+    "SetTransitionLabel": "Zustandswechsel Beschriftung",
+    "SetTransitionTextBoxLabel": "Beschriftung",
+    "Ok": "Ok",
+    "Cancel": "Abbrechen",
+
+    "StateSettings": "Zustandseinstellungen",
+    "StateDescription": "Beschreibung",
+    "StateScript": "Skript",
+    "ClickHereToAddScript": "<Hier klicken um ein Skript hinzuzufügen>",
+    "DeleteScriptTooltip": "Hier klicken um das Skript zu entfernen",
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToRemoveTheScript": "Bist du sicher das du das Skript löschen willst?",
+    "StateDontExportToScript": "Nicht in Skript exportieren",
+
+    "Error": "Fehler",
+    "ErrorOccured": "Ein Fehler ist aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Diese State Machine wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+
+    "NodeLang": "de"
+}

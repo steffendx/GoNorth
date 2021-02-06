@@ -1039,6 +1039,91 @@
 (function(GoNorth) {
     "use strict";
     (function(DefaultNodeShapes) {
+        
+        /**
+         * Returns the node statistics for 
+         * @param {object} nodeGraph Node graph
+         * @param {object} nodePaper Node paper
+         * @returns {object} Statistics
+         */
+        DefaultNodeShapes.getNodeStatistics = function(nodeGraph, nodePaper) {
+            var statisticsByNode = {};
+            var knownNodeTypes = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().getKnownNodeTypes();
+            for(var curNodeType = 0; curNodeType < knownNodeTypes.length; ++curNodeType)
+            {
+                statisticsByNode[knownNodeTypes[curNodeType]] = {
+                    nodeCount: 0,
+                    wordCount: 0,
+                    conditionCount: 0
+                };
+            }
+
+            var elements = nodeGraph.getElements();
+            for(var curElement = 0; curElement < elements.length; ++curElement)
+            {
+                var model = nodePaper.findViewByModel(elements[curElement].id);
+                if(!model || !model.getStatistics) {
+                    continue;
+                }
+
+                var nodeType = elements[curElement].attributes["type"];
+                if(!statisticsByNode[nodeType]) {
+                    statisticsByNode[nodeType] = {
+                        nodeCount: 0,
+                        wordCount: 0,
+                        conditionCount: 0
+                    };
+                }
+
+                ++statisticsByNode[nodeType].nodeCount;
+                
+                var statistics = model.getStatistics();
+                for(var curProp in statistics) {
+                    if(!statistics.hasOwnProperty(curProp)) {
+                        continue;
+                    }
+
+                    if(!statisticsByNode[nodeType][curProp]) {
+                        statisticsByNode[nodeType][curProp] = 0;
+                    }
+
+                    statisticsByNode[nodeType][curProp] += statistics[curProp];
+                }
+            }
+
+            var totalNodeCount = 0;
+            var totalWordCount = 0;
+            var totalConditionCount = 0;
+            for(var curElement in statisticsByNode) {
+                if(!statisticsByNode.hasOwnProperty(curElement)) {
+                    continue;
+                }
+
+                if(statisticsByNode[curElement].nodeCount) {
+                    totalNodeCount += statisticsByNode[curElement].nodeCount;
+                }
+
+                if(statisticsByNode[curElement].wordCount) {
+                    totalWordCount += statisticsByNode[curElement].wordCount;
+                }
+
+                if(statisticsByNode[curElement].conditionCount) {
+                    totalConditionCount += statisticsByNode[curElement].conditionCount;
+                }
+            }
+
+            statisticsByNode["totalNodeCount"] = totalNodeCount;
+            statisticsByNode["totalWordCount"] = totalWordCount;
+            statisticsByNode["totalConditionCount"] = totalConditionCount;
+
+            return statisticsByNode;
+        }
+
+    }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(DefaultNodeShapes) {
         (function(Shapes) {
 
             /// Object Resource for npcs
@@ -1295,6 +1380,9 @@
             this.deleteNodeTarget = null;
             this.deleteDeferred = null;
 
+            this.nodeDropOffsetX = 0;
+            this.nodeDropOffsetY = 0;
+
             this.errorOccured = new ko.observable(false);
         };
 
@@ -1327,7 +1415,7 @@
                 var scale = this.nodePaper().scale();
                 var translate = this.nodePaper().translate();
                 var initOptions = {
-                    position: { x: (x - translate.tx) / scale.sx, y: (y - translate.ty) / scale.sy }
+                    position: { x: (x - translate.tx) / scale.sx + this.nodeDropOffsetX, y: (y - translate.ty) / scale.sy + this.nodeDropOffsetY }
                 };
                 return initOptions;
             },
@@ -2622,6 +2710,28 @@
                             self.deleteChoice(jQuery(this).data("choiceid"));
                         });
 
+                    },
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var choices = this.model.get("choices");
+                        var conditionCount = 0;
+                        var totalWordCount = 0;
+                        for(var curChoice = 0; curChoice < choices.length; ++curChoice)
+                        {
+                            if(choices[curChoice].condition) {
+                                ++conditionCount;
+                            }
+                            totalWordCount += GoNorth.Util.getWordCount(choices[curChoice].text)
+                        }
+                        
+                        return {
+                            conditionCount: conditionCount,
+                            wordCount: totalWordCount
+                        };
                     }
                 });
             }
@@ -3059,6 +3169,30 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var action = this.getCurrentAction();
+                        if(!action)
+                        {
+                            return;
+                        }
+
+                        var currentAction = action.buildAction();
+                        currentAction.setNodeModel(this.model);
+
+                        var actionData = this.model.get("actionData");
+                        if(!actionData) {
+                            return {};
+                        }
+
+                        var parsedActionData = JSON.parse(actionData);
+                        return currentAction.getStatistics(parsedActionData);
                     }
                 });
             }
@@ -3893,6 +4027,15 @@
                  */
                 deserialize: function(serializedData) {
 
+                },
+
+                /**
+                 * Returns statistics for the action
+                 * @param {object} parsedActionData Parsed action data
+                 * @returns Node statistics
+                 */
+                getStatistics: function(parsedActionData) {
+                    return {};
                 }
             };
 
@@ -6430,6 +6573,17 @@
                 return def.promise();
             };
 
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.AddQuestTextAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.questText)
+                };
+            };
+
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.AddQuestTextAction());
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
@@ -8020,6 +8174,17 @@
 
                 this.nodeModel.set("actionData", JSON.stringify(serializeData));
             }
+            
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.ShowFloatingTextAboveObjectAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.floatingText)
+                };
+            };
 
         }(DefaultNodeShapes.Actions = DefaultNodeShapes.Actions || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -8325,6 +8490,17 @@
                 });
 
                 return def.promise();
+            };
+
+            /**
+             * Returns statistics for the action
+             * @param {object} parsedActionData Parsed action data
+             * @returns Node statistics
+             */
+            Actions.ShowFloatingTextAboveChooseNpcAction.prototype.getStatistics = function(parsedActionData) {
+                return {
+                    wordCount: GoNorth.Util.getWordCount(parsedActionData.floatingText)
+                };
             };
 
             GoNorth.DefaultNodeShapes.Shapes.addAvailableAction(new Actions.ShowFloatingTextAboveChooseNpcAction());
@@ -15490,6 +15666,25 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        var conditions = this.model.get("conditions");
+                        var conditionCount = 0;
+                        for(var curCondition = 0; curCondition < conditions.length; ++curCondition) {
+                            if(conditions[curCondition].conditionElements && conditions[curCondition].conditionElements.length > 0) {
+                                ++conditionCount;
+                            }
+                        }
+
+                        return {
+                            conditionCount: conditionCount
+                        };
                     }
                 });
             }
@@ -16295,6 +16490,17 @@
                      */
                     hideError: function() {
                         this.$box.find(".gn-nodeError").hide();
+                    },
+
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            wordCount: GoNorth.Util.getWordCount(this.model.get('referenceText'))
+                        };
                     }
                 });
                 baseView.prototype = jQuery.extend(baseView.prototype, GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.prototype);
@@ -16488,6 +16694,12 @@
 
                 this.isImplemented = new ko.observable(false);
                 this.compareDialog = new GoNorth.ImplementationStatus.CompareDialog.ViewModel();
+
+                this.dialogStatistics = new ko.observable(null);
+                this.dialogStatisticsWordCountExpanded = new ko.observable(false);
+                this.dialogStatisticsConditionCountExpanded = new ko.observable(false);
+                this.dialogStatisticsNodeCountExpanded = new ko.observable(false);
+                this.showStatisticsDialog = new ko.observable(false);
 
                 this.showReturnToNpcButton = new ko.observable(false);
                 
@@ -16705,7 +16917,7 @@
                         self.dialogId(data.id);
                         self.isImplemented(data.isImplemented);
 
-                        GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().deserializeGraph(self.nodeGraph(), data, function(newNode) { self.setupNewNode(newNode); }, self.nodePaper());
+                        GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().deserializeGraph(self.nodeGraph(), data, function(newNode) { self.setupNewNode(newNode); });
                         self.focusNodeFromUrl();
 
                         if(self.isReadonly())
@@ -16732,6 +16944,50 @@
                 this.compareDialog.openDialogCompare(this.dialogId(), this.headerName()).done(function() {
                     self.isImplemented(true);
                 });
+            };
+
+            /**
+             * Opens the statistics dialog
+             */
+            Dialog.ViewModel.prototype.openStatisticsDialog = function() {
+                var graph = this.nodeGraph();
+                var paper = this.nodePaper();
+
+                var statistics = GoNorth.DefaultNodeShapes.getNodeStatistics(graph, paper);
+                
+                this.dialogStatistics(statistics);
+                this.dialogStatisticsWordCountExpanded(false);
+                this.dialogStatisticsConditionCountExpanded(false);
+                this.dialogStatisticsNodeCountExpanded(false);
+                this.showStatisticsDialog(true);
+            };
+
+            /**
+             * Toggles the visibility of the detailed word count statistics
+             */
+            Dialog.ViewModel.prototype.toggleDialogStatisticsWordCount = function() {
+                this.dialogStatisticsWordCountExpanded(!this.dialogStatisticsWordCountExpanded());
+            }
+            
+            /**
+             * Toggles the visibility of the detailed condition count statistics
+             */
+            Dialog.ViewModel.prototype.toggleDialogStatisticsConditionCount = function() {
+                this.dialogStatisticsConditionCountExpanded(!this.dialogStatisticsConditionCountExpanded());
+            }
+            
+            /**
+             * Toggles the visibility of the detailed node count statistics
+             */
+            Dialog.ViewModel.prototype.toggleDialogStatisticsNodeCount = function() {
+                this.dialogStatisticsNodeCountExpanded(!this.dialogStatisticsNodeCountExpanded());
+            }
+
+            /**
+             * Closes the statistics dialog
+             */
+            Dialog.ViewModel.prototype.closeStatisticsDialog = function() {
+                this.showStatisticsDialog(false);
             };
 
             /**

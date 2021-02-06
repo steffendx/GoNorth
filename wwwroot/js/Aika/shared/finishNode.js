@@ -118,6 +118,17 @@
                             self.model.set("finishColor", finishColor.val());
                         });
                         finishColor.find("option[value='" + this.model.get("finishColor") + "']").prop("selected", true);
+                    },
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: GoNorth.Util.getWordCount(this.model.get("finishName"))
+                        };
                     }
                 });
             }

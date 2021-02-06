@@ -32,7 +32,6 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Script Type
         /// </summary>
-        [ValueCompareAttribute]
         public int ScriptType { get; set; }
 
         /// <summary>
@@ -44,7 +43,7 @@ namespace GoNorth.Data.Exporting
         /// <summary>
         /// Script node graph
         /// </summary>
-        [ValueCompareAttribute]
+        [ValueCompareAttribute(LabelKey = "", TextKey = "NodeSystemChanged")]
         public NodeGraphSnippet ScriptNodeGraph { get; set; }
 
         /// <summary>

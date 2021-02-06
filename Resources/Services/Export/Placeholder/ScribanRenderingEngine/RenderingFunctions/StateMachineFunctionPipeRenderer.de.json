@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_StateMachineFunction": "Rendert eine State Machine Funktion basierend auf dem geteilten Template für State Machine Funktionen. Als &lt;STATE_MACHINE_FUNCTION&gt; muss eine State Machine Funktion, wie beispielsweise ein Eintrag aus state_machine.states[0].all_functions, übergeben werden."
+}

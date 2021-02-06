@@ -88,6 +88,8 @@
         </button>
     }
 
+    <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openStateMachine, visible: id(), disable: isLoading()"><i class="glyphicon glyphicon-retweet"></i> @Localizer["StateMachine"]</button>
+
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" style="display: none" data-bind="click: openNameGenSettings, visible: isTemplateMode(), disable: isLoading() || isReadonly()"><i class="glyphicon glyphicon-cog"></i> @Localizer["NameGenSettings"]</button>
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: generateName, visible: !isTemplateMode(), disable: isLoading() || isReadonly() || !nameGenTemplate(), attr: { title: !nameGenTemplate() ? '@Localizer["NoNameGenTemplateTooltip"]' : '' }"><i class="glyphicon glyphicon-transfer"></i> @Localizer["GenerateName"]</button>
 

@@ -1,0 +1,13 @@
+{
+    "PlaceholderDesc_Id": "Id des Zustands.",
+    "PlaceholderDesc_Name": "Name des Zustands.",
+    "PlaceholderDesc_Description": "Beschreibung des Zustands.",
+    "PlaceholderDesc_IsInitialState": "true wenn der Zustand der initiale Zustand der State Machine ist.",
+    "PlaceholderDesc_HasEndConnection": "true wenn der Zustand eine Verbindung zu einem Endknoten der State Machine hat.",
+    "PlaceholderDesc_Transitions": "Übergänge des Zustands. Details siehe <i>cur_state_transition</i>.",
+    "PlaceholderDesc_ScriptType": "Art des Skripts. Kann <i>None</i>, <i>Code</i> oder <i>NodeGraph</i> sein.",
+    "PlaceholderDesc_ScriptName": "Name der Skript Funktion.",
+    "PlaceholderDesc_InitialFunction": "Initiale Funktion des Zustands. Kann null sein wenn kein Script hinterlegt ist.",
+    "PlaceholderDesc_AdditionalFunctions": "Weitere Funktionen des Zustands. Können mit <i>for</i> durchlaufen werden.",
+    "PlaceholderDesc_AllFunctions": "Alle Funktionen des Zustands. Können mit <i>for</i> durchlaufen werden."
+}

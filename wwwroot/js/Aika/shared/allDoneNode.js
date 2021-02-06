@@ -56,7 +56,18 @@
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                             '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
                         '</div>',
-                    ].join('')
+                    ].join(''),
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function() {
+                        return {
+                            conditionCount: 0,
+                            wordCount: 0
+                        };
+                    }
                 });
             }
 

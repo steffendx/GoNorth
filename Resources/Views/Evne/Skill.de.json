@@ -60,6 +60,8 @@
     "ReferencedInDailyRoutines": "Referenziert in Tagesabläufen:",
     "ReferencedInExportSnippets": "Referenziert in Export Snippets:",
 
+    "ReferencedInStateMachines": "Referenziert in State Machines:",
+    
     "ReferencedInEvneSkills": "Referenziert in Fähigkeiten:",
 
     "ClickHereForDetailedReferences": "Der Skill ist in mehreren Objekten referenziert. Klick hier für Details.",

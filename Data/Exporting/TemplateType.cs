@@ -55,6 +55,11 @@ namespace GoNorth.Data.Exporting
         /// </summary>
         ObjectExportSnippetFunction = 10,
 
+        /// <summary>
+        /// Object state Function
+        /// </summary>
+        ObjectStateFunction = 11,
+
 
         /// <summary>
         /// Tale dialog function

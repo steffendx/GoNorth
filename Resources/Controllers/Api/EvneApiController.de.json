@@ -6,9 +6,10 @@
     "CanNotDeleteSkillMentionedInKirjaPage": "Die Fähigkeit wird in den Wiki-Seiten \"{0}\" erwähnt. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeleteSkillLearnedByNpc": "Die Npcs \"{0}\" beherrschen die Fähigkeit. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
     "CanNotDeleteSkillUsedInDailyRoutine": "Die Fähigkeit ist in den Tagesabläufen von \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
-    "CanNotDeleteObjectUsedInExportSnippet": "Das Objekt ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss es hier erst entfernt werden bevor es gelöscht werden kann.",
+    "CanNotDeleteObjectUsedInExportSnippet": "Die Fähigkeit ist in Export Snippets von \"{0}\" referenziert. Um Export Fehler zu verhindern muss er hier erst entfernt werden bevor es gelöscht werden kann.",
     "CanNotDeleteSkillUsedInSkill": "Die Fähigkeit ist in den Fähigkeiten \"{0}\" referenziert. Um Story Fehler zu verhindern muss sie hier erst entfernt werden bevor sie gelöscht werden kann.",
-    
+    "CanNotDeleteSkillUsedInStateMachines": "Die Fähigkeit ist in der State Machine von \"{0}\" referenziert. Um Export Fehler zu verhindern muss er hier erst entfernt werden bevor es gelöscht werden kann.",
+        
     "OnlyOneFileAllowed": "Es darf nur exakt eine Datei hochgeladen werden.",
     "CouldNotUploadImage": "Bild konnte nicht hochgeladen werden.",
     "ImageFormatNotSupported": "Das Bildformat wird nicht unterstützt.",

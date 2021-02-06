@@ -38,10 +38,20 @@ namespace GoNorth.Services.Export
         public const string ExportDataDialog = "Dialog";
 
         /// <summary>
+        /// Key for the export data state machine
+        /// </summary>
+        public const string ExportDataStateMachine = "StateMachine";
+
+        /// <summary>
         /// Key for referenced language ids
         /// </summary>
         public const string ExportDataReferencedLanguageIds = "ReferencedLanguageIds";
 
+
+        /// <summary>
+        /// Export Object Type for none
+        /// </summary>
+        public const string ExportObjectTypeNone = "none";
 
         /// <summary>
         /// Export Object Type for npcs
@@ -208,6 +218,26 @@ namespace GoNorth.Services.Export
         /// </summary>
         public const string DailyRoutineEventObjectKey = "cur_event";
 
+        /// <summary>
+        /// Scriban Npc state machine object key
+        /// </summary>
+        public const string ScribanStateMachineObjectKey = "state_machine";
+
+        /// <summary>
+        /// Scriban Npc state object key
+        /// </summary>
+        public const string ScribanStateObjectKey = "cur_state";
+
+        /// <summary>
+        /// Scriban Npc state function key
+        /// </summary>
+        public const string ScribanStateFunctionObjectKey = "state_function";
+
+        /// <summary>
+        /// Scriban Npc state transition key
+        /// </summary>
+        public const string ScribanStateTransitionObjectKey = "cur_state_transition";
+        
         /// <summary>
         /// Scriban export snippets object key
         /// </summary>

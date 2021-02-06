@@ -28,7 +28,7 @@
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.4.1/css/bootstrap.min.css"
@@ -141,7 +141,7 @@
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/knockout/dist/knockout.js"></script>
         <script src="~/lib/moment/moment.js"></script>
-        <script src="~/js/Shared/shared.lib.js"></script>
+        <script src="~/js/Shared/shared.lib.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.5.1.min.js"
@@ -168,7 +168,7 @@
                 crossorigin="anonymous"
                 integrity="sha384-Uz1UHyakAAz121kPY0Nx6ZGzYeUTy9zAtcpdwVmFCEwiTGPA2K6zSGgkKJEQfMhK">
         </script>
-        <script src="~/js/Shared/shared.lib.min.js"></script>
+        <script src="~/js/Shared/shared.lib.min.js" asp-append-version="true"></script>
     </environment>
 
     <script type="text/javascript">

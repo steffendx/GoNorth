@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using GoNorth.Data.FlexFieldDatabase;
-using GoNorth.Data.Kortisto;
 using GoNorth.Data.NodeGraph;
 using GoNorth.Services.Export.Dialog;
 using GoNorth.Services.Export.Placeholder;

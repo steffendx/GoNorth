@@ -161,6 +161,29 @@
 
 
             /**
+             * Opens the state machine for the npc
+             */
+            Npc.ViewModel.prototype.openStateMachine = function() {
+                if(!this.id())
+                {
+                    return;
+                }
+
+                var urlParameters = "";
+                if(!this.isTemplateMode())
+                {
+                    urlParameters = "npcId=" + this.id();
+                }
+                else
+                {
+                    urlParameters = "npcTemplateId=" + this.id();
+                }
+
+                window.location = "/StateMachine?" + urlParameters;
+            };
+
+
+            /**
              * Opens the mark as playe dialog
              */
             Npc.ViewModel.prototype.openMarkAsPlayerDialog = function() {

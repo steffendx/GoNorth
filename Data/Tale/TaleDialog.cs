@@ -81,7 +81,7 @@ namespace GoNorth.Data.Tale
         public DateTimeOffset ModifiedOn { get; set; }
 
         /// <summary>
-        /// Id of the user who last modified the page
+        /// Id of the user who last modified the dialog
         /// </summary>
         public string ModifiedBy { get; set; }
     }

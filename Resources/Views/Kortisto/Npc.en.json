@@ -29,6 +29,7 @@
     "NameGenUnexpectedPointyBracketInInput": "Unexpected '<' bracket in input",
     "NameGenUnexpectedRoundBracketInInput": "Unexpected '(' bracket in input",
     "NameGenUnknownError": "Unknown error",
+    "StateMachine": "State Machine",
     "ManageTemplate": "Export template",
     "Export": "Export",
     "Script": "Script",
@@ -113,6 +114,8 @@
 
     "ReferencedInDailyRoutines": "Referenced in daily routines:",
     "ReferencedInExportSnippets": "Referenced in export snippets:",
+
+    "ReferencedInStateMachines": "Referenced in state machines:",
 
     "ReferencedInEvneSkills": "Referenced in skills:",
 

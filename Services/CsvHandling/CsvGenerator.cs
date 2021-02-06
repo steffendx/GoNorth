@@ -38,8 +38,10 @@ namespace GoNorth.Services.CsvHandling
         {
             using(TextWriter writer = new StringWriter())
             {
-                CsvConfiguration configuration = new CsvConfiguration(CultureInfo.CurrentUICulture);
-                configuration.Delimiter = _delimiter;
+                CsvConfiguration configuration = new CsvConfiguration(CultureInfo.CurrentUICulture)
+                {
+                    Delimiter = _delimiter
+                };
                 using(CsvWriter csvWriter = new CsvWriter(writer, configuration))
                 {
                     await WriteHeader(csvWriter, headerNames);
