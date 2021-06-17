@@ -94,6 +94,160 @@
 		});
 	};
 
+
+	var getAllDescendants = function (node, callback) {
+		for (var curNode = 0; curNode < node.childNodes.length; ++curNode) {
+			var child = node.childNodes[curNode];
+			getAllDescendants(child, callback);
+			callback(child);
+		}
+	}
+
+	var glueSplitElements = function(firstEl, secondEl){
+		var done = false;
+		var result = [];
+
+		if(!firstEl || !secondEl){
+			return false;
+		}
+
+		if(firstEl.nodeName == secondEl.nodeName){
+			result.push([firstEl, secondEl]);
+
+			while(!done) {
+				firstEl = firstEl.childNodes[firstEl.childNodes.length - 1];
+				secondEl = secondEl.childNodes[0];
+
+				if(!firstEl || !secondEl){
+					break;
+				}
+
+				if(firstEl.nodeName != secondEl.nodeName){
+					done = true;
+				} else {
+					result.push([firstEl, secondEl]);
+				}
+			}
+		}
+
+		for(var curResult = result.length - 1; curResult >= 0; --curResult){
+			var elements = result[curResult];
+			while(elements[1].childNodes.length > 0){
+				elements[0].appendChild(elements[1].childNodes[0]);
+			}
+			elements[1].parentNode.removeChild(elements[1]);
+		}
+	}
+
+	var surroundSelectionFromRange = function (range, elementType) {
+		var rangeContents = range.extractContents();
+		var nodesInRange  = rangeContents.childNodes;
+		var nodesToWrap   = [];
+
+		for(var curNode = 0; curNode < nodesInRange.length; ++curNode){
+			if(nodesInRange[curNode].nodeName.toLowerCase() == "#text"){
+				nodesToWrap.push(nodesInRange[curNode]);
+			} else {
+				getAllDescendants(nodesInRange[curNode], function(child){
+					if(child.nodeName.toLowerCase() == "#text"){
+						nodesToWrap.push(child);
+					}
+				});
+			}
+		};
+
+		for(var curNode = 0; curNode < nodesToWrap.length; ++curNode){
+			var child = nodesToWrap[curNode];
+			var wrap;
+			if(typeof elementType == "function") {
+				wrap = elementType();
+			} else {
+				wrap = jQuery(elementType)[0];
+			}
+
+			if(child.nodeValue.replace(/(\s|\n|\t)/g, "").length != 0){
+				child.parentNode.insertBefore(wrap, child);
+				wrap.appendChild(child);
+			} else {
+				wrap = null;
+			}
+		}
+
+		var firstChild = rangeContents.childNodes[0];
+		var lastChild = rangeContents.childNodes[rangeContents.childNodes.length - 1];
+
+		range.insertNode(rangeContents);
+
+		glueSplitElements(firstChild.previousSibling, firstChild);
+		glueSplitElements(lastChild, lastChild.nextSibling);
+
+		rangeContents = null;
+	};
+
+	var buildSelectionPath = function(editor, element) {
+		var curSelectorPath = [];
+		while(element[0] != editor[0]) {
+			if(curSelectorPath.length > 100) {
+				break;
+			}
+
+			var parentContent = jQuery(element).parent().contents();
+			for(var curContent = 0; curContent < parentContent.length; ++curContent) {
+				if(parentContent[curContent] == element[0]) {
+					curSelectorPath.push(curContent);
+				}
+			}
+			element = jQuery(element).parent();
+		}
+		curSelectorPath.reverse();
+
+		return curSelectorPath;
+	}
+
+	var getElementFromSelectionPath = function(editor, selectorPath) {
+		var target = jQuery(editor);
+		for(var curElem = 0; curElem < selectorPath.length; ++curElem) {
+			target = target.contents().eq(selectorPath[curElem]);
+		}
+
+		return target;
+	}
+
+	var surroundSelection = function (editor, elementType) {
+		var selection = getSelection();
+	
+		if(selection.rangeCount == 0) {
+			return;
+		}
+		
+		var range = selection.getRangeAt(0);
+		var startPath = buildSelectionPath(editor, jQuery(range.startContainer));
+		var endPath = buildSelectionPath(editor, jQuery(range.endContainer));
+		var clonedContent = jQuery("<div>" + jQuery(editor).html() + "</div>");
+
+		var clonedStart = getElementFromSelectionPath(clonedContent[0], startPath);
+		var clonedEnd = getElementFromSelectionPath(clonedContent[0], endPath);
+		let clonedRange = document.createRange();
+		clonedRange.setStart(clonedStart[0], range.startOffset);
+		clonedRange.setEnd(clonedEnd[0], range.endOffset);
+		surroundSelectionFromRange(clonedRange, elementType);
+
+		while(clonedContent.children().length == 1 && clonedContent.children().first().is("div"))
+		{
+			clonedContent.children().children().unwrap();
+		}
+
+		return clonedContent.html();
+	}
+
+	var generateAdditionalButtonHtml = function(button, key, parentKey) {
+		var callbackKey = key;
+		if(parentKey) {
+			callbackKey = parentKey + "." + key;
+		}
+		return '<a class="btn btn-default" title="' + button.title + '" data-customcallback="' + callbackKey + '"><i class="glyphicon ' + button.icon + '"></i></a>';
+	}
+
 	var createToolbar = function(targetElement, additionalButtons, options) {
 		var toolbarHtml = '<div class="btn-toolbar" data-role="editor-toolbar"> \
 			<div class="btn-group"> \
@@ -143,7 +297,7 @@
 				<a class="btn btn-default" data-edit="unlink" title="' + bootstrapWysiwyg.local.removeHyperlink + '"><i class="glyphicon glyphicon-link" style="text-decoration: line-through"></i></a> \
 			</div> \
 			\
-			<div class="btn-group"> \
+			<div class="btn-group gn-insertRichtextImage"> \
 				<a class="btn btn-default" title="' + bootstrapWysiwyg.local.insertPicture + '"><i class="glyphicon glyphicon-picture"></i></a> \
 				<input type="file" data-role="magic-overlay" data-edit="insertImage" class="wysiwgEditor-imageUpload" /> \
 			</div> \
@@ -177,11 +331,16 @@
 		if(additionalButtons)
 		{
 			jQuery.each(additionalButtons, function(key, button) {
-				var buttonHtml = '<div class="btn-group"> \
-									<a class="btn btn-default" title="' + button.title + '" data-customcallback="' + key + '"><i class="glyphicon ' + button.icon + '"></i></a> \
-								  </div>';
-				
-				toolbarHtml += buttonHtml;
+				toolbarHtml += '<div class="btn-group">';
+				if(!button.toolbarButtonGroup) {
+					toolbarHtml += generateAdditionalButtonHtml(button, key, "");
+				} else {
+					jQuery.each(button.toolbarButtonGroup, function(subKey, groupButton) {
+						toolbarHtml += generateAdditionalButtonHtml(groupButton, subKey, key);
+					});
+				}
+
+				toolbarHtml += '</div>';
 			});
 		}
 
@@ -219,8 +378,12 @@
 		htmlEditor.attr("class", targetClass);
 		htmlEditor.insertAfter(this);
 		var htmlOld = $(this).html();
-		
-		var editor = this;
+
+		if(userOptions.richTextDisableImageUpload) {
+			$(createdToolbar).find(".gn-insertRichtextImage").hide();
+		}
+
+		var editor = this;		
 		var selectedRange,
 			options,
 			toolbarBtnSelector,
@@ -245,6 +408,22 @@
 					containerNode = containerNode.parentNode;
 				}
 				return null;
+			},
+			callFocusChangeCallback = function() {
+				if(!options.focusChangeCallback) {
+					return;
+				}
+
+				if (window.getSelection) {
+					sel = window.getSelection();
+					if (sel.rangeCount > 0) {
+						containerNode = sel.getRangeAt(0).commonAncestorContainer;
+					}
+				} else if ((sel = document.selection) && sel.type != "Control") {
+					containerNode = sel.createRange().parentElement();
+				}
+
+				options.focusChangeCallback(containerNode);
 			},
 			updateToolbar = function () {
 				if (options.activeToolbarClass) {
@@ -284,6 +463,7 @@
 					args = commandArr.join(' ') + (valueArg || '');
 				document.execCommand(command, 0, args);
 				updateToolbar();
+				callFocusChangeCallback();
 			},
 			bindHotkeys = function (hotKeys) {
 				$.each(hotKeys, function (hotkey, command) {
@@ -307,6 +487,23 @@
 					return sel.getRangeAt(0);
 				}
 			},
+			clearSelection = function () {
+				try {
+					selection.removeAllRanges();
+				} catch (ex) {
+					if(document.body.createTextRange)
+					{
+						document.body.createTextRange().select();
+						document.selection.empty();
+					}
+					else
+					{
+						var range = document.createRange();
+						window.getSelection().addRange(range);
+						window.getSelection().empty()
+					}
+				}
+			}
 			saveSelection = function () {
 				selectedRange = getCurrentRange();
 			},
@@ -333,6 +530,10 @@
 				}
 			},
 			insertFiles = function (files, userOptions) {
+				if(userOptions.richTextDisableImageUpload) {
+					return;
+				}
+
 				if(!userOptions.imageUploadUrl)
 				{
 					$.each(files, function (idx, fileInfo) {
@@ -436,7 +637,7 @@
 				});
 				toolbar.find('input[type=file][data-' + options.commandRole + ']').change(function () {
 					restoreSelection();
-					if (this.type === 'file' && this.files && this.files.length > 0) {
+					if (this.type == 'file' && this.files && this.files.length > 0) {
 						insertFiles(this.files, userOptions);
 					}
 					saveSelection();
@@ -677,14 +878,37 @@
 		}
 		bindToolbar($(options.toolbarSelector), options);
 		if(userOptions.additionalButtons) {
-			jQuery(createdToolbar).find("a[data-customcallback]").click(function() {
-				var buttonData = userOptions.additionalButtons[jQuery(this).data("customcallback")];
+			jQuery(createdToolbar).find("a[data-customcallback]").on("click", function() {
+				var callbackKey = jQuery(this).data("customcallback").split(".");
+				var sourceObject = userOptions.additionalButtons;
+				if(callbackKey.length > 1) {
+					sourceObject = sourceObject[callbackKey[0]].toolbarButtonGroup;
+				}
+				var buttonData = sourceObject[callbackKey[callbackKey.length - 1]];
 				if(buttonData && buttonData.callback) {
 					buttonData.callback(function(htmlToInsert) {
 						restoreSelection();
 						if (htmlToInsert) {
 							editor.focus();
 							execCommand("insertHTML", htmlToInsert);
+						}
+					}, function(wrapElement) {
+						restoreSelection();
+						if (wrapElement) {
+							editor.focus();
+
+							var html = surroundSelection(editor, wrapElement);
+
+							// Ensure undo / redo works
+							clearSelection();
+							
+							var range = document.createRange();
+							range.selectNodeContents(jQuery(editor)[0]);
+							window.getSelection().addRange(range);
+
+							execCommand("insertHTML", html);
+
+							clearSelection();
 						}
 					});
 				}
@@ -694,11 +918,17 @@
 			.on('mouseup keyup mouseout', function () {
 				saveSelection();
 				updateToolbar();
+			}).on('paste', function(event) {
+				if (event.originalEvent && event.originalEvent.clipboardData && event.originalEvent.clipboardData && event.originalEvent.clipboardData.types && event.originalEvent.clipboardData.types.indexOf("Files") >= 0) {
+					event.preventDefault()
+				}
+			}).on('mouseup keyup touchend', function() {
+				callFocusChangeCallback();
 			});
 		$(window).bind('touchend', function (e) {
 			var isInside = (editor.is(e.target) || editor.has(e.target).length > 0),
 				currentRange = getCurrentRange(),
-				clear = currentRange && (currentRange.startContainer === currentRange.endContainer && currentRange.startOffset === currentRange.endOffset);
+				clear = currentRange && (currentRange.startContainer == currentRange.endContainer && currentRange.startOffset == currentRange.endOffset);
 			if (!clear || isInside) {
 				saveSelection();
 				updateToolbar();

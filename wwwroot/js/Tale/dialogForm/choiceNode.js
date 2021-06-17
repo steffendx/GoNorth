@@ -325,7 +325,7 @@
 
                         // Bind events
                         var self = this;
-                        this.$box.find(".gn-taleChoiceInput").change(function() {
+                        this.$box.find(".gn-taleChoiceInput").on("input", function() {
                             self.setChoiceText(jQuery(this).data("choiceid"), jQuery(this).val());
                         });
 

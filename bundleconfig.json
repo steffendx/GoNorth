@@ -84,7 +84,8 @@
       "wwwroot/js/Shared/util.js",
       "wwwroot/js/Shared/knockout.bindings.js",
       "wwwroot/js/Shared/lockService.js",
-      "wwwroot/js/Shared/httpClient.js"
+      "wwwroot/js/Shared/httpClient.js",
+      "wwwroot/js/Shared/promptService.js"
     ],
     "minify": {
       "enabled": true,
@@ -248,6 +249,9 @@
   {
     "outputFileName": "wwwroot/js/Kortisto/npc.viewmodel.js",
     "inputFiles": [
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/flexFieldUtil.js",
       "wwwroot/js/ProjectConfig/shared/configKeys.js",
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
@@ -422,6 +426,9 @@
   {
     "outputFileName": "wwwroot/js/Styr/item.viewmodel.js",
     "inputFiles": [
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/chooseScriptTypeDialog.js",
       
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
@@ -596,6 +603,9 @@
   {
     "outputFileName": "wwwroot/js/Evne/skill.viewmodel.js",
     "inputFiles": [
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
       
       "wwwroot/js/Shared/chooseScriptTypeDialog.js",
@@ -742,9 +752,30 @@
   {
     "outputFileName": "wwwroot/js/Kirja/page.viewmodel.js",
     "inputFiles": [
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
-      "wwwroot/js/Kirja/page/childLinkClickBindingHandler.js",
+      "wwwroot/js/Kirja/shared/baseViewmodel.js",
+      "wwwroot/js/Kirja/shared/childLinkClickBindingHandler.js",
       "wwwroot/js/Kirja/page/viewmodel.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Kirja/review.viewmodel.js",
+    "inputFiles": [
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+      
+      "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
+      "wwwroot/js/Kirja/shared/baseViewmodel.js",
+      "wwwroot/js/Kirja/shared/childLinkClickBindingHandler.js",
+      "wwwroot/js/Kirja/review/viewmodel.js"
     ],
     "minify": {
       "enabled": true,
@@ -926,6 +957,10 @@
   {
     "outputFileName": "wwwroot/js/Tale/dialog.viewmodel.js",
     "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js",
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
 
       "wwwroot/js/Shared/dailyRoutines/utilFunctions.js",
@@ -1093,6 +1128,10 @@
   {
     "outputFileName": "wwwroot/js/StateMachine/stateMachine.viewmodel.js",
     "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js",
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
 
       "wwwroot/js/Shared/dailyRoutines/utilFunctions.js",
@@ -1275,6 +1314,10 @@
   {
     "outputFileName": "wwwroot/js/Aika/chapterOverview.viewmodel.js",
     "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js",
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
 
       "wwwroot/js/Aika/shared/viewModelHelper.js",
@@ -1293,6 +1336,10 @@
   {
     "outputFileName": "wwwroot/js/Aika/chapterDetail.viewmodel.js",
     "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js",
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
 
       "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
@@ -1316,7 +1363,10 @@
   },
   {
     "outputFileName": "wwwroot/js/Aika/quest.viewmodel.js",
-    "inputFiles": [
+    "inputFiles": [      
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+      
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
 
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
@@ -1527,6 +1577,10 @@
   {
     "outputFileName": "wwwroot/js/Export/manageTemplate.viewmodel.js",
     "inputFiles": [
+      "wwwroot/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js",
+      "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
+      "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
       "wwwroot/js/Shared/scriptDialog/codeEditor.bindingHandler.js",
       "wwwroot/js/Export/manageTemplate/viewmodel.js"
     ],

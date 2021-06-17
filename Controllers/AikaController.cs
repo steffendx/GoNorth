@@ -1,5 +1,8 @@
+using GoNorth.Config;
+using GoNorth.Models.AikaViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace GoNorth.Controllers
 {
@@ -11,13 +14,29 @@ namespace GoNorth.Controllers
     public class AikaController : Controller
     {
         /// <summary>
+        /// Misc config
+        /// </summary>
+        private readonly MiscConfig _config;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        public AikaController(IOptions<ConfigurationData> configuration)
+        {
+            _config = configuration.Value.Misc;
+        }
+
+        /// <summary>
         /// Chapter Overview view
         /// </summary>
         /// <returns>View</returns>
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            SharedAikaViewModel viewModel = new SharedAikaViewModel();
+            viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
+            return View(viewModel);
         }
 
         /// <summary>
@@ -27,7 +46,9 @@ namespace GoNorth.Controllers
         [HttpGet]
         public IActionResult Detail()
         {
-            return View();
+            SharedAikaViewModel viewModel = new SharedAikaViewModel();
+            viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
+            return View(viewModel);
         }
 
         /// <summary>
@@ -37,7 +58,9 @@ namespace GoNorth.Controllers
         [HttpGet]
         public IActionResult Quest()
         {
-            return View();
+            SharedAikaViewModel viewModel = new SharedAikaViewModel();
+            viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
+            return View(viewModel);
         }
 
         /// <summary>

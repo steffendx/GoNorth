@@ -14,5 +14,10 @@ namespace GoNorth.Models.KirjaViewModels
         /// true if versioning is used, else false
         /// </summary>
         public bool IsUsingVersioning { get; set; }
+
+        /// <summary>
+        /// true if auto save is disabled, else false
+        /// </summary>
+        public bool DisableAutoSaving { get; set; }
     }
 }

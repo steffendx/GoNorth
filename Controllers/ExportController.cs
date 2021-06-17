@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using GoNorth.Config;
 using GoNorth.Data.Exporting;
 using GoNorth.Data.Project;
 using GoNorth.Data.User;
@@ -12,6 +13,7 @@ using GoNorth.Services.Project;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace GoNorth.Controllers
 {
@@ -53,6 +55,11 @@ namespace GoNorth.Controllers
         private readonly IActionTranslator _actionTranslator;
 
         /// <summary>
+        /// Misc config
+        /// </summary>
+        private readonly MiscConfig _config;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="exportDefaultTemplateProvider">Export default template provider</param>
@@ -61,8 +68,9 @@ namespace GoNorth.Controllers
         /// <param name="exportSettings">Export settings</param>
         /// <param name="userProjectAccess">User project Access</param>
         /// <param name="actionTranslator">Action translator</param>
+        /// <param name="configuration">Configuration</param>
         public ExportController(IExportDefaultTemplateProvider exportDefaultTemplateProvider, IUserPreferencesDbAccess userPreferencesDbAccess, UserManager<GoNorthUser> userManager, IExportSettingsDbAccess exportSettings, IUserProjectAccess userProjectAccess,
-                                IActionTranslator actionTranslator)
+                                IActionTranslator actionTranslator, IOptions<ConfigurationData> configuration)
         {
             _exportDefaultTemplateProvider = exportDefaultTemplateProvider;
             _userPreferencesDbAccess = userPreferencesDbAccess;
@@ -70,6 +78,7 @@ namespace GoNorth.Controllers
             _exportSettings = exportSettings;
             _userProjectAccess = userProjectAccess;
             _actionTranslator = actionTranslator;
+            _config = configuration.Value.Misc;
         }
 
         /// <summary>
@@ -108,6 +117,8 @@ namespace GoNorth.Controllers
             viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectNpc, "/Kortisto/Npc?id={0}"));
             viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectItem, "/Styr/Item?id={0}"));
             viewModel.TemplateTypeUrls.Add(BuildExportTemplateTypeUrl(TemplateType.ObjectSkill, "/Evne/Skill?id={0}"));
+
+            viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
 
             return View(viewModel);
         }

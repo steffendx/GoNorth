@@ -2,10 +2,13 @@
     "Kirja": "Wiki",
 
     "EditPage": "Edit",
+    "StartReview": "Start review",
+    "ShowReviews": "Show reviews",
     "StopEditPage": "Stop editing",
     "SavePage": "Save",
     "DeletePage": "Delete",
     "CanNotDeleteRootPage": "The root page can not be deleted",
+    "ToggleDropdown": "Toggle dropdown",
 
     "Name": "Name",
 
@@ -75,6 +78,17 @@
     "Skill": "Skill",
     "Quest": "Quest",
     "KirjaPage": "KirjaPage",
+
+    "Reviews": "Reviews",
+    "Status": "Status",
+    "Open": "Open",
+    "Completed": "Completed",
+    "Merged": "Merged",
+    "ReviewsWaitingForMerge": "There are completed reviews which are not yet merged.",
+
+    "EnterReviewName": "Enter review name",
+
+    "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
 
     "Error": "Error:",
     "ErrorOccured": "An error occured.",

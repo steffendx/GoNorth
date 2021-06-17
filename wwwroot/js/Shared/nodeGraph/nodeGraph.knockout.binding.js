@@ -11,7 +11,10 @@
                 var linkData = {
                     attrs: {
                         ".marker-target": { d: "M 10 0 L 0 5 L 10 10 z" },
-                        ".link-tools .tool-remove circle, .marker-vertex": { r: 8 }
+                        ".link-tools .tool-remove circle, .marker-vertex": { r: 8 },
+                        ".link-tools .tool-remove title": { text: DefaultNodeShapes.Localization.Links.Delete },
+                        ".link-tools .tool-options title": { text: DefaultNodeShapes.Localization.Links.Rename },
+                        ".link-tools .tool-options": { class: "tool-options gn-showLinkOptions" }
                     }
                 };
                 if(initData)
@@ -81,7 +84,7 @@
                     // Prevent paper from handling pointerdown.
                     this.$box.find('input').on('mousedown click', function(evt) { evt.stopPropagation(); });
 
-                    this.$box.find('.nodeText').on('change', _.bind(function(evt)
+                    this.$box.find('.nodeText').on('input', _.bind(function(evt)
                     {
                         this.model.set('nodeText', jQuery(evt.target).val());
                     }, this));
@@ -677,6 +680,56 @@
                 miniMapContainer.html(miniMap[0].outerHTML);
             }
 
+            /**
+             * Updates the font size
+             * @param {object} paper Paper
+             * @param {object} element Element
+             * @param {number} defaultFontSize Default font size 
+             */
+             function updateFontSize(paper, element, defaultFontSize) {
+                var targetFontSize = roundToOneDigit(paper.scale().sx * defaultFontSize);
+                jQuery(element).css("font-size", targetFontSize + "px");
+            }
+
+            /**
+             * Zooms with a target
+             * @param {object} event Event
+             * @param {object} element Element
+             * @param {object} paper JointJS paper
+             * @param {boolean} showMiniMap true if the mini map is shown, else false
+             * @param {boolean} enableNodeGraphPositionZoomUrl true if the url must be updated
+             * @param {number} x Mouse X
+             * @param {number} y Mouse Y
+             * @param {number} delta Delta of the scale
+             */
+            function zoomOnTarget(event, paper, element, showMiniMap, enableNodeGraphPositionZoomUrl, x, y, delta) {
+                event.preventDefault();
+
+                var oldScale = paper.scale().sx;
+                var newScale = oldScale + delta * scaleStep;
+
+                if(newScale < minScale)
+                {
+                    return;
+                }
+
+                var beta = oldScale / newScale;
+                var ax = x - (x * beta);
+                var ay = y - (y * beta);
+                var translate = paper.translate();
+    
+                var nextTx = translate.tx - ax * newScale;
+                var nextTy = translate.ty - ay * newScale;
+    
+                paper.translate(nextTx, nextTy);
+                paper.scale(newScale, newScale);
+
+                if(enableNodeGraphPositionZoomUrl) {
+                    debouncedUpdatePositionZoomUrl(paper);
+                }
+                throttledUpdatedMiniMap(element, paper, showMiniMap)
+            };
+
             // Create throttled version of update mini map
             var throttledUpdatedMiniMap = GoNorth.Util.throttle(updateMiniMap, 35);
             var throttledupdatePositionZoomDisplay = GoNorth.Util.throttle(updatePositionZoomDisplay, 35);
@@ -778,6 +831,15 @@
                         }
                     };
 
+                    // Store default values
+                    var defaultFontSize = jQuery(element).css("font-size");
+                    if(defaultFontSize && defaultFontSize.replace) {
+                        defaultFontSize = parseFloat(defaultFontSize.replace("px", ""));
+                    }
+                    if(!defaultFontSize) {
+                        defaultFontSize = 14;
+                    }
+
                     // Add mini Map update events
                     var showMiniMap = false;
                     graph.on("change", function() {
@@ -807,24 +869,20 @@
                     }
 
                     // Zoom
+                    paper.on('blank:mousewheel', function(event, x, y, delta) {
+                        zoomOnTarget(event, paper, element, showMiniMap, enableNodeGraphPositionZoomUrl, x, y, delta);
+                    });
+                    
+                    paper.on('cell:mousewheel element:mousewheel', function(_cellView, event, x, y, delta) {
+                        zoomOnTarget(event, paper, element, showMiniMap, enableNodeGraphPositionZoomUrl, x, y, delta);
+                    });
+                    
+                    jQuery(element).on("mousewheel DOMMouseScroll", ":not(svg)", function(event) {
+                        // Make sure zoom also works on mousewheel of html elements
+                        event.target = element;
+                    });
+
                     jQuery(element).on("mousewheel DOMMouseScroll", function(event) {
-                        var wheelDirection = 1;
-                        if(event.originalEvent.wheelDelta < 0 || event.originalEvent.detail > 0)
-                        {
-                            wheelDirection = -1;
-                        }
-
-                        var oldScale = paper.scale().sx;
-                        var newScale = oldScale + wheelDirection * scaleStep;
-                        if(newScale >= minScale)
-                        {
-                            paper.scale(newScale, newScale);
-                            if(enableNodeGraphPositionZoomUrl) {
-                                debouncedUpdatePositionZoomUrl(paper);
-                            }
-                            throttledUpdatedMiniMap(element, paper, showMiniMap);
-                        }
-
                         event.preventDefault();
                     });
 
@@ -931,7 +989,8 @@
                     jQuery(element).append("<div class='gn-nodeGraphPositionZoomIndicator'><span class='gn-nodeGraphPositionZoomIndicatorText'></span><span><a class='gn-clickable gn-nodeGraphToogleMinimap' title='" + GoNorth.DefaultNodeShapes.Localization.NodeDisplay.ToogleMiniMap + "'><i class='glyphicon glyphicon-chevron-down'></i></a></span></div>");
                     jQuery(element).append("<div class='gn-nodeGraphMiniMap' style='display: none'></div>");
 
-                    jQuery(element).find(".gn-nodeGraphToogleMinimap").click(function() {
+                    jQuery(element).find(".gn-nodeGraphPositionZoomIndicator").css("font-size", defaultFontSize + "px");
+                    jQuery(element).find(".gn-nodeGraphToogleMinimap").on("click", function() {
                         showMiniMap = !showMiniMap;
                         if(showMiniMap)
                         {
@@ -948,6 +1007,20 @@
                         }
                     });
 
+                    // Event Handlers
+                    paper.on("link:options", function(linkView) {
+                        var link = linkView.model;
+                        var existingText = "";
+                        var existingLabel = link.label(0);
+                        if(existingLabel && existingLabel.attrs && existingLabel.attrs.text && existingLabel.attrs.text.text) {
+                            existingText = existingLabel.attrs.text.text;
+                        }
+                        GoNorth.PromptService.openInputPrompt(GoNorth.DefaultNodeShapes.Localization.Links.EnterName, existingText).done(function(label) {
+                            link.label(0, { attrs: { text: { text: label } } });
+                        });
+                    })
+
+                    // Initialize
                     updatePositionZoomDisplay(element, paper);
                     if(enableNodeGraphPositionZoomUrl) {
                         debouncedUpdatePositionZoomUrl(paper);
@@ -955,7 +1028,10 @@
                     paper.on("translate", function() {
                         throttledupdatePositionZoomDisplay(element, paper);
                     });
+
+                    updateFontSize(paper, element, defaultFontSize);
                     paper.on("scale", function() {
+                        updateFontSize(paper, element, defaultFontSize);
                         throttledupdatePositionZoomDisplay(element, paper);
                     });
                 },

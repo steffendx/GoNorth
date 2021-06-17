@@ -100,7 +100,7 @@
                         var self = this;
 
                         var finishName = this.$box.find(".gn-aikaFinishName");
-                        finishName.on("change", function() {
+                        finishName.on("input", function() {
                             self.model.set("finishName", finishName.val());
                         });
                         finishName.val(this.model.get("finishName"));

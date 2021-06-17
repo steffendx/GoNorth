@@ -1,4 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.AikaViewModels
+
+@model SharedAikaViewModel
 
 @inject IViewLocalizer Localizer
 
@@ -191,11 +194,11 @@
         <form id="gn-questHeader">
             <div class="form-group">
                 <label for="gn-questName">@Localizer["Name"]</label>
-                <input type="text" class="form-control" id="gn-questName" placeholder="@Localizer["Name"]" name="questName" data-bind="value: name, disable: isReadonly" required/>
+                <input type="text" class="form-control" id="gn-questName" placeholder="@Localizer["Name"]" name="questName" data-bind="value: name, valueUpdate: 'input', disable: isReadonly" required/>
             </div>
             <div class="form-group">
                 <label for="gn-questDescription">@Localizer["Description"]</label>
-                <textarea type="text" class="form-control gn-aikaQuestDescription" id="gn-questDescription" placeholder="@Localizer["Description"]" name="questName" data-bind="value: description, disable: isReadonly"></textarea>
+                <textarea type="text" class="form-control gn-aikaQuestDescription" id="gn-questDescription" placeholder="@Localizer["Description"]" name="questName" data-bind="value: description, valueUpdate: 'input', disable: isReadonly"></textarea>
             </div>
             <div class="checkbox">
                 <label><input type="checkbox" data-bind="checked: isMainQuest">@Localizer["IsMainQuest"]</label>
@@ -412,6 +415,8 @@
             Skill: "@Localizer["Skill"]"
         };
 
+        GoNorth.Aika.Shared = GoNorth.Aika.Shared || {};
+        GoNorth.Aika.Shared.DirtyMessage = "@Localizer["DirtyMessage"]";
 
         @if(User.IsInRole(RoleNames.Kortisto))
         {
@@ -488,6 +493,19 @@
         {
             <text>
             GoNorth.Aika.Quest.hasExportObjectsRights = false;
+            </text>
+        }
+
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.Aika.Shared.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Shared.disableAutoSaving = false;
             </text>
         }
 

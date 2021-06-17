@@ -539,6 +539,68 @@
             return Util.getWordCount(str);
         };
 
+        /**
+         * Escapes HTML Special characters
+         * @param {string} str String to escape
+         * @returns {string} Escaped string
+         */
+        Util.escapeHtmlSpecialCharacters = function(str) {
+            return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        /**
+         * Unescapes HTML Special characters
+         * @param {string} str String to unescape
+         * @returns {string} Unescaped string
+         */
+         Util.unescapeHtmlSpecialCharacters = function(str) {
+            return str.replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, "\"")
+                .replace(/&#039;/g, "'")
+                .replace(/&nbsp;/g, " ");
+        }
+
+        /**
+         * Generates a string in a uuidv4 format
+         * @returns {string} String i uuidv4 format
+         */
+        Util.uuidv4 = function() {
+            if(typeof crypto != "undefined" && crypto.getRandomValues) {
+                return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                );
+            } else {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+        }
+
+
+        /**
+         * Validates a jQuery form
+         * @param {string} selector jQuery selector
+         * @param {boolean} showErrorMessages True if error messages must be shown, else false
+         * @returns {boolean} true if the form is valid, else false
+         */
+        Util.validateForm = function(selector, showErrorMessages) {
+            if(showErrorMessages) {
+                return jQuery(selector).valid();
+            } else {
+                var validate = jQuery(selector).validate();
+                var isValid = validate.checkForm(); 
+                validate.submitted = {};
+                return isValid;
+            }
+        }
+
     }(GoNorth.Util = GoNorth.Util || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
@@ -665,6 +727,11 @@
                         options.additionalButtons = allBindings.get("richTextAddditionalButtons").apply(bindingContext.$data);
                     }
 
+                    if(allBindings.get("richTextDisableImageUpload"))
+                    {
+                        options.richTextDisableImageUpload = allBindings.get("richTextDisableImageUpload");
+                    }
+
                     if(allBindings.get("richTextImageUploadUrl") && allBindings.get("richTextImageUploadSuccess"))
                     {
                         var uploadSuccessCallback = allBindings.get("richTextImageUploadSuccess");
@@ -687,7 +754,13 @@
                     {
                         var uploadErrorCallback = allBindings.get("richTextAddditionalImageUploadError");
                         options.fileUploadError = function(errorMessage, xhr) { uploadErrorCallback.apply(bindingContext.$data, [ errorMessage, xhr ]); }
-                    }            
+                    }       
+                    
+                    if(allBindings.get("richTextFocusChangeCallback"))
+                    {
+                        var focusChangeCallback = allBindings.get("richTextFocusChangeCallback");
+                        options.focusChangeCallback = function(element) { focusChangeCallback.apply(bindingContext.$data, [ element ]); }
+                    }  
 
                     jQuery(element).wysiwyg(options);
                     jQuery(element).addClass("wysiwgEditor");
@@ -721,11 +794,11 @@
                         return;
                     }
 
-                    jQuery(element).keydown(function(e) {
+                    jQuery(element).on("keydown", function(e) {
                         GoNorth.Util.validateNumberKeyPress(element, e);
                     });
 
-                    jQuery(element).change(function() {
+                    jQuery(element).on("change input", function() {
                         var parsedValue = 0.0;
                         if(jQuery(element).val())
                         {
@@ -1421,68 +1494,126 @@
 
     }(GoNorth.BindingHandlers = GoNorth.BindingHandlers || {}));
 }(window.GoNorth = window.GoNorth || {}));
-(function(GoNorth) {
+(function (GoNorth) {
     "use strict";
-    (function(LockService) {
-        
+    (function (LockService) {
+
+        /// Storage key
+        var externalUserRandomIdentifierStorageKey = "GoNorthExternalUserRandomIdentifer";
+
         /// Refresh Lock Timeout
         var refreshLockTimeout = null;
 
         /// Currently active lock category
         var activeLockCategory = null;
-        
+
         /// Currently active lock id
         var activeLockId = null;
 
         /// True if the active lock appends the project id to the key
         var activeLockAppendsProjectIdToKey = false;
 
+        /// External access token
+        var activeExternalAccessToken = null;
+
         /**
          * Releases the current lock if a lock is acquired, else does nothing
          */
-        LockService.releaseCurrentLock = function() {
-            if(refreshLockTimeout)
-            {
+        LockService.releaseCurrentLock = function () {
+            if (refreshLockTimeout) {
                 clearTimeout(refreshLockTimeout);
                 refreshLockTimeout = null;
             }
 
-            if(activeLockCategory && activeLockId) 
-            {
-                let url = "/api/LockServiceApi/DeleteLock?category=" + activeLockCategory + "&id=" + activeLockId;
-                if(activeLockAppendsProjectIdToKey)
-                {
+            if (activeLockCategory && activeLockId) {
+                let url = "/api/LockServiceApi/DeleteLock";
+                if (activeExternalAccessToken) {
+                    url = "/api/LockServiceApi/DeleteExternalLock";
+                }
+
+                url += "?category=" + activeLockCategory + "&id=" + activeLockId;
+                if (activeLockAppendsProjectIdToKey) {
                     url += "&appendProjectIdToKey=true";
                 }
 
-                if(navigator && navigator.sendBeacon) 
-                {
+                if (activeExternalAccessToken) {
+                    url += "&token=" + encodeURIComponent(activeExternalAccessToken) + "&userIdentifier=" + getExternalUserIdentifier();
+                }
+
+                if (navigator && navigator.sendBeacon) {
                     navigator.sendBeacon(url)
                 }
-                else
-                {
+                else {
                     GoNorth.HttpClient.post(url, {});
                 }
 
                 activeLockCategory = null;
                 activeLockId = null;
                 activeLockAppendsProjectIdToKey = false;
+                activeExternalAccessToken = null;
             }
         }
 
         /**
          * Releases the current lock 
          */
-        window.addEventListener("unload", function() {
+        window.addEventListener("unload", function () {
             LockService.releaseCurrentLock();
         });
 
         /**
          * Releases the current lock 
          */
-        window.addEventListener("beforeunload", function() {
+        window.addEventListener("beforeunload", function () {
             LockService.releaseCurrentLock();
         });
+        
+        /**
+         * Generates an external user identifier
+         * @returns {string} External user identifier
+         */
+        function generateExternalUserIdentifier() {
+            return Math.round(Math.random() * 10000000000 + 1000).toString();
+        }
+
+        /**
+         * Returns an external user identifier
+         * @param {object} storage Storage object to use
+         * @returns {string} External user identifier
+         */
+        function getExternalUserIdentifierFromStorage(storage) {
+            try {
+                var userIdentifier = storage.getItem(externalUserRandomIdentifierStorageKey);
+                if (!userIdentifier) 
+                {
+                    var userIdentifier = generateExternalUserIdentifier();
+                    storage.setItem(externalUserRandomIdentifierStorageKey, userIdentifier);
+                }
+                return userIdentifier;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        /**
+         * Returns an identifier for an external user
+         * @returns {string}  External user identifier
+         */
+        function getExternalUserIdentifier() {
+            var userIdentifier = getExternalUserIdentifierFromStorage(localStorage);
+            if(userIdentifier) 
+            {
+                return userIdentifier;
+            }
+
+            var userIdentifier = getExternalUserIdentifierFromStorage(sessionStorage);
+            if(userIdentifier) 
+            {
+                return userIdentifier;
+            }
+
+            return "FallbackExternalUser";
+        };
 
         /**
          * Acquires a lock
@@ -1490,30 +1621,41 @@
          * @param {string} category Category for the lock
          * @param {string} id Id of the resource to lock
          * @param {boolean} appendProjectIdToKey True if the project id must be appended to the key
+         * @param {string} externalAccessToken External access token, if specified external access is asumed
          * @returns {jQuery.Deferred} Deferred for the lock result
          */
-        LockService.acquireLock = function(category, id, appendProjectIdToKey) {
+        LockService.acquireLock = function (category, id, appendProjectIdToKey, externalAccessToken) {
             var def = new jQuery.Deferred();
 
-            var url = "/api/LockServiceApi/AcquireLock?category=" + category + "&id=" + id;
-            if(appendProjectIdToKey)
-            {
+            var url = "/api/LockServiceApi/AcquireLock";
+            if (externalAccessToken) {
+                url = "/api/LockServiceApi/AcquireExternalLock";
+            }
+
+            url += "?category=" + category + "&id=" + id;
+            if (appendProjectIdToKey) {
                 url += "&appendProjectIdToKey=true";
             }
 
-            GoNorth.HttpClient.post(url, {}).done(function(data) {
+            if (externalAccessToken) {
+                url += "&token=" + encodeURIComponent(externalAccessToken) + "&userIdentifier=" + getExternalUserIdentifier();
+                activeExternalAccessToken = externalAccessToken;
+            } else {
+                activeExternalAccessToken = null;
+            }
+
+            GoNorth.HttpClient.post(url, {}).done(function (data) {
                 def.resolve(data.lockedByOtherUser, data.lockedByUserName);
-                if(!data.lockedByOtherUser)
-                {
-                    refreshLockTimeout = setTimeout(function() {
-                        LockService.acquireLock(category, id, true, activeLockAppendsProjectIdToKey);
+                if (!data.lockedByOtherUser) {
+                    refreshLockTimeout = setTimeout(function () {
+                        LockService.acquireLock(category, id, activeLockAppendsProjectIdToKey, activeExternalAccessToken);
                     }, data.lockValidForMinutes * 60 * 1000 - 100);
 
                     activeLockCategory = category;
                     activeLockId = id;
                     activeLockAppendsProjectIdToKey = !!appendProjectIdToKey;
                 }
-            }).fail(function(xhr) {
+            }).fail(function (xhr) {
                 def.reject();
             });
 
@@ -1528,18 +1670,26 @@
          * @param {boolean} appendProjectIdToKey True if the project id must be appended to the key
          * @returns {jQuery.Deferred} Deferred for the lock result
          */
-        LockService.checkLock = function(category, id, appendProjectIdToKey) {
+        LockService.checkLock = function (category, id, appendProjectIdToKey) {
             var def = new jQuery.Deferred();
 
-            var url = "/api/LockServiceApi/CheckLock?category=" + category + "&id=" + id;
-            if(appendProjectIdToKey)
-            {
+            var url = "/api/LockServiceApi/CheckLock";
+            if (activeExternalAccessToken) {
+                url = "/api/LockServiceApi/CheckExternalLock";
+            }
+
+            url += "?category=" + category + "&id=" + id;
+            if (appendProjectIdToKey) {
                 url += "&appendProjectIdToKey=true";
             }
 
-            GoNorth.HttpClient.get(url).done(function(data) {
+            if (activeExternalAccessToken) {
+                url += "&token=" + encodeURIComponent(activeExternalAccessToken);
+            }
+
+            GoNorth.HttpClient.get(url).done(function (data) {
                 def.resolve(data.lockedByOtherUser, data.lockedByUserName);
-            }).fail(function(xhr) {
+            }).fail(function (xhr) {
                 def.reject();
             });
 
@@ -1592,4 +1742,130 @@
         };
 
     }(GoNorth.HttpClient = GoNorth.HttpClient || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(PromptService) {
+
+        /**
+         * Prompt Service viewmodel
+         */
+        PromptService.ViewModel = function()
+        {
+            this.inputPromptVisible = new ko.observable(false);
+            this.inputPromptTitle = new ko.observable("");
+            this.inputPromptText = new ko.observable("");
+            this.inputPromptTextMandatory = new ko.observable(false);
+            this.inputPromptIsMultiLine = new ko.observable(false);
+            this.inputPromptDeferred = null;
+
+            this.yesNoPromptVisible = new ko.observable(false);
+            this.yesNoPromptTitle = new ko.observable("");
+            this.yesNoPromptText = new ko.observable("");
+            this.yesNoPromptDeferred = null;
+
+            var self = this;
+
+            /**
+             * Opens an input prompt
+             * @param {string} title Title of the dialog
+             * @param {string} existingText Optional existing text
+             * @param {boolean} isTextMandatory true if its mandatory to enter a text, else false
+             * @param {boolena} isMultiLine true if the text must be displayed as a multiline text
+             * @returns {jQuery.Deferred} Promise that will be resolved with the new text
+             */
+            PromptService.openInputPrompt = function(title, existingText, isTextMandatory, isMultiLine) {
+                if(!existingText) {
+                    existingText = "";
+                }
+
+                self.inputPromptTitle(title);
+                self.inputPromptText(existingText);
+                self.inputPromptVisible(true);
+                self.inputPromptTextMandatory(!!isTextMandatory);
+                self.inputPromptIsMultiLine(!!isMultiLine);
+                self.inputPromptDeferred = new jQuery.Deferred();
+
+                GoNorth.Util.setupValidation("#gn-inputPromptForm");
+
+                return self.inputPromptDeferred.promise();
+            };
+
+            /**
+             * Opens a yes/no prompt
+             * @param {string} title Title of the dialog
+             * @param {string} text Optional existing text
+             * @returns {jQuery.Deferred} Promise that will be resolved if the user accepts, else rejected
+             */
+             PromptService.openYesNoPrompt = function(title, text) {
+                self.yesNoPromptVisible(true);
+                self.yesNoPromptTitle(title);
+                self.yesNoPromptText(text);
+                self.yesNoPromptDeferred = new jQuery.Deferred();
+
+                return self.yesNoPromptDeferred.promise();
+            }
+        };
+
+        PromptService.ViewModel.prototype = {
+            /**
+             * Confirms the input prompt
+             */
+            confirmInputPrompt: function() {
+                var text = this.inputPromptText();
+                if(this.inputPromptTextMandatory() && !jQuery("#gn-inputPromptForm").valid())
+                {
+                    return;
+                }
+                
+                this.inputPromptVisible(false);
+
+                if(this.inputPromptDeferred)
+                {
+                    this.inputPromptDeferred.resolve(text);
+                    this.inputPromptDeferred = null;
+                }
+            },
+
+            /**
+             * Cancels the input prompt
+             */
+            cancelInputPrompt: function() {
+                this.inputPromptVisible(false);
+                if(this.inputPromptDeferred)
+                {
+                    this.inputPromptDeferred.reject();
+                    this.inputPromptDeferred = null;
+                }
+            },
+
+
+            /**
+             * Confirms the yes/no prompt
+             */
+             confirmYesNoPrompt: function() {
+                this.yesNoPromptVisible(false);
+
+                if(this.yesNoPromptDeferred)
+                {
+                    this.yesNoPromptDeferred.resolve();
+                    this.yesNoPromptDeferred = null;
+                }
+            },
+
+            /**
+             * Cancels the yes/no prompt
+             */
+            cancelYesNoPrompt: function() {
+                this.yesNoPromptVisible(false);
+
+                if(this.yesNoPromptDeferred)
+                {
+                    this.yesNoPromptDeferred.reject();
+                    this.yesNoPromptDeferred = null;
+                }
+            }
+        };
+
+    }(GoNorth.PromptService = GoNorth.PromptService || {}));
 }(window.GoNorth = window.GoNorth || {}));

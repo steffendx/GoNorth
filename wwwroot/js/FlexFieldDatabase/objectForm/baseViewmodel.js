@@ -132,14 +132,23 @@
                 this.additionalErrorDetails = new ko.observable("");
                 this.objectNotFound = new ko.observable(false);
 
-                this.lastSavedObjectState = null;
-
                 GoNorth.Util.setupValidation("#gn-objectFields");
 
                 if(this.id() && this.isTemplateMode())
                 {
                     this.checkIfCustomizedExportTemplateExists();
                 }
+
+                var self = this;
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.FlexFieldDatabase.ObjectForm.dirtyMessage, GoNorth.FlexFieldDatabase.ObjectForm.disableAutoSaving, function() {
+                    self.sendSaveRequest(false, true);
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
             };
 
             
@@ -330,21 +339,21 @@
              * Saves the last saved object state from the current state
              */
             ObjectForm.BaseViewModel.prototype.saveLastObjectState = function() {
-                this.lastSavedObjectState = this.buildSaveRequestObject();
+                this.dirtyChecker.saveCurrentSnapshot();
             };   
 
             /**
              * Saves the form
              */
             ObjectForm.BaseViewModel.prototype.save = function() {
-                this.sendSaveRequest(false);
+                this.sendSaveRequest(false, false);
             };
 
             /**
              * Saves the form and distribute the fields to objects
              */
             ObjectForm.BaseViewModel.prototype.saveAndDistributeFields = function() {
-                this.sendSaveRequest(true);
+                this.sendSaveRequest(true, false);
             };
             
             /**
@@ -384,9 +393,10 @@
              * Saves the form
              * 
              * @param {bool} distributeFields true if the fields should be distributed, else false
+             * @param {bool} isAutoSave true if the save request is from an auto save, else fasle
              */
-            ObjectForm.BaseViewModel.prototype.sendSaveRequest = function(distributeFields) {
-                if(!jQuery("#gn-objectFields").valid())
+            ObjectForm.BaseViewModel.prototype.sendSaveRequest = function(distributeFields, isAutoSave) {
+                if(!GoNorth.Util.validateForm("#gn-objectFields", !isAutoSave))
                 {
                     return;
                 }
@@ -456,7 +466,7 @@
 
                     self.callObjectGridRefresh();
 
-                    self.lastSavedObjectState = requestObject;
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
@@ -476,17 +486,6 @@
              */
             ObjectForm.BaseViewModel.prototype.runAfterSave = function(data) {
 
-            };
-
-
-            /**
-             * Returns true if the form is dirty, else false
-             * 
-             * @returns {boolean} true if the form is dirty, else false
-             */
-            ObjectForm.BaseViewModel.prototype.isDirty = function() {
-                var objectState = this.buildSaveRequestObject();
-                return !GoNorth.Util.isEqual(objectState, this.lastSavedObjectState)
             };
 
 
@@ -556,6 +555,7 @@
              */
             ObjectForm.BaseViewModel.prototype.imageUploaded = function(image) {
                 this.imageFilename(image);
+                this.thumbnailImageFilename(image);
                 this.callObjectGridRefresh();
             };
 
@@ -626,7 +626,7 @@
              * @param {string} exportFormat Format to export to (Script, JSON, Language)
              */
             ObjectForm.BaseViewModel.prototype.exportObject = function(templateType, exportFormat) {
-                if(this.isDirty())
+                if(this.dirtyChecker.isDirty())
                 {
                     var self = this;
                     this.openConfirmExportDirtyStateDialog().done(function() {

@@ -82,7 +82,7 @@
                     GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
                 });
 
-                itemQuantity.change(function(e) {
+                itemQuantity.on("input", function(e) {
                     self.ensureNumberValue();
                     self.saveData();
                 });

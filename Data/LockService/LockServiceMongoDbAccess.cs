@@ -52,9 +52,10 @@ namespace GoNorth.Data.LockService
         /// <param name="category">Category</param>
         /// <param name="id">Id of the resource</param>
         /// <param name="userId">Id of the user who acquires the lock</param>
+        /// <param name="externalUserId">Optional Id for an external user id</param>
         /// <param name="expireDate">Date at which  the lock expires</param>
         /// <returns>Task</returns>
-        public async Task LockResource(string category, string id, string userId, DateTimeOffset expireDate)
+        public async Task LockResource(string category, string id, string userId, string externalUserId, DateTimeOffset expireDate)
         {
             LockEntry existingLock = await GetResourceLockEntry(category, id);
             LockEntry lockEntry = new LockEntry
@@ -62,6 +63,7 @@ namespace GoNorth.Data.LockService
                 Category = category,
                 ResourceId = id,
                 UserId = userId,
+                ExternalUserId = externalUserId,
                 ExpireDate = expireDate
             };
 

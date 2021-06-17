@@ -26,6 +26,8 @@
     "AreYouSureYouWantToRemoveTheScript": "Bist du sicher das du das Skript löschen willst?",
     "StateDontExportToScript": "Nicht in Skript exportieren",
 
+    "DirtyMessage": "Es liegen ungespeicherte Änderungen vor. Willst du die Seite wirklich verlassen?",
+
     "Error": "Fehler",
     "ErrorOccured": "Ein Fehler ist aufgetreten.",
 

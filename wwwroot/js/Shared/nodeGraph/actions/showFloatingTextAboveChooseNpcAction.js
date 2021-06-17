@@ -69,7 +69,7 @@
                 // Handlers
                 var self = this;
                 var floatingText = contentElement.find(".gn-nodeActionFloatingText");
-                floatingText.change(function(e) {
+                floatingText.on("input", function(e) {
                     self.saveData();
                 });
 

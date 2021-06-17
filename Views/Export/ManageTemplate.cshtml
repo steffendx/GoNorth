@@ -136,6 +136,21 @@
             </text>
         }
 
+        GoNorth.Export.ManageTemplate.DirtyMessage = "@Localizer["DirtyMessage"]";
+
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.Export.ManageTemplate.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Export.ManageTemplate.disableAutoSaving = false;
+            </text>
+        }
+
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Export.ManageTemplate.ViewModel(), jQuery("#gn-exportManageTemplateContainer")[0]);
         });

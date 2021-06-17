@@ -449,5 +449,67 @@
             return Util.getWordCount(str);
         };
 
+        /**
+         * Escapes HTML Special characters
+         * @param {string} str String to escape
+         * @returns {string} Escaped string
+         */
+        Util.escapeHtmlSpecialCharacters = function(str) {
+            return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        /**
+         * Unescapes HTML Special characters
+         * @param {string} str String to unescape
+         * @returns {string} Unescaped string
+         */
+         Util.unescapeHtmlSpecialCharacters = function(str) {
+            return str.replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, "\"")
+                .replace(/&#039;/g, "'")
+                .replace(/&nbsp;/g, " ");
+        }
+
+        /**
+         * Generates a string in a uuidv4 format
+         * @returns {string} String i uuidv4 format
+         */
+        Util.uuidv4 = function() {
+            if(typeof crypto != "undefined" && crypto.getRandomValues) {
+                return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                );
+            } else {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+        }
+
+
+        /**
+         * Validates a jQuery form
+         * @param {string} selector jQuery selector
+         * @param {boolean} showErrorMessages True if error messages must be shown, else false
+         * @returns {boolean} true if the form is valid, else false
+         */
+        Util.validateForm = function(selector, showErrorMessages) {
+            if(showErrorMessages) {
+                return jQuery(selector).valid();
+            } else {
+                var validate = jQuery(selector).validate();
+                var isValid = validate.checkForm(); 
+                validate.submitted = {};
+                return isValid;
+            }
+        }
+
     }(GoNorth.Util = GoNorth.Util || {}));
 }(window.GoNorth = window.GoNorth || {}));

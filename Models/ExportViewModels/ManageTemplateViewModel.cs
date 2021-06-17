@@ -23,6 +23,11 @@ namespace GoNorth.Models.ExportViewModels
         public List<ExportTemplateTypeUrl> TemplateTypeUrls { get; set; }
 
         /// <summary>
+        /// True if auto save is disabled
+        /// </summary>
+        public bool DisableAutoSaving { get; set; }
+        
+        /// <summary>
         /// Constructor
         /// </summary>
         public ManageTemplateViewModel()

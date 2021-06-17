@@ -34,6 +34,11 @@
    fill: #c0392b;
 }
 
+.link-tools .gn-showLinkOptions
+{
+	display: inline-block;
+}
+
 .connection
 {
 	stroke: #fff;
@@ -94,7 +99,7 @@
 	/* Make sure events are propagated to the JointJS element so, e.g. dragging works.*/
 	pointer-events: none;
 	-webkit-user-select: none;
-	padding: 8px;
+	padding: 0.6em;
 	box-sizing: border-box;
 	z-index: 2;
 	overflow: hidden;
@@ -114,8 +119,8 @@
 {
 	resize: none;
 	width: 100%;
-	height: calc(100% - 30px);
-	margin-top: 5px;
+	height: calc(100% - 1.8em);
+	margin-top: 0.4em;
 }
 
 .node .label
@@ -147,10 +152,10 @@
 {
 	float: right;
 	border: none;
-	border-radius: 8px;
+	border-radius: 0.6em;
 	font-weight: bold;
-	width: 16px;
-	height: 16px;
+	width: 1.2em;
+	height: 1.2em;
 	line-height: 0px;
 	text-align: middle;
 	padding: 0;
@@ -176,8 +181,8 @@ button.delete:hover
 .node input, .node select
 {
 	width: 100%;
-	padding: 4px;
-	margin-top: 8px;
+	padding: 0.3em;
+	margin-top: 0.6em;
 	display: block;
 }
 
@@ -292,7 +297,7 @@ button.delete:hover
 .gn-nodeConditionIcon {
     pointer-events: auto;
     cursor: pointer;
-    margin-left: 5px;
+    margin-left: 0.35em;
 }
 
 .gn-nodeConditionIcon:hover {
@@ -336,11 +341,11 @@ button.delete:hover
 }
 
 .gn-nodeConditionDialogAddCondition {
-    margin-left: 10px;
+    margin-left: 0.8em;
 }
 
 .gn-nodeAddCondition {
-    margin-right: 10px !important;
+    margin-right: 0.8em !important;
 }
 
 .gn-nodeAddCondition:hover {
@@ -349,14 +354,14 @@ button.delete:hover
 
 .gn-nodeConditionTable {
     width: 100%;
-    height: calc(100% - 33px);
-    margin-top: 15px;
+    height: calc(100% - 2em);
+    margin-top: 1em;
     table-layout: fixed;
 }
 
 .gn-nodeConditionTable tr {
-    padding-bottom: 20px;
-    padding-top: 20px;
+    padding-bottom: 1.4em;
+    padding-top: 1.4em;
 }
 
 .gn-nodeConditionTable input {
@@ -390,20 +395,20 @@ button.delete:hover
 }
 
 .gn-actionNodeObjectSelectContainer {
-	margin-top: 5px;
-	padding-left: 5px;
+	margin-top: 0.5em;
+	padding-left: 0.35em;
 }
 
 .gn-actionNodeObjectSpawnRotation {
 	display: inline-block !important;
 	width: 30% !important;
-	margin-right: 5px;
+	margin-right: 0.35em;
 	margin-top: 0px !important;
 }
 
 .gn-nodeActionText {
-    margin-top: 8px;
-    padding-left: 5px;
+    margin-top: 0.6em;
+    padding-left: 0.35em;
 }
 
 .gn-nodeActionOutputLabel {
@@ -421,7 +426,7 @@ button.delete:hover
 }
 
 .gn-spawnObjectMarkerActionContainer {
-    line-height: 15px;
+    line-height: 1.1em;
 }
 
 .gn-spawnObjectMarkerAction {

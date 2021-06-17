@@ -1,5 +1,111 @@
 (function(GoNorth) {
     "use strict";
+    (function(SaveUtil) {
+
+        /**
+         * Prepares a save hotkey
+         * @param {function} callback Callback function for saving
+         */
+         SaveUtil.setupSaveHotkey = function(callback) {
+            jQuery(document).on("keydown", "*", "ctrl+s", function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                callback();
+            });
+        };
+
+    }(GoNorth.SaveUtil = GoNorth.SaveUtil || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(SaveUtil) {
+
+            /// Auto save interval in milliseconds
+            var autoSaveInterval = 60000;
+
+            /**
+             * Class to run dirty checks
+             * @param {function} buildObjectSnapshot Function that builds a snapshot of the current data
+             * @param {string} dirtyMessage Message that is shown if dirty chagnes exist and the user wants to navigate away from the page
+             * @param {boolean} isAutoSaveDisabled true if auto save is disabled, else false
+             * @param {function} saveCallback Function that will get called if an auto save is triggered
+             * @class
+             */
+             SaveUtil.DirtyChecker = function(buildObjectSnapshot, dirtyMessage, isAutoSaveDisabled, saveCallback)
+            {
+                var self = this;
+                window.addEventListener("beforeunload", function (e) {
+                    return self.runDirtyCheck(e);
+                });
+
+                this.dirtyMessage = dirtyMessage;
+                this.buildObjectSnapshot = buildObjectSnapshot;
+                this.lastSnapshot = null;
+
+                if(!isAutoSaveDisabled) {
+                    this.saveCallback = saveCallback;
+                    this.autoSaveInterval = setInterval(function() {
+                        self.runAutoSave();
+                    }, autoSaveInterval);
+                }
+            };
+
+            SaveUtil.DirtyChecker.prototype = {
+                /**
+                 * Runs a dirty check
+                 * @param {object} e Event object
+                 * @returns {string} null if no change was triggered, else true
+                 */
+                runDirtyCheck: function(e) {
+                    if(!this.isDirty()) {
+                        return null;
+                    }
+
+                    e.preventDefault();
+                    (e || window.event).returnValue = this.dirtyMessage;
+                    return this.dirtyMessage;
+                },
+
+                /**
+                 * Saves the current snapshot
+                 */
+                saveCurrentSnapshot: function() {
+                    // Ensure async processing is done
+                    var self = this;
+                    jQuery(document).ajaxStop(function () {
+                        setTimeout(function() {
+                            self.lastSnapshot = self.buildObjectSnapshot();
+                        }, 1);
+                    });
+                },
+
+                /**
+                 * Returns true if the object is currently dirty, else false
+                 * @returns {boolean} True if the object is currently dirty, else
+                 */
+                isDirty: function() {
+                    var currentSnapshot = this.buildObjectSnapshot();
+                    var isSame = GoNorth.Util.isEqual(this.lastSnapshot, currentSnapshot);
+                    return !isSame;
+                },
+
+
+                /**
+                 * Runs an auto save command
+                 */
+                runAutoSave: function() {
+                    if(!this.isDirty()) {
+                        return;
+                    }
+
+                    this.saveCallback();   
+                }
+            };
+
+    }(GoNorth.SaveUtil = GoNorth.SaveUtil || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
     (function(ChooseObjectDialog) {
 
         /// Dialog Page Size
@@ -729,7 +835,220 @@
 (function(GoNorth) {
     "use strict";
     (function(Kirja) {
-        (function(Page) {
+        (function(Shared) {
+
+            /**
+             * Shared View Model
+             * @class
+             */
+            Shared.BaseViewModel = function()
+            {
+                this.id = new ko.observable("");
+                var paramId = GoNorth.Util.getParameterFromUrl("id");
+                if(paramId)
+                {
+                    this.id(paramId);
+                }
+
+                this.isLoading = new ko.observable(false);
+                this.isReadonly = new ko.observable(false);
+
+                this.pageName = new ko.observable("");
+                this.originalPageContent = null;
+                this.pageContent = new ko.observable("");
+
+                this.pageModifiedOn = new ko.observable("");
+
+                this.linkDialog = new GoNorth.ChooseObjectDialog.ViewModel();
+                this.linkDialogInsertHtmlCallback = null;
+
+                this.errorOccured = new ko.observable(false);
+                this.additionalErrorDetails = new ko.observable("");
+                
+                this.lockedByUser = new ko.observable("");
+            };
+
+            Shared.BaseViewModel.prototype = {
+                /**
+                 * Returns true if the link rich text buttons must be generated
+                 * @returns {boolean} true if the link rich text buttons must be generated, else false
+                 */
+                allowLinkRichTextButtons: function() {
+                    return true;
+                },
+
+                /**
+                 * Generates additional rich text buttons
+                 * @param {object} allKirjaButtons rich text buttons to extend
+                 * @param {object} additionalParams Any additional parameters for generating the buttons
+                 */
+                generateAdditionalRichTextButtons: function(allKirjaButtons, additionalParams) {
+                },
+
+                /**
+                 * Generates the rich text buttons
+                 * 
+                 * @param {object} additionalParams Any additional parameters for generating the buttons
+                 * @returns {object} Rich text buttons
+                 */
+                generateRichTextButtons: function(additionalParams) {
+                    var allKirjaButtons = {};
+                    if(!this.allowLinkRichTextButtons())
+                    {
+                        this.generateAdditionalRichTextButtons(allKirjaButtons, additionalParams);
+                        return allKirjaButtons;
+                    }
+
+                    var self = this;
+
+                    var allKirjaButtons = {};
+                    allKirjaButtons.insertTableOfContent = {
+                        title: Shared.toolbarButtonInsertTableOfContentTitle,
+                        icon: "glyphicon-list-alt",
+                        callback: function(htmlInsert) {
+                            htmlInsert("<br/><span contenteditable='false'><gn-kirjaTableOfContent></gn-kirjaTableOfContent></span><br/>")
+                        }
+                    };
+
+                    allKirjaButtons.insertWikiLink = {
+                        title: Shared.toolbarButtonInsertKirjaLinkTitle,
+                        icon: "glyphicon-book",
+                        callback: function(htmlInsert) {
+                            self.linkDialogInsertHtmlCallback = htmlInsert;
+                            if(self.openCreatePage) {
+                                self.linkDialog.openKirjaPageSearch(Shared.toolbarButtonInsertKirjaLinkTitle, function() { self.openCreatePage() }, self.id).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, true);
+                                });
+                            } else {
+                                self.linkDialog.openKirjaPageSearch(Shared.toolbarButtonInsertKirjaLinkTitle).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, true);
+                                });
+                            }
+                        }
+                    };
+
+                    if(Shared.hasAikaRights)
+                    {
+                        allKirjaButtons.insertQuestLink = {
+                            title: Shared.toolbarButtonInsertAikaQuestLinkTitle,
+                            icon: "glyphicon-king",
+                            callback: function(htmlInsert) {
+                                self.linkDialogInsertHtmlCallback = htmlInsert;
+                                self.linkDialog.openQuestSearch(Shared.toolbarButtonInsertAikaQuestLinkTitle).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, false);
+                                });
+                            }
+                        };
+                    }
+
+                    if(Shared.hasKortistoRights)
+                    {
+                        allKirjaButtons.insertNpcLink = {
+                            title: Shared.toolbarButtonInsertKortistoNpcLinkTitle,
+                            icon: "glyphicon-user",
+                            callback: function(htmlInsert) {
+                                self.linkDialogInsertHtmlCallback = htmlInsert;
+                                self.linkDialog.openNpcSearch(Shared.toolbarButtonInsertKortistoNpcLinkTitle).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, false);
+                                });
+                            }
+                        };
+                    }
+
+                    if(Shared.hasStyrRights)
+                    {
+                        allKirjaButtons.insertItemLink = {
+                            title: Shared.toolbarButtonInsertStyrItemLinkTitle,
+                            icon: "glyphicon-apple",
+                            callback: function(htmlInsert) {
+                                self.linkDialogInsertHtmlCallback = htmlInsert;
+                                self.linkDialog.openItemSearch(Shared.toolbarButtonInsertStyrItemLinkTitle).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, false);
+                                });
+                            }
+                        };
+                    }
+
+                    if(Shared.hasEvneRights)
+                    {
+                        allKirjaButtons.insertSkillLink = {
+                            title: Shared.toolbarButtonInsertEvneSkillLinkTitle,
+                            icon: "glyphicon-flash",
+                            callback: function(htmlInsert) {
+                                self.linkDialogInsertHtmlCallback = htmlInsert;
+                                self.linkDialog.openSkillSearch(Shared.toolbarButtonInsertEvneSkillLinkTitle).then(function(selectedObject) {
+                                    self.addLinkFromLinkDialog(selectedObject, false);
+                                });
+                            }
+                        };
+                    }
+
+                    this.generateAdditionalRichTextButtons(allKirjaButtons, additionalParams);
+
+                    return allKirjaButtons;
+                },
+
+                /**
+                 * Adds a link from the link dialog
+                 * 
+                 * @param {object} linkObj Link object
+                 * @param {bool} samePage true if the link should open on the same page, else false
+                 */
+                 addLinkFromLinkDialog: function(linkObj, samePage) {
+                    if(samePage)
+                    {
+                        this.linkDialogInsertHtmlCallback("<a href='" + linkObj.openLink  + "'>" + linkObj.name + "</a>");
+                    }
+                    else
+                    {
+                        this.linkDialogInsertHtmlCallback("<a href='" + linkObj.openLink + "' target='_blank'>" + linkObj.name + "</a>");
+                    }
+                },
+
+                /**
+                 * Fixes old links
+                 * 
+                 * @param {string} pageContent Page content
+                 * @returns {string} Paged content with fixed links
+                 */
+                fixOldLinks: function(pageContent) {
+                    if(!pageContent)
+                    {
+                        return "";
+                    }
+
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Kirja");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Kortisto/Npc");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Styr/Item");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Evne/Skill");
+                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Aika/Quest");
+                
+                    return pageContent;
+                },
+
+                /**
+                 * Fixes old links by the controller url
+                 * 
+                 * @param {string} pageContent Page content
+                 * @param {string} controllerUrl Controller Url to search for
+                 * @returns {string} Page content with fixed links
+                 */
+                fixOldLinksByControllerUrl: function(pageContent, controllerUrl) {
+                    var replaceRegex = new RegExp(" href=\"" + controllerUrl + "#id=([0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12})\"", "gi");
+                    pageContent = pageContent.replace(replaceRegex, function(match) {
+                        return match.replace("#", "?");
+                    });
+                    return pageContent;
+                }
+            };
+
+        }(Kirja.Shared = Kirja.Shared || {}));
+    }(GoNorth.Kirja = GoNorth.Kirja || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(Kirja) {
+        (function(Shared) {
 
             /**
              * Child Link Click Binding Handler
@@ -753,7 +1072,7 @@
                 }
             };
 
-        }(Kirja.Page = Kirja.Page || {}));
+        }(Kirja.Shared = Kirja.Shared || {}));
     }(GoNorth.Kirja = GoNorth.Kirja || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
@@ -763,6 +1082,9 @@
 
             /// Version Dialog Page Size
             var versionDialogPageSize = 25;
+
+            /// Review Dialog Page Size
+            var reviewDialogPageSize = 25;
 
             /// Scroll Offset
             var headerScrollOffset = 45;
@@ -779,31 +1101,12 @@
              */
             Page.ViewModel = function()
             {
-                this.id = new ko.observable("");
-                var paramId = GoNorth.Util.getParameterFromUrl("id");
-                if(paramId)
-                {
-                    this.id(paramId);
-                }
-
-                this.isLoading = new ko.observable(false);
-                this.isReadonly = new ko.observable(false);
-                this.lockedByUser = new ko.observable("");
+                Kirja.Shared.BaseViewModel.apply(this);
 
                 this.isEditMode = new ko.observable(false);
-                this.isDirty = new ko.observable(false);
 
                 this.blockPageReload = false;
                 var self = this;
-                this.pageName = new ko.observable("");
-                this.pageName.subscribe(function() {
-                    self.isDirty(true);
-                });
-                this.originalPageContent = null;
-                this.pageContent = new ko.observable("");
-                this.pageContent.subscribe(function() {
-                    self.isDirty(true);
-                });
                 this.pageWordCount = new ko.observable(0);
                 this.pageContent.subscribe(GoNorth.Util.debounce(function(newVal) {
                     self.pageWordCount(GoNorth.Util.getHtmlWordCount(newVal));
@@ -856,7 +1159,6 @@
 
                     return pageName;
                 }, this);
-                this.pageModifiedOn = new ko.observable("");
 
                 this.isDefault = new ko.observable(false);
 
@@ -876,13 +1178,18 @@
                 this.versionDialogMostRecentVersion = new ko.observable(0);
                 this.versions = new ko.observableArray();
 
+                this.showReviewDialog = new ko.observable(false);
+                this.loadingReviews = new ko.observable(false);
+                this.reviewDialogErrorOccured = new ko.observable(false);
+                this.currentReviewPage = new ko.observable(0);
+                this.hasMoreReviews = new ko.observable(false);
+                this.reviews = new ko.observableArray();
+                this.reviewsWaitingForMergeCount = new ko.observable(0);
+
                 this.showConfirmRestoreDialog = new ko.observable(false);
                 this.confirmRestoreDialogLoading = new ko.observable(false);
                 this.confirmRestoreDialogErrorOccured = new ko.observable(false);
                 this.confirmRestoreBrokenLinks = new ko.observableArray();
-
-                this.linkDialog = new GoNorth.ChooseObjectDialog.ViewModel();
-                this.linkDialogInsertHtmlCallback = null;
 
                 this.showNewWaitPageDialog = new ko.observable(false);
 
@@ -936,8 +1243,6 @@
                 this.loadingReferencedInExportSnippets = new ko.observable(false);
                 this.loadingReferencedInExportSnippetsError = new ko.observable(false);
 
-                this.errorOccured = new ko.observable(false);
-                this.additionalErrorDetails = new ko.observable("");
                 this.pageNotFound = new ko.observable(false);
 
                 this.attachmentFiles = new ko.observableArray();
@@ -1000,9 +1305,19 @@
                         scrollTop: Math.max(0, jQuery(".gn-header_" + id).offset().top - headerScrollOffset)
                     }, 250);
                 }
+
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.Kirja.Page.dirtyMessage, GoNorth.Kirja.Page.disableAutoSaving, function() {
+                    self.sendSaveRequest(true);
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
             };
 
-            Page.ViewModel.prototype = {
+            Page.ViewModel.prototype = jQuery.extend({ }, Kirja.Shared.BaseViewModel.prototype, {
                 /**
                  * Resets the error state
                  */
@@ -1105,102 +1420,16 @@
                         self.loadReferencedInDialogs();
                         self.loadMarkedInMaps();
                         self.loadReferencedInExportSnippets();
+                        self.loadReviewsWaitingForMerge();
 
                         self.attachmentFiles(data.attachments ? data.attachments : []);
 
-                        self.isDirty(false);
+                        self.dirtyChecker.saveCurrentSnapshot();
                         self.checkLock();
                     }).fail(function(xhr) {
                         self.errorOccured(true);
                         self.isLoading(false);
                     });
-                },
-
-                /**
-                 * Generates the rich text buttons
-                 * 
-                 * @returns {object} Rich text buttons
-                 */
-                generateRichTextButtons: function() {
-                    var self = this;
-
-                    var allKirjaButtons = {};
-                    allKirjaButtons.insertTableOfContent = {
-                        title: GoNorth.Kirja.Page.toolbarButtonInsertTableOfContentTitle,
-                        icon: "glyphicon-list-alt",
-                        callback: function(htmlInsert) {
-                            htmlInsert("<br/><span contenteditable='false'><gn-kirjaTableOfContent></gn-kirjaTableOfContent></span><br/>")
-                        }
-                    };
-
-                    allKirjaButtons.insertWikiLink = {
-                        title: GoNorth.Kirja.Page.toolbarButtonInsertKirjaLinkTitle,
-                        icon: "glyphicon-book",
-                        callback: function(htmlInsert) {
-                            self.linkDialogInsertHtmlCallback = htmlInsert;
-                            self.linkDialog.openKirjaPageSearch(GoNorth.Kirja.Page.toolbarButtonInsertKirjaLinkTitle, function() { self.openCreatePage() }, self.id).then(function(selectedObject) {
-                                self.addLinkFromLinkDialog(selectedObject, true);
-                            });
-                        }
-                    };
-
-                    if(GoNorth.Kirja.Page.hasAikaRights)
-                    {
-                        allKirjaButtons.insertQuestLink = {
-                            title: GoNorth.Kirja.Page.toolbarButtonInsertAikaQuestLinkTitle,
-                            icon: "glyphicon-king",
-                            callback: function(htmlInsert) {
-                                self.linkDialogInsertHtmlCallback = htmlInsert;
-                                self.linkDialog.openQuestSearch(GoNorth.Kirja.Page.toolbarButtonInsertAikaQuestLinkTitle).then(function(selectedObject) {
-                                    self.addLinkFromLinkDialog(selectedObject, false);
-                                });
-                            }
-                        };
-                    }
-
-                    if(GoNorth.Kirja.Page.hasKortistoRights)
-                    {
-                        allKirjaButtons.insertNpcLink = {
-                            title: GoNorth.Kirja.Page.toolbarButtonInsertKortistoNpcLinkTitle,
-                            icon: "glyphicon-user",
-                            callback: function(htmlInsert) {
-                                self.linkDialogInsertHtmlCallback = htmlInsert;
-                                self.linkDialog.openNpcSearch(GoNorth.Kirja.Page.toolbarButtonInsertKortistoNpcLinkTitle).then(function(selectedObject) {
-                                    self.addLinkFromLinkDialog(selectedObject, false);
-                                });
-                            }
-                        };
-                    }
-
-                    if(GoNorth.Kirja.Page.hasStyrRights)
-                    {
-                        allKirjaButtons.insertItemLink = {
-                            title: GoNorth.Kirja.Page.toolbarButtonInsertStyrItemLinkTitle,
-                            icon: "glyphicon-apple",
-                            callback: function(htmlInsert) {
-                                self.linkDialogInsertHtmlCallback = htmlInsert;
-                                self.linkDialog.openItemSearch(GoNorth.Kirja.Page.toolbarButtonInsertStyrItemLinkTitle).then(function(selectedObject) {
-                                    self.addLinkFromLinkDialog(selectedObject, false);
-                                });
-                            }
-                        };
-                    }
-
-                    if(GoNorth.Kirja.Page.hasEvneRights)
-                    {
-                        allKirjaButtons.insertSkillLink = {
-                            title: GoNorth.Kirja.Page.toolbarButtonInsertEvneSkillLinkTitle,
-                            icon: "glyphicon-flash",
-                            callback: function(htmlInsert) {
-                                self.linkDialogInsertHtmlCallback = htmlInsert;
-                                self.linkDialog.openSkillSearch(GoNorth.Kirja.Page.toolbarButtonInsertEvneSkillLinkTitle).then(function(selectedObject) {
-                                    self.addLinkFromLinkDialog(selectedObject, false);
-                                });
-                            }
-                        };
-                    }
-
-                    return allKirjaButtons;
                 },
 
                 /**
@@ -1224,42 +1453,6 @@
                     GoNorth.Util.setUrlParameters(href);
                     event.preventDefault();
                     return false;
-                },
-
-                /**
-                 * Fixes old links
-                 * 
-                 * @param {string} pageContent Page content
-                 * @returns {string} Paged content with fixed links
-                 */
-                fixOldLinks: function(pageContent) {
-                    if(!pageContent)
-                    {
-                        return "";
-                    }
-
-                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Kirja");
-                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Kortisto/Npc");
-                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Styr/Item");
-                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Evne/Skill");
-                    pageContent = this.fixOldLinksByControllerUrl(pageContent, "/Aika/Quest");
-                
-                    return pageContent;
-                },
-
-                /**
-                 * Fixes old links by the controller url
-                 * 
-                 * @param {string} pageContent Page content
-                 * @param {string} controllerUrl Controller Url to search for
-                 * @returns {string} Page content with fixed links
-                 */
-                fixOldLinksByControllerUrl: function(pageContent, controllerUrl) {
-                    var replaceRegex = new RegExp(" href=\"" + controllerUrl + "#id=([0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12})\"", "gi");
-                    pageContent = pageContent.replace(replaceRegex, function(match) {
-                        return match.replace("#", "?");
-                    });
-                    return pageContent;
                 },
 
                 /**
@@ -1391,7 +1584,7 @@
                     var confirmDirtyExitPromise = new jQuery.Deferred();
                     this.confirmDirtyExitPromise = confirmDirtyExitPromise;
 
-                    if(this.isDirty())
+                    if(this.dirtyChecker.isDirty())
                     {
                         this.showConfirmDirtyExitEdit(true);
                     }
@@ -1538,10 +1731,29 @@
 
 
                 /**
+                 * Builds the save request object
+                 * @returns {object} Save Request object
+                 */
+                buildSaveRequestObject: function() {
+                    return {
+                        name: this.pageName(),
+                        content: this.pageContent()
+                    };
+                },
+
+                /**
                  * Saves the page
                  */
                 save: function() {
-                    if(!jQuery("#gn-kirjaHeaderFields").valid())
+                    this.sendSaveRequest(false);
+                },
+
+                /**
+                 * Saves the page
+                 * @param {boolean} isAutoSave true if the save is an auto save
+                 */
+                 sendSaveRequest: function(isAutoSave) {
+                    if(!GoNorth.Util.validateForm("#gn-kirjaHeaderFields", !isAutoSave))
                     {
                         return;
                     }
@@ -1553,10 +1765,7 @@
                         url = "/api/KirjaApi/UpdatePage?id=" + this.id();
                     }
 
-                    var request = {
-                        name: this.pageName(),
-                        content: this.pageContent()
-                    };
+                    var request = this.buildSaveRequestObject();
 
                     this.isLoading(true);
                     this.resetErrorState();
@@ -1584,7 +1793,7 @@
                         self.loadReferencedInExportSnippets();
                         self.pageModifiedOn(savedPage.modifiedOn);
                         self.callPageRefreshGrid();
-                        self.isDirty(false);
+                        self.dirtyChecker.saveCurrentSnapshot();
                         self.isLoading(false);
                         self.originalPageContent = self.pageContent();
                     }).fail(function(xhr) {
@@ -1932,6 +2141,89 @@
                  */
                 loadPageVersion: function(id) {
                     return GoNorth.HttpClient.get("/api/KirjaApi/PageVersion?versionId=" + id);
+                },
+
+
+                /**
+                 * Loads the amount of reviews that are waiting for merge
+                 */
+                loadReviewsWaitingForMerge: function() {
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/KirjaApi/GetPageReviewCountWaitingForMerge?pageId=" + this.id()).done(function(data) {
+                        self.reviewsWaitingForMergeCount(data);
+                    }).fail(function() {
+                        self.errorOccured(true);
+                    });
+                },
+
+                /**
+                 * Opens the review dialog
+                 */
+                openReviewDialog: function() {
+                    this.showReviewDialog(true);
+                    this.loadReviewsPage();
+                },
+
+                /**
+                 * Closes the review dialog
+                 */
+                closeReviewDialog: function() {
+                    this.showReviewDialog(false);
+                },
+
+                /**
+                 * Loads the previous review page
+                 */
+                prevReviewPage: function() {
+                    if(this.currentReviewPage() == 0)
+                    {
+                        return;
+                    }                 
+
+                    this.currentReviewPage(this.currentReviewPage() - 1);
+                    this.loadReviewsPage();
+                },
+                
+                /**
+                 * Loads the next review page
+                 */
+                nextReviewPage: function() {
+                    if(!this.hasMoreReviews())
+                    {
+                        return;
+                    }                 
+
+                    this.currentReviewPage(this.currentReviewPage() + 1);
+                    this.loadReviewsPage();
+                },
+
+                /**
+                 * Loads the review page
+                 */
+                loadReviewsPage: function() {
+                    var startPageIndex = this.currentReviewPage() * reviewDialogPageSize;
+
+                    this.loadingReviews(true);
+                    this.reviewDialogErrorOccured(false);
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/KirjaApi/GetPageReviews?pageId=" + this.id() + "&start=" + startPageIndex + "&pageSize=" + reviewDialogPageSize).done(function(data) {
+                        self.loadingReviews(false);
+                        self.hasMoreReviews(data.hasMore);
+                        self.reviews(data.reviews);
+                    }).fail(function() {
+                        self.loadingReviews(false);
+                        self.reviews.removeAll();
+                        self.reviewDialogErrorOccured(true);
+                    });
+                },
+                
+                /**
+                 * Builds the url for a review
+                 * @param {object} review Review
+                 * @returns {string} Review Url 
+                 */
+                buildReviewUrl: function(review) {
+                    return "/Kirja/Review?id=" + review.id;
                 },
 
 
@@ -2407,23 +2699,6 @@
                 },
 
                 /**
-                 * Adds a link from the link dialog
-                 * 
-                 * @param {object} linkObj Link object
-                 * @param {bool} samePage true if the link should open on the same page, else false
-                 */
-                addLinkFromLinkDialog: function(linkObj, samePage) {
-                    if(samePage)
-                    {
-                        this.linkDialogInsertHtmlCallback("<a href='" + linkObj.openLink  + "'>" + linkObj.name + "</a>");
-                    }
-                    else
-                    {
-                        this.linkDialogInsertHtmlCallback("<a href='" + linkObj.openLink + "' target='_blank'>" + linkObj.name + "</a>");
-                    }
-                },
-
-                /**
                  * Opens a page to create a new kirja page
                  */
                 openCreatePage: function() {
@@ -2510,8 +2785,32 @@
                     }
 
                     return false;
+                },
+
+
+                /**
+                 * Starts a review
+                 */
+                startReview: function() {
+                    var self = this;
+                    GoNorth.PromptService.openInputPrompt(Page.enterReviewName, "", true).done(function(reviewName) {
+                        var request = {
+                            name: reviewName,
+                            pageId: self.id(),
+                            versionId: self.displayVersionId() ? self.displayVersionId() : ""
+                        };
+    
+                        self.isLoading(true);
+                        self.resetErrorState();
+                        GoNorth.HttpClient.post("/api/KirjaApi/StartReview", request).done(function(reviewId) {
+                            window.location.href = "/Kirja/Review?id=" + reviewId;
+                        }).fail(function(xhr) {
+                            self.isLoading(false);
+                            self.errorOccured(true);
+                        });
+                    });
                 }
-            };
+            });
 
         }(Kirja.Page = Kirja.Page || {}));
     }(GoNorth.Kirja = GoNorth.Kirja || {}));

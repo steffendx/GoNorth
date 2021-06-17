@@ -1,5 +1,8 @@
+using GoNorth.Config;
+using GoNorth.Models.FlexFieldDatabaseModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace GoNorth.Controllers
 {
@@ -10,6 +13,20 @@ namespace GoNorth.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class EvneController : Controller
     {
+        /// <summary>
+        /// Misc config
+        /// </summary>
+        private readonly MiscConfig _config;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        public EvneController(IOptions<ConfigurationData> configuration)
+        {
+            _config = configuration.Value.Misc;
+        }
+
         /// <summary>
         /// Index view
         /// </summary>
@@ -27,7 +44,9 @@ namespace GoNorth.Controllers
         [HttpGet]
         public IActionResult Skill()
         {
-            return View();
+            DetailFormViewModel viewModel = new DetailFormViewModel();
+            viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
+            return View(viewModel);
         }
 
         /// <summary>

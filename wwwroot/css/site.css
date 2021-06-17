@@ -22,6 +22,10 @@ footer {
     padding-left: 10px;
 }
 
+.gn-inputPromptMultiLine {
+    height: 120px !important;
+}
+
 /* Cookie policy */
 #cookieConsent {
     top: 21px;
@@ -438,7 +442,7 @@ footer {
     display: inline-block;
 }
 
-.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText {
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText,.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipTextBottom {
     background-color: #555;
     color: #fff;
     text-align: center;
@@ -446,20 +450,35 @@ footer {
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 120%;
     left: 50%;
     margin-left: -50%;
 }
 
-.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText::after {
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText {
+    bottom: 120%;
+}
+
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipTextBottom {
+    top: 120%;
+}
+
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText::after, .gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipTextBottom::after {
     content: "";
     position: absolute;
-    top: 100%;
     left: 50%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
+}
+
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipText::after {
     border-color: #555 transparent transparent transparent;
+    top: 100%;
+}
+
+.gn-copyToClipboardToolTipContainer .gn-copyToClipboardToolTipTextBottom::after {
+    border-color: transparent transparent #555 transparent;
+    bottom: 100%;
 }
 
 /** Timeline **/
@@ -1091,7 +1110,7 @@ footer {
 
 @media(min-width:768px) {
     .gn-kirjaAlertTextCol {
-        padding-top: 10px;
+        padding-top: 8px;
     }
 
     .gn-kirjaAlertButtonCol {
@@ -1116,12 +1135,12 @@ footer {
     margin-top: 20px;
 }
 
-#gn-kirjaPageContainer ins {
+#gn-kirjaPageContainer ins, #gn-kirjaReviewContainer ins {
     text-decoration: none;
     background-color: #d4fcbc;
 }
 
-#gn-kirjaPageContainer del {
+#gn-kirjaPageContainer del, #gn-kirjaReviewContainer del {
     text-decoration: line-through;
     background-color: #fbb6c2;
 }
@@ -1313,39 +1332,82 @@ gn-kirjaTableOfContent {
 }
 
 
-.gn-kirjaVersionDialogVersionList {
+/** Version, Review Shared */
+.gn-kirjaVersionReviewDialogList {
     max-height: 250px;
     overflow-y: auto;
 }
 
 @media(min-height:500px) {
-    .gn-kirjaVersionDialogVersionList {
+    .gn-kirjaVersionReviewDialogList {
         max-height: 330px !important;
     }
 }
 
 @media(min-height:700px) {
-    .gn-kirjaVersionDialogVersionList {
+    .gn-kirjaVersionReviewDialogList {
         max-height: 530px !important;
     }
 }
 
 @media(min-height:900px) {
-    .gn-kirjaVersionDialogVersionList {
+    .gn-kirjaVersionReviewDialogList {
         max-height: 730px !important;
     }
 }
 
 @media(min-height:1100px) {
-    .gn-kirjaVersionDialogVersionList {
+    .gn-kirjaVersionReviewDialogList {
         max-height: 930px !important;
     }
 }
 
 @media(min-height:1200px) {
-    .gn-kirjaVersionDialogVersionList {
+    .gn-kirjaVersionReviewDialogList {
         max-height: 1030px !important;
     }
+}
+
+gn-kirjacomment {
+    background-color: #d9edf7;
+}
+
+.gn-kirjaCommentContainer, .gn-kirjaMergeTagContainer {
+    position: relative;
+}
+
+.gn-kirjaCommentCallout, .gn-kirjaMergeTagCallout {
+    position: absolute;
+}
+
+.gn-kirjaCommentCalloutContent {
+    margin-bottom: 10px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.18);
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.18);
+}
+
+.gn-kirjaCommentCalloutText {
+    white-space: pre-wrap;
+}
+
+.gn-kirjaCommentCalloutContent .panel-title {
+    align-self: center;
+    margin-right: 10px;
+}
+
+.gn-kirjaCommentCalloutContent .panel-heading {
+    display: flex;
+    justify-content: space-between;
+}
+
+.gn-kirjaMergeTagCallout {
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    padding: 3px 7px;
+}
+
+.gn-kirjaMergeTagCallout a {
+    color: black;
 }
 
 /** Karta **/
@@ -1588,7 +1650,7 @@ path.leaflet-interactive {
 }
 
 .gn-taleAddChoice {
-    margin-right: 10px !important;
+    margin-right: 0.8em !important;
 }
 
 .gn-taleAddChoice:hover {
@@ -1615,7 +1677,7 @@ path.leaflet-interactive {
 }
 
 .gn-referenceNodeLink {
-    margin-top: 15px;
+    margin-top: 1em;
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1627,7 +1689,7 @@ path.leaflet-interactive {
 }
 
 .gn-referenceText {
-    height: calc(100% - 65px) !important;
+    height: calc(100% - 4.2em) !important;
 }
 
 .gn-taleChoiceTextCell {
@@ -1639,14 +1701,14 @@ path.leaflet-interactive {
 
 .gn-taleChoiceTable {
     width: 100%;
-    height: calc(100% - 33px);
-    margin-top: 15px;
+    height: calc(100% - 2em);
+    margin-top: 1em;
     table-layout: fixed;
 }
 
 .gn-taleChoiceTable tr {
-    padding-bottom: 20px;
-    padding-top: 20px;
+    padding-bottom: 1.4em;
+    padding-top: 1.4em;
 }
 
 .gn-taleChoiceTable input {
@@ -1662,16 +1724,16 @@ path.leaflet-interactive {
 .gn-taleChoiceIcon {
     pointer-events: auto;
     cursor: pointer;
-    margin-left: 5px;
+    margin-left: 0.35em;
 }
 
 .gn-nodeActionOpenObject, .gn-nodeActionOpenChooseObject {
-    margin-left: 5px;
+    margin-left: 0.35em;
 }
 
 .gn-actionNodeObjectSelectionSeperator {
-    margin-top: 3px;
-    margin-left: 5px;
+    margin-top: 0.25em;
+    margin-left: 0.35em;
 }
 
 .gn-actionNodeTimeOverflow {
@@ -1691,7 +1753,7 @@ path.leaflet-interactive {
 }
 
 .gn-actionNodeTimeContainer .gn-timePickerInput {
-    margin-bottom: 8px;
+    margin-bottom: 0.6em;
 }
 
 /** State Machine **/
@@ -1723,6 +1785,7 @@ path.leaflet-interactive {
 	/* Make sure events are propagated to the JointJS element so, e.g. dragging works.*/
 	pointer-events: none;
 	-webkit-user-select: none;
+    user-select: none;
 	box-sizing: border-box;
 	z-index: 2;
 	overflow: hidden;
@@ -1739,7 +1802,8 @@ path.leaflet-interactive {
     background-color: #456;
     width: calc(100% - 10px);
     margin-left: 5px;
-    margin-top: calc(50% - 10px);
+    margin-top: 50%;
+    transform: translateY(-50%);
 }
 
 .stateEndNodeOuter {
@@ -1755,21 +1819,24 @@ path.leaflet-interactive {
 }
 
 .stateNodeEndView .delete {
-    margin-left: calc(50% - 7px);
-    margin-top: calc(50% - 9px);
+    margin-left: 50%;
+    margin-top: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 .stateNodeStateView .delete {
     position: absolute;
-    top: calc(50% + 25px);
-    right: calc(50% - 7px);
+    top: 50%;
+    right: 50%;
+    transform: translateX(50%) translateY(200%);
 }
 
 .stateNodeStateView .settings {
     position: absolute;
-    right: calc(50% - 32px);
-    top: calc(50% - 36px);
-    font-size: 20px;
+    top: 50%;
+    right: 50%;
+    transform: translateX(150%) translateY(-180%);
+    font-size: 1.4em;
     color: white;
     cursor: pointer;
     pointer-events: all;
@@ -1812,8 +1879,8 @@ path.leaflet-interactive {
 /** Aika Chapter Detail **/
 .gn-aikaChapterDetailButton {
     width: 100%;
-    margin-top: 10px;
-    padding: 4px;
+    margin-top: 0.8em;
+    padding: 0.25em;
 }
 
 .gn-aikaChapterFinishPort {
@@ -1843,8 +1910,8 @@ path.leaflet-interactive {
 .gn-aikaNodeQuestName {
     display: block;
     color: #FFFFFF;
-    margin-top: 8px;
-    padding-left: 5px;
+    margin-top: 0.6em;
+    padding-left: 0.35em;
     pointer-events: auto;
 }
 

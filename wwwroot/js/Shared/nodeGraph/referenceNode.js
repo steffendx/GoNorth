@@ -76,7 +76,7 @@
                         GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
 
                         var self = this;
-                        this.$box.find('.gn-referenceText').on('change', function(evt)
+                        this.$box.find('.gn-referenceText').on('input', function(evt)
                         {
                             self.model.set('referenceText', jQuery(evt.target).val());
                         });

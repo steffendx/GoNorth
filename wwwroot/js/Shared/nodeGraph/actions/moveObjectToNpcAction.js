@@ -90,7 +90,7 @@
                 });
 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };

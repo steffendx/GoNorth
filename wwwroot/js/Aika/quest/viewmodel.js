@@ -257,6 +257,17 @@
                 GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
                     self.errorOccured(true);
                 });
+
+                // Dirty Check
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.Aika.Shared.DirtyMessage, GoNorth.Aika.Shared.disableAutoSaving, function() {
+                    self.sendSaveRequest(true);
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
             };
 
             Quest.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
@@ -639,23 +650,41 @@
              * Saves the quest
              */
             Quest.ViewModel.prototype.save = function() {
+                this.sendSaveRequest(false);
+            };
+
+            /**
+             * Builds the save request object
+             * @returns {object} Save request object
+             */
+            Quest.ViewModel.prototype.buildSaveRequestObject = function() {
+                var serializedQuest = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+                serializedQuest.name = this.name();
+                serializedQuest.description = this.description();
+                serializedQuest.isMainQuest = this.isMainQuest();
+                serializedQuest.fields = this.fieldManager.serializeFields();
+
+                return serializedQuest;
+            };
+
+            /**
+             * Saves the quest
+             * @param {boolean} isAutoSave true if the save is triggered by an auto save, else false
+             */
+            Quest.ViewModel.prototype.sendSaveRequest = function(isAutoSave) {
                 // Validate Data
                 if(!this.nodeGraph())
                 {
                     return;
                 }
 
-                if(!jQuery("#gn-questHeader").valid())
+                if(!GoNorth.Util.validateForm("#gn-questHeader", !isAutoSave))
                 {
                     return;
                 }
 
                 // Serialize quest
-                var serializedQuest = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
-                serializedQuest.name = this.name();
-                serializedQuest.description = this.description();
-                serializedQuest.isMainQuest = this.isMainQuest();
-                serializedQuest.fields = this.fieldManager.serializeFields();
+                var serializedQuest = this.buildSaveRequestObject();
 
                 var url = "";
                 if(this.id())
@@ -687,6 +716,7 @@
                     self.reloadFieldsForNodes(GoNorth.DefaultNodeShapes.Shapes.ObjectResourceQuest, self.id());
 
                     self.callOnQuestSaved();
+                    self.dirtyChecker.saveCurrentSnapshot();
                     self.isLoading(false);
                 }).fail(function(xhr) {
                     self.isLoading(false);
@@ -735,6 +765,8 @@
                     {
                         self.setGraphToReadonly();
                     }
+                    
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);

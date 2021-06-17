@@ -69,6 +69,8 @@
     "AllDoneNodeCount": "Total all done node count",
     "Close": "Close",
     
+    "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
+
     "Error": "Error:",
     "ErrorOccured": "An error occured.",
     "QuestNotFound": "Quest was not found.",

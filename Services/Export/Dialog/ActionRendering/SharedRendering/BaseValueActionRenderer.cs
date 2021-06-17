@@ -89,6 +89,11 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.SharedRendering
         /// <returns>Action Operator</returns>
         private async Task<string> GetOperatorFromTemplate(GoNorthProject project, string actionOperator, ExportPlaceholderErrorCollection errorCollection)
         {
+            if(actionOperator == null)
+            {
+                actionOperator = string.Empty;
+            }
+
             switch(actionOperator.ToLowerInvariant())
             {
             case "=":

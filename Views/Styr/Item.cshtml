@@ -2,6 +2,8 @@
 @using GoNorth.Models.FlexFieldDatabaseModels
 @using GoNorth.Data.Exporting
 
+@model DetailFormViewModel
+
 @inject IViewLocalizer Localizer
 
 @{
@@ -75,6 +77,21 @@
             GoNorth.FlexFieldDatabase.ObjectForm.hasKortistoRights = false;
             </text>
         }
+        
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.disableAutoSaving = false;
+            </text>
+        }
+
+        GoNorth.FlexFieldDatabase.ObjectForm.dirtyMessage = "@Localizer["DirtyMessage"]";
 
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Styr.Item.ViewModel(), jQuery("#gn-styrItemContainer")[0]);

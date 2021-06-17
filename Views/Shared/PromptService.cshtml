@@ -1,0 +1,58 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<div id="gn-promptServiceContainer">
+    <!-- Prompt with input -->
+    <div class="modal fade" role="dialog" data-bind="modal: inputPromptVisible">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" data-bind="text: inputPromptTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <form id="gn-inputPromptForm">
+                        <div class="form-group">
+                            <!-- ko if: !inputPromptIsMultiLine() -->
+                            <input type="text" class="form-control" id="gn-inputPromptText" placeholder="@Localizer["Text"]" name="inputPromptText" data-bind="value: inputPromptText, enterPressed: confirmInputPrompt, attr: { required: inputPromptTextMandatory() ? 'required' : undefined }"/>
+                            <!-- /ko -->
+                            <!-- ko if: inputPromptIsMultiLine -->
+                            <textarea type="text" class="form-control gn-nonResizeable gn-inputPromptMultiLine" rowss="6" id="gn-inputPromptTextMultiLine" placeholder="@Localizer["Text"]" name="inputPromptText" data-bind="value: inputPromptText, attr: { required: inputPromptTextMandatory() ? 'required' : undefined }"></textarea>
+                            <!-- /ko -->
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: confirmInputPrompt">@Localizer["Ok"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: cancelInputPrompt">@Localizer["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yes / No Prompt -->
+    <div class="modal fade" role="dialog" data-bind="modal: yesNoPromptVisible">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" data-bind="text: yesNoPromptTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <p data-bind="text: yesNoPromptText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: confirmYesNoPrompt">@Localizer["Yes"]</button>
+                    <button type="button" class="btn btn-default" data-bind="click: cancelYesNoPrompt">@Localizer["No"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        ko.applyBindings(new GoNorth.PromptService.ViewModel(), jQuery("#gn-promptServiceContainer")[0]);
+    });
+</script>

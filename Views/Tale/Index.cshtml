@@ -1,4 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.TaleViewModels
+
+@model TaleIndexViewModel
 
 @inject IViewLocalizer Localizer
 
@@ -238,8 +241,22 @@
 
     <script type="text/javascript">
         GoNorth.Tale.Dialog.Localization = {
-            Tale: "@Localizer["Tale"]"
+            Tale: "@Localizer["Tale"]",
+            DirtyMessage: "@Localizer["DirtyMessage"]"
         };
+
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.Tale.Dialog.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Tale.Dialog.disableAutoSaving = false;
+            </text>
+        }
 
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Tale.Dialog.ViewModel(), jQuery("#gn-taleDialogContainer")[0]);

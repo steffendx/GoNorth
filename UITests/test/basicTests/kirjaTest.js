@@ -28,6 +28,16 @@ describe("Kirja", function () {
         testBed.assertNoErrorsOccured();
     });
     
+    it("should not throw errors on review", async function() {
+        var testBed = this.test.testBed;
+        
+        await testBed.navigateByUrl("/Kirja/Review");
+
+        await testBed.checkElementExistsOnPage("#gn-kirjaReviewContainer");
+
+        testBed.assertNoErrorsOccured();
+    });
+    
     it("should not throw errors on page list", async function() {
         var testBed = this.test.testBed;
         

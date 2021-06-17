@@ -173,6 +173,17 @@
                 GoNorth.DefaultNodeShapes.Shapes.loadConfigLists().fail(function() {
                     self.errorOccured(true);
                 });
+
+                // Dirty Check
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.Tale.Dialog.Localization.DirtyMessage, GoNorth.Tale.Dialog.disableAutoSaving, function() {
+                    self.save();
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
             };
 
             Dialog.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
@@ -198,6 +209,14 @@
             };
 
             /**
+             * Builds the save request object
+             * @returns {object} Save request object
+             */
+            Dialog.ViewModel.prototype.buildSaveRequestObject = function() {
+                return GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+            }
+
+            /**
              * Saves the node graph
              */
             Dialog.ViewModel.prototype.save = function() {
@@ -206,7 +225,7 @@
                     return;
                 }
 
-                var serializedGraph = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+                var serializedGraph = this.buildSaveRequestObject();
 
                 this.isLoading(true);
                 this.errorOccured(false);
@@ -224,6 +243,7 @@
                     if(window.taleDialogSaved) {
                         window.taleDialogSaved(self.id());
                     }
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
@@ -264,6 +284,8 @@
                         self.dialogId("");
                         self.isImplemented(false);
                     }
+                    
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);

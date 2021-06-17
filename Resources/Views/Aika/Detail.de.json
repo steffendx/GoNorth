@@ -14,6 +14,8 @@
     "WaitingOnNewObject": "Warte auf neues Objekt",
     "DialogWillCloseOnSaveOfNewObject": "Dieser Dialog schließt sich sobald du das neue Objekt gespeichert hast oder das Fenster schließt. Wenn das neue Objekt gespeichert wird wird automatisch ein Knoten eingefügt.",
 
+    "DirtyMessage": "Es liegen ungespeicherte Änderungen vor. Willst du die Seite wirklich verlassen?",
+
     "Error": "Fehler:",
     "ErrorOccured": "Es ist ein Fehler aufgetreten.",
 

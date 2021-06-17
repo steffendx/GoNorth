@@ -174,6 +174,7 @@ namespace GoNorth
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IEncryptionService, AesEncryptionService>();
+            services.AddTransient<ISecureTokenGenerator, RngSecureTokenGenerator>();
             services.AddTransient<IXssChecker, XssChecker>();
             services.AddTransient<ITimelineService, TimelineService>();
             services.AddTransient<ITimelineTemplateService, HtmlTimelineTemplateService>();
@@ -282,6 +283,7 @@ namespace GoNorth
             
             services.AddScoped<IKirjaPageDbAccess, KirjaPageMongoDbAccess>();
             services.AddScoped<IKirjaPageVersionDbAccess, KirjaPageVersionMongoDbAccess>();
+            services.AddScoped<IKirjaPageReviewDbAccess, KirjaPageReviewMongoDbAccess>();
 
             services.AddScoped<IKartaMapDbAccess, KartaMapMongoDbAccess>();
             services.AddScoped<IKartaMarkerImplementationSnapshotDbAccess, KartaMarkerImplementationSnapshotMongoDbAccess>();

@@ -76,11 +76,20 @@
 
     "EvneValueFileImport": "Eine Fähigkeiten Wertedatei wurde importiert. Es wurden {0} Fähigkeiten aktualisiert und {1} Fähigkeiten neu angelegt.",
 
-    "KirjaPageCreated": "Eine neue Seite <a href='/Kirja?id={1}'>{0}</a> wurde in Kirja angelegt.",
-    "KirjaPageDeleted": "Die Seite {0} wurde in Kirja gelöscht.",
-    "KirjaPageUpdated": "Die Seite <a href='/Kirja?id={1}&displayVersionId={2}&compareVersionId={3}'>{0}</a> wurde in Kirja aktualisiert.",
-    "KirjaAttachmentAdded": "Die Datei {2} wurde zur Kirja Seite <a href='/Kirja?id={1}'>{0}</a> hochgeladen.",
-    "KirjaAttachmentDeleted": "Die Datei {2} wurde von der Kirja Seite <a href='/Kirja?id={1}'>{0}</a> gelöscht.",
+    "KirjaPageCreated": "Eine neue Wiki Seite <a href='/Kirja?id={1}'>{0}</a> wurde angelegt.",
+    "KirjaPageDeleted": "Die Wiki Seite {0} wurde gelöscht.",
+    "KirjaPageUpdated": "Die Wiki Seite <a href='/Kirja?id={1}&displayVersionId={2}&compareVersionId={3}'>{0}</a> wurde aktualisiert.",
+    "KirjaAttachmentAdded": "Die Datei {2} wurde zur Wiki Seite <a href='/Kirja?id={1}'>{0}</a> hochgeladen.",
+    "KirjaAttachmentDeleted": "Die Datei {2} wurde von der Wiki Seite <a href='/Kirja?id={1}'>{0}</a> gelöscht.",
+
+    "KirjaPageReviewStarted": "Eine neues Review <a href='/Kirja/Review?id={1}'>{0}</a> wurde für die Wiki Seite <a href='/Kirja?id={3}'>{2}</a> gestartet.",
+    "KirjaPageReviewUpdated": "Das Wiki Review <a href='/Kirja/Review?id={1}'>{0}</a> wurde aktualisiert.",
+    "KirjaPageReviewExternallyShared": "Das Wiki Review <a href='/Kirja/Review?id={1}'>{0}</a> wurde extern freigegeben.",
+    "KirjaPageReviewExternalShareRevoked": "Die externe Freigabe für das Wiki Review <a href='/Kirja/Review?id={1}'>{0}</a> wurde zurückgezogen.",
+    "KirjaPageReviewMarkedAsCompleted": "Das Wiki Review <a href='/Kirja/Review?id={1}'>{0}</a> wurde als abgeschlossen markiert.",
+    "KirjaPageReviewReopened": "Das Wiki Review <a href='/Kirja/Review?id={1}'>{0}</a> wurde erneut eröffnet.",
+    "KirjaPageReviewMerged": "Das Wiki Review <a href='/Kirja/Review?id={1}'>{0}</a> wurde in die Wiki Seite <a href='/Kirja?id={3}'>{2}</a> übernommen.",
+    "KirjaPageReviewDeleted": "Das Wiki Review {0} für die Seite <a href='/Kirja?id={2}'>{1}</a> wurde gelöscht.",
 
     "KartaMapCreated": "Eine neue Karte <a href='/Karta?id={1}'>{0}</a> wurde angelegt.",
     "KartaMapDeleted": "Die Karte {0} wurde gelöscht.",
@@ -145,5 +154,7 @@
 
     "IncludeExportTemplateCreated": "Das Include Export Template <a href='/Export/ManageIncludeTemplate?id={0}'>{1}</a> wurde erstellt.",
     "IncludeExportTemplateUpdated": "Das Include Export Template <a href='/Export/ManageIncludeTemplate?id={0}'>{1}</a> wurde aktualisiert.",
-    "IncludeExportTemplateDeleted": "Das Include Export Template {0} wurde gelöscht."
+    "IncludeExportTemplateDeleted": "Das Include Export Template {0} wurde gelöscht.",
+
+    "ExternalUserDisplayName": "Externe Person"
 }

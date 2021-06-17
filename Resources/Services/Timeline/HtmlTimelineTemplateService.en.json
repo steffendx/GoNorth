@@ -76,11 +76,20 @@
 
     "EvneValueFileImport": "A skill value file was imported. {0} skills were updated and {1} new skills were created.",
 
-    "KirjaPageCreated": "A new page <a href='/Kirja?id={1}'>{0}</a> was created in Kirja.",
-    "KirjaPageDeleted": "The page {0} was deleted in Kirja.",
-    "KirjaPageUpdated": "The page <a href='/Kirja?id={1}&displayVersionId={2}&compareVersionId={3}'>{0}</a> was updated in Kirja.",
-    "KirjaAttachmentAdded": "The file {2} was uploaded to the Kirja page <a href='/Kirja?id={1}'>{0}</a>.",
-    "KirjaAttachmentDeleted": "The file {2} was deleted in the Kirja page <a href='/Kirja?id={1}'>{0}</a>.",
+    "KirjaPageCreated": "A new wiki page <a href='/Kirja?id={1}'>{0}</a> was created.",
+    "KirjaPageDeleted": "The wiki page {0} was deleted.",
+    "KirjaPageUpdated": "The wiki page <a href='/Kirja?id={1}&displayVersionId={2}&compareVersionId={3}'>{0}</a> was updated.",
+    "KirjaAttachmentAdded": "The file {2} was uploaded to the wiki page <a href='/Kirja?id={1}'>{0}</a>.",
+    "KirjaAttachmentDeleted": "The file {2} was deleted in the wiki page <a href='/Kirja?id={1}'>{0}</a>.",
+
+    "KirjaPageReviewStarted": "A new review <a href='/Kirja/Review?id={1}'>{0}</a> was started for wiki page <a href='/Kirja?id={3}'>{2}</a>.",
+    "KirjaPageReviewUpdated": "The wiki review <a href='/Kirja/Review?id={1}'>{0}</a> was updated.",
+    "KirjaPageReviewExternallyShared": "The wiki review <a href='/Kirja/Review?id={1}'>{0}</a> was shared externally.",
+    "KirjaPageReviewExternalShareRevoked": "The external share for the wiki review <a href='/Kirja/Review?id={1}'>{0}</a> was revoked.",
+    "KirjaPageReviewMarkedAsCompleted": "The wiki review <a href='/Kirja/Review?id={1}'>{0}</a> was marked as completed.",
+    "KirjaPageReviewReopened": "The wiki review <a href='/Kirja/Review?id={1}'>{0}</a> was reopened.",
+    "KirjaPageReviewMerged": "The wiki review <a href='/Kirja/Review?id={1}'>{0}</a> was merged into the page <a href='/Kirja?id={3}'>{2}</a>.",
+    "KirjaPageReviewDeleted": "The wiki review {0} for page <a href='/Kirja?id={2}'>{1}</a> was deleted.",
 
     "KartaMapCreated": "A new map <a href='/Karta?id={1}'>{0}</a> was created.",
     "KartaMapDeleted": "The map {0} was deleted.",
@@ -145,5 +154,7 @@
 
     "IncludeExportTemplateCreated": "The include export template <a href='/Export/ManageIncludeTemplate?id={0}'>{1}</a> was created.",
     "IncludeExportTemplateUpdated": "The include export template <a href='/Export/ManageIncludeTemplate?id={0}'>{1}</a> was updated.",
-    "IncludeExportTemplateDeleted": "The include export template {0} was deleted."
+    "IncludeExportTemplateDeleted": "The include export template {0} was deleted.",
+
+    "ExternalUserDisplayName": "External user"
 }

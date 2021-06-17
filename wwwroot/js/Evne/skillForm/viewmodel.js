@@ -12,7 +12,7 @@
                 GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
                 GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Evne", "EvneApi", "Skill", "EvneSkill", "EvneTemplate", "GetPagesBySkill?skillId=", null ]);
 
-                this.isSkillFlowExpanded = new ko.observable(false);
+                this.isSkillFlowExpanded = new ko.observable(true);
                 this.loadedGraph = null;
 
                 this.learnedByNpcs = new ko.observableArray();

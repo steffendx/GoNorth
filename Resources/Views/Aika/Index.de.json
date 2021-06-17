@@ -6,6 +6,8 @@
 
     "ChapterNode": "Kapitel",
 
+    "DirtyMessage": "Es liegen ungespeicherte Änderungen vor. Willst du die Seite wirklich verlassen?",
+
     "Error": "Fehler:",
     "ErrorOccured": "Es ist ein Fehler aufgetreten.",
 

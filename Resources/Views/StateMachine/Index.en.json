@@ -26,6 +26,8 @@
     "AreYouSureYouWantToRemoveTheScript": "Are you sure you want to remove the script?",
     "StateDontExportToScript": "Do not export to script",
 
+    "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
+
     "Error": "Error",
     "ErrorOccured": "An error occured.",
 

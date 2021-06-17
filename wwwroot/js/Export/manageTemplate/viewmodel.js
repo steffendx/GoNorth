@@ -109,6 +109,17 @@
                     GoNorth.LockService.releaseCurrentLock();
                     self.initTemplateData();
                 });
+
+                // Dirty Check
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.Export.ManageTemplate.DirtyMessage, GoNorth.Export.ManageTemplate.disableAutoSaving, function() {
+                    self.save();
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
             };
 
             ManageTemplate.ViewModel.prototype = {
@@ -164,6 +175,8 @@
                         self.templateCode(template.template.code);
                         
                         self.loadTemplatePlaceholders();
+
+                        self.dirtyChecker.saveCurrentSnapshot();
                     }).fail(function() {
                         self.isLoading(false);
                         self.errorOccured(true);
@@ -187,6 +200,14 @@
                 },
 
                 /**
+                 * Builds the save request object
+                 * @returns {object} Save request object
+                 */
+                buildSaveRequestObject: function() {
+                    return this.templateCode();
+                },
+
+                /**
                  * Saves the template
                  */
                 save: function() {
@@ -199,11 +220,13 @@
                     this.isLoading(true);
                     this.resetErrorState();
                     var self = this;
-                    GoNorth.HttpClient.post(url, this.templateCode()).done(function() {
+                    GoNorth.HttpClient.post(url, this.buildSaveRequestObject()).done(function() {
                         self.customizedObjectTemplateIsDefault(false);
                         self.isLoading(false);
 
                         self.loadInvalidSnippets();
+                        
+                        self.dirtyChecker.saveCurrentSnapshot();
                     }).fail(function(xhr) {
                         self.isLoading(false);
                         self.errorOccured(true);

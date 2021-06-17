@@ -24,9 +24,10 @@ namespace GoNorth.Data.LockService
         /// <param name="category">Category</param>
         /// <param name="id">Id of the resource</param>
         /// <param name="userId">Id of the user who acquires the lock</param>
+        /// <param name="externalUserId">Optional Id for an external user id</param>
         /// <param name="expireDate">Date at which  the lock expires</param>
         /// <returns>Task</returns>
-        Task LockResource(string category, string id, string userId, DateTimeOffset expireDate);
+        Task LockResource(string category, string id, string userId, string externalUserId, DateTimeOffset expireDate);
 
         /// <summary>
         /// Deletes a lock by its id

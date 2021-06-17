@@ -1,0 +1,345 @@
+@using GoNorth.Data.User
+@using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.KirjaViewModels
+
+@inject IViewLocalizer Localizer
+@inject SignInManager<GoNorthUser> SignInManager
+
+@model KirjaReviewViewModel
+
+@{
+    ViewData["Title"] = @Localizer["KirjaReview"];
+}
+
+<div id="gn-kirjaReviewContainer">
+    <!-- Link Dialog -->
+    <!-- ko with: linkDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 gn-kirjaNameCol">
+            <h2 data-bind="text: pageName"></h2>
+        </div>
+        
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 gn-kirjaButtonCol"> 
+            <button type="button" class="btn btn-primary" data-bind="click: save, disable: isLoading() || reviewStatusIsReadonly() || isReadonly(), visible: pageStatus() && !isRunningMerge() && pageStatus() != 'Merged'" tabindex="8" style="display: none">
+                <i class="glyphicon glyphicon-floppy-disk" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["SaveReview"]
+            </button>    
+            @if(!Model.DisableWikiExternalSharing && SignInManager.IsSignedIn(User))
+            {
+            <span class="gn-copyToClipboardToolTipContainer" data-bind="visible: showExternalLink() && !isRunningMerge() && pageStatus() != 'Merged'" style="display: none">    
+                <div class="btn-group" tabindex="4">
+                    <button type="button" class="btn btn-default" data-bind="click: copyExternalShareLink, disable: isGeneratingExternalShareLink() || (!pageExternalShareToken() && isReadonly())">
+                        <i class="glyphicon glyphicon-link" data-bind="visible: !isGeneratingExternalShareLink()"></i>
+                        <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isGeneratingExternalShareLink"></i> 
+                        <span data-bind="visible: !pageExternalShareToken()" style="display: none">@Localizer["GenerateExternalLink"]</span>
+                        <span data-bind="visible: pageExternalShareToken" style="display: none">@Localizer["CopyExternalLink"]</span>
+                        <span class="gn-copyToClipboardToolTipTextBottom" style="display: none" data-bind="visible: externalLinkShowSuccessfullyCopiedTooltip">@Localizer["SuccessfullyCopiedToClipboard"]</span>
+                    </button>
+                    <button type="button" data-bind="disable: isLoading() || isReadonly(), visible: pageExternalShareToken" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">@Localizer["ToggleDropdown"]</span>
+                    </button>
+                    <ul class="dropdown-menu" data-bind="visible: pageExternalShareToken">
+                        <li><a href="#" data-bind="click: revokeExternalShareToken">@Localizer["RevokeExternalLink"]</a></li>
+                    </ul>
+                </div>
+            </span>
+            }
+            <button type="button" class="btn btn-default" data-bind="click: markAsCompleted, disable: isLoading() || isReadonly(), visible: pageStatus() == 'Open' && !isRunningMerge()" tabindex="5" style="display: none">
+                <i class="glyphicon glyphicon-ok"></i> @Localizer["MarkAsCompleted"]
+            </button>
+            <button type="button" class="btn btn-default" data-bind="click: reopen, disable: isLoading() || isReadonly(), visible: pageStatus() == 'Completed' && !isRunningMerge()" tabindex="5" style="display: none">
+                <i class="glyphicon glyphicon-repeat"></i> @Localizer["Reopen"]
+            </button>
+
+
+            <button type="button" class="btn btn-primary" data-bind="click: saveMerge, disable: isLoading() || isReadonly(), visible: isRunningMerge()" tabindex="8" style="display: none">
+                <i class="glyphicon glyphicon-ok" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["AcceptMerge"]
+            </button>    
+            <button type="button" class="btn btn-default" data-bind="click: cancelMerge, disable: isLoading() || isReadonly(), visible: isRunningMerge" tabindex="5" style="display: none">
+                <i class="glyphicon glyphicon-remove"></i> @Localizer["Cancel"]
+            </button>
+
+            @if(SignInManager.IsSignedIn(User))
+            {
+                <button type="button" class="btn btn-default" data-bind="click: deleteReview, disable: isLoading() || isReadonly(), visible: !isRunningMerge()" tabindex="7">
+                    <i class="glyphicon glyphicon-trash" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["DeleteReview"]
+                </button>
+                <button type="button" class="btn btn-default" data-bind="click: backToReviewedPage" tabindex="6">
+                    <i class="glyphicon glyphicon-share-alt"></i> @Localizer["BackToReviewedPage"]
+                </button>    
+            }  
+        </div>
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: lockedByUser">
+        <strong>@Localizer["Locked"]</strong>  
+        @if(SignInManager.IsSignedIn(User))
+        {
+            @Localizer["LockedPrefix"]<span data-bind="text: lockedByUser"></span>@Localizer["LockedPostfix"]
+        }
+        else
+        {
+            @Localizer["LockedByOtherUser"]
+        }
+    </div>
+
+    <div class="alert alert-warning gn-defaultContentTopMargin" style="display: none" data-bind="visible: mergePageLockedBy">
+        <strong>@Localizer["Locked"]</strong> @Localizer["MergeLockedPrefix"]<span data-bind="text: mergePageLockedBy"></span>@Localizer["MergeLockedPostfix"]
+    </div>
+
+    <div class="alert alert-success gn-defaultContentTopMargin" style="display: none" data-bind="visible: pageStatus() == 'Merged' && !isRunningMerge()">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-7 col-lg-7 gn-kirjaAlertTextCol">
+                <strong>@Localizer["Merged"]</strong> @Localizer["ReviewMerged"]
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info gn-defaultContentTopMargin" style="display: none" data-bind="visible: pageStatus() == 'Completed' && !isRunningMerge()">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-7 col-lg-7 gn-kirjaAlertTextCol">
+                <strong>@Localizer["Completed"]</strong> @Localizer["ReviewCompleted"]
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-5 col-lg-5 gn-kirjaAlertButtonCol">
+                @if(SignInManager.IsSignedIn(User))
+                {
+                    <button type="button" class="btn btn-default" data-bind="click: startMerge, disable: isLoading() || isReadonly()" tabindex="5">
+                        <i class="glyphicon glyphicon-eject"></i> @Localizer["Merge"]
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: errorOccured">
+        <strong>@Localizer["Error"]</strong> @Localizer["ErrorOccured"] <span data-bind="text: additionalErrorDetails, visible: additionalErrorDetails"></span>
+    </div>
+    
+    <div class="alert alert-danger gn-defaultContentTopMargin" style="display: none" data-bind="visible: unmergedChangesExist">
+        <strong>@Localizer["Error"]</strong> @Localizer["UnmergedChangesExist"]
+    </div>
+    
+
+    <div class="row gn-kirjaCommentContainer" data-bind="visible: !isRunningMerge()">
+        <!-- ko foreach: visibleComments -->
+        <div data-bind="style: { left: left() + width() * 0.5, top: top(), opacity: visible() ? 1 : 0, transform: expandDownwards() ? 'translateX(-50%) translateY(' + height() + 'px)' : 'translateX(-50%) translateY(-100%)' }" style="opacity: 0" class="gn-kirjaCommentCallout">
+            <div class="panel panel-primary gn-kirjaCommentCalloutContent"> 
+                <div class="panel-heading"> 
+                    <h3 class="panel-title">@Localizer["CommentHeader"]</h3> 
+                    <div data-bind="visible: !$root.reviewStatusIsReadonly() && !$root.isReadonly()">
+                        <a class="btn btn-default" title="@Localizer["EditComment"]" data-bind="click: function(comment) { $root.editComment(comment); }"><i class="glyphicon glyphicon-pencil"></i></a>
+                        <a class="btn btn-default" title="@Localizer["DeleteComment"]" data-bind="click: function(comment) { $root.deleteComment(comment); }"><i class="glyphicon glyphicon-trash"></i></a>
+                    </div>
+                </div> 
+                <div class="panel-body">
+                    <div data-bind="text: text" class="gn-kirjaCommentCalloutText"></div>
+                </div>
+            </div>
+        </div>
+        <!-- /ko -->
+
+        <div data-bind="visible: pageStatus() && !reviewStatusIsReadonly() && !isReadonly()" style="display: none">
+            <div data-bind="richText: pageContent, richTextDisableImageUpload: true, richTextAddditionalButtons: generateRichTextButtons, richTextFocusChangeCallback: checkCommentFocus" class="gn-kirjaPageRichTextEditor gn-reviewContent gn-kirjaPageContentFormats" tabindex="2">
+            </div>
+        </div>
+        <div data-bind="html: pageContent, visible: reviewStatusIsReadonly() || isReadonly(), click: onPageContentClick" class="gn-kirjaPageContent gn-kirjaPageContentFormats" style="display: none"></div>
+        
+        <h3 class="gn-defaultContentTopMargin">@Localizer["AdditionalComment"]</h3>
+        <div data-bind="visible: pageStatus() && !reviewStatusIsReadonly() && !isReadonly()" style="display: none">
+            <div data-bind="richText: additionalComment, richTextDisableImageUpload: true" tabindex="3">
+            </div>
+        </div>
+        <div data-bind="html: additionalComment, visible: reviewStatusIsReadonly() || isReadonly()" class="gn-kirjaPageContent gn-kirjaPageContentFormats" style="display: none"></div>
+    </div>
+
+    <div class="row gn-kirjaMergeTagContainer" data-bind="visible: isRunningMerge">
+        <!-- ko foreach: visibleMergeTags -->
+        <div data-bind="style: { left: left() + width() * 0.5, top: top(), opacity: visible() ? 1 : 0, transform: expandDownwards() ? 'translateX(-50%) translateY(' + height() + 'px)' : 'translateX(-50%) translateY(-100%)' }" style="opacity: 0" class="gn-kirjaMergeTagCallout">
+            <a class="gn-clickable" data-bind="click: function(mergeTag) { $root.acceptRejectMergeTag(mergeTag, true); }"><i class="glyphicon glyphicon-ok"></i> @Localizer["Accept"]</a> | <a class="gn-clickable" data-bind="click: function(mergeTag) { $root.acceptRejectMergeTag(mergeTag, false); }"><i class="glyphicon glyphicon-remove"></i> @Localizer["Reject"]</a>
+        </div>
+        <!-- /ko -->
+
+        <div data-bind="richText: mergeHtml, richTextDisableImageUpload: true, richTextAddditionalButtons: function() { return generateRichTextButtons(true) }, richTextFocusChangeCallback: checkMergeFocus" class="gn-kirjaPageRichTextEditor gn-reviewContent gn-kirjaPageContentFormats" tabindex="2">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <environment include="Development">
+        <script src="~/lib/bootstrap-wysiwyg/external/jquery.hotkeys.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).js"></script>
+
+        <script src="~/js/Kirja/review.viewmodel.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.js"></script>
+        <script src="~/lib/bootstrap-wysiwyg/locale/bootstrap-wysiwyg.@(Localizer["RichTextLocale"]).min.js"></script>
+
+        <script src="~/js/Kirja/review.viewmodel.min.js" asp-append-version="true"></script>
+    </environment>
+    
+    <script src="~/lib/htmldiff/htmldiff.min.js"></script>
+
+    <script type="text/javascript">
+        GoNorth.Kirja.Shared.toolbarButtonInsertTableOfContentTitle = "@Localizer["InsertTableOfContent"]";
+        GoNorth.Kirja.Shared.toolbarButtonInsertKirjaLinkTitle = "@Localizer["InsertKirjaLink"]";
+        GoNorth.Kirja.Shared.toolbarButtonInsertAikaQuestLinkTitle = "@Localizer["InsertAikaQuestLink"]";
+        GoNorth.Kirja.Shared.toolbarButtonInsertKortistoNpcLinkTitle = "@Localizer["InsertKortistoNpcLink"]";
+        GoNorth.Kirja.Shared.toolbarButtonInsertStyrItemLinkTitle = "@Localizer["InsertStyrItemLink"]";
+        GoNorth.Kirja.Shared.toolbarButtonInsertEvneSkillLinkTitle = "@Localizer["InsertEvneSkillLink"]";
+        
+        GoNorth.Kirja.Review.toolbarButtonInsertComment = "@Localizer["InsertComment"]";
+        GoNorth.Kirja.Review.enterCommentText = "@Localizer["EnterCommentText"]";
+
+        GoNorth.Kirja.Review.toolbarButtonAcceptAllChanges = "@Localizer["AcceptAllChanges"]";
+        GoNorth.Kirja.Review.toolbarButtonRejectAllChanges = "@Localizer["RejectAllChanges"]";
+
+        GoNorth.Kirja.Review.areYouSure = "@Localizer["AreYouSure"]";
+        GoNorth.Kirja.Review.areYouSureYouWantToDeleteTheReview = "@Localizer["AreYouSureYouWantToDeleteTheReview"]";
+        GoNorth.Kirja.Review.areYouSureYouWantToDeleteTheComment = "@Localizer["AreYouSureYouWantToDeleteTheComment"]";
+        
+        GoNorth.Kirja.Review.dirtyMessage = "@Localizer["DirtyMessage"]";
+
+        @if(User.IsInRole(RoleNames.Aika))
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasAikaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasAikaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Kortisto))
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasKortistoRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasKortistoRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Tale))
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasTaleRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasTaleRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Styr))
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasStyrRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasStyrRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Evne))
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasEvneRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasEvneRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.Karta))
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasKartaRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasKartaRights = false;
+            </text>
+        }
+
+        @if(User.IsInRole(RoleNames.ExportObjects))
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasExportObjectsRights = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.hasExportObjectsRights = false;
+            </text>
+        }
+
+        @if(SignInManager.IsSignedIn(User))
+        {
+            <text>
+            GoNorth.Kirja.Shared.isUserSignedIn = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Shared.isUserSignedIn = false;
+            </text>
+        }
+
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.Kirja.Review.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Kirja.Review.disableAutoSaving = false;
+            </text>
+        }
+
+        jQuery(document).ready(function() {
+            ko.applyBindings(new GoNorth.Kirja.Review.ViewModel(), jQuery("#gn-kirjaReviewContainer")[0]);
+        });
+    </script>
+}
+
+@section Styles {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap-wysiwyg/bootstrap-wysiwyg.min.css" />
+    </environment>
+    
+    <style>
+        gn-kirjaTableOfContent::after {
+            content: "@Localizer["TableOfContent"]"
+        }
+    </style>
+}

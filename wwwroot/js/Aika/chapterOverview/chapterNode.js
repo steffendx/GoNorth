@@ -75,7 +75,7 @@
                         var self = this;
 
                         var chapterName = this.$box.find(".gn-aikaChapterName");
-                        chapterName.on("change", function() {
+                        chapterName.on("input", function() {
                             self.model.set("chapterName", chapterName.val());
                         });
                         chapterName.val(this.model.get("chapterName"));

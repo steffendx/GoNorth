@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
+using GoNorth.Authentication;
 using GoNorth.Config;
 using GoNorth.Data.Project;
 using GoNorth.Data.Timeline;
@@ -169,6 +167,15 @@ namespace GoNorth.Services.Timeline
             _entryRoleFilter.Add(TimelineEvent.KirjaAttachmentAdded, new List<string>() { RoleNames.Kirja });
             _entryRoleFilter.Add(TimelineEvent.KirjaAttachmentDeleted, new List<string>() { RoleNames.Kirja });
 
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewStarted, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewUpdated, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewExternallyShared, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewExternalShareRevoked, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewMarkedAsCompleted, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewReopened, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewMerged, new List<string>() { RoleNames.Kirja });
+            _entryRoleFilter.Add(TimelineEvent.KirjaPageReviewDeleted, new List<string>() { RoleNames.Kirja });
+
             // Karta
             _entryRoleFilter.Add(TimelineEvent.KartaMapCreated, new List<string>() { RoleNames.Karta });
             _entryRoleFilter.Add(TimelineEvent.KartaMapDeleted, new List<string>() { RoleNames.Karta });
@@ -251,26 +258,44 @@ namespace GoNorth.Services.Timeline
         /// <returns>Task</returns>
         public async Task AddTimelineEntry(string projectId, TimelineEvent timelineEvent, params string[] additionalValues)
         {
-            GoNorthUser currentUser;
+            GoNorthUser currentUser = await _userManager.GetUserAsync(_httpContext.HttpContext.User);
+            await AddTimlineEntry(projectId, currentUser.DisplayName, currentUser.UserName, timelineEvent, additionalValues);
+        }
+
+        /// <summary>
+        /// Adds a timeline event for an external user
+        /// </summary>
+        /// <param name="projectId">Id of the project to associate, if null the project will be loaded</param>
+        /// <param name="timelineEvent">Timeline Event</param>
+        /// <param name="additionalValues">Additional Values</param>
+        /// <returns>Task</returns>
+        public async Task AddExternalTimelineEntry(string projectId, TimelineEvent timelineEvent, params string[] additionalValues)
+        {
+            await AddTimlineEntry(projectId, "", ExternalUserConstants.ExternalUserLoginName, timelineEvent, additionalValues);
+        }
+
+        /// <summary>
+        /// Adds a timeline entry with a user
+        /// </summary>
+        /// <param name="projectId">Id of the project to associate, if null the project will be loaded</param>
+        /// <param name="userDisplayName">User Displayname</param>
+        /// <param name="userLoginName">Userl oginname</param>
+        /// <param name="timelineEvent">Timeline Event</param>
+        /// <param name="additionalValues">Additional Values</param>
+        /// <returns>Task</returns>
+        private async Task AddTimlineEntry(string projectId, string userDisplayName, string userLoginName, TimelineEvent timelineEvent, params string[] additionalValues)
+        {
             if(string.IsNullOrEmpty(projectId))
             {
-                Task<GoNorthUser> currentUserTask = _userManager.GetUserAsync(_httpContext.HttpContext.User);
-                Task<GoNorthProject> projectTask = _userProjectAccess.GetUserProject();
-                Task.WaitAll(currentUserTask, projectTask);
-                currentUser = currentUserTask.Result;
-                GoNorthProject project = projectTask.Result;
+                GoNorthProject project = await _userProjectAccess.GetUserProject();
                 projectId = project != null ? project.Id : string.Empty;
-            }
-            else
-            {
-                currentUser = await _userManager.GetUserAsync(_httpContext.HttpContext.User);
             }
 
             string updateId = null;
             if(_eventMergeTimeSpan > 0)
             {
                 DateTimeOffset dateLimit = DateTimeOffset.UtcNow.AddMinutes(-_eventMergeTimeSpan);
-                List<TimelineEntry> timelineEntries = await _timelineDbAccess.GetTimelineEntriesByUserInTimeSpan(projectId, currentUser.UserName, timelineEvent, dateLimit);
+                List<TimelineEntry> timelineEntries = await _timelineDbAccess.GetTimelineEntriesByUserInTimeSpan(projectId, userLoginName, timelineEvent, dateLimit);
                 foreach(TimelineEntry curEntry in timelineEntries)
                 {
                     if(curEntry.AdditionalValues == null && additionalValues == null)
@@ -313,8 +338,8 @@ namespace GoNorth.Services.Timeline
             entry.Event = timelineEvent;
             entry.Timestamp = DateTimeOffset.UtcNow;
             entry.AdditionalValues = additionalValues;
-            entry.Username = currentUser.UserName;
-            entry.UserDisplayName = currentUser.DisplayName;
+            entry.Username = userLoginName;
+            entry.UserDisplayName = userDisplayName;
 
             if(string.IsNullOrEmpty(updateId))
             {

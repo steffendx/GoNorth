@@ -4,7 +4,7 @@
 
 <script type="text/html" id="gn-singleLineField">
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldDefaultHeader.cshtml")
-    <input type="text" class="form-control" data-bind="value: value, attr: { placeholder: name }, disable: $root.isReadonly"/>
+    <input type="text" class="form-control" data-bind="value: value, valueUpdate: 'input', attr: { placeholder: name }, disable: $root.isReadonly"/>
 </script>
 
 <script type="text/html" id="gn-multiLineField">

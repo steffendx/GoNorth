@@ -2,10 +2,13 @@
     "Kirja": "Wiki",
 
     "EditPage": "Bearbeiten",
+    "StartReview": "Review starten",
+    "ShowReviews": "Reviews anzeigen",
     "StopEditPage": "Bearbeiten beenden",
     "SavePage": "Speichern",
     "DeletePage": "Löschen",
     "CanNotDeleteRootPage": "Die Wiki Startseite kann nicht gelöscht werden",
+    "ToggleDropdown": "Dropdown anzeigen",
 
     "Name": "Name",
 
@@ -75,6 +78,17 @@
     "Skill": "Fähigkeit",
     "Quest": "Quest",
     "KirjaPage": "Kirja Seite",
+
+    "Reviews": "Reviews",
+    "Status": "Status",
+    "Open": "Offen",
+    "Completed": "Abgeschlossen",
+    "Merged": "Übernommen",
+    "ReviewsWaitingForMerge": "Es liegen abgeschlossene Reviews vor welche noch nicht übernommen wurden.",
+    
+    "EnterReviewName": "Review Name eingeben",
+
+    "DirtyMessage": "Es liegen ungespeicherte Änderungen vor. Willst du die Seite wirklich verlassen?",
 
     "Error": "Fehler:",
     "ErrorOccured": "Es ist ein Fehler aufgetreten.",

@@ -158,6 +158,11 @@ namespace GoNorth.Controllers.Api
         private const string ExcelCsvContentType = "application/vnd.ms-excel";
 
         /// <summary>
+        /// Octet Stream Content Type
+        /// </summary>
+        private const string OctetStreamContentType = "application/octet-stream";
+
+        /// <summary>
         /// CSV Header Id
         /// </summary>
         private const string CsvHeaderId = "Id";
@@ -1670,7 +1675,7 @@ namespace GoNorth.Controllers.Api
             }
 
             IFormFile uploadFile = Request.Form.Files[0];
-            if (uploadFile.ContentType != CsvContentType && uploadFile.ContentType != ExcelCsvContentType)
+            if (uploadFile.ContentType != CsvContentType && uploadFile.ContentType != ExcelCsvContentType && uploadFile.ContentType != OctetStreamContentType)
             {
                 return BadRequest();
             }

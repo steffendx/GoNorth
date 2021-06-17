@@ -3,6 +3,12 @@
     (function(DefaultNodeShapes) {
         (function(Localization) {
 
+            // Links
+            Localization.Links = {};
+            Localization.Links.Delete = "Verbindung löschen";
+            Localization.Links.Rename = "Verbindung umbennen";
+            Localization.Links.EnterName = "Beschriftung eingeben";
+
             // Node Display
             Localization.NodeDisplay = {};
 

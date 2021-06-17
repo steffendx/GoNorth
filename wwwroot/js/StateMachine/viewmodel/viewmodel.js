@@ -206,6 +206,17 @@
             StateMachine.openStateSettings = function(stateModel) {
                 self.openStateSettingsDialog(stateModel);
             };
+
+            // Dirty Check
+            this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                return self.buildSaveRequestObject();
+            }, GoNorth.StateMachine.Localization.ViewModel.DirtyMessage, GoNorth.StateMachine.disableAutoSaving, function() {
+                self.save();
+            });
+
+            GoNorth.SaveUtil.setupSaveHotkey(function() {
+                self.save();
+            });
         };
 
         StateMachine.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
@@ -311,6 +322,14 @@
         };
 
         /**
+         * Builds the save request object
+         * @returns {object} Save request object
+         */
+        StateMachine.ViewModel.prototype.buildSaveRequestObject = function() {
+            return GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+        };
+
+        /**
          * Saves the node graph
          */
         StateMachine.ViewModel.prototype.save = function() {
@@ -319,7 +338,7 @@
                 return;
             }
 
-            var serializedGraph = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+            var serializedGraph = this.buildSaveRequestObject();
 
             this.isLoading(true);
             this.errorOccured(false);
@@ -332,6 +351,8 @@
                 {
                     self.stateMachineId(data.id);
                 }
+                
+                self.dirtyChecker.saveCurrentSnapshot();
             }).fail(function(xhr) {
                 self.isLoading(false);
                 self.errorOccured(true);
@@ -357,6 +378,7 @@
                 if(data)
                 {
                     self.processStateMachine(data);
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }
                 else if(!self.isTemplateMode())
                 {
@@ -371,6 +393,8 @@
                             self.stateMachineId("");
                             self.addStartNodeToPaper();
                         }
+                        
+                        self.dirtyChecker.saveCurrentSnapshot();
                     }).fail(function(xhr) {
                         self.isLoading(false);
                         self.errorOccured(true);
@@ -380,6 +404,7 @@
                 {
                     self.stateMachineId("");
                     self.addStartNodeToPaper();
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }
             }).fail(function(xhr) {
                 self.isLoading(false);

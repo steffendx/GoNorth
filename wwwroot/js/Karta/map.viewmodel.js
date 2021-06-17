@@ -4614,7 +4614,7 @@
                     GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
                 });
 
-                itemQuantity.change(function(e) {
+                itemQuantity.on("input", function(e) {
                     self.ensureNumberValue();
                     self.saveData();
                 });
@@ -4831,7 +4831,7 @@
                     GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
                 });
 
-                itemQuantity.change(function(e) {
+                itemQuantity.on("input", function(e) {
                     self.ensureNumberValue();
                     self.saveData();
                 });
@@ -6257,7 +6257,7 @@
                 });
 
                 var questText = contentElement.find(".gn-nodeActionQuestText");
-                questText.change(function(e) {
+                questText.on("input", function(e) {
                     self.saveData();
                 });
 
@@ -6693,7 +6693,7 @@
                 // Handlers
                 var self = this;
                 var objectState = contentElement.find(".gn-nodeActionObjectState");
-                objectState.change(function(e) {
+                objectState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -7477,7 +7477,7 @@
                 // Handlers
                 var self = this;
                 var animationName = contentElement.find(".gn-nodeActionPlayAnimation");
-                animationName.change(function(e) {
+                animationName.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -8355,7 +8355,7 @@
                 });
 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -8699,7 +8699,7 @@
                 });
                 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -9370,7 +9370,7 @@
                 });
 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -9655,7 +9655,7 @@
                 });
 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -15319,7 +15319,7 @@
                         GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
 
                         var self = this;
-                        this.$box.find('.gn-referenceText').on('change', function(evt)
+                        this.$box.find('.gn-referenceText').on('input', function(evt)
                         {
                             self.model.set('referenceText', jQuery(evt.target).val());
                         });

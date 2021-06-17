@@ -1,4 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.AikaViewModels
+
+@model SharedAikaViewModel
 
 @inject IViewLocalizer Localizer
 
@@ -69,6 +72,22 @@
     </environment>
 
     <script type="text/javascript">
+        GoNorth.Aika.Shared = GoNorth.Aika.Shared || {};
+        GoNorth.Aika.Shared.DirtyMessage = "@Localizer["DirtyMessage"]";
+
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.Aika.Shared.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Shared.disableAutoSaving = false;
+            </text>
+        }
+
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Aika.ChapterOverview.ViewModel(), jQuery("#gn-aikaChapterOverviewContainer")[0]);
         });

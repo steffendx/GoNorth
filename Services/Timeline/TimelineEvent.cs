@@ -358,6 +358,47 @@ namespace GoNorth.Services.Timeline
 
 
         /// <summary>
+        /// A Kirja page review was started
+        /// </summary>
+        KirjaPageReviewStarted = 120,
+        
+        /// <summary>
+        /// A Kirja page review was updated
+        /// </summary>
+        KirjaPageReviewUpdated = 121,
+        
+        /// <summary>
+        /// A Kirja page review was externally shared
+        /// </summary>
+        KirjaPageReviewExternallyShared = 122,
+        
+        /// <summary>
+        /// A Kirja page review external share was revoked
+        /// </summary>
+        KirjaPageReviewExternalShareRevoked = 123,
+        
+        /// <summary>
+        /// A Kirja page review was marked as completed
+        /// </summary>
+        KirjaPageReviewMarkedAsCompleted = 124,
+        
+        /// <summary>
+        /// A Kirja page review was reopened
+        /// </summary>
+        KirjaPageReviewReopened = 125,
+        
+        /// <summary>
+        /// A Kirja page review was merged
+        /// </summary>
+        KirjaPageReviewMerged = 126,
+        
+        /// <summary>
+        /// A Kirja page review was deleted
+        /// </summary>
+        KirjaPageReviewDeleted = 127,
+
+
+        /// <summary>
         /// A Karta Map was created
         /// </summary>
         KartaMapCreated = 20,

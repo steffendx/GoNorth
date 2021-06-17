@@ -1,5 +1,111 @@
 (function(GoNorth) {
     "use strict";
+    (function(SaveUtil) {
+
+        /**
+         * Prepares a save hotkey
+         * @param {function} callback Callback function for saving
+         */
+         SaveUtil.setupSaveHotkey = function(callback) {
+            jQuery(document).on("keydown", "*", "ctrl+s", function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+                callback();
+            });
+        };
+
+    }(GoNorth.SaveUtil = GoNorth.SaveUtil || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
+    (function(SaveUtil) {
+
+            /// Auto save interval in milliseconds
+            var autoSaveInterval = 60000;
+
+            /**
+             * Class to run dirty checks
+             * @param {function} buildObjectSnapshot Function that builds a snapshot of the current data
+             * @param {string} dirtyMessage Message that is shown if dirty chagnes exist and the user wants to navigate away from the page
+             * @param {boolean} isAutoSaveDisabled true if auto save is disabled, else false
+             * @param {function} saveCallback Function that will get called if an auto save is triggered
+             * @class
+             */
+             SaveUtil.DirtyChecker = function(buildObjectSnapshot, dirtyMessage, isAutoSaveDisabled, saveCallback)
+            {
+                var self = this;
+                window.addEventListener("beforeunload", function (e) {
+                    return self.runDirtyCheck(e);
+                });
+
+                this.dirtyMessage = dirtyMessage;
+                this.buildObjectSnapshot = buildObjectSnapshot;
+                this.lastSnapshot = null;
+
+                if(!isAutoSaveDisabled) {
+                    this.saveCallback = saveCallback;
+                    this.autoSaveInterval = setInterval(function() {
+                        self.runAutoSave();
+                    }, autoSaveInterval);
+                }
+            };
+
+            SaveUtil.DirtyChecker.prototype = {
+                /**
+                 * Runs a dirty check
+                 * @param {object} e Event object
+                 * @returns {string} null if no change was triggered, else true
+                 */
+                runDirtyCheck: function(e) {
+                    if(!this.isDirty()) {
+                        return null;
+                    }
+
+                    e.preventDefault();
+                    (e || window.event).returnValue = this.dirtyMessage;
+                    return this.dirtyMessage;
+                },
+
+                /**
+                 * Saves the current snapshot
+                 */
+                saveCurrentSnapshot: function() {
+                    // Ensure async processing is done
+                    var self = this;
+                    jQuery(document).ajaxStop(function () {
+                        setTimeout(function() {
+                            self.lastSnapshot = self.buildObjectSnapshot();
+                        }, 1);
+                    });
+                },
+
+                /**
+                 * Returns true if the object is currently dirty, else false
+                 * @returns {boolean} True if the object is currently dirty, else
+                 */
+                isDirty: function() {
+                    var currentSnapshot = this.buildObjectSnapshot();
+                    var isSame = GoNorth.Util.isEqual(this.lastSnapshot, currentSnapshot);
+                    return !isSame;
+                },
+
+
+                /**
+                 * Runs an auto save command
+                 */
+                runAutoSave: function() {
+                    if(!this.isDirty()) {
+                        return;
+                    }
+
+                    this.saveCallback();   
+                }
+            };
+
+    }(GoNorth.SaveUtil = GoNorth.SaveUtil || {}));
+}(window.GoNorth = window.GoNorth || {}));
+(function(GoNorth) {
+    "use strict";
     (function(ChooseObjectDialog) {
 
         /// Dialog Page Size
@@ -3157,14 +3263,23 @@
                 this.additionalErrorDetails = new ko.observable("");
                 this.objectNotFound = new ko.observable(false);
 
-                this.lastSavedObjectState = null;
-
                 GoNorth.Util.setupValidation("#gn-objectFields");
 
                 if(this.id() && this.isTemplateMode())
                 {
                     this.checkIfCustomizedExportTemplateExists();
                 }
+
+                var self = this;
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.FlexFieldDatabase.ObjectForm.dirtyMessage, GoNorth.FlexFieldDatabase.ObjectForm.disableAutoSaving, function() {
+                    self.sendSaveRequest(false, true);
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
             };
 
             
@@ -3355,21 +3470,21 @@
              * Saves the last saved object state from the current state
              */
             ObjectForm.BaseViewModel.prototype.saveLastObjectState = function() {
-                this.lastSavedObjectState = this.buildSaveRequestObject();
+                this.dirtyChecker.saveCurrentSnapshot();
             };   
 
             /**
              * Saves the form
              */
             ObjectForm.BaseViewModel.prototype.save = function() {
-                this.sendSaveRequest(false);
+                this.sendSaveRequest(false, false);
             };
 
             /**
              * Saves the form and distribute the fields to objects
              */
             ObjectForm.BaseViewModel.prototype.saveAndDistributeFields = function() {
-                this.sendSaveRequest(true);
+                this.sendSaveRequest(true, false);
             };
             
             /**
@@ -3409,9 +3524,10 @@
              * Saves the form
              * 
              * @param {bool} distributeFields true if the fields should be distributed, else false
+             * @param {bool} isAutoSave true if the save request is from an auto save, else fasle
              */
-            ObjectForm.BaseViewModel.prototype.sendSaveRequest = function(distributeFields) {
-                if(!jQuery("#gn-objectFields").valid())
+            ObjectForm.BaseViewModel.prototype.sendSaveRequest = function(distributeFields, isAutoSave) {
+                if(!GoNorth.Util.validateForm("#gn-objectFields", !isAutoSave))
                 {
                     return;
                 }
@@ -3481,7 +3597,7 @@
 
                     self.callObjectGridRefresh();
 
-                    self.lastSavedObjectState = requestObject;
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);
@@ -3501,17 +3617,6 @@
              */
             ObjectForm.BaseViewModel.prototype.runAfterSave = function(data) {
 
-            };
-
-
-            /**
-             * Returns true if the form is dirty, else false
-             * 
-             * @returns {boolean} true if the form is dirty, else false
-             */
-            ObjectForm.BaseViewModel.prototype.isDirty = function() {
-                var objectState = this.buildSaveRequestObject();
-                return !GoNorth.Util.isEqual(objectState, this.lastSavedObjectState)
             };
 
 
@@ -3581,6 +3686,7 @@
              */
             ObjectForm.BaseViewModel.prototype.imageUploaded = function(image) {
                 this.imageFilename(image);
+                this.thumbnailImageFilename(image);
                 this.callObjectGridRefresh();
             };
 
@@ -3651,7 +3757,7 @@
              * @param {string} exportFormat Format to export to (Script, JSON, Language)
              */
             ObjectForm.BaseViewModel.prototype.exportObject = function(templateType, exportFormat) {
-                if(this.isDirty())
+                if(this.dirtyChecker.isDirty())
                 {
                     var self = this;
                     this.openConfirmExportDirtyStateDialog().done(function() {
@@ -10942,7 +11048,7 @@
                     GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
                 });
 
-                itemQuantity.change(function(e) {
+                itemQuantity.on("input", function(e) {
                     self.ensureNumberValue();
                     self.saveData();
                 });
@@ -11159,7 +11265,7 @@
                     GoNorth.Util.validateNumberKeyPress(itemQuantity, e);
                 });
 
-                itemQuantity.change(function(e) {
+                itemQuantity.on("input", function(e) {
                     self.ensureNumberValue();
                     self.saveData();
                 });
@@ -11521,7 +11627,7 @@
                 // Handlers
                 var self = this;
                 var objectState = contentElement.find(".gn-nodeActionObjectState");
-                objectState.change(function(e) {
+                objectState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -12113,7 +12219,7 @@
                 });
 
                 var questText = contentElement.find(".gn-nodeActionQuestText");
-                questText.change(function(e) {
+                questText.on("input", function(e) {
                     self.saveData();
                 });
 
@@ -12549,7 +12655,7 @@
                 // Handlers
                 var self = this;
                 var objectState = contentElement.find(".gn-nodeActionObjectState");
-                objectState.change(function(e) {
+                objectState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -13128,7 +13234,7 @@
                 // Handlers
                 var self = this;
                 var animationName = contentElement.find(".gn-nodeActionPlayAnimation");
-                animationName.change(function(e) {
+                animationName.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -13419,7 +13525,7 @@
                 // Handlers
                 var self = this;
                 var floatingText = contentElement.find(".gn-nodeActionFloatingText");
-                floatingText.change(function(e) {
+                floatingText.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -13587,7 +13693,7 @@
                 // Handlers
                 var self = this;
                 var floatingText = contentElement.find(".gn-nodeActionFloatingText");
-                floatingText.change(function(e) {
+                floatingText.on("input", function(e) {
                     self.saveData();
                 });
 
@@ -14310,7 +14416,7 @@
                 });
 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -14603,7 +14709,7 @@
                 });
                 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -15221,7 +15327,7 @@
                 });
 
                 var movementState = contentElement.find(".gn-nodeActionMovementState");
-                movementState.change(function(e) {
+                movementState.on("input", function(e) {
                     self.saveData();
                 });
             };
@@ -16391,7 +16497,7 @@
                         GoNorth.DefaultNodeShapes.Shapes.SharedObjectLoading.apply(this);
 
                         var self = this;
-                        this.$box.find('.gn-referenceText').on('change', function(evt)
+                        this.$box.find('.gn-referenceText').on('input', function(evt)
                         {
                             self.model.set('referenceText', jQuery(evt.target).val());
                         });
@@ -16950,7 +17056,7 @@
                 GoNorth.DefaultNodeShapes.BaseViewModel.apply(this);
                 GoNorth.FlexFieldDatabase.ObjectForm.BaseViewModel.apply(this, [ "/Evne", "EvneApi", "Skill", "EvneSkill", "EvneTemplate", "GetPagesBySkill?skillId=", null ]);
 
-                this.isSkillFlowExpanded = new ko.observable(false);
+                this.isSkillFlowExpanded = new ko.observable(true);
                 this.loadedGraph = null;
 
                 this.learnedByNpcs = new ko.observableArray();

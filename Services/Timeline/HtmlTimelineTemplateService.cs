@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Encodings.Web;
+using GoNorth.Authentication;
 using Microsoft.Extensions.Localization;
 
 namespace GoNorth.Services.Timeline
@@ -39,7 +37,7 @@ namespace GoNorth.Services.Timeline
 
             FormattedTimelineEntry formattedEntry = new FormattedTimelineEntry();
             formattedEntry.Timestamp = entry.Timestamp.ToLocalTime();
-            formattedEntry.UserDisplayName = entry.UserDisplayName;
+            formattedEntry.UserDisplayName = entry.Username != ExternalUserConstants.ExternalUserLoginName ? entry.UserDisplayName : _localizer["ExternalUserDisplayName"];
             try
             {
                 formattedEntry.Content = _localizer[entry.Event.ToString(), escapedValues];

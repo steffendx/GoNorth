@@ -135,6 +135,7 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KirjaPageMongoDbAccess.KirjaPageRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KirjaPageVersionMongoDbAccess.KirjaPageVersionCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(KirjaPageReviewMongoDbAccess.KirjaPageReviewCollectionName, collectionNames);
 
             await CreateCollectionIfNotExists(KartaMapMongoDbAccess.KartaMapCollectionName, collectionNames);
             await CreateCollectionIfNotExists(KartaMapMongoDbAccess.KartaMapRecyclingBinCollectionName, collectionNames);

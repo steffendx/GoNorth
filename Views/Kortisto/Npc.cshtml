@@ -2,6 +2,8 @@
 @using GoNorth.Models.FlexFieldDatabaseModels
 @using GoNorth.Data.Exporting
 
+@model DetailFormViewModel
+
 @inject IViewLocalizer Localizer
 
 @{
@@ -427,6 +429,21 @@
             GoNorth.Kortisto.Npc.hasEvneRights = false;
             </text>
         }
+
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.disableAutoSaving = false;
+            </text>
+        }
+
+        GoNorth.FlexFieldDatabase.ObjectForm.dirtyMessage = "@Localizer["DirtyMessage"]";
 
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Kortisto.Npc.ViewModel(), jQuery("#gn-kortistoNpcContainer")[0]);

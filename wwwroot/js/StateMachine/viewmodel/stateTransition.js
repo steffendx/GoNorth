@@ -12,7 +12,8 @@
                 var linkData = {
                     attrs: {
                         ".marker-target": { d: "M 10 0 L 0 5 L 10 10 z" },
-                        ".link-tools .tool-remove circle, .marker-vertex": { r: 8 }
+                        ".link-tools .tool-remove circle, .marker-vertex": { r: 8 },
+                        ".link-tools .tool-remove title": { text: GoNorth.DefaultNodeShapes.Localization.Links.Delete }
                     }
                 };
                 if(initData)

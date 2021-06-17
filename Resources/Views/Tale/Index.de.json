@@ -34,6 +34,8 @@
     "ReferenceNodeCount": "Gesamtzahl Referenz Knoten",
     "Close": "Schließen",
 
+    "DirtyMessage": "Es liegen ungespeicherte Änderungen vor. Willst du die Seite wirklich verlassen?",
+
     "Error": "Fehler",
     "ErrorOccured": "Ein Fehler ist aufgetreten.",
 

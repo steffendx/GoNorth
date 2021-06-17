@@ -1,4 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using GoNorth.Models.StateMachineViewModels
+
+@model StateMachineIndexViewModel
 
 @inject IViewLocalizer Localizer
 
@@ -25,7 +28,6 @@
                 <div class="modal-body">
                     <form id="gn-stateTransitionLabelForm">
                         <div class="form-group">
-                            <label for="gn-stateTransitionLabel">@Localizer["SetTransitionTextBoxLabel"]</label>
                             <input type="text" class="form-control" id="gn-stateTransitionLabel" placeholder="@Localizer["SetTransitionTextBoxLabel"]" name="stateTransitionLabel" data-bind="value: transitionLabel, valueUpdate: 'input', enterPressed: saveTransitionLabel"/>
                         </div>
                     </form>
@@ -194,6 +196,20 @@
     <script type="text/javascript">
         GoNorth.StateMachine.Localization.ViewModel = GoNorth.StateMachine.Localization.ViewModel || {};
         GoNorth.StateMachine.Localization.ViewModel["StateMachine"] = "@Localizer["StateMachine"]";
+        GoNorth.StateMachine.Localization.ViewModel["DirtyMessage"] = "@Localizer["DirtyMessage"]";
+
+        @if(Model.DisableAutoSaving)
+        {
+            <text>
+            GoNorth.StateMachine.disableAutoSaving = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.StateMachine.disableAutoSaving = false;
+            </text>
+        }
 
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.StateMachine.ViewModel(), jQuery("#gn-stateMachineContainer")[0]);

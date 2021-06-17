@@ -77,7 +77,7 @@
                 });
 
                 var questText = contentElement.find(".gn-nodeActionQuestText");
-                questText.change(function(e) {
+                questText.on("input", function(e) {
                     self.saveData();
                 });
 

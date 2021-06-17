@@ -1,0 +1,11 @@
+(function(GoNorth) {
+    "use strict";
+
+    /**
+     * Namespace for classes that help with save util
+     * @namespace SaveUtil
+     */
+    (function(SaveUtil) {
+    }(GoNorth.SaveUtil = GoNorth.SaveUtil || {}));
+
+}(window.GoNorth = window.GoNorth || {}));

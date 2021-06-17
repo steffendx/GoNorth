@@ -81,6 +81,8 @@
     "Yes": "Yes",
     "No": "No",
 
+    "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
+
     "Error": "Error:",
     "ErrorOccured": "An error occured.",
     "ObjectNotFound": "Skill was not found.",

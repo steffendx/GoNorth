@@ -28,6 +28,11 @@ namespace GoNorth.Data.LockService
         public string UserId { get; set; }
 
         /// <summary>
+        /// External user id
+        /// </summary>
+        public string ExternalUserId { get; set; }
+
+        /// <summary>
         /// Expire Date
         /// </summary>
         public DateTimeOffset ExpireDate { get; set; }

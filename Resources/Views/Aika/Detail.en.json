@@ -14,6 +14,8 @@
     "WaitingOnNewObject": "Waiting on new object",
     "DialogWillCloseOnSaveOfNewObject": "This dialog will close as soon the new object was saved or the window is closed. If the object was saved a new node will be inserted.",
 
+    "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
+
     "Error": "Error:",
     "ErrorOccured": "An error occured.",
 

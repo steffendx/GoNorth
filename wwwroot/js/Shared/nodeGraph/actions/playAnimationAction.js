@@ -38,7 +38,7 @@
                 // Handlers
                 var self = this;
                 var animationName = contentElement.find(".gn-nodeActionPlayAnimation");
-                animationName.change(function(e) {
+                animationName.on("input", function(e) {
                     self.saveData();
                 });
             };

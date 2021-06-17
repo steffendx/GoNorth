@@ -100,7 +100,7 @@
                         var stateNodeText = this.$box.find('.stateNodeText');
                         stateNodeText.val(this.model.get("name"));
                         
-                        stateNodeText.on("change", _.bind(function() {
+                        stateNodeText.on("input", _.bind(function() {
                             this.model.set("name", stateNodeText.val());
                         }, this));
 

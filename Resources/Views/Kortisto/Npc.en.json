@@ -136,6 +136,8 @@
 
     "AreYouSureYouWantToMarkTheNpcAsPlayer": "Are you sure you want to mark the npc as the player?",
 
+    "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
+
     "Error": "Error:",
     "ErrorOccured": "An error occured.",
     "ObjectNotFound": "Npc was not found.",

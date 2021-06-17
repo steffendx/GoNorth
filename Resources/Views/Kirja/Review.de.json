@@ -1,0 +1,63 @@
+{
+    "KirjaReview": "Wiki Review",
+
+    "SaveReview": "Speichern",
+    "MarkAsCompleted": "Abschließen",
+    "GenerateExternalLink": "Externen Freigabelink generieren",
+    "CopyExternalLink": "Externen Freigabelink kopieren",
+    "SuccessfullyCopiedToClipboard": "Link wurde in die zwischenablage kopiert",
+    "RevokeExternalLink": "Externe Freigabelink löschen",
+    "BackToReviewedPage": "Zurück zur Seite",
+    "DeleteReview": "Löschen",
+
+    "Completed": "Abgeschlossen",
+    "Reopen": "Wieder öffnen",
+    "ReviewCompleted": "Das Review ist abgeschlossen.",
+    "Merge": "In Hauptartikel übernehmen",
+    
+    "AcceptMerge": "Bestätigen",
+    "Cancel": "Abbrechen",
+
+    "InsertKirjaLink": "Link zu Kirja Seite einfügen",
+    "InsertAikaQuestLink": "Link zu Quest einfügen",
+    "InsertKortistoNpcLink": "Link zu Npc einfügen",
+    "InsertStyrItemLink": "Link zu Item einfügen",
+    "InsertEvneSkillLink": "Link zu Fähigkeit einfügen",
+    "InsertComment": "Kommentar einfügen",
+    "EnterCommentText": "Kommentar eingeben",
+
+    "AdditionalComment": "Kommentar",
+    "CommentHeader": "Kommentar",
+    "EditComment": "Bearbeiten",
+    "DeleteComment": "Löschen",
+
+    "Accept": "Übernehmen",
+    "Reject": "Ablehnen",
+    "AcceptAllChanges": "Alle Änderungen übernehmen",
+    "RejectAllChanges": "Alle Änderungen ablehnen",
+    "UnmergedChangesExist": "Es liegen Änderungen vor die noch nicht übernommen wurden. Diese sind in Rot oder Grün hervorgehoben. Sie müssen diese Änderung übernehmen bevor Sie das Review übernehmen können.",
+
+    "Merged": "Übernommen",
+    "ReviewMerged": "Die Änderungen des Reviews wurden in die Seite übernommen.",
+
+    "InsertTableOfContent": "Inhaltsverzeichnis einfügen",
+    "TableOfContent": "Inhaltsverzeichnis",
+
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToDeleteTheReview": "Bist du sicher dass du das Review löschen willst?",
+    "AreYouSureYouWantToDeleteTheComment": "Bist du sicher dass du das Kommentar löschen willst?",
+
+    "DirtyMessage": "Es liegen ungespeicherte Änderungen vor. Willst du die Seite wirklich verlassen?",
+
+    "Error": "Fehler:",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten.",
+
+    "Locked": "Gesperrt",
+    "LockedPrefix": "Dieses Review wird gerade von ",
+    "LockedPostfix": " bearbeitet.",
+    "MergeLockedPrefix": "Die Seite in die das Review übernommen wird, wird gerade von ",
+    "MergeLockedPostfix": " bearbeitet.",
+    "LockedByOtherUser": "Diese Seite wird gerade von einer anderen Person bearbeitet.",
+
+    "RichTextLocale": "de"
+}

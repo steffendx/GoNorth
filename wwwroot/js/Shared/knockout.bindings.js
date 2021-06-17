@@ -122,6 +122,11 @@
                         options.additionalButtons = allBindings.get("richTextAddditionalButtons").apply(bindingContext.$data);
                     }
 
+                    if(allBindings.get("richTextDisableImageUpload"))
+                    {
+                        options.richTextDisableImageUpload = allBindings.get("richTextDisableImageUpload");
+                    }
+
                     if(allBindings.get("richTextImageUploadUrl") && allBindings.get("richTextImageUploadSuccess"))
                     {
                         var uploadSuccessCallback = allBindings.get("richTextImageUploadSuccess");
@@ -144,7 +149,13 @@
                     {
                         var uploadErrorCallback = allBindings.get("richTextAddditionalImageUploadError");
                         options.fileUploadError = function(errorMessage, xhr) { uploadErrorCallback.apply(bindingContext.$data, [ errorMessage, xhr ]); }
-                    }            
+                    }       
+                    
+                    if(allBindings.get("richTextFocusChangeCallback"))
+                    {
+                        var focusChangeCallback = allBindings.get("richTextFocusChangeCallback");
+                        options.focusChangeCallback = function(element) { focusChangeCallback.apply(bindingContext.$data, [ element ]); }
+                    }  
 
                     jQuery(element).wysiwyg(options);
                     jQuery(element).addClass("wysiwgEditor");
@@ -178,11 +189,11 @@
                         return;
                     }
 
-                    jQuery(element).keydown(function(e) {
+                    jQuery(element).on("keydown", function(e) {
                         GoNorth.Util.validateNumberKeyPress(element, e);
                     });
 
-                    jQuery(element).change(function() {
+                    jQuery(element).on("change input", function() {
                         var parsedValue = 0.0;
                         if(jQuery(element).val())
                         {

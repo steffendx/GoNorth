@@ -1,0 +1,13 @@
+(function(GoNorth) {
+    "use strict";
+    (function(Kirja) {
+
+        /**
+         * Kirja Shared Form Namespace
+         * @namespace Shared
+         */
+        (function(Shared) {
+        }(Kirja.Shared = Kirja.Shared || {}));
+        
+    }(GoNorth.Kirja = GoNorth.Kirja || {}));
+}(window.GoNorth = window.GoNorth || {}));

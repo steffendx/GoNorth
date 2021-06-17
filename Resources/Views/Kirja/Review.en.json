@@ -1,0 +1,63 @@
+{
+    "KirjaReview": "Wiki Review",
+
+    "SaveReview": "Save",
+    "MarkAsCompleted": "Complete",
+    "GenerateExternalLink": "Generate external share link",
+    "CopyExternalLink": "Copy external share link",
+    "SuccessfullyCopiedToClipboard": "Link was copied to clipboard",
+    "RevokeExternalLink": "Revoke external share link",
+    "BackToReviewedPage": "Back to page",
+    "DeleteReview": "Delete",
+
+    "Completed": "Completed",
+    "Reopen": "Reopen",
+    "ReviewCompleted": "The review is completed.",
+    "Merge": "Merge to main article",
+    
+    "AcceptMerge": "Confirm",
+    "Cancel": "Cancel",
+
+    "InsertKirjaLink": "Add link to Kirja page",
+    "InsertAikaQuestLink": "Add link to quest",
+    "InsertKortistoNpcLink": "Add link to npc",
+    "InsertStyrItemLink": "Add link to item",
+    "InsertEvneSkillLink": "Add link to skill",
+    "InsertComment": "Add comment",
+    "EnterCommentText": "Enter comment",
+
+    "AdditionalComment": "Comment",
+    "CommentHeader": "Comment",
+    "EditComment": "Edit",
+    "DeleteComment": "Delete",
+
+    "Accept": "Accept",
+    "Reject": "Reject",
+    "AcceptAllChanges": "Accept all changes",
+    "RejectAllChanges": "Reject all changes",
+    "UnmergedChangesExist": "There are unmerged changes (highlighted in red or green). You have to merge these before you can confirm the merge.",
+    
+    "Merged": "Merged",
+    "ReviewMerged": "The review changes were merged into the wiki page",
+
+    "InsertTableOfContent": "Add table of content",
+    "TableOfContent": "Table of content",
+    
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToDeleteTheReview": "Are you sure you want to delete the review?",
+    "AreYouSureYouWantToDeleteTheComment": "Are you sure you want to delete the comment?",
+
+    "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
+
+    "Error": "Error:",
+    "ErrorOccured": "An error occured.",
+
+    "Locked": "Locked",
+    "LockedPrefix": "The review is currently being edited by ",
+    "LockedPostfix": ".",
+    "MergeLockedPrefix": "The page to which the review is being merged is currently being edited by ",
+    "MergeLockedPostfix": ".",
+    "LockedByOtherUser": "The page is currently being edited by someone else.",
+
+    "RichTextLocale": "en"
+}

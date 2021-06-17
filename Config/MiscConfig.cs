@@ -54,5 +54,15 @@ namespace GoNorth.Config
         /// Timeout for locks
         /// </summary>
         public int? ResourceLockTimespan { get; set;}
+
+        /// <summary>
+        /// True if external wiki sharing must be disabled, else false
+        /// </summary>
+        public bool? DisableWikiExternalSharing { get; set; }
+
+        /// <summary>
+        /// True if auto saving must be disabled
+        /// </summary>
+        public bool? DisableAutoSaving { get; set; }
     }
 }

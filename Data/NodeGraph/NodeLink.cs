@@ -36,6 +36,11 @@ namespace GoNorth.Data.NodeGraph
         /// </summary>
         public List<NodeLinkVertex> Vertices { get; set; }
 
+        /// <summary>
+        /// Label
+        /// </summary>
+        public string Label { get; set; }
+
 
         /// <summary>
         /// Id which is used in a list compare to detect deleted or new objects
@@ -60,7 +65,8 @@ namespace GoNorth.Data.NodeGraph
                 SourceNodePort = this.SourceNodePort,
                 TargetNodeId = this.TargetNodeId,
                 TargetNodePort = this.TargetNodePort,
-                Vertices = this.Vertices != null ? this.Vertices.Select(v => v.Clone()).Cast<NodeLinkVertex>().ToList() : null
+                Vertices = this.Vertices != null ? this.Vertices.Select(v => v.Clone()).Cast<NodeLinkVertex>().ToList() : null,
+                Label = this.Label
             };
         }
     }

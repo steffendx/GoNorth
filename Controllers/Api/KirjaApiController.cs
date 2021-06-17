@@ -32,6 +32,8 @@ using GoNorth.Data.Tale;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Export.ExportSnippets;
 using GoNorth.Data.StateMachines;
+using GoNorth.Services.Encryption;
+using GoNorth.Authentication;
 
 namespace GoNorth.Controllers.Api
 {
@@ -143,6 +145,63 @@ namespace GoNorth.Controllers.Api
             public List<string> MissingQuests { get; set; }
         }
 
+        /// <summary>
+        /// Request to start a review
+        /// </summary>
+        public class StartReviewRequest 
+        {
+            /// <summary>
+            /// Name of the review
+            /// </summary>
+            public string Name { get; set; }
+
+            /// <summary>
+            /// Id of the page that must be reviewd
+            /// </summary>
+            public string PageId { get; set; }
+
+            /// <summary>
+            /// Id of the version for which the review was started
+            /// </summary>
+            public string VersionId { get; set; }
+        }
+
+        /// <summary>
+        /// Page Review Query Result
+        /// </summary>
+        public class PageReviewQueryResult
+        {
+            /// <summary>
+            /// true if there are more reviews to query, else false
+            /// </summary>
+            public bool HasMore { get; set; }
+
+            /// <summary>
+            /// Reviews
+            /// </summary>
+            public IList<KirjaPageReview> Reviews { get; set; }
+        }
+
+        /// <summary>
+        /// Review Request data
+        /// </summary>
+        public class ReviewRequest
+        {   
+            /// <summary>
+            /// Content of the page
+            /// </summary>
+            public string Content { get; set; }
+            
+            /// <summary>
+            /// Additional comment of the page
+            /// </summary>
+            public string AdditionalComment { get; set; }
+        }
+
+        /// <summary>
+        /// External access token length
+        /// </summary>
+        public const int ExternalAccessTokenLength = 256;
 
         /// <summary>
         /// Page Db Access
@@ -153,6 +212,11 @@ namespace GoNorth.Controllers.Api
         /// Page Version Db ACcess
         /// </summary>
         private readonly IKirjaPageVersionDbAccess _pageVersionDbAccess;
+
+        /// <summary>
+        /// Page Review Db Access
+        /// </summary>
+        private readonly IKirjaPageReviewDbAccess _pageReviewDbAccess;
 
         /// <summary>
         /// User project access
@@ -235,6 +299,11 @@ namespace GoNorth.Controllers.Api
         private readonly IXssChecker _xssChecker;
 
         /// <summary>
+        /// Secure token generator
+        /// </summary>
+        private readonly ISecureTokenGenerator _secureTokenGenerator;
+
+        /// <summary>
         /// Logger
         /// </summary>
         private readonly ILogger _logger;
@@ -258,12 +327,18 @@ namespace GoNorth.Controllers.Api
         /// Max Version Count for pages
         /// </summary>
         private readonly int _maxVersionCount;
+
+        /// <summary>
+        /// true if external sharing is disabled
+        /// </summary>
+        private readonly bool _disableWikiExternalSharing;
         
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="pageDbAccess">Page Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
+        /// <param name="pageReviewDbAccess">Page review Db Access</param>
         /// <param name="kartaMapDbAccess">Karta Map Db Access</param>
         /// <param name="npcDbAccess">Npc Db Access</param>
         /// <param name="npcTemplateDbAccess">Npc Template Db Access</param>
@@ -280,16 +355,18 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="userManager">User Manager</param>
         /// <param name="xssChecker">Xss Checker</param>
+        /// <param name="secureTokenGenerator">Secure Token Generator</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         /// <param name="configuration">Config Data</param>
-        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IStyrItemDbAccess itemDbAccess, 
-                                  IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, ITaleDbAccess dialogDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IStateMachineDbAccess stateMachineDbAccess, IUserProjectAccess userProjectAccess, 
-                                  IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, UserManager<GoNorthUser> userManager, 
-                                  IXssChecker xssChecker, ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
+        public KirjaApiController(IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IKirjaPageReviewDbAccess pageReviewDbAccess, IKartaMapDbAccess kartaMapDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, 
+                                  IStyrItemDbAccess itemDbAccess, IEvneSkillDbAccess skillDbAccess, IAikaQuestDbAccess questDbAccess, ITaleDbAccess dialogDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IStateMachineDbAccess stateMachineDbAccess, 
+                                  IUserProjectAccess userProjectAccess, IKirjaFileAccess fileAccess, ITimelineService timelineService, IKirjaPageParserService pageParserService, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, UserManager<GoNorthUser> userManager, 
+                                  IXssChecker xssChecker, ISecureTokenGenerator secureTokenGenerator, ILogger<KirjaApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration)
         {
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
+            _pageReviewDbAccess = pageReviewDbAccess;
             _kartaMapDbAccess = kartaMapDbAccess;
             _npcDbAccess = npcDbAccess;
             _npcTemplateDbAccess = npcTemplateDbAccess;
@@ -306,11 +383,13 @@ namespace GoNorth.Controllers.Api
             _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
             _userManager = userManager;
             _xssChecker = xssChecker;
+            _secureTokenGenerator = secureTokenGenerator;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(KirjaApiController));
             _allowedAttachmentMimeTypes = configuration.Value.Misc.KirjaAllowedAttachmentMimeTypes.Split(",").Select(s => ConvertMimeTypeToRegex(s)).ToList();
             _versionMergeTimeSpan = configuration.Value.Misc.KirjaVersionMergeTimeSpan;
             _maxVersionCount = configuration.Value.Misc.KirjaMaxVersionCount;
+            _disableWikiExternalSharing = configuration.Value.Misc.DisableWikiExternalSharing.HasValue ? configuration.Value.Misc.DisableWikiExternalSharing.Value : false;
         }
 
         /// <summary>
@@ -853,6 +932,7 @@ namespace GoNorth.Controllers.Api
             }
 
             await _pageVersionDbAccess.DeletePageVersionsByPage(page.Id);
+            await _pageReviewDbAccess.DeletePageReviewsByPage(page.Id);
 
             await _timelineService.AddTimelineEntry(page.ProjectId, TimelineEvent.KirjaPageDeleted, page.Name);
             return Ok(id);
@@ -1206,6 +1286,446 @@ namespace GoNorth.Controllers.Api
             }
 
             return  Ok(validationResult);
+        }
+
+
+        /// <summary>
+        /// Starts a review
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Review Id</returns>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StartReview([FromBody]StartReviewRequest request)
+        {
+            if(request == null || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.PageId))
+            {
+                return BadRequest();
+            }
+
+            KirjaPage page;
+            if(string.IsNullOrEmpty(request.VersionId))
+            {
+                page = await _pageDbAccess.GetPageById(request.PageId);
+            } 
+            else
+            {
+                page = await _pageVersionDbAccess.GetPageVersionById(request.VersionId);
+            }
+
+            if(page == null)
+            {
+                return NotFound();
+            }
+
+            KirjaPageReview review;
+            try
+            {
+                review = new KirjaPageReview();
+                review.Name = request.Name;
+                review.ProjectId = page.ProjectId;
+                review.ReviewedPageId = page.Id;
+                review.IsDefault = false;
+                review.Content = page.Content;
+                review.AdditionalComment = "";
+                review.ExternalAccessToken = "";
+
+                review.MentionedNpcs = page.MentionedNpcs;
+                review.MentionedItems = page.MentionedItems;
+                review.MentionedSkills = page.MentionedSkills;
+                review.MentionedKirjaPages = page.MentionedKirjaPages;
+                review.MentionedQuests = page.MentionedQuests;
+
+                review.Attachments = new List<KirjaPageAttachment>();
+
+                review.CreatedOn = DateTimeOffset.UtcNow;
+                
+                await this.SetModifiedData(_userManager, review);
+
+                review = await _pageReviewDbAccess.CreatePageReview(review);
+
+                await _timelineService.AddTimelineEntry(review.ProjectId, TimelineEvent.KirjaPageReviewStarted, review.Name, review.Id, page.Name, page.Id);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Could not start page {0}", page.Name);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+
+            return Ok(review.Id);
+        }
+        
+        /// <summary>
+        /// Returns a review
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <returns>Review</returns>
+        [ProducesResponseType(typeof(KirjaPageReview), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet]
+        public async Task<IActionResult> Review(string id)
+        {
+            KirjaPageReview review = await _pageReviewDbAccess.GetPageReviewById(id);
+            return Ok(review);
+        }
+        
+        /// <summary>
+        /// Returns a review for an external user
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <param name="token">Access token</param>
+        /// <returns>Review</returns>
+        [ProducesResponseType(typeof(KirjaPageReview), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalReview(string id, string token)
+        {
+            if(_disableWikiExternalSharing) 
+            {
+                return NotFound();
+            }
+
+            KirjaPageReview pageReview = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(pageReview == null || string.IsNullOrEmpty(pageReview.ExternalAccessToken) || pageReview.ExternalAccessToken != token)
+            {
+                return NotFound();
+            }
+
+            return Ok(pageReview);
+        }
+
+        /// <summary>
+        /// Updates a review
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <param name="saveRequest">Save request</param>
+        /// <returns>Updated Review</returns>
+        [ProducesResponseType(typeof(KirjaPageReview), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateReview(string id, [FromBody]ReviewRequest saveRequest)
+        {
+            _xssChecker.CheckXss(saveRequest.Content);
+            _xssChecker.CheckXss(saveRequest.AdditionalComment);
+
+            KirjaPageReview loadedReview = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(loadedReview == null)
+            {
+                return NotFound();
+            }
+
+            loadedReview.Content = saveRequest.Content;
+            loadedReview.AdditionalComment = saveRequest.AdditionalComment;
+            _pageParserService.ParsePage(loadedReview);
+            await this.SetModifiedData(_userManager, loadedReview);
+
+            await _pageReviewDbAccess.UpdatePageReview(loadedReview);
+            _logger.LogInformation("Page was updated.");
+
+            await _timelineService.AddTimelineEntry(loadedReview.ProjectId, TimelineEvent.KirjaPageReviewUpdated, loadedReview.Name, loadedReview.Id);
+
+            return Ok(loadedReview);
+        }
+        
+        /// <summary>
+        /// Updates a review
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <param name="token">Access token</param>
+        /// <param name="saveRequest">Save request</param>
+        /// <returns>Updated Review</returns>
+        [ProducesResponseType(typeof(KirjaPageReview), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateExternalReview(string id, string token, [FromBody]ReviewRequest saveRequest)
+        {
+            if(_disableWikiExternalSharing) 
+            {
+                return NotFound();
+            }
+            
+            _xssChecker.CheckXss(saveRequest.Content);
+            _xssChecker.CheckXss(saveRequest.AdditionalComment);
+
+            KirjaPageReview loadedReview = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(loadedReview == null || string.IsNullOrEmpty(loadedReview.ExternalAccessToken) || loadedReview.ExternalAccessToken != token)
+            {
+                return NotFound();
+            }
+
+            loadedReview.Content = saveRequest.Content;
+            loadedReview.AdditionalComment = saveRequest.AdditionalComment;
+            _pageParserService.ParsePage(loadedReview);
+
+            loadedReview.ModifiedOn = DateTimeOffset.UtcNow;
+            loadedReview.ModifiedBy = ExternalUserConstants.ExternalUserId;
+
+            await _pageReviewDbAccess.UpdatePageReview(loadedReview);
+            _logger.LogInformation("Page was updated.");
+
+            await _timelineService.AddExternalTimelineEntry(loadedReview.ProjectId, TimelineEvent.KirjaPageReviewUpdated, loadedReview.Name, loadedReview.Id);
+
+            return Ok(loadedReview);
+        }
+        
+        /// <summary>
+        /// Returns the reviews of a page
+        /// </summary>
+        /// <param name="pageId">Page Id</param>
+        /// <param name="start">Start of the page</param>
+        /// <param name="pageSize">Page Size</param>
+        /// <returns>Page Reviews</returns>
+        [ProducesResponseType(typeof(PageReviewQueryResult), StatusCodes.Status200OK)]
+        [HttpGet]
+        public IActionResult GetPageReviews(string pageId, int start, int pageSize)
+        {
+            Task<List<KirjaPageReview>> queryTask;
+            Task<int> countTask;
+            queryTask = _pageReviewDbAccess.GetReviewsOfPage(pageId, start, pageSize);
+            countTask = _pageReviewDbAccess.GetReviewsOfPageCount(pageId);
+            Task.WaitAll(queryTask, countTask);
+
+            PageReviewQueryResult queryResult = new PageReviewQueryResult();
+            queryResult.Reviews = queryTask.Result;
+            queryResult.HasMore = start + queryResult.Reviews.Count < countTask.Result;
+            return Ok(queryResult);
+        }
+
+        /// <summary>
+        /// Returns the amount of reviews that are waiting to get merged
+        /// </summary>
+        /// <param name="pageId">Page Id</param>
+        /// <returns>Count of reviews that are waiting to get merged</returns>
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> GetPageReviewCountWaitingForMerge(string pageId)
+        {
+            int waitingForMergeCount = await _pageReviewDbAccess.GetPageReviewCountWaitingForMerge(pageId);
+            return Ok(waitingForMergeCount);
+        }
+
+        /// <summary>
+        /// Generates an external access token for a review
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <returns>External access token</returns>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateExternalAccessToken(string id)
+        {
+            if(_disableWikiExternalSharing)
+            {
+                return NotFound();
+            }
+
+            KirjaPageReview review = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(review == null)
+            {
+                return NotFound();
+            }
+
+            if(!string.IsNullOrEmpty(review.ExternalAccessToken))
+            {
+                return Ok(review.ExternalAccessToken);
+            }
+
+            while(true)
+            {
+                review.ExternalAccessToken = _secureTokenGenerator.GenerateSecureToken(ExternalAccessTokenLength);
+                KirjaPageReview checkReview = await _pageReviewDbAccess.GetPageReviewByExternalAccessToken(review.ExternalAccessToken);
+                if(checkReview == null)
+                {
+                    break;
+                }
+            }
+
+            await _pageReviewDbAccess.UpdatePageReview(review);
+
+            await _timelineService.AddTimelineEntry(review.ProjectId, TimelineEvent.KirjaPageReviewExternallyShared, review.Name, review.Id);
+
+            return Ok(review.ExternalAccessToken);
+        }
+
+
+        /// <summary>
+        /// Revokes an external access token for a review
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <returns>Task</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RevokeExternalAccessToken(string id)
+        {
+            if(_disableWikiExternalSharing)
+            {
+                return NotFound();
+            }
+
+            KirjaPageReview review = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(review == null)
+            {
+                return NotFound();
+            }
+
+            review.ExternalAccessToken = null;
+
+            await _pageReviewDbAccess.UpdatePageReview(review);
+            await _timelineService.AddTimelineEntry(review.ProjectId, TimelineEvent.KirjaPageReviewExternalShareRevoked, review.Name, review.Id);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Sets the review status
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <param name="status">Status of the review</param>
+        /// <returns>Task</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetReviewStatus(string id, KirjaPageReviewStatus status)
+        {
+            KirjaPageReview review = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(review == null)
+            {
+                return NotFound();
+            }
+            KirjaPage originalPage = await _pageDbAccess.GetPageById(review.ReviewedPageId);
+
+            if(review.Status == status)
+            {
+                return Ok();
+            }
+
+            review.Status = status;
+
+            await _pageReviewDbAccess.UpdatePageReview(review);
+
+
+            TimelineEvent timelineEvent = GetTimelineEventFromReviewStatus(status);
+            await _timelineService.AddTimelineEntry(review.ProjectId, timelineEvent, review.Name, review.Id, originalPage != null ? originalPage.Name : "", originalPage != null ? originalPage.Id : "");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Sets the review status from an external access
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <param name="status">Status of the review</param>
+        /// <param name="token">Access token</param>
+        /// <returns>Task</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> SetExternalReviewStatus(string id, KirjaPageReviewStatus status, string token)
+        {            
+            if(_disableWikiExternalSharing)
+            {
+                return NotFound();
+            }
+
+            KirjaPageReview review = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(review == null|| string.IsNullOrEmpty(review.ExternalAccessToken) || review.ExternalAccessToken != token)
+            {
+                return NotFound();
+            }
+
+            if(status == KirjaPageReviewStatus.Merged)
+            {
+                return Unauthorized();
+            }
+
+            KirjaPage originalPage = await _pageDbAccess.GetPageById(review.ReviewedPageId);
+            if(review.Status == status)
+            {
+                return Ok();
+            }
+
+            review.Status = status;
+
+            await _pageReviewDbAccess.UpdatePageReview(review);
+
+            TimelineEvent timelineEvent = GetTimelineEventFromReviewStatus(status);
+            await _timelineService.AddExternalTimelineEntry(review.ProjectId, timelineEvent, review.Name, review.Id, originalPage != null ? originalPage.Name : "", originalPage != null ? originalPage.Id : "");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Returns the timeline event from a review status
+        /// </summary>
+        /// <param name="status">Status</param>
+        /// <returns>Timeline Event</returns>
+        private TimelineEvent GetTimelineEventFromReviewStatus(KirjaPageReviewStatus status)
+        {
+            if(status == KirjaPageReviewStatus.Open)
+            {
+                return TimelineEvent.KirjaPageReviewReopened;
+            }
+            else if(status == KirjaPageReviewStatus.Merged)
+            {
+                return TimelineEvent.KirjaPageReviewMerged;
+            }
+
+            return TimelineEvent.KirjaPageReviewMarkedAsCompleted;
+        }
+
+        /// <summary>
+        /// Deletes a page review
+        /// </summary>
+        /// <param name="id">Id of the review</param>
+        /// <returns>Result Status Code</returns>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteReview(string id)
+        {
+            KirjaPageReview review = await _pageReviewDbAccess.GetPageReviewById(id);
+            if(review == null)
+            {
+                return NotFound();
+            }
+
+            string pageName = "";
+            string pageId = "";
+            KirjaPage page = await _pageDbAccess.GetPageById(review.ReviewedPageId);
+            if(page != null)
+            {
+                pageName = page.Name;
+                pageId = page.Id;
+            }
+
+            await _pageReviewDbAccess.DeletePageReview(review);
+            _logger.LogInformation("Review was deleted.");
+
+            await _timelineService.AddTimelineEntry(review.ProjectId, TimelineEvent.KirjaPageReviewDeleted, review.Name, pageName, pageId);
+            return Ok(id);
         }
 
     }

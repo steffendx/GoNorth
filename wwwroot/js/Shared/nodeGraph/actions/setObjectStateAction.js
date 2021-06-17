@@ -38,7 +38,7 @@
                 // Handlers
                 var self = this;
                 var objectState = contentElement.find(".gn-nodeActionObjectState");
-                objectState.change(function(e) {
+                objectState.on("input", function(e) {
                     self.saveData();
                 });
             };

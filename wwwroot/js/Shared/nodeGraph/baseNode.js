@@ -53,7 +53,7 @@
                     // Prevent paper from handling pointerdown.
                     this.$box.find('input').on('mousedown click', function(evt) { evt.stopPropagation(); });
 
-                    this.$box.find('.nodeText').on('change', _.bind(function(evt)
+                    this.$box.find('.nodeText').on('input', _.bind(function(evt)
                     {
                         this.model.set('nodeText', jQuery(evt.target).val());
                     }, this));

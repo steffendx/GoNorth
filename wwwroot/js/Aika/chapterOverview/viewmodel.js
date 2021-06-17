@@ -19,10 +19,30 @@
             
                 this.additionalErrorDetails = new ko.observable("");
 
+                // Dirty Check
+                var self = this;
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.Aika.Shared.DirtyMessage, GoNorth.Aika.Shared.disableAutoSaving, function() {
+                    self.save();
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
+
                 this.load();
             };
 
             ChapterOverview.ViewModel.prototype = jQuery.extend({ }, GoNorth.DefaultNodeShapes.BaseViewModel.prototype);
+
+            /**
+             * Builds the save request object
+             * @returns {object} Save request object
+             */
+             ChapterOverview.ViewModel.prototype.buildSaveRequestObject = function() {
+                return GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+            };
 
             /**
              * Saves the chapter overview
@@ -33,7 +53,7 @@
                     return;
                 }
 
-                var serializedGraph = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+                var serializedGraph = this.buildSaveRequestObject();
 
                 this.isLoading(true);
                 this.errorOccured(false);
@@ -46,6 +66,8 @@
                         self.id(data.id);
                         self.acquireLock();
                     }
+
+                    self.dirtyChecker.saveCurrentSnapshot();
 
                     self.isLoading(false);
                 }).fail(function(xhr) {
@@ -83,6 +105,8 @@
                             self.setGraphToReadonly();
                         }
                     }
+                    
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);

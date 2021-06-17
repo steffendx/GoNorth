@@ -328,6 +328,11 @@ namespace GoNorth.Controllers.Api
         private readonly IKirjaPageVersionDbAccess _pageVersionDbAccess;
 
         /// <summary>
+        /// Page Review Db Access
+        /// </summary>
+        private readonly IKirjaPageReviewDbAccess _pageReviewDbAccess;
+
+        /// <summary>
         /// Tale Db Access
         /// </summary>
         private readonly ITaleDbAccess _taleDbAccess;
@@ -426,6 +431,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="objectExportSnippetDbAccess">Object Export snippet Db Access</param>
         /// <param name="mapDbAccess">Map Db Access</param>
         /// <param name="pageDbAccess">Page Db Access</param>
+        /// <param name="pageReviewDbAccess">Page Review Db Access</param>
         /// <param name="pageVersionDbAccess">Page Version Db Access</param>
         /// <param name="taleDbAccess">Tale Db Access</param>
         /// <param name="taleImplementationSnapshotDbAccess">Tale Implementation Snapshot Db Access</param>
@@ -446,9 +452,10 @@ namespace GoNorth.Controllers.Api
                                          IEvneSkillTemplateDbAccess skillTemplateDbAccess, IEvneSkillImplementationSnapshotDbAccess skillImplementationSnapshotDbAccess, IEvneImportFieldValuesLogDbAccess skillImportFieldValuesLogDbAccess, IKortistoNpcDbAccess npcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, 
                                          IKortistoNpcImplementationSnapshotDbAccess npcImplementationSnapshotDbAccess, IKortistoImportFieldValuesLogDbAccess npcImportFieldValuesLogDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTemplateDbAccess itemTemplateDbAccess, 
                                          IStyrItemImplementationSnapshotDbAccess itemImplementationSnapshotDbAccess, IStyrImportFieldValuesLogDbAccess itemImportFieldValuesLogDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IIncludeExportTemplateDbAccess includeExportTemplateDbAccess, 
-                                         IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, ITaleDbAccess taleDbAccess, ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, 
-                                         IStateMachineDbAccess stateMachineDbAccess, IStateMachineImplementationSnapshotDbAccess stateMachineSnapsshotDbAccess, IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, 
-                                         IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
+                                         IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IKartaMapDbAccess mapDbAccess, IKirjaPageDbAccess pageDbAccess, IKirjaPageVersionDbAccess pageVersionDbAccess, IKirjaPageReviewDbAccess pageReviewDbAccess, ITaleDbAccess taleDbAccess, 
+                                         ITaleDialogImplementationSnapshotDbAccess taleImplementationSnapshotDbAccess, IStateMachineDbAccess stateMachineDbAccess, IStateMachineImplementationSnapshotDbAccess stateMachineSnapsshotDbAccess, IProjectConfigDbAccess projectConfigDbAccess, ITaskBoardDbAccess taskBoardDbAccess, 
+                                         ITaskGroupTypeDbAccess taskGroupTypeDbAccess, ITaskTypeDbAccess taskTypeDbAccess, IUserTaskBoardHistoryDbAccess userTaskBoardHistoryDbAccess, IProjectDbAccess projectDbAccess, ITimelineDbAccess timelineDbAccess, ILockServiceDbAccess lockDbAccess, UserManager<GoNorthUser> userManager, 
+                                         SignInManager<GoNorthUser> signInManager, IUserDeleter userDeleter)
         {
             _questDbAccess = questDbAccess;
             _questImplementationSnapshotDbAccess = questImplementationSnapshotDbAccess;
@@ -472,6 +479,7 @@ namespace GoNorth.Controllers.Api
             _mapDbAccess = mapDbAccess;
             _pageDbAccess = pageDbAccess;
             _pageVersionDbAccess = pageVersionDbAccess;
+            _pageReviewDbAccess = pageReviewDbAccess;
             _taleDbAccess = taleDbAccess;
             _taleImplementationSnapshotDbAccess = taleImplementationSnapshotDbAccess;
             _stateMachineDbAccess = stateMachineDbAccess;
@@ -783,6 +791,13 @@ namespace GoNorth.Controllers.Api
             response.ModifiedData.AddRange(pageVersions.Select(p => new TrimmedModifiedData {
                 ObjectType = "WikiPageVersion",
                 Name = string.Format("{0} #{1}", p.Name, p.VersionNumber),
+                ModifiedDate = p.ModifiedOn
+            }));
+            
+            List<KirjaPageReview> pageReviews = await _pageReviewDbAccess.GetReviewsByModifiedUser(currentUser.Id);
+            response.ModifiedData.AddRange(pageReviews.Select(p => new TrimmedModifiedData {
+                ObjectType = "WikiPageReview",
+                Name = p.Name,
                 ModifiedDate = p.ModifiedOn
             }));
 

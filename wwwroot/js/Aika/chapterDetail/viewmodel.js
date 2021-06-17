@@ -30,6 +30,17 @@
             
                 this.additionalErrorDetails = new ko.observable("");
 
+                var self = this;
+                this.dirtyChecker = new GoNorth.SaveUtil.DirtyChecker(function() {
+                    return self.buildSaveRequestObject();
+                }, GoNorth.Aika.Shared.DirtyMessage, GoNorth.Aika.Shared.disableAutoSaving, function() {
+                    self.save();
+                });
+
+                GoNorth.SaveUtil.setupSaveHotkey(function() {
+                    self.save();
+                });
+
                 this.load();
                 this.acquireLock();
             };
@@ -125,6 +136,13 @@
                 });
             };
 
+            /**
+             * Builds the save request object
+             * @returns {object} Save request object
+             */
+             ChapterDetail.ViewModel.prototype.buildSaveRequestObject = function() {
+                return GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+            };
 
             /**
              * Saves the chapter detail
@@ -135,7 +153,7 @@
                     return;
                 }
 
-                var serializedGraph = GoNorth.DefaultNodeShapes.Serialize.getNodeSerializerInstance().serializeGraph(this.nodeGraph());
+                var serializedGraph = this.buildSaveRequestObject();
 
                 this.isLoading(true);
                 this.errorOccured(false);
@@ -154,6 +172,7 @@
                         window.refreshChapterNode();
                     }
 
+                    self.dirtyChecker.saveCurrentSnapshot();
                     self.isLoading(false);
                 }).fail(function(xhr) {
                     self.isLoading(false);
@@ -184,6 +203,8 @@
                     {
                         self.setGraphToReadonly();
                     }
+                    
+                    self.dirtyChecker.saveCurrentSnapshot();
                 }).fail(function(xhr) {
                     self.isLoading(false);
                     self.errorOccured(true);

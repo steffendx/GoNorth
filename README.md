@@ -87,6 +87,8 @@ Kirja is the wiki component of GoNorth. Apart from allowing the user to write wi
 ![Wiki](https://github.com/steffendx/GoNorth/blob/master/TeaserImages/Kirja.PNG?raw=true)
 
 Kirja also allows the users to attach additional planning files.  
+A review system is also integrated into the wiki system, allowing you to collect feedback and easily merging the feedback into the page.  
+External sharing of wiki reviews can also be enabled, offering support to generate a link with a strong token to get external feedback on a wiki page.  
 More details can be found [in the wiki](https://github.com/steffendx/GoNorth/wiki/Kirja).
 
 ### Map Planning (Karta)
