@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using GoNorth.Services.ImplementationStatusCompare;
 
 namespace GoNorth.Data.Karta.Marker
@@ -20,5 +18,11 @@ namespace GoNorth.Data.Karta.Marker
         /// </summary>
         [ValueCompareAttribute]
         public string Description { get; set; }
+        
+        /// <summary>
+        /// Color of the marker
+        /// </summary>
+        [ValueCompareAttribute]
+        public string Color { get; set; }
     }
 }

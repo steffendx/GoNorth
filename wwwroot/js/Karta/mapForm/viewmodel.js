@@ -67,7 +67,9 @@
                 this.showMarkerNameDialog = new ko.observable(false);
                 this.dialogMarkerName = new ko.observable("");
                 this.showMarkerNameDialogDescription = new ko.observable(false);
+                this.showMarkerNameDialogColor = new ko.observable(false);
                 this.dialogMarkerDescription = new ko.observable("");
+                this.dialogMarkerColor = new ko.observable("#a9a9a9");
                 this.dialogMarkerNameDef = null;
 
                 this.showMarkerExportNameDialog = new ko.observable(false);
@@ -134,6 +136,8 @@
 
                     return false;
                 }, this);
+
+                this.exportObjectDialog = new GoNorth.Shared.ExportObjectDialog.ViewModel(this.isLoading, this.errorOccured);
 
                 this.loadAllMaps();
 
@@ -892,13 +896,17 @@
                  * @param {string} existingName Existing name in case of edit
                  * @param {bool} showDescription true if a description field should be shown, else false
                  * @param {string} existingDescription Existing description in case of edit
+                 * @param {bool} showColor true if a color field should be shown, else false
+                 * @param {string} existingColor Existing color in case of edit
                  * @returns {jQuery.Deferred} Deferred which will be resolve with the name and description if the user saves
                  */
-                openMarkerNameDialog: function(existingName, showDescription, existingDescription) {
+                openMarkerNameDialog: function(existingName, showDescription, existingDescription, showColor, existingColor) {
                     this.showMarkerNameDialog(true);
                     this.dialogMarkerName(existingName ? existingName : "");
                     this.showMarkerNameDialogDescription(showDescription ? true : false);
                     this.dialogMarkerDescription(showDescription && existingDescription ? existingDescription : "");
+                    this.showMarkerNameDialogColor(showColor ? true : false);
+                    this.dialogMarkerColor(existingColor ? existingColor : "#a9a9a9");
                     this.dialogMarkerNameDef = new jQuery.Deferred();
                     
                     GoNorth.Util.setupValidation("#gn-markerNameForm");
@@ -917,7 +925,7 @@
 
                     if(this.dialogMarkerNameDef != null)
                     {
-                        this.dialogMarkerNameDef.resolve(this.dialogMarkerName(), this.dialogMarkerDescription());
+                        this.dialogMarkerNameDef.resolve(this.dialogMarkerName(), this.dialogMarkerDescription(), this.dialogMarkerColor());
                         this.dialogMarkerNameDef = null;
                     }
 
@@ -1129,6 +1137,14 @@
                 closeMarkerGeometrySettingsDialog: function() {
                     this.showGeometrySettingDialog(false);
                     this.editGeometry = null;
+                },
+
+
+                /**
+                 * Exports the map
+                 */
+                exportObject: function() {
+                    this.exportObjectDialog.exportObject("/api/KartaApi/ExportMap?id=" + this.id(), "/api/KartaApi/DownloadExportMap?id=" + this.id(), false);
                 },
 
 

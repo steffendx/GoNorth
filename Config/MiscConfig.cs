@@ -64,5 +64,10 @@ namespace GoNorth.Config
         /// True if auto saving must be disabled
         /// </summary>
         public bool? DisableAutoSaving { get; set; }
+
+        /// <summary>
+        /// True if all fields can have script settings
+        /// </summary>
+        public bool? AllowScriptSettingsForAllFieldTypes { get; set; }
     }
 }

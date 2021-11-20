@@ -252,6 +252,8 @@
       "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
       "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
 
+      "wwwroot/js/Shared/exportObjectDialog/exportObjectDialogViewmodel.js",
+
       "wwwroot/js/Shared/flexFieldUtil.js",
       "wwwroot/js/ProjectConfig/shared/configKeys.js",
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
@@ -429,6 +431,8 @@
       "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
       "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
 
+      "wwwroot/js/Shared/exportObjectDialog/exportObjectDialogViewmodel.js",
+
       "wwwroot/js/Shared/chooseScriptTypeDialog.js",
       
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
@@ -605,6 +609,8 @@
     "inputFiles": [
       "wwwroot/js/Shared/saveUtil/autoSaveUtil.js",
       "wwwroot/js/Shared/saveUtil/dirtyChecker.js",
+
+      "wwwroot/js/Shared/exportObjectDialog/exportObjectDialogViewmodel.js",
 
       "wwwroot/js/Shared/chooseObjectDialog/chooseObjectDialogViewModel.js",
       
@@ -812,6 +818,10 @@
       "wwwroot/js/ImplementationStatus/compareDialog/viewmodel.js",
       "wwwroot/js/ProjectConfig/shared/configKeys.js",
       "wwwroot/js/Shared/flexFieldUtil.js",
+
+      "wwwroot/js/Shared/colorPickerBinding.js",
+      
+      "wwwroot/js/Shared/exportObjectDialog/exportObjectDialogViewmodel.js",
       
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldScriptSettings.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldBase.js",
@@ -1457,6 +1467,8 @@
       
       "wwwroot/js/Shared/nodeGraph/referenceNode.js",
 
+      "wwwroot/js/Shared/exportObjectDialog/exportObjectDialogViewmodel.js",
+
       "wwwroot/js/Aika/shared/finishNode.js",
       "wwwroot/js/Aika/shared/startNode.js",
       "wwwroot/js/Aika/shared/allDoneNode.js",
@@ -1543,7 +1555,7 @@
   {
     "outputFileName": "wwwroot/js/Task/manageTaskTypes.viewmodel.js",
     "inputFiles": [
-      "wwwroot/js/Task/manageTaskTypes/colorPickerBinding.js",
+      "wwwroot/js/Shared/colorPickerBinding.js",
       "wwwroot/js/Task/manageTaskTypes/taskTypeList.js",
       "wwwroot/js/Task/manageTaskTypes/viewmodel.js"
     ],

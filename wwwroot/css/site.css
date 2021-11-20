@@ -1451,6 +1451,10 @@ gn-kirjacomment {
     top: 15px;
 }
 
+.gn-kartaExportButton {
+    margin-right: 25px;
+}
+
 .gn-kartaSwitchMapButton, .gn-kartaSwitchChapterButton {
     margin-top: 10px;
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<svg width="52" height="82" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <path d="m26.6,79.033333c-3.8,-6.1 -22.9,-35.4 -24.8,-50.2c0.7,-26.2 22.4,-27.1 25.6,-27.033333c3,0.066667 22.3,2.833333 23.2,26.233333c-2,16.5 -19.8,44.8 -24,51z" fill="{{fillColor}}" id="svg_9" stroke="#1f1f1f" stroke-width="2"/>
+  <ellipse cx="26.4" cy="25.733333" fill="#ffffff" id="svg_10" rx="18.9" ry="19" stroke="#1f1f1f" stroke-width="2"/>
+  <rect fill="#1f1f1f" height="20.9" id="svg_11" stroke="#1f1f1f" stroke-width="2" width="21.3" x="16.1" y="15.333333"/>
+  <text fill="#ffffff" font-family="Serif" font-size="24" id="svg_12" stroke="#1f1f1f" stroke-width="0" text-anchor="middle" x="26.3" xml:space="preserve" y="33.533334">A</text>
+</svg>

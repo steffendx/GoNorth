@@ -28,6 +28,12 @@ using GoNorth.Services.Export.ExportSnippets;
 using GoNorth.Data.Evne;
 using GoNorth.Services.ReferenceAnalyzer;
 using GoNorth.Data.StateMachines;
+using GoNorth.Services.Export;
+using System.Text.Json;
+using System.Text.Encodings.Web;
+using GoNorth.Services.Export.Placeholder;
+using GoNorth.Services.User;
+using System.Text;
 
 namespace GoNorth.Controllers.Api
 {
@@ -301,6 +307,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Chapter Overview</returns>
         [ProducesResponseType(typeof(AikaChapterOverview), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveChapterOverview([FromBody]AikaChapterOverview overview)
@@ -793,6 +800,7 @@ namespace GoNorth.Controllers.Api
         /// <param name="chapterDetail">Chapter Detail</param>
         /// <returns>Created chapter detail</returns>
         [ProducesResponseType(typeof(AikaChapterDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChapterDetail([FromBody]AikaChapterDetail chapterDetail)
@@ -830,6 +838,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Updated chapter detail</returns>
         [ProducesResponseType(typeof(AikaChapterDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateChapterDetail(string id, [FromBody]AikaChapterDetail chapterDetail)
@@ -1235,5 +1244,60 @@ namespace GoNorth.Controllers.Api
             return Ok(id);
         }
 
+
+        /// <summary>
+        /// Exports a quest to JSON
+        /// </summary>
+        /// <param name="id">Quest id</param>
+        /// <returns>Export Result</returns>
+        [Authorize(Roles = RoleNames.Aika)]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [ProducesResponseType(typeof(ExportObjectResult), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> ExportQuest(string id)
+        {
+            ExportObjectResult exportResult = await RunQuestExport(id);
+
+            return Ok(exportResult);
+        }
+
+        /// <summary>
+        /// Downloads an export of a quest
+        /// </summary>
+        /// <param name="id">Quest id</param>
+        /// <returns>Export Result</returns>
+        [Authorize(Roles = RoleNames.Aika)]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [ProducesResponseType(typeof(ExportObjectResult), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> DownloadExportQuest(string id)
+        {
+            ExportObjectResult exportResult = await RunQuestExport(id);
+
+            return File(Encoding.UTF8.GetBytes(exportResult.Code), "text/plain", exportResult.ObjectFilename + "." + exportResult.FileExtension);
+        }
+
+        /// <summary>
+        /// Runs a quest export
+        /// </summary>
+        /// <param name="id">Quest Id</param>
+        /// <returns>Export result</returns>
+        private async Task<ExportObjectResult> RunQuestExport(string id)
+        {
+            AikaQuest quest = await _questDbAccess.GetQuestById(id);
+
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            ExportObjectResult exportResult = new ExportObjectResult();
+            exportResult.Code = JsonSerializer.Serialize(quest, options);
+            exportResult.Errors = new List<ExportPlaceholderError>();
+            exportResult.ObjectFilename = StringUtility.CleanInvalidFilenameChars(quest.Name);
+            exportResult.FileExtension = "json";
+            return exportResult;
+        }
     }
 }

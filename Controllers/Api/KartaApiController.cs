@@ -24,6 +24,14 @@ using GoNorth.Data.Evne;
 using GoNorth.Data.Exporting;
 using GoNorth.Services.Export.ExportSnippets;
 using GoNorth.Data.StateMachines;
+using System.Text.Json;
+using GoNorth.Services.Export;
+using System.Text.Encodings.Web;
+using GoNorth.Services.Export.Placeholder;
+using GoNorth.Services.User;
+using System.Text;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace GoNorth.Controllers.Api
 {
@@ -186,6 +194,11 @@ namespace GoNorth.Controllers.Api
         private readonly UserManager<GoNorthUser> _userManager;
 
         /// <summary>
+        /// Host Environment
+        /// </summary>
+        private readonly IWebHostEnvironment _hostEnvironment;
+
+        /// <summary>
         /// Logger
         /// </summary>
         private readonly ILogger _logger;
@@ -213,12 +226,13 @@ namespace GoNorth.Controllers.Api
         /// <param name="exportSnippetRelatedObjectNameResolver">Service that will resolve export snippet related object names</param>
         /// <param name="timelineService">Timeline Service</param>
         /// <param name="userManager">User Manager</param>
+        /// <param name="hostEnvironment">Host Environment</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
         public KartaApiController(IKartaMapDbAccess mapDbAccess, IKartaMarkerImplementationSnapshotDbAccess markerImplementationSnapshotDbAccess, IKortistoNpcDbAccess kortistoNpcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, 
                                   ITaleDbAccess taleDbAccess, IAikaQuestDbAccess questDbAccess, IEvneSkillDbAccess skillDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IStateMachineDbAccess stateMachineDbAccess, 
                                   IUserProjectAccess userProjectAccess, IKartaImageAccess mapImageAccess, IKartaImageProcessor imageProcessor, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, 
-                                  ITimelineService timelineService, UserManager<GoNorthUser> userManager, ILogger<KartaApiController> logger, IStringLocalizerFactory localizerFactory)
+                                  ITimelineService timelineService, UserManager<GoNorthUser> userManager, IWebHostEnvironment hostEnvironment, ILogger<KartaApiController> logger, IStringLocalizerFactory localizerFactory)
         {
             _mapDbAccess = mapDbAccess;
             _markerImplementationSnapshotDbAccess = markerImplementationSnapshotDbAccess;
@@ -235,6 +249,7 @@ namespace GoNorth.Controllers.Api
             _exportSnippetRelatedObjectNameResolver = exportSnippetRelatedObjectNameResolver;
             _timelineService = timelineService;
             _userManager = userManager;
+            _hostEnvironment = hostEnvironment;
             _logger = logger;
             _localizer = localizerFactory.Create(typeof(KartaApiController));
         }
@@ -389,6 +404,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Created map</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RoleNames.KartaMapManager)]
@@ -453,6 +469,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Result</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateMap(string id, string name)
@@ -911,6 +928,7 @@ namespace GoNorth.Controllers.Api
                     CopyBaseMarkerAttributes(existingMarker, markerRequest.NoteMarker);
                     existingMarker.Name = markerRequest.NoteMarker.Name;
                     existingMarker.Description = markerRequest.NoteMarker.Description;
+                    existingMarker.Color = markerRequest.NoteMarker.Color;
                     existingMarker.IsImplemented = false;
                 }
                 else
@@ -1147,5 +1165,81 @@ namespace GoNorth.Controllers.Api
             return Ok(marker);
         }
 
+        /// <summary>
+        /// Exports a map by id
+        /// </summary>
+        /// <param name="id">Map Id</param>
+        /// <returns>Export result</returns>
+        [Authorize(Roles = RoleNames.Karta)]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [ProducesResponseType(typeof(ExportObjectResult), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> ExportMap(string id)
+        {
+            ExportObjectResult exportResult = await RunMapExport(id);
+
+            return Ok(exportResult);
+        }
+        
+        /// <summary>
+        /// Downloads the export result of a map by id
+        /// </summary>
+        /// <param name="id">Map Id</param>
+        /// <returns>Export result</returns>
+        [Authorize(Roles = RoleNames.Karta)]
+        [Authorize(Roles = RoleNames.ExportObjects)]
+        [ProducesResponseType(typeof(ExportObjectResult), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> DownloadExportMap(string id)
+        {
+            ExportObjectResult exportResult = await RunMapExport(id);
+
+            return File(Encoding.UTF8.GetBytes(exportResult.Code), "text/plain", exportResult.ObjectFilename + "." + exportResult.FileExtension);
+        }
+
+        /// <summary>
+        /// Runs a map export
+        /// </summary>
+        /// <param name="id">Map Id</param>
+        /// <returns>Export result</returns>
+        private async Task<ExportObjectResult> RunMapExport(string id)
+        {
+            KartaMap map = await _mapDbAccess.GetMapById(id);
+
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            ExportObjectResult exportResult = new ExportObjectResult();
+            exportResult.Code = JsonSerializer.Serialize(map, options);
+            exportResult.Errors = new List<ExportPlaceholderError>();
+            exportResult.ObjectFilename = StringUtility.CleanInvalidFilenameChars(map.Name);
+            exportResult.FileExtension = "json";
+            return exportResult;
+        }
+
+        /// <summary>
+        /// Returns the colored image for a note marker
+        /// </summary>
+        /// <param name="color">Color to use</param>
+        /// <returns>Colored image</returns>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> GetNoteMapImage(string color) 
+        {
+            if(string.IsNullOrEmpty(color))
+            {
+                color = "#a9a9a9";
+            }
+
+            string imagePath = Path.Combine(_hostEnvironment.WebRootPath, "img", "karta", "noteMarker.svg");
+            string imageContent = await System.IO.File.ReadAllTextAsync(imagePath);
+
+            imageContent = imageContent.Replace("{{fillColor}}", color);
+
+            return File(Encoding.UTF8.GetBytes(imageContent), "image/svg+xml");
+        }
     }
 }

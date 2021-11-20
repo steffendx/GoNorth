@@ -9,6 +9,7 @@
     "MarkAsImplemented": "Als implementiert markieren", 
     "ShowStatistics": "Statistik",
     "OpenQuestList": "Quest Liste öffnen",
+    "Export": "Exportieren",
     "Delete": "Löschen",
 
     "HeaderData": "Kopfdaten",
@@ -69,6 +70,8 @@
     "AllDoneNodeCount": "Gesamtzahl Alles abgeschlossen Knoten",
     "Close": "Schließen",
 
+    "JSON": "JSON",
+    
     "DirtyMessage": "Es liegen ungespeicherte Änderungen vor. Willst du die Seite wirklich verlassen?",
 
     "Error": "Fehler:",

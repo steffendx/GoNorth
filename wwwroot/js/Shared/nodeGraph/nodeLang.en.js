@@ -7,6 +7,7 @@
             Localization.Links = {};
             Localization.Links.Delete = "Delete connection";
             Localization.Links.Rename = "Rename connection";
+            Localization.Links.Hide = "Hide child nodes";
             Localization.Links.EnterName = "Enter label";
 
             // Node Display
@@ -15,6 +16,7 @@
             Localization.NodeDisplay.Position = "Position:";
             Localization.NodeDisplay.Zoom = "Zoom:";    
             Localization.NodeDisplay.ToogleMiniMap = "Click here to toogle the mini map display";        
+            Localization.NodeDisplay.ShowAllNodes = "Show all nodes";
 
             // Shared Messages
             Localization.DeleteNode = "Delete node";

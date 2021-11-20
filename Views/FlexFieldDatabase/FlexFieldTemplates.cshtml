@@ -33,6 +33,7 @@
         <span data-bind="text: name"></span>
         <!-- ko if: !$root.isReadonly() -->
             <a class="gn-clickable gn-flexFieldObjectFormFieldGroupButton gn-flexFieldDragHandle" data-bind="click: function() {}, clickBubble: false" title="@Localizer["DragToMove"]"><i class="glyphicon glyphicon-sort"></i></a>
+            <a class="gn-clickable gn-flexFieldObjectFormFieldGroupButton" data-bind="click: function(fieldGroup) { $root.openScriptSettings(fieldGroup); }, visible: $root.allowScriptSettingsForAllFieldTypes" title="@Localizer["ScriptSettings"]"><i class="glyphicon glyphicon-log-in"></i></a>
             <a class="gn-clickable gn-flexFieldObjectFormFieldGroupButton" data-bind="click: function(fieldGroup) { $root.openEditFieldGroupDialog(fieldGroup); }, clickBubble: false"><i class="glyphicon glyphicon-pencil" title="@Localizer["EditFieldGroup"]"></i></a>
             <a class="gn-clickable gn-flexFieldObjectFormFieldGroupButton" data-bind="click: function(fieldGroup) { $root.openConfirmDeleteFieldGroupDialog(fieldGroup); }, clickBubble: false" title="@Localizer["DeleteFieldGroup"]"><i class="glyphicon glyphicon-trash"></i></a>
         <!-- /ko -->

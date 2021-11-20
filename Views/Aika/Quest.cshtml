@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using GoNorth.Models.AikaViewModels
 
-@model SharedAikaViewModel
+@model QuestViewModel
 
 @inject IViewLocalizer Localizer
 
@@ -35,6 +35,11 @@
     <!-- Choose Object Dialog -->
     <!-- ko with: chooseObjectDialog -->
         @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    <!-- Export Object Dialog -->
+    <!-- ko with: exportObjectDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ExportObjectDialog.cshtml")
     <!-- /ko -->
 
     <!-- Delete Quest Dialog -->
@@ -171,6 +176,18 @@
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin" data-bind="click: openQuestList">
         <i class="glyphicon glyphicon-king"></i> @Localizer["OpenQuestList"]
     </button>
+
+    @if(User.IsInRole(RoleNames.ExportObjects))
+    {
+        <div class="dropdown gn-inlineDropdown" data-bind="visible: id">
+            <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-exportButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="disable: isLoading() || isReadonly()">
+                <i class="glyphicon glyphicon-export"></i> @Localizer["Export"] <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="gn-exportButton">
+                <li><a class="gn-clickable" data-bind="click: function() { exportObject('JSON'); }">@Localizer["JSON"]</a></li>
+            </ul>
+        </div>
+    }
 
     <button type="button" class="btn btn-default gn-commandWidgetTopMargin  gn-buttonMarginLeft" data-bind="click: openDeleteQuestDialog, disable: isLoading() || isReadonly(), visible: id">
         <i class="glyphicon glyphicon-trash" data-bind="visible: !isLoading()"></i><i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: isLoading"></i> @Localizer["Delete"]
@@ -506,6 +523,19 @@
         {
             <text>
             GoNorth.Aika.Shared.disableAutoSaving = false;
+            </text>
+        }
+
+        @if(Model.AllowScriptSettingsForAllFieldTypes)
+        {
+            <text>
+            GoNorth.Aika.Quest.allowScriptSettingsForAllFieldTypes = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.Aika.Quest.allowScriptSettingsForAllFieldTypes = false;
             </text>
         }
 

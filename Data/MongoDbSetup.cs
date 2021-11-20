@@ -149,9 +149,13 @@ namespace GoNorth.Data
             await CreateCollectionIfNotExists(TaleMongoDbAccess.TaleDialogRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(TaleDialogImplementationSnapshotMongoDbAccess.TaleDialogImplementationSnapshotCollectionName, collectionNames);
 
+            await CreateCollectionIfNotExists(DialogFunctionGenerationConditionMongoDbAccess.DialogFunctionGenerationConditionCollectionName, collectionNames);
+
             await CreateCollectionIfNotExists(StateMachineMongoDbAccess.StateMachineCollectionName, collectionNames);
             await CreateCollectionIfNotExists(StateMachineImplementationSnapshotMongoDbAccess.StateMachineImplementationSnapshotCollectionName, collectionNames);
 
+            await CreateCollectionIfNotExists(AikaChapterDetailMongoDbAccess.AikaChapterDetailCollectionName, collectionNames);
+            await CreateCollectionIfNotExists(AikaChapterDetailMongoDbAccess.AikaChapterDetailRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(AikaChapterOverviewMongoDbAccess.AikaChapterOverviewCollectionName, collectionNames);
             await CreateCollectionIfNotExists(AikaChapterOverviewMongoDbAccess.AikaChapterOverviewRecyclingBinCollectionName, collectionNames);
             await CreateCollectionIfNotExists(AikaQuestMongoDbAccess.AikaQuestCollectionName, collectionNames);

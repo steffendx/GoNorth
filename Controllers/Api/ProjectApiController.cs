@@ -239,6 +239,7 @@ namespace GoNorth.Controllers.Api
         [Authorize(Roles = RoleNames.Administrator)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateProject([FromBody]GoNorthProject project)

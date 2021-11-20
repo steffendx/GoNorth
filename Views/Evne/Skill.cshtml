@@ -139,6 +139,19 @@
             </text>
         }
 
+        @if(Model.AllowScriptSettingsForAllFieldTypes)
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.allowScriptSettingsForAllFieldTypes = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.allowScriptSettingsForAllFieldTypes = false;
+            </text>
+        }
+
         GoNorth.FlexFieldDatabase.ObjectForm.dirtyMessage = "@Localizer["DirtyMessage"]";
 
         jQuery(document).ready(function() {

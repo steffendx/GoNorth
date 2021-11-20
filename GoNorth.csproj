@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>aspnet-GoNorth-BEC9142A-89D7-4A58-904B-BCD87806912F</UserSecretsId>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
@@ -11,13 +11,13 @@
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
-    <PackageReference Include="CsvHelper" Version="27.1.0" />
-    <PackageReference Include="MongoDB.Bson" Version="2.12.4" />
-    <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
-    <PackageReference Include="MongoDB.Driver.Core" Version="2.12.4" />
-    <PackageReference Include="Scriban" Version="4.0.1" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Include="CsvHelper" Version="27.2.0" />
+    <PackageReference Include="MongoDB.Bson" Version="2.13.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.13.2" />
+    <PackageReference Include="Scriban" Version="5.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +32,8 @@
   <ItemGroup>
     <Content Update="Documentation/**/*" CopyToPublishDirectory="Never" />
     <Content Update="UITests/**/*" CopyToPublishDirectory="Never" />
+    <Content Remove="Installer/**" />
+    <Compile Remove="Installer/**" />
   </ItemGroup>
 
 </Project>

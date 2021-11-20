@@ -7,6 +7,7 @@
             Localization.Links = {};
             Localization.Links.Delete = "Verbindung löschen";
             Localization.Links.Rename = "Verbindung umbennen";
+            Localization.Links.Hide = "Untergeordnete Knoten verstecken";
             Localization.Links.EnterName = "Beschriftung eingeben";
 
             // Node Display
@@ -14,7 +15,8 @@
 
             Localization.NodeDisplay.Position = "Position:";
             Localization.NodeDisplay.Zoom = "Zoom:";       
-            Localization.NodeDisplay.ToogleMiniMap = "Hier klicken um die Minimap ein und auszublenden";     
+            Localization.NodeDisplay.ToogleMiniMap = "Hier klicken um die Minimap ein und auszublenden";
+            Localization.NodeDisplay.ShowAllNodes = "Alle Knoten anzeigen";
 
             // Shared Messages
             Localization.DeleteNode = "Knoten löschen";

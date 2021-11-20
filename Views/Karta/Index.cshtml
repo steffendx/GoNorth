@@ -105,6 +105,10 @@
                             <label for="gn-markerDescription">@Localizer["Description"]</label>
                             <textarea class="form-control gn-nonResizeable" id="gn-markerDescription" placeholder="@Localizer["Description"]" name="markerDescription" data-bind="value: dialogMarkerDescription"></textarea>
                         </div>
+                        <div class="form-group" style="display: none" data-bind="visible: showMarkerNameDialogColor">
+                            <label for="gn-markerColor">@Localizer["Color"]</label>
+                            <input id="gn-markerColor" type="text" class="form-control" placeholder="@Localizer["Color"]" name="markerColor" data-bind="colorpicker: dialogMarkerColor"/>
+                        </div>
                     </form>
                 </div>
 
@@ -185,13 +189,17 @@
         </div>
     </div>
 
+    <!-- Export Object Dialog -->
+    <!-- ko with: exportObjectDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ExportObjectDialog.cshtml")
+    <!-- /ko -->
+    
     @if(User.IsInRole(RoleNames.ImplementationStatusTracker))
     {
         <!-- ko with: compareDialog -->
             @await Html.PartialAsync("~/Views/ImplementationStatus/CompareDialog.cshtml")
         <!-- /ko -->
     }
-
     
     <!-- ko with: dailyRoutineEditor -->
         <datalist id="gn-kartaNpcStates" data-bind="foreach: suggestedNpcStates">
@@ -384,6 +392,18 @@
             </div>
             <!-- /ko -->
 
+            @if(User.IsInRole(RoleNames.ExportObjects))
+            {
+                <div class="dropdown gn-inlineDropdown gn-kartaExportButton" data-bind="visible: id">
+                    <button class="btn btn-default dropdown-toggle gn-commandWidgetTopMargin" type="button" id="gn-exportButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-bind="disable: isLoading() || isReadonly()">
+                        <i class="glyphicon glyphicon-export"></i> @Localizer["Export"] <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="gn-exportButton">
+                        <li><a class="gn-clickable" data-bind="click: function() { exportObject('JSON'); }">@Localizer["JSON"]</a></li>
+                    </ul>
+                </div>
+            }
+
             @if(User.IsInRole(RoleNames.Aika))
             {
                 <div class="gn-kartaTopBarHintIcon text-info" title="@Localizer["YouAreEditingANonDefaultChapter"]" style="display: none" data-bind="visible: isNonDefaultChapterSelected">
@@ -509,6 +529,12 @@
     <script src="~/lib/leaflet-draw/dist/leaflet.draw.js"></script>
     <script src="~/lib/Leaflet.TextPath/leaflet.textpath.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/js/bootstrap-colorpicker.min.js" 
+        asp-fallback-src="~/lib/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"
+        asp-fallback-test="window.jQuery && jQuery.fn.colorpicker"
+        integrity="sha256-Y27a5HlqZwshkK8xfNfu6Y0c6+GGX9wTiRe8Xa8ITGY=" 
+        crossorigin="anonymous"></script>
+
     <environment include="Development">
         <script src="~/lib/ace-builds/src-noconflict/ace.js"></script>
         <script src="~/lib/ace-builds/src-noconflict/ext-language_tools.js"></script>
@@ -629,5 +655,6 @@
 @section Styles {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha256-LcmP8hlMTofQrGU6W2q3tUnDnDZ1QVraxfMkP060ekM=" crossorigin="anonymous" asp-fallback-test-call="leaflet-layer" asp-fallback-test-property="position" asp-fallback-test-value="relative" asp-fallback-href="~/lib/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="~/lib/leaflet-draw/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" integrity="sha256-1kg+SaNnqDn7AaD0skLFrhW4KoZVnAnYnuVP3rC8wqE=" crossorigin="anonymous" asp-fallback-test-call="colorpicker" asp-fallback-test-property="min-width" asp-fallback-test-value="130px" asp-fallback-href="~/lib/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" />
     @await Html.PartialAsync("~/Views/Shared/NodeScriptEditorStyles.cshtml")
 }

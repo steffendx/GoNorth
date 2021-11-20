@@ -70,8 +70,8 @@
                 var def = new jQuery.Deferred();
                 
                 var self = this;
-                this.viewModel.openMarkerNameDialog("", true).then(function(name, description) {
-                    var marker = new Map.NoteMarker(name, description, latLng);
+                this.viewModel.openMarkerNameDialog("", true, "", true).then(function(name, description, color) {
+                    var marker = new Map.NoteMarker(name, description, color, latLng);
                     self.pushMarker(marker);
                     def.resolve(marker);
                 });
@@ -87,14 +87,15 @@
             Map.NoteMarkerManager.prototype.setEditCallback = function(marker) {
                 var self = this;
                 marker.setEditCallback(function() {
-                    self.viewModel.openMarkerNameDialog(marker.name, true, marker.description).then(function(name, description) {
-                        if(marker.name == name && marker.description == description)
+                    self.viewModel.openMarkerNameDialog(marker.name, true, marker.description, true, marker.color).then(function(name, description, color) {
+                        if(marker.name == name && marker.description == description && marker.color == color)
                         {
                             return;
                         }
 
                         marker.name = name;
                         marker.description = description;
+                        marker.color = color;
 
                         // Update popup
                         if(marker.marker.getPopup())
@@ -106,6 +107,7 @@
                         if(marker.marker.getElement())
                         {
                             jQuery(marker.marker.getElement()).find(".gn-kartaIconLabel").text(name);
+                            jQuery(marker.marker.getElement()).find("img:not('.gn-kartaIconShadowImage')").attr("src", marker.getIconUrl())
                         }
 
                         self.viewModel.saveMarker(marker);
@@ -120,7 +122,7 @@
              * @param {object} latLng Lat/Long Position
              */
             Map.NoteMarkerManager.prototype.parseMarker = function(unparsedMarker, latLng) {
-                return new Map.NoteMarker(unparsedMarker.name, unparsedMarker.description, latLng);
+                return new Map.NoteMarker(unparsedMarker.name, unparsedMarker.description, unparsedMarker.color, latLng);
             };
 
         }(Karta.Map = Karta.Map || {}));

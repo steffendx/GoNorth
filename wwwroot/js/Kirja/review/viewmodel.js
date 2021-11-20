@@ -124,7 +124,7 @@
                  */
                 getMaxCommentId: function() {
                     var commentId = 0;
-                    jQuery(this.pageContent()).find("gn-kirjacomment").each(function() {
+                    jQuery("<div>" + this.pageContent() + "</div>").find("gn-kirjacomment").each(function() {
                         var curCommentId = parseInt(jQuery(this).attr("commentid"));
                         if(!isNaN(curCommentId) && curCommentId > commentId) {
                             commentId = curCommentId;
@@ -963,7 +963,8 @@
                  * Checks if any unmerged changes exist
                  */
                 checkForUnmergedChanges: function() {
-                    return jQuery(this.mergeHtml()).find("ins").length == 0 && jQuery(this.mergeHtml()).find("del").length == 0;
+                    var mergeCheck = jQuery("<div>" + this.mergeHtml() + "</div>");
+                    return mergeCheck.find("ins").length == 0 && mergeCheck.find("del").length == 0;
                 },
 
 

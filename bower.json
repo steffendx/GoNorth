@@ -16,7 +16,7 @@
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "leaflet": "1.4.0",
     "leaflet-draw": "^1.0.4",
-    "ace-builds": "^1.4.12",
+    "ace-builds": "1.4.13",
     "knockout-sortable": "1.2.0",
     "bootstrap-colorpicker": "2.5.3"
   }

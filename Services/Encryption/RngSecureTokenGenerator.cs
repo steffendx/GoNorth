@@ -19,34 +19,24 @@ namespace GoNorth.Services.Encryption
         /// <returns>Generated token</returns>
         public string GenerateSecureToken(int length)
         {
-            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
+            int maxRandom = byte.MaxValue - ((byte.MaxValue + 1) % TokenChars.Length);
+
+            byte[] data = RandomNumberGenerator.GetBytes(length);
+
+            char[] result = new char[length];
+            for (int curChar = 0; curChar < length; ++curChar)
             {
-                byte[] data = new byte[length];
-                byte[] buffer = null;
-                int maxRandom = byte.MaxValue - ((byte.MaxValue + 1) % TokenChars.Length);
-
-                crypto.GetBytes(data);
-
-                char[] result = new char[length];
-                for (int curChar = 0; curChar < length; ++curChar)
+                byte value = data[curChar];
+                while (value > maxRandom)
                 {
-                    byte value = data[curChar];
-                    while (value > maxRandom)
-                    {
-                        if (buffer == null)
-                        {
-                            buffer = new byte[1];
-                        }
-
-                        crypto.GetBytes(buffer);
-                        value = buffer[0];
-                    }
-
-                    result[curChar] = TokenChars[value % TokenChars.Length];
+                    byte[] buffer = RandomNumberGenerator.GetBytes(1);
+                    value = buffer[0];
                 }
 
-                return new string(result);
+                result[curChar] = TokenChars[value % TokenChars.Length];
             }
+
+            return new string(result);
         }
     }
 }

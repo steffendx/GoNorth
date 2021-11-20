@@ -34,9 +34,32 @@
    fill: #c0392b;
 }
 
+.link-tools .tool-hide circle
+{
+   fill: #8c6;
+}
+
 .link-tools .gn-showLinkOptions
 {
 	display: inline-block;
+}
+
+.node-box-hidden, .node-link-hidden {
+	opacity: 0.1;
+	pointer-events: none !important;
+}
+
+.node-box-hidden input, .node-box-hidden button, .node-box-hidden textarea {
+	pointer-events: none !important;
+}
+
+.node-svg-hidden {
+	opacity: 0.1;
+	pointer-events: none;
+}
+
+.node-svg-hidden text {
+	display: none;
 }
 
 .connection
@@ -265,6 +288,21 @@ button.delete:hover
 .gn-nodeGraphPositionZoomIndicatorText {
 	display: inline-block;
 	min-width: 225px;
+}
+
+.gn-nodeGraphShowAllNodes {
+	position: absolute;
+	top: 30px;
+	z-index: 50;
+	background-color: #999999;
+	border-bottom: 1px solid #888888;
+	border-right: 1px solid #888888;
+	padding: 5px;
+	color: #FFFFFF;
+	min-width: 250px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: pointer;
 }
 
 .gn-nodeGraphMiniMap {

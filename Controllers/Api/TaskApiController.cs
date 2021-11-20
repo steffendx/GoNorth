@@ -227,6 +227,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Id of the board</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -287,6 +288,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -337,6 +339,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -387,6 +390,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Id of the board</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = RoleNames.TaskBoardManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
@@ -438,6 +442,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateTaskGroup(string boardId, [FromBody]TaskGroup group)
@@ -511,6 +516,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateTaskGroup(string boardId, string groupId, [FromBody]TaskGroup group)
@@ -594,6 +600,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> MoveTaskGroupToBoard(string sourceBoardId, string groupId, string targetBoardId)
@@ -664,6 +671,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(TaskGroup), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> ReorderTaskGroup(string boardId, string groupId, int targetIndex)
@@ -725,6 +733,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
         public async Task<IActionResult> DeleteTaskGroup(string boardId, string groupId)
@@ -805,6 +814,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(GoNorthTask), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> CreateTask(string boardId, string groupId, [FromBody]GoNorthTask task)
@@ -921,6 +931,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(GoNorthTask), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> UpdateTask(string boardId, string groupId, string taskId, string oldGroupId, int targetIndex, [FromBody]GoNorthTask task)
@@ -1043,6 +1054,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(GoNorthTask), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> MoveTaskToBoard(string sourceBoardId, string sourceGroupId, string taskId, string targetBoardId, string targetGroupId)
@@ -1125,6 +1137,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpDelete]
         public async Task<IActionResult> DeleteTask(string boardId, string groupId, string taskId)
@@ -1202,6 +1215,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Image Name</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ImageUpload()
@@ -1239,6 +1253,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Task Image</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
         public IActionResult TaskImage(string imageFile)
         {
@@ -1331,6 +1346,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Id of the board category</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1386,6 +1402,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -1445,6 +1462,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Id of the board category</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = RoleNames.TaskBoardCategoryManager)]
         [ValidateAntiForgeryToken]
         [HttpDelete]

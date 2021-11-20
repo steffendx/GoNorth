@@ -71,6 +71,7 @@
 
     "PickMarkerName": "Enter name for marker",
     "Name": "Name",
+    "Description": "Description",
     "Save": "Save",
     "Cancel": "Cancel",
 

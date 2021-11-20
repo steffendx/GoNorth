@@ -8,15 +8,17 @@
              * 
              * @param {string} name Name of the marker
              * @param {string} description Description of the marker
+             * @param {string} color Color of the marker
              * @param {object} latLng Coordinates of the marker
              * @class
              */
-            Map.NoteMarker = function(name, description, latLng) 
+            Map.NoteMarker = function(name, description, color, latLng) 
             {
                 Map.BaseMarker.apply(this);
                 
                 this.name = name;
                 this.description = description;
+                this.color = color;
 
                 this.isTrackingImplementationStatus = true;
 
@@ -33,7 +35,11 @@
              * @return {string} Icon Url
              */
             Map.NoteMarker.prototype.getIconUrl = function() {
-                return "/img/karta/noteMarker.png";
+                let url = "/api/KartaApi/GetNoteMapImage";
+                if(this.color) {
+                    url += "?color=" + encodeURIComponent(this.color);
+                }
+                return url;
             }
 
             /**
@@ -42,7 +48,7 @@
              * @return {string} Icon Retina Url
              */
             Map.NoteMarker.prototype.getIconRetinaUrl = function() {
-                return "/img/karta/noteMarker_2x.png";
+                return this.getIconUrl();
             }
 
             /**
@@ -83,6 +89,7 @@
                 var serializedObject = this.serializeBaseData(map);
                 serializedObject.name = this.name;
                 serializedObject.description = this.description;
+                serializedObject.color = this.color;
                 return serializedObject;
             }
 

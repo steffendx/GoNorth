@@ -58,8 +58,9 @@ namespace GoNorth.Controllers
         [HttpGet]
         public IActionResult Quest()
         {
-            SharedAikaViewModel viewModel = new SharedAikaViewModel();
+            QuestViewModel viewModel = new QuestViewModel();
             viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
+            viewModel.AllowScriptSettingsForAllFieldTypes = _config.AllowScriptSettingsForAllFieldTypes.HasValue ? _config.AllowScriptSettingsForAllFieldTypes.Value : false;
             return View(viewModel);
         }
 

@@ -5,7 +5,7 @@
 <label data-bind="text: name"></label>
 <!-- ko if: !$root.isReadonly() -->
     <a class="gn-clickable gn-flexFieldObjectFormFieldButton gn-flexFieldDragHandle" title="@Localizer["DragToMove"]"><i class="glyphicon glyphicon-sort"></i></a>
-    <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.openScriptSettings(field); }, visible: canExportToScript()" title="@Localizer["ScriptSettings"]"><i class="glyphicon glyphicon-log-in"></i></a>
+    <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.openScriptSettings(field); }, visible: canExportToScript() || $root.allowScriptSettingsForAllFieldTypes" title="@Localizer["ScriptSettings"]"><i class="glyphicon glyphicon-log-in"></i></a>
     <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.editField(field); }"><i class="glyphicon glyphicon-pencil" title="@Localizer["EditField"]"></i></a>
     <a class="gn-clickable gn-flexFieldObjectFormFieldButton" data-bind="click: function(field) { $root.openConfirmDeleteFieldDialog(field, $parents[1]); }" title="@Localizer["DeleteField"]"><i class="glyphicon glyphicon-trash"></i></a>
 <!-- /ko -->

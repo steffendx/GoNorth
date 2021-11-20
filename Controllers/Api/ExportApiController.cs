@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using GoNorth.Services.Project;
 using GoNorth.Data.StateMachines;
+using GoNorth.Services.User;
 
 namespace GoNorth.Controllers.Api
 {
@@ -1624,10 +1625,7 @@ namespace GoNorth.Controllers.Api
 
             // Run Export
             ExportObjectResult result = await exporter.ExportObject(template.Template, objectData);
-            result.ObjectFilename = ((FlexFieldObject)objectData.ExportData[ExportConstants.ExportDataObject]).Name;
-            string regexSearch = Regex.Escape(new string(Path.GetInvalidFileNameChars()));
-            Regex illegalCharRegex = new Regex(string.Format("[{0}]", regexSearch));
-            result.ObjectFilename = illegalCharRegex.Replace(result.ObjectFilename, string.Empty);
+            result.ObjectFilename = StringUtility.CleanInvalidFilenameChars(((FlexFieldObject)objectData.ExportData[ExportConstants.ExportDataObject]).Name);
             return result;
         }
 

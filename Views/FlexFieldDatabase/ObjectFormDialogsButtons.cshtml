@@ -1,4 +1,3 @@
-@using Microsoft.AspNetCore.Mvc.Localization
 @using GoNorth.Models.FlexFieldDatabaseModels
 
 @model ObjectFormButtonsViewModel
@@ -43,64 +42,10 @@
     </div>
 </div>
 
-<!-- Export Result Dialog -->
-<div class="modal fade" role="dialog" data-bind="modal: showExportResultDialog">
-    <div class="modal-dialog gn-flexFieldObjectExportResultDialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">@Model.Localizer["ExportResult"]</h4>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-warning" role="alert" data-bind="visible: exportResultErrors().length > 0">
-                    <strong>@Model.Localizer["Warning"]</strong> @Model.Localizer["ExportErrorsOccured"]
-                    <!-- ko foreach: exportResultErrors -->
-                        <div data-bind="visible: contextName, text: contextName" class="gn-flexFieldObjectExportResultErrorListHeader"></div>
-                        <ul data-bind="foreach: errors" class="gn-flexFieldObjectExportResultErrorList">
-                            <li><span data-bind="text: message"></span> <span data-bind="visible: count > 1">@Model.Localizer["ExportErrorsCountPrefix"]<span data-bind="text: count"></span>@Model.Localizer["ExportErrorsCountPostfix"]</span></li>
-                        </ul>
-                    <!-- /ko -->
-                </div>
-                <p>
-                    <button type="button" class="btn btn-primary" data-bind="click: function() { exportDownload('@(@Model.ExportTemplateType.ToString())'); }">
-                        <i class="glyphicon glyphicon-export"></i> @Model.Localizer["Download"]
-                    </button>
-                    <span class="gn-copyToClipboardToolTipContainer">
-                        <button type="button" class="btn btn-default" data-bind="click: function() { copyExportCodeToClipboard() }">
-                            <span class="gn-copyToClipboardToolTipText" style="display: none" data-bind="visible: exportShowSuccessfullyCopiedTooltip">@Model.Localizer["SuccessfullyCopiedToClipboard"]</span>
-                            <i class="glyphicon glyphicon-paperclip"></i> @Model.Localizer["CopyToClipboard"]
-                        </button>
-                    </span>
-                </p>
-                <p>
-                    <textarea type="text" id="gn-flexFieldObjectExportResultTextarea" class="form-control gn-flexFieldObjectExportResultTextarea" data-bind="value: exportResultContent" readonly="readonly"></textarea>
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bind="click: closeExportResultDialog">@Model.Localizer["Ok"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Confirm export unsaved object -->
-<div class="modal fade" role="dialog" data-bind="modal: showConfirmExportDirtyStateDialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">@Model.Localizer["UnsavedChanges"]</h4>
-            </div>
-            <div class="modal-body">
-                <p>@Model.Localizer["AreYouSureYouWantToExportUnsavedChanges"]</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bind="click: confirmExportDirtyStateDialog">@Model.Localizer["Yes"]</button>
-                <button type="button" class="btn btn-default" data-bind="click: closeConfirmExportDirtyStateDialog">@Model.Localizer["No"]</button>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Export Object Dialog -->
+<!-- ko with: exportObjectDialog -->
+    @await Html.PartialAsync("~/Views/Shared/ExportObjectDialog.cshtml")
+<!-- /ko -->
 
 <!-- Manage export snippets -->
 <!-- ko with: exportSnippetManager -->

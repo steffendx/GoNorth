@@ -1037,6 +1037,7 @@ namespace GoNorth.Controllers.Api
         /// </summary>
         /// <returns>Result</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> DeleteUserData()

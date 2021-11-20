@@ -9,6 +9,7 @@
     "MarkAsImplemented": "Mark as implemented", 
     "ShowStatistics": "Statistics",
     "OpenQuestList": "Open quest list",
+    "Export": "Export",
     "Delete": "Delete",
 
     "HeaderData": "Header data",
@@ -68,6 +69,8 @@
     "FinishNodeCount": "Total finish node count",
     "AllDoneNodeCount": "Total all done node count",
     "Close": "Close",
+
+    "JSON": "JSON",
     
     "DirtyMessage": "There are unsaved changes. Are you sure you want to leave the page?",
 

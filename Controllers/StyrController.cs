@@ -46,6 +46,7 @@ namespace GoNorth.Controllers
         {
             DetailFormViewModel viewModel = new DetailFormViewModel();
             viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
+            viewModel.AllowScriptSettingsForAllFieldTypes = _config.AllowScriptSettingsForAllFieldTypes.HasValue ? _config.AllowScriptSettingsForAllFieldTypes.Value : false;
             return View(viewModel);
         }
 

@@ -202,6 +202,72 @@
                 throttledUpdatedMiniMap(element, paper, showMiniMap)
             };
 
+            /**
+             * Hides all children for a link
+             * @param {object} container Container Element
+             * @param {object} graph Graph
+             * @param {object} paper Paper
+             * @param {object} linkView Link view
+             */
+            function hideChildren(container, graph, paper, linkView) {
+                if(!linkView.targetView) {
+                    return;
+                }
+
+                var usedLinks = {};
+                usedLinks[linkView] = true;
+                var linksToCheck = [ linkView ];
+                while(linksToCheck.length > 0)
+                {
+                    var curLink = linksToCheck.shift();
+                    if(!curLink.targetView || !curLink.targetView.model)
+                    {
+                        continue;
+                    }
+                    curLink.$el.addClass("node-link-hidden");
+
+                    var targetView = curLink.targetView;
+                    var targetElement = targetView.model;
+                    var inboundLinks = graph.getConnectedLinks(targetElement, { inbound: true });
+                    if(inboundLinks.length > 1)
+                    {
+                        var allHidden = true;
+                        for(var curConnectedLink = 0; curConnectedLink < inboundLinks.length; ++curConnectedLink) 
+                        {
+                            var parentLink = paper.findViewByModel(inboundLinks[curConnectedLink]);
+                            if(!parentLink.$el.hasClass("node-link-hidden"))
+                            {
+                                allHidden = false;
+                                break;
+                            }
+                        }
+
+                        if(!allHidden)
+                        {
+                            continue;
+                        }
+                    }
+
+                    targetView.$box.addClass("node-box-hidden");
+                    targetView.$el.addClass("node-svg-hidden");
+                    
+                    var connectedLinks = graph.getConnectedLinks(targetElement, { outbound: true });
+
+                    for(var curConnectedLink = 0; curConnectedLink < connectedLinks.length; ++curConnectedLink) 
+                    {
+                        var childLinkView = paper.findViewByModel(connectedLinks[curConnectedLink]);
+                        if(usedLinks[childLinkView.id])
+                        {
+                            continue;
+                        }
+                        linksToCheck.push(childLinkView);
+                        usedLinks[childLinkView.id] = true;
+                    }
+                }
+
+                container.find(".gn-nodeGraphShowAllNodes").show();
+            }
+
             // Create throttled version of update mini map
             var throttledUpdatedMiniMap = GoNorth.Util.throttle(updateMiniMap, 35);
             var throttledupdatePositionZoomDisplay = GoNorth.Util.throttle(updatePositionZoomDisplay, 35);
@@ -459,9 +525,11 @@
                     jQuery(element).addClass("gn-nodeGraph");
 
                     jQuery(element).append("<div class='gn-nodeGraphPositionZoomIndicator'><span class='gn-nodeGraphPositionZoomIndicatorText'></span><span><a class='gn-clickable gn-nodeGraphToogleMinimap' title='" + GoNorth.DefaultNodeShapes.Localization.NodeDisplay.ToogleMiniMap + "'><i class='glyphicon glyphicon-chevron-down'></i></a></span></div>");
+                    jQuery(element).append("<div class='gn-nodeGraphShowAllNodes' style='display: none'>" + GoNorth.DefaultNodeShapes.Localization.NodeDisplay.ShowAllNodes + "</div>");
                     jQuery(element).append("<div class='gn-nodeGraphMiniMap' style='display: none'></div>");
 
                     jQuery(element).find(".gn-nodeGraphPositionZoomIndicator").css("font-size", defaultFontSize + "px");
+                    jQuery(element).find(".gn-nodeGraphShowAllNodes").css("font-size", defaultFontSize + "px");
                     jQuery(element).find(".gn-nodeGraphToogleMinimap").on("click", function() {
                         showMiniMap = !showMiniMap;
                         if(showMiniMap)
@@ -490,7 +558,18 @@
                         GoNorth.PromptService.openInputPrompt(GoNorth.DefaultNodeShapes.Localization.Links.EnterName, existingText).done(function(label) {
                             link.label(0, { attrs: { text: { text: label } } });
                         });
-                    })
+                    });
+
+                    paper.on("link:hide", function(linkView) {
+                        hideChildren(jQuery(element), graph, paper, linkView);
+                    });
+
+                    jQuery(element).find(".gn-nodeGraphShowAllNodes").on("click", function() {
+                        jQuery(element).find(".node-box-hidden").removeClass("node-box-hidden");
+                        jQuery(element).find(".node-svg-hidden").removeClass("node-svg-hidden");
+                        jQuery(element).find(".node-link-hidden").removeClass("node-link-hidden");
+                        jQuery(element).find(".gn-nodeGraphShowAllNodes").hide();
+                    });
 
                     // Initialize
                     updatePositionZoomDisplay(element, paper);

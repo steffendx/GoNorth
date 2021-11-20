@@ -35,6 +35,8 @@
     "PropertyNameScriptNodeGraph": "Skript Knotensystem",
     "PropertyNameActionData": "Aktionsdaten",
     "PropertyNameLabel": "Beschriftung",
+    "PropertyNameColor": "Farbe",
+    "PropertyNameConditionElements": "Bedingungsdaten",
 
     "EntryRemoved": "Eintrag '{0}' entfernt.",
     "EntryAdded": "Eintrag '{0}' hinzugefügt.",

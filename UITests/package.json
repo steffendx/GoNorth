@@ -14,10 +14,10 @@
   "author": "Steffen Nörtershäuser",
   "license": "MIT",
   "dependencies": {
-    "mocha": "^9.0.0",
-    "mocha-junit-reporter": "^2.0.0",
+    "mocha": "^9.1.3",
+    "mocha-junit-reporter": "^2.0.2",
     "mocha-multi-reporters": "^1.5.1",
-    "puppeteer": "^10.0.0"
+    "puppeteer": "^11.0.0"
   },
   "devDependencies": {
     "gulp": "^4.0.2",

@@ -589,6 +589,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Id</returns>
         [ProducesResponseType(typeof(KirjaPage), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePage([FromBody]PageRequest page)
@@ -946,6 +947,7 @@ namespace GoNorth.Controllers.Api
         /// <returns>Image Name</returns>
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ImageUpload()
@@ -984,6 +986,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
         public IActionResult KirjaImage(string imageFile)
         {
@@ -1035,6 +1038,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(KirjaPageAttachment), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadPageAttachment(string id)
@@ -1168,6 +1172,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAttachment(string pageId, string attachmentFile)
@@ -1297,6 +1302,7 @@ namespace GoNorth.Controllers.Api
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> StartReview([FromBody]StartReviewRequest request)

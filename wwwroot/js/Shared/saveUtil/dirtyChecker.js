@@ -13,7 +13,7 @@
              * @param {function} saveCallback Function that will get called if an auto save is triggered
              * @class
              */
-             SaveUtil.DirtyChecker = function(buildObjectSnapshot, dirtyMessage, isAutoSaveDisabled, saveCallback)
+            SaveUtil.DirtyChecker = function(buildObjectSnapshot, dirtyMessage, isAutoSaveDisabled, saveCallback)
             {
                 var self = this;
                 window.addEventListener("beforeunload", function (e) {

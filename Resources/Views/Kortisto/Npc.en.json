@@ -83,15 +83,6 @@
     "TheNpcHasNoMarkerInAnyMap": "The npc is not marked in any map. It is recommended to mark the npc in a map before adding movement targets.",
     "Continue": "Continue",
 
-    "ExportResult": "Export result",
-    "Warning": "Warning:",
-    "ExportErrorsOccured": "Errors occured during exporting.",
-    "ExportErrorsCountPrefix": "(",
-    "ExportErrorsCountPostfix": "x)",
-    "Download": "Download",
-    "CopyToClipboard": "Copy to clipboard",
-    "SuccessfullyCopiedToClipboard": "Code was copied to clipboard",
-
     "InvalidSnippets": "Invalid export snippets",
     "ValidSnippets": "Valid export snippets",
     "ThereAreInvalidSnippets": "There are invalid snippets because the associated placeholders have been deleted from the template. They will not be exported.",
@@ -99,9 +90,6 @@
     "DeleteSnippetToolTip": "Click here to delete the snippet",
     "AreYouSureYouWantToDeleteTheExportSnippet": "Are you sure you want to delete the export snippet?",
     "Close": "Close",
-
-    "UnsavedChanges": "Unsaved changes",
-    "AreYouSureYouWantToExportUnsavedChanges": "There are unsaved changes. The export will reflect an old state. Are you sure you want to export the old state?",
 
     "ReferencedInAikaQuests": "Referenced in quests:",
 

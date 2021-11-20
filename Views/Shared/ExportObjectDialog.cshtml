@@ -1,0 +1,62 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+<!-- Export Result Dialog -->
+<div class="modal fade" role="dialog" data-bind="modal: showExportResultDialog">
+    <div class="modal-dialog gn-flexFieldObjectExportResultDialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Localizer["ExportResult"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning" role="alert" data-bind="visible: exportResultErrors().length > 0">
+                    <strong>@Localizer["Warning"]</strong> @Localizer["ExportErrorsOccured"]
+                    <!-- ko foreach: exportResultErrors -->
+                        <div data-bind="visible: contextName, text: contextName" class="gn-flexFieldObjectExportResultErrorListHeader"></div>
+                        <ul data-bind="foreach: errors" class="gn-flexFieldObjectExportResultErrorList">
+                            <li><span data-bind="text: message"></span> <span data-bind="visible: count > 1">@Localizer["ExportErrorsCountPrefix"]<span data-bind="text: count"></span>@Localizer["ExportErrorsCountPostfix"]</span></li>
+                        </ul>
+                    <!-- /ko -->
+                </div>
+                <p>
+                    <button type="button" class="btn btn-primary" data-bind="click: function() { exportDownload('TEST'); }">
+                        <i class="glyphicon glyphicon-export"></i> @Localizer["Download"]
+                    </button>
+                    <span class="gn-copyToClipboardToolTipContainer">
+                        <button type="button" class="btn btn-default" data-bind="click: function() { copyExportCodeToClipboard() }">
+                            <span class="gn-copyToClipboardToolTipText" style="display: none" data-bind="visible: exportShowSuccessfullyCopiedTooltip">@Localizer["SuccessfullyCopiedToClipboard"]</span>
+                            <i class="glyphicon glyphicon-paperclip"></i> @Localizer["CopyToClipboard"]
+                        </button>
+                    </span>
+                </p>
+                <p>
+                    <textarea type="text" id="gn-flexFieldObjectExportResultTextarea" class="form-control gn-flexFieldObjectExportResultTextarea" data-bind="value: exportResultContent" readonly="readonly"></textarea>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bind="click: closeExportResultDialog">@Localizer["Ok"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm export unsaved object -->
+<div class="modal fade" role="dialog" data-bind="modal: showConfirmExportDirtyStateDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@Localizer["UnsavedChanges"]</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Localizer["AreYouSureYouWantToExportUnsavedChanges"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-bind="click: confirmExportDirtyStateDialog">@Localizer["Yes"]</button>
+                <button type="button" class="btn btn-default" data-bind="click: closeConfirmExportDirtyStateDialog">@Localizer["No"]</button>
+            </div>
+        </div>
+    </div>
+</div>

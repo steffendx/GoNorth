@@ -87,6 +87,8 @@
             
                 this.chooseObjectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
 
+                this.exportObjectDialog = new GoNorth.Shared.ExportObjectDialog.ViewModel(this.isLoading, this.errorOccured);
+
                 this.isImplemented = new ko.observable(false);
                 this.compareDialog = new GoNorth.ImplementationStatus.CompareDialog.ViewModel();
 
@@ -94,6 +96,8 @@
                 this.questNotFound = new ko.observable(false);
                 
                 this.extendedReferenceCallout = new ko.observable(null);
+
+                this.allowScriptSettingsForAllFieldTypes = GoNorth.Aika.Quest.allowScriptSettingsForAllFieldTypes;
                 
                 if(this.id())
                 {
@@ -905,6 +909,14 @@
                 {
                     window.onQuestSaved(this.id());
                 }
+            };
+
+
+            /**
+             * Exports the quest
+             */
+            Quest.ViewModel.prototype.exportObject = function() {
+                this.exportObjectDialog.exportObject("/api/AikaApi/ExportQuest?id=" + this.id(), "/api/AikaApi/DownloadExportQuest?id=" + this.id(), this.dirtyChecker.isDirty());
             };
 
 

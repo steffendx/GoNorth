@@ -35,6 +35,8 @@
     "PropertyNameScriptNodeGraph": "Script node system",
     "PropertyNameActionData": "Action config",
     "PropertyNameLabel": "Label",
+    "PropertyNameColor": "Color",
+    "PropertyNameConditionElements": "Condition data",
 
     "EntryRemoved": "Entry '{0}' removed.",
     "EntryAdded": "Entry '{0}' added.",
