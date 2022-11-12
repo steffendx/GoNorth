@@ -1,5 +1,7 @@
 {
     "PlaceholderDesc_Object": "Objekt zu dem die Sprachdatei gehört",
     "PlaceholderDesc_LanguageKeys": "Liste von Sprachschlüsseln die exportiert werden. Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der einzelnen Einträge kann unter cur_key gefunden werden.",
-    "PlaceholderDesc_ReferencedLanguageKeys": "Liste von Sprachschlüsseln die vom aktuellen Objekt referenziert werden (wie z.B. von Quests die innerhalb des Dialogs genutzt werden). Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der einzelnen Einträge kann unter cur_key gefunden werden."
+    "PlaceholderDesc_ReferencedLanguageKeys": "Liste von Sprachschlüsseln die vom aktuellen Objekt referenziert werden (wie z.B. von Quests die innerhalb des Dialogs genutzt werden). Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der einzelnen Einträge kann unter cur_key gefunden werden.",
+    "PlaceholderDesc_DialogLanguageKeys": "Liste von Sprachschlüsseln die vom aktuellen Objekt nur im Dialog genutzt werden. Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der einzelnen Einträge kann unter cur_key gefunden werden. Diese Eigenschaft ist nur für Npcs gefüllt.",
+    "PlaceholderDesc_DialogReferencedObjects": "Liste von Objekten die im Dialog referenziert werden. Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der einzelnen Einträge kann unter cur_obj gefunden werden. Diese Eigenschaft ist nur für Npcs gefüllt."
 }

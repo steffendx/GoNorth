@@ -65,7 +65,8 @@
                         '<div class="node">',
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                             '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
-                            '<textarea class="nodeText" placeholder="' + placeHolder + '" />',
+                            '<button class="toggleFullscreen toggleFullscreenOffset cornerButton" data-target=".nodeText" title="' + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + '"><i class="glyphicon glyphicon-resize-full"></i></button>',
+                            '<textarea class="nodeText" placeholder="' + placeHolder + '"></textarea>',
                         '</div>',
                     ].join('')
                 });

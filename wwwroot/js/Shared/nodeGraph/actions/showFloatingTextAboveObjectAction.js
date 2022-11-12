@@ -20,7 +20,10 @@
              * @returns {string} HTML Content of the action
              */
             Actions.ShowFloatingTextAboveObjectAction.prototype.getContent = function() {
-                return "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.FloatingText + "</div>" +
+                return "<div class='gn-nodeActionText'>" + 
+                            DefaultNodeShapes.Localization.Actions.FloatingText + 
+                            "<button class='toggleFullscreen cornerButton' data-target='.gn-nodeActionFloatingText' title='" + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + "'><i class='glyphicon glyphicon-resize-full'></i></button>" +
+                        "</div>" +
                        "<textarea class='gn-nodeActionFloatingText'></textarea>";
             };
 
@@ -37,6 +40,8 @@
                 this.deserializeData();
 
                 // Handlers
+                DefaultNodeShapes.Shapes.initFullscreenMode(contentElement);
+                
                 var self = this;
                 var floatingText = contentElement.find(".gn-nodeActionFloatingText");
                 floatingText.on("input", function(e) {

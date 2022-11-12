@@ -48,10 +48,11 @@
         }(DefaultNodeShapes.Connections = DefaultNodeShapes.Connections || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
 }(window.GoNorth = window.GoNorth || {}));
-(function(GoNorth) {
+(function (GoNorth) {
     "use strict";
-    (function(DefaultNodeShapes) {
-        (function(Shapes) {
+    (function (DefaultNodeShapes) {
+        (function (Shapes) {
+
 
             joint.shapes.default = joint.shapes.default || {};
 
@@ -59,162 +60,167 @@
              * Base Shape
              */
             joint.shapes.default.Base = joint.shapes.devs.Model.extend(
-            {
-                defaults: joint.util.deepSupplement
-                (
-                    {
-                        type: 'default.Base',
-                        size: { width: 200, height: 64 },
-                        nodeText: '',
-                        attrs:
-                        {
-                            rect: { stroke: 'none', 'fill-opacity': 0 },
-                            text: { display: 'none' },
-                        },
-                    },
-                    joint.shapes.devs.Model.prototype.defaults
-                ),
-            });
+                {
+                    defaults: joint.util.deepSupplement
+                        (
+                            {
+                                type: 'default.Base',
+                                size: { width: 200, height: 64 },
+                                nodeText: '',
+                                attrs:
+                                {
+                                    rect: { stroke: 'none', 'fill-opacity': 0 },
+                                    text: { display: 'none' },
+                                },
+                            },
+                            joint.shapes.devs.Model.prototype.defaults
+                        ),
+                });
 
             /**
              * Base Shape View
              */
             joint.shapes.default.BaseView = joint.shapes.devs.ModelView.extend(
-            {
-                /**
-                 * Template
-                 */
-                template:
-                [
-                    '<div class="node">',
-                        '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
-                        '<button class="delete" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
-                    '</div>',
-                ].join(''),
+                {
+                    /**
+                     * Template
+                     */
+                    template:
+                        [
+                            '<div class="node">',
+                            '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
+                            '<button class="delete" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
+                            '</div>',
+                        ].join(''),
 
-                /**
-                 * Initializes the shape
-                 */
-                initialize: function() {
-                    _.bindAll(this, 'updateBox');
-                    joint.shapes.devs.ModelView.prototype.initialize.apply(this, arguments);
+                    /**
+                     * Initializes the shape
+                     */
+                    initialize: function () {
+                        _.bindAll(this, 'updateBox');
+                        joint.shapes.devs.ModelView.prototype.initialize.apply(this, arguments);
 
-                    this.$box = jQuery(_.template(this.template)());
-                    // Prevent paper from handling pointerdown.
-                    this.$box.find('input').on('mousedown click', function(evt) { evt.stopPropagation(); });
+                        this.$box = jQuery(_.template(this.template)());
+                        // Prevent paper from handling pointerdown.
+                        this.$box.find('input').on('mousedown click', function (evt) { evt.stopPropagation(); });
 
-                    this.$box.find('.nodeText').on('input', _.bind(function(evt)
-                    {
-                        this.model.set('nodeText', jQuery(evt.target).val());
-                    }, this));
+                        this.$box.find('.nodeText').on('input', _.bind(function (evt) {
+                            this.model.set('nodeText', jQuery(evt.target).val());
+                        }, this));
 
-                    this.$box.find('.delete').on('click', _.bind(function() {
-                        if(!this.model.onDelete)
-                        {
-                            this.model.remove();
-                        }
-                        else
-                        {
+                        this.$box.find('.delete').on('click', _.bind(function () {
+                            if (!this.model.onDelete) {
+                                this.model.remove();
+                            }
+                            else {
+                                var self = this;
+                                this.model.onDelete(this).done(function () {
+                                    self.model.remove();
+                                });
+                            }
+                        }, this));
+                        Shapes.initFullscreenMode(this.$box);
+
+                        if (this.additionalCallbackButtons) {
+                            var callbacks = this.additionalCallbackButtons;
                             var self = this;
-                            this.model.onDelete(this).done(function() {
-                                self.model.remove();
+                            jQuery.each(callbacks, function (key) {
+                                self.$box.find("." + key).on("click", _.bind(function () {
+                                    callbacks[key].apply(self);
+                                }, self));
                             });
                         }
-                    }, this));
 
-                    if(this.additionalCallbackButtons)
-                    {
-                        var callbacks = this.additionalCallbackButtons;
-                        var self = this;
-                        jQuery.each(callbacks, function(key) {
-                            self.$box.find("." + key).on("click", _.bind(function() {
-                                callbacks[key].apply(self);
-                            }, self));
-                        });
+                        this.model.on('change', this.updateBox, this);
+                        this.model.on('remove', this.removeBox, this);
+
+                        this.updateBox();
+                    },
+
+                    /**
+                     * Renders the shape
+                     */
+                    render: function () {
+                        joint.shapes.devs.ModelView.prototype.render.apply(this, arguments);
+
+                        this.listenTo(this.paper, "scale", this.updateBox);
+                        this.listenTo(this.paper, "translate", this.updateBox);
+
+                        this.paper.$el.prepend(this.$box);
+                        this.updateBox();
+                        return this;
+                    },
+
+                    /**
+                     * Updates the box
+                     */
+                    updateBox: function () {
+                        var bbox = this.model.getBBox();
+                        if (this.paper) {
+                            bbox.x = bbox.x * this.paper.scale().sx + this.paper.translate().tx;
+                            bbox.y = bbox.y * this.paper.scale().sy + this.paper.translate().ty;
+                            bbox.width *= this.paper.scale().sx;
+                            bbox.height *= this.paper.scale().sy;
+                        }
+
+                        var textField = this.$box.find('.nodeText');
+                        if (!textField.is(':focus')) {
+                            textField.val(this.model.get('nodeText'));
+                        }
+
+                        var label = this.$box.find('.labelText');
+                        var type = this.model.get('type');
+                        label.text(DefaultNodeShapes.Localization.TypeNames[type]);
+                        this.$box.find('.label').attr('class', 'label ' + type.replace(".", "_"));
+
+                        if (this.model.get("icon")) {
+                            this.$box.find(".nodeIcon").addClass(this.model.get("icon"));
+                        }
+                        else {
+                            this.$box.find(".nodeIcon").remove();
+                        }
+
+                        this.$box.css({ width: bbox.width, height: bbox.height, left: bbox.x, top: bbox.y, transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)' });
+                    },
+
+                    /**
+                     * Removes the box
+                     */
+                    removeBox: function (evt) {
+                        this.$box.remove();
+                    },
+
+                    /**
+                     * Checks if a node can be deleted
+                     * 
+                     * @returns {jQuery.Deferred} Deferred for the validation process
+                     */
+                    validateDelete: function () {
+                        return null;
+                    },
+
+                    /**
+                     * Returns statistics for the node
+                     * @returns Node statistics
+                     */
+                    getStatistics: function () {
+                        return {
+                            wordCount: GoNorth.Util.getWordCount(this.model.get('nodeText'))
+                        };
                     }
+                });
 
-                    this.model.on('change', this.updateBox, this);
-                    this.model.on('remove', this.removeBox, this);
-
-                    this.updateBox();
-                },
-
-                /**
-                 * Renders the shape
-                 */
-                render: function() {
-                    joint.shapes.devs.ModelView.prototype.render.apply(this, arguments);
-                    
-                    this.listenTo(this.paper, "scale", this.updateBox);
-                    this.listenTo(this.paper, "translate", this.updateBox);
-
-                    this.paper.$el.prepend(this.$box);
-                    this.updateBox();
-                    return this;
-                },
-
-                /**
-                 * Updates the box
-                 */
-                updateBox: function() {
-                    var bbox = this.model.getBBox();
-                    if(this.paper)
-                    {
-                        bbox.x = bbox.x * this.paper.scale().sx + this.paper.translate().tx;
-                        bbox.y = bbox.y * this.paper.scale().sy + this.paper.translate().ty;
-                        bbox.width *= this.paper.scale().sx;
-                        bbox.height *= this.paper.scale().sy;
-                    }
-
-                    var textField = this.$box.find('.nodeText');
-                    if (!textField.is(':focus'))
-                    {
-                        textField.val(this.model.get('nodeText'));
-                    }
-
-                    var label = this.$box.find('.labelText');
-                    var type = this.model.get('type');
-                    label.text(DefaultNodeShapes.Localization.TypeNames[type]);
-                    this.$box.find('.label').attr('class', 'label ' + type.replace(".", "_"));
-
-                    if(this.model.get("icon"))
-                    {
-                        this.$box.find(".nodeIcon").addClass(this.model.get("icon"));
-                    }
-                    else
-                    {
-                        this.$box.find(".nodeIcon").remove();
-                    }
-
-                    this.$box.css({ width: bbox.width, height: bbox.height, left: bbox.x, top: bbox.y, transform: 'rotate(' + (this.model.get('angle') || 0) + 'deg)' });
-                },
-
-                /**
-                 * Removes the box
-                 */
-                removeBox: function(evt) {
-                    this.$box.remove();
-                },
-
-                /**
-                 * Checks if a node can be deleted
-                 * 
-                 * @returns {jQuery.Deferred} Deferred for the validation process
-                 */
-                validateDelete: function() {
-                    return null;
-                },
-
-                /**
-                 * Returns statistics for the node
-                 * @returns Node statistics
-                 */
-                getStatistics: function() {
-                    return {
-                        wordCount: GoNorth.Util.getWordCount(this.model.get('nodeText'))
-                    };
-                }
-            });
+            /**
+             * Initializes the fullscreen mode
+             */
+            Shapes.initFullscreenMode = function (contentElement) {
+                contentElement.find('.toggleFullscreen').on('click', function (evt) {
+                    var targetElement = jQuery(evt.target).closest("[data-target]").data('target');
+                    GoNorth.PromptService.openInputPrompt(GoNorth.DefaultNodeShapes.Localization.EditText, contentElement.find(targetElement).val(), false, true, true).done(function (newContent) {
+                        contentElement.find(targetElement).val(newContent).change().trigger("input");
+                    });
+                })
+            };
 
         }(DefaultNodeShapes.Shapes = DefaultNodeShapes.Shapes || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
@@ -545,12 +551,11 @@
         }(DefaultNodeShapes.Serialize = DefaultNodeShapes.Serialize || {}));
     }(GoNorth.DefaultNodeShapes = GoNorth.DefaultNodeShapes || {}));
 }(window.GoNorth = window.GoNorth || {}));
-(function(GoNorth) {
+(function (GoNorth) {
     "use strict";
-    (function(BindingHandlers) {
+    (function (BindingHandlers) {
 
-        if(typeof ko !== "undefined")
-        {
+        if (typeof ko !== "undefined") {
 
             /// Scale Step
             var scaleStep = 0.1;
@@ -558,7 +563,7 @@
             /// Min Scale
             var minScale = 0.1;
 
-        
+
             /**
              * Calculates the touch distance
              * @param {object[]} touches Touch objects
@@ -603,17 +608,14 @@
                 urlParams += "&nodeZoom=" + roundToOneDigit(paper.scale().sx);
 
                 var finalParams = window.location.search;
-                if(finalParams) 
-                {
+                if (finalParams) {
                     finalParams = finalParams.replace(/nodeX=.*?&nodeY=.*?&nodeZoom=.*?(&|$)/i, "");
-                    if(finalParams[finalParams.length - 1] != "&")
-                    {
+                    if (finalParams[finalParams.length - 1] != "&") {
                         finalParams += "&";
                     }
                     finalParams += urlParams;
                 }
-                else
-                {
+                else {
                     finalParams = "?" + urlParams;
                 }
 
@@ -628,15 +630,13 @@
              * @param {bool} showMiniMap true if the mini map is shown, else false
              */
             function updateMiniMap(element, paper, showMiniMap) {
-                if(!showMiniMap)
-                {
+                if (!showMiniMap) {
                     return;
                 }
 
                 var miniMapContainer = jQuery(element).children(".gn-nodeGraphMiniMap");
                 var sourceSvg = jQuery(element).children("svg");
-                if(sourceSvg.length == 0)
-                {
+                if (sourceSvg.length == 0) {
                     return;
                 }
 
@@ -662,21 +662,17 @@
                 };
 
                 // Adjust view bounding box to always incoperate camera
-                if(viewPortBoundingBox.x < viewBoundingBox.x)
-                {
+                if (viewPortBoundingBox.x < viewBoundingBox.x) {
                     viewBoundingBox.x = viewPortBoundingBox.x;
                 }
-                if(viewPortBoundingBox.x + viewPortBoundingBox.width > viewBoundingBox.right)
-                {
+                if (viewPortBoundingBox.x + viewPortBoundingBox.width > viewBoundingBox.right) {
                     viewBoundingBox.right = viewPortBoundingBox.x + viewPortBoundingBox.width;
                 }
 
-                if(viewPortBoundingBox.y < viewBoundingBox.y)
-                {
+                if (viewPortBoundingBox.y < viewBoundingBox.y) {
                     viewBoundingBox.y = viewPortBoundingBox.y;
                 }
-                if(viewPortBoundingBox.y + viewPortBoundingBox.height > viewBoundingBox.bottom)
-                {
+                if (viewPortBoundingBox.y + viewPortBoundingBox.height > viewBoundingBox.bottom) {
                     viewBoundingBox.bottom = viewPortBoundingBox.y + viewPortBoundingBox.height;
                 }
 
@@ -705,9 +701,27 @@
              * @param {object} element Element
              * @param {number} defaultFontSize Default font size 
              */
-             function updateFontSize(paper, element, defaultFontSize) {
+            function updateFontSize(paper, element, defaultFontSize) {
                 var targetFontSize = roundToOneDigit(paper.scale().sx * defaultFontSize);
                 jQuery(element).css("font-size", targetFontSize + "px");
+            }
+
+            /**
+             * Clears the multi select elements
+             * @param {object[]} multiSelectedElements 
+             */
+            function clearMultiselectElements(multiSelectedElements) {
+                if (!multiSelectedElements) {
+                    return;
+                }
+
+                for (var curElement = 0; curElement < multiSelectedElements.length; ++curElement) {
+                    if (!multiSelectedElements[curElement].$box) {
+                        continue;
+                    }
+
+                    multiSelectedElements[curElement].$box.removeClass("gn-multiSelected");
+                }
             }
 
             /**
@@ -727,8 +741,7 @@
                 var oldScale = paper.scale().sx;
                 var newScale = oldScale + delta * scaleStep;
 
-                if(newScale < minScale)
-                {
+                if (newScale < minScale) {
                     return;
                 }
 
@@ -736,14 +749,14 @@
                 var ax = x - (x * beta);
                 var ay = y - (y * beta);
                 var translate = paper.translate();
-    
+
                 var nextTx = translate.tx - ax * newScale;
                 var nextTy = translate.ty - ay * newScale;
-    
+
                 paper.translate(nextTx, nextTy);
                 paper.scale(newScale, newScale);
 
-                if(enableNodeGraphPositionZoomUrl) {
+                if (enableNodeGraphPositionZoomUrl) {
                     debouncedUpdatePositionZoomUrl(paper);
                 }
                 throttledUpdatedMiniMap(element, paper, showMiniMap)
@@ -757,18 +770,16 @@
              * @param {object} linkView Link view
              */
             function hideChildren(container, graph, paper, linkView) {
-                if(!linkView.targetView) {
+                if (!linkView.targetView) {
                     return;
                 }
 
                 var usedLinks = {};
                 usedLinks[linkView] = true;
-                var linksToCheck = [ linkView ];
-                while(linksToCheck.length > 0)
-                {
+                var linksToCheck = [linkView];
+                while (linksToCheck.length > 0) {
                     var curLink = linksToCheck.shift();
-                    if(!curLink.targetView || !curLink.targetView.model)
-                    {
+                    if (!curLink.targetView || !curLink.targetView.model) {
                         continue;
                     }
                     curLink.$el.addClass("node-link-hidden");
@@ -776,35 +787,29 @@
                     var targetView = curLink.targetView;
                     var targetElement = targetView.model;
                     var inboundLinks = graph.getConnectedLinks(targetElement, { inbound: true });
-                    if(inboundLinks.length > 1)
-                    {
+                    if (inboundLinks.length > 1) {
                         var allHidden = true;
-                        for(var curConnectedLink = 0; curConnectedLink < inboundLinks.length; ++curConnectedLink) 
-                        {
+                        for (var curConnectedLink = 0; curConnectedLink < inboundLinks.length; ++curConnectedLink) {
                             var parentLink = paper.findViewByModel(inboundLinks[curConnectedLink]);
-                            if(!parentLink.$el.hasClass("node-link-hidden"))
-                            {
+                            if (!parentLink.$el.hasClass("node-link-hidden")) {
                                 allHidden = false;
                                 break;
                             }
                         }
 
-                        if(!allHidden)
-                        {
+                        if (!allHidden) {
                             continue;
                         }
                     }
 
                     targetView.$box.addClass("node-box-hidden");
                     targetView.$el.addClass("node-svg-hidden");
-                    
+
                     var connectedLinks = graph.getConnectedLinks(targetElement, { outbound: true });
 
-                    for(var curConnectedLink = 0; curConnectedLink < connectedLinks.length; ++curConnectedLink) 
-                    {
+                    for (var curConnectedLink = 0; curConnectedLink < connectedLinks.length; ++curConnectedLink) {
                         var childLinkView = paper.findViewByModel(connectedLinks[curConnectedLink]);
-                        if(usedLinks[childLinkView.id])
-                        {
+                        if (usedLinks[childLinkView.id]) {
                             continue;
                         }
                         linksToCheck.push(childLinkView);
@@ -826,172 +831,262 @@
             ko.bindingHandlers.nodeGraph = {
                 init: function (element, valueAccessor, allBindings) {
                     var allowMultipleOutboundForNodes = false;
-                    if(allBindings.get("nodeGraphAllowMultpleOutbound"))
-                    {
+                    if (allBindings.get("nodeGraphAllowMultpleOutbound")) {
                         allowMultipleOutboundForNodes = allBindings.get("nodeGraphAllowMultpleOutbound");
                     }
 
                     var enableNodeGraphPositionZoomUrl = true;
-                    if(allBindings.get("nodeGraphDisablePositionZoomUrl"))
-                    {
+                    if (allBindings.get("nodeGraphDisablePositionZoomUrl")) {
                         enableNodeGraphPositionZoomUrl = !allBindings.get("nodeGraphDisablePositionZoomUrl");
                     }
 
                     var markAvailable = true;
-                    if(allBindings.get("nodeGraphDontMarkAvailablePorts"))
-                    {
+                    if (allBindings.get("nodeGraphDontMarkAvailablePorts")) {
                         markAvailable = false;
                     }
 
                     var allowSelfLink = false;
-                    if(allBindings.get("nodeGraphAllowSelfLink"))
-                    {
+                    if (allBindings.get("nodeGraphAllowSelfLink")) {
                         allowSelfLink = true;
                     }
 
                     var disableLinkVertexEdit = false;
-                    if(allBindings.get("nodeGraphDisableLinkVertexEdit"))
-                    {
+                    if (allBindings.get("nodeGraphDisableLinkVertexEdit")) {
                         disableLinkVertexEdit = true;
                     }
 
                     var linkCreationCallback = null;
-                    if(allBindings.get("nodeGraphLinkCreationCallback"))
-                    {
+                    if (allBindings.get("nodeGraphLinkCreationCallback")) {
                         linkCreationCallback = allBindings.get("nodeGraphLinkCreationCallback");
                     }
 
                     var graph = new joint.dia.Graph();
                     var paper = new joint.dia.Paper(
-                    {
-                        el: element,
-                        width: 16000,
-                        height: 8000,
-                        gridSize: 1,
-                        model: graph,
-                        defaultLink: linkCreationCallback ? linkCreationCallback() : GoNorth.DefaultNodeShapes.Connections.createDefaultLink(),
-                        snapLinks: { radius: 75 }, 
-                        markAvailable: markAvailable,
-                        linkPinning: false,
-                        validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
-                          // Prevent linking from output ports to input ports within one element.
-                          if (cellViewS === cellViewT && !allowSelfLink) 
-                          {
-                              return false;
-                          }
-
-                          // Prevent linking to output ports.
-                          return magnetT && magnetT.getAttribute("port-type") === "input";
-                        },
-                        validateMagnet: function(cellView, magnet) {
-                            if(allowMultipleOutboundForNodes && !cellView.model.get("allowSingleConnectionOnly"))
-                            {
-                                return magnet.getAttribute("magnet") !== "passive";
-                            }
-
-                            var port = magnet.getAttribute("port");
-
-                            // Delete old links on new drag
-                            var links = graph.getConnectedLinks(cellView.model, { outbound: true });
-                            for(var curLink = links.length - 1; curLink >= 0; --curLink)
-                            {
-                                if(links[curLink].attributes && links[curLink].attributes.source && links[curLink].attributes.source.port === port)
-                                {
-                                    links[curLink].remove();
+                        {
+                            el: element,
+                            width: 16000,
+                            height: 8000,
+                            gridSize: 1,
+                            model: graph,
+                            defaultLink: linkCreationCallback ? linkCreationCallback() : GoNorth.DefaultNodeShapes.Connections.createDefaultLink(),
+                            snapLinks: { radius: 75 },
+                            markAvailable: markAvailable,
+                            linkPinning: false,
+                            validateConnection: function (cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
+                                // Prevent linking from output ports to input ports within one element.
+                                if (cellViewS === cellViewT && !allowSelfLink) {
+                                    return false;
                                 }
-                            }
-                            return magnet.getAttribute("magnet") !== "passive";
-                        },
-                        interactive: function(cellView) {
-                            if (disableLinkVertexEdit && cellView.model.isLink()) {
-                                return { vertexAdd: false, vertexMove: false, labelMove: false };
-                            }
-                            return true;
-                        }
-                    });
 
-                    GoNorth.BindingHandlers.nodeGraphRefreshPositionZoomUrl = function() {
-                        if(enableNodeGraphPositionZoomUrl) {
+                                // Prevent linking to output ports.
+                                return magnetT && magnetT.getAttribute("port-type") === "input";
+                            },
+                            validateMagnet: function (cellView, magnet) {
+                                if (allowMultipleOutboundForNodes && !cellView.model.get("allowSingleConnectionOnly")) {
+                                    return magnet.getAttribute("magnet") !== "passive";
+                                }
+
+                                var port = magnet.getAttribute("port");
+
+                                // Delete old links on new drag
+                                var links = graph.getConnectedLinks(cellView.model, { outbound: true });
+                                for (var curLink = links.length - 1; curLink >= 0; --curLink) {
+                                    if (links[curLink].attributes && links[curLink].attributes.source && links[curLink].attributes.source.port === port) {
+                                        links[curLink].remove();
+                                    }
+                                }
+                                return magnet.getAttribute("magnet") !== "passive";
+                            },
+                            interactive: function (cellView) {
+                                if (disableLinkVertexEdit && cellView.model.isLink()) {
+                                    return { vertexAdd: false, vertexMove: false, labelMove: false };
+                                }
+                                return true;
+                            }
+                        });
+
+                    GoNorth.BindingHandlers.nodeGraphRefreshPositionZoomUrl = function () {
+                        if (enableNodeGraphPositionZoomUrl) {
                             debouncedUpdatePositionZoomUrl(paper);
                         }
                     };
 
                     // Store default values
                     var defaultFontSize = jQuery(element).css("font-size");
-                    if(defaultFontSize && defaultFontSize.replace) {
+                    if (defaultFontSize && defaultFontSize.replace) {
                         defaultFontSize = parseFloat(defaultFontSize.replace("px", ""));
                     }
-                    if(!defaultFontSize) {
+                    if (!defaultFontSize) {
                         defaultFontSize = 14;
                     }
 
                     // Add mini Map update events
                     var showMiniMap = false;
-                    graph.on("change", function() {
+                    graph.on("change", function () {
                         throttledUpdatedMiniMap(element, paper, showMiniMap);
                     });
-                    graph.on("add", function() {
+                    graph.on('change:position', function (cell, pos, trans) {
+                        if (!multiSelectedElements || trans.ignore) {
+                            return;
+                        }
+
+                        var view = paper.findViewByModel(cell);
+                        if (!view) {
+                            clearMultiselectElements(multiSelectedElements);
+                            multiSelectedElements = null;
+                            return;
+                        }
+
+                        var elementSelected = false;
+                        for (var curElement = 0; curElement < multiSelectedElements.length; ++curElement) {
+                            if (multiSelectedElements[curElement] == view) {
+                                elementSelected = true;
+                            }
+                        }
+
+                        if (!elementSelected) {
+                            clearMultiselectElements(multiSelectedElements);
+                            multiSelectedElements = null;
+                            return;
+                        }
+
+                        for (var curElement = 0; curElement < multiSelectedElements.length; ++curElement) {
+                            if (multiSelectedElements[curElement] != view) {
+                                multiSelectedElements[curElement].model.translate(trans.tx, trans.ty, { ignore: true });
+                            }
+                        }
+
+                        for (var curElement = 0; curElement < multiSelectedElements.length; ++curElement) {
+                            var outboundLinks = graph.getConnectedLinks(multiSelectedElements[curElement].model, { outbound: true });
+                            for (var curLink = 0; curLink < outboundLinks.length; ++curLink) {
+                                var oldVertices = outboundLinks[curLink].get("vertices");
+                                if (!oldVertices) {
+                                    continue;
+                                }
+                                var newVertices = [];
+                                for (var curVertex = 0; curVertex < oldVertices.length; ++curVertex) {
+                                    var newVertex = { x: oldVertices[curVertex].x, y: oldVertices[curVertex].y }
+                                    newVertex.x += trans.tx;
+                                    newVertex.y += trans.ty;
+                                    newVertices.push(newVertex);
+                                }
+                                outboundLinks[curLink].set('vertices', newVertices);
+                            }
+                        }
+                    });
+                    graph.on("add", function () {
                         throttledUpdatedMiniMap(element, paper, showMiniMap);
                     });
-                    graph.on("remove", function() {
+                    graph.on("remove", function () {
                         throttledUpdatedMiniMap(element, paper, showMiniMap);
                     });
-                    jQuery(window).on("resize", function() {
+                    jQuery(window).on("resize", function () {
                         throttledUpdatedMiniMap(element, paper, showMiniMap);
                     });
 
                     // Set Observables
                     var graphObs = valueAccessor();
-                    if(ko.isObservable(graphObs))
-                    {
+                    if (ko.isObservable(graphObs)) {
                         graphObs(graph);
                     }
 
                     var paperObs = allBindings.get("nodePaper");
-                    if(paperObs && ko.isObservable(paperObs))
-                    {
+                    if (paperObs && ko.isObservable(paperObs)) {
                         paperObs(paper);
                     }
 
                     // Zoom
-                    paper.on('blank:mousewheel', function(event, x, y, delta) {
+                    paper.on('blank:mousewheel', function (event, x, y, delta) {
                         zoomOnTarget(event, paper, element, showMiniMap, enableNodeGraphPositionZoomUrl, x, y, delta);
                     });
-                    
-                    paper.on('cell:mousewheel element:mousewheel', function(_cellView, event, x, y, delta) {
+
+                    paper.on('cell:mousewheel element:mousewheel', function (_cellView, event, x, y, delta) {
                         zoomOnTarget(event, paper, element, showMiniMap, enableNodeGraphPositionZoomUrl, x, y, delta);
                     });
-                    
-                    jQuery(element).on("mousewheel DOMMouseScroll", ":not(svg)", function(event) {
+
+                    jQuery(element).on("mousewheel DOMMouseScroll", ":not(svg)", function (event) {
                         // Make sure zoom also works on mousewheel of html elements
                         event.target = element;
                     });
 
-                    jQuery(element).on("mousewheel DOMMouseScroll", function(event) {
+                    jQuery(element).on("mousewheel DOMMouseScroll", function (event) {
                         event.preventDefault();
                     });
 
                     // Pan
                     var dragStartPosition = null;
                     var blockStart = false;
-                    paper.on('blank:pointerdown', function(event, x, y) {
+                    var multiSelectOverlay = null;
+                    var multiSelectElement = null;
+                    var multiSelectStartPosition = null;
+                    var multiSelectedElements = null;
+                    paper.on('blank:pointerdown', function (event, x, y) {
+                        clearMultiselectElements(multiSelectedElements);
+                        multiSelectedElements = null;
+
+                        if (event.ctrlKey) {
+                            multiSelectStartPosition = { x: event.offsetX, paperX: x, y: event.offsetY, paperY: y };
+                            multiSelectOverlay = jQuery("<div class='gn-multiSelectBackgroundOverlay'></div>")
+                            multiSelectElement = jQuery("<div class='gn-multiSelectRectangle' style='left: " + event.offsetX + "px; top: " + event.offsetY + "px; width: 1px; height: 1px;'></div>");
+                            jQuery(element).append(multiSelectOverlay);
+                            multiSelectOverlay.append(multiSelectElement);
+                            return;
+                        }
+
                         jQuery(element).addClass("gn-nodeGraph-dragging");
-                        if(!blockStart)
-                        {
-                            dragStartPosition = { x: x * paper.scale().sx, y: y * paper.scale().sy};
+                        if (!blockStart) {
+                            dragStartPosition = { x: x * paper.scale().sx, y: y * paper.scale().sy };
                         }
                     });
 
-                    paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) {
+                    paper.on('cell:pointerup blank:pointerup', function (cellView, x, y) {
+                        if (multiSelectOverlay) {
+                            var left = Math.min(x, multiSelectStartPosition.paperX);
+                            var right = Math.max(x, multiSelectStartPosition.paperX);
+                            var top = Math.min(y, multiSelectStartPosition.paperY);
+                            var bottom = Math.max(y, multiSelectStartPosition.paperY);
+                            multiSelectedElements = paper.findViewsInArea({
+                                x: left,
+                                y: top,
+                                width: right - left,
+                                height: bottom - top
+                            });
+
+                            for (var curElement = 0; curElement < multiSelectedElements.length; ++curElement) {
+                                if (!multiSelectedElements[curElement].$box) {
+                                    continue;
+                                }
+
+                                multiSelectedElements[curElement].$box.addClass("gn-multiSelected");
+                            }
+
+                            multiSelectElement.remove();
+                            multiSelectOverlay.remove();
+                            multiSelectElement = null;
+                            multiSelectOverlay = null;
+                            return;
+                        }
+
                         jQuery(element).removeClass("gn-nodeGraph-dragging");
                         dragStartPosition = null;
                     });
 
-                    jQuery(element).on("mousemove", function(event) {
-                        if(dragStartPosition)
-                        {
+                    jQuery(element).on("mousemove", function (event) {
+                        if (multiSelectElement) {
+                            var left = Math.min(event.offsetX, multiSelectStartPosition.x);
+                            var right = Math.max(event.offsetX, multiSelectStartPosition.x);
+                            var top = Math.min(event.offsetY, multiSelectStartPosition.y);
+                            var bottom = Math.max(event.offsetY, multiSelectStartPosition.y);
+                            multiSelectElement.css("left", left);
+                            multiSelectElement.css("top", top);
+                            multiSelectElement.css("width", right - left);
+                            multiSelectElement.css("height", bottom - top);
+                            return;
+                        }
+
+                        if (dragStartPosition) {
                             paper.translate(event.offsetX - dragStartPosition.x, event.offsetY - dragStartPosition.y);
-                            if(enableNodeGraphPositionZoomUrl) {
+                            if (enableNodeGraphPositionZoomUrl) {
                                 debouncedUpdatePositionZoomUrl(paper);
                             }
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
@@ -1002,45 +1097,44 @@
                     var dragStartTransform = null;
                     var dragStartDistance = null;
                     var dragStartScale = null;
-                    jQuery(element).find("svg").on("touchstart", function(event) {
-                        if(jQuery(event.target).attr("id") != jQuery(element).find("svg").attr("id"))
-                        {
+                    jQuery(element).find("svg").on("touchstart", function (event) {
+                        if (jQuery(event.target).attr("id") != jQuery(element).find("svg").attr("id")) {
                             return;
                         }
 
-                        if(event.originalEvent.touches && event.originalEvent.touches.length == 1)
-                        {
+                        if (event.originalEvent.touches && event.originalEvent.touches.length == 1) {
                             dragStartPosition = { x: event.originalEvent.touches[0].screenX, y: event.originalEvent.touches[0].screenY };
                             dragStartTransform = { x: paper.translate().tx, y: paper.translate().ty }
                             blockStart = true;
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 blockStart = false;
                             }, 10);
                         }
-                        else if(event.originalEvent.touches && event.originalEvent.touches.length == 2)
-                        {
+                        else if (event.originalEvent.touches && event.originalEvent.touches.length == 2) {
                             dragStartDistance = calcTouchDistance(event.originalEvent.touches);
                             dragStartScale = paper.scale().sx;
                         }
                     });
 
-                    jQuery(element).on("touchmove", function(event) {
-                        if(dragStartPosition && event.originalEvent.touches && event.originalEvent.touches.length == 1)
-                        {
+                    jQuery(element).on("click", "input,select,textarea,button", function () {
+                        clearMultiselectElements(multiSelectedElements);
+                        multiSelectedElements = null;
+                    });
+
+                    jQuery(element).on("touchmove", function (event) {
+                        if (dragStartPosition && event.originalEvent.touches && event.originalEvent.touches.length == 1) {
                             paper.translate(event.originalEvent.touches[0].screenX - dragStartPosition.x + dragStartTransform.x, event.originalEvent.touches[0].screenY - dragStartPosition.y + dragStartTransform.y);
-                            if(enableNodeGraphPositionZoomUrl) {
+                            if (enableNodeGraphPositionZoomUrl) {
                                 debouncedUpdatePositionZoomUrl(paper);
                             }
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
-                        else if(dragStartDistance && event.originalEvent.touches && event.originalEvent.touches.length == 2)
-                        {
+                        else if (dragStartDistance && event.originalEvent.touches && event.originalEvent.touches.length == 2) {
                             var newDistance = calcTouchDistance(event.originalEvent.touches);
                             var newScale = dragStartScale * (newDistance / dragStartDistance);
-                            if(newScale >= minScale)
-                            {
+                            if (newScale >= minScale) {
                                 paper.scale(newScale, newScale);
-                                if(enableNodeGraphPositionZoomUrl) {
+                                if (enableNodeGraphPositionZoomUrl) {
                                     debouncedUpdatePositionZoomUrl(paper);
                                 }
                                 throttledUpdatedMiniMap(element, paper, showMiniMap);
@@ -1048,7 +1142,7 @@
                         }
                     });
 
-                    jQuery(element).on("touchend touchcancel", function(event) {
+                    jQuery(element).on("touchend touchcancel", function (event) {
                         dragStartPosition = null;
                         dragStartTransform = null;
                         dragStartDistance = null;
@@ -1059,12 +1153,10 @@
                     var urlPositionX = parseFloat(GoNorth.Util.getParameterFromUrl("nodeX"));
                     var urlPositionY = parseFloat(GoNorth.Util.getParameterFromUrl("nodeY"));
                     var urlZoom = parseFloat(GoNorth.Util.getParameterFromUrl("nodeZoom"));
-                    if(!isNaN(urlPositionX) && !isNaN(urlPositionY))
-                    {
+                    if (!isNaN(urlPositionX) && !isNaN(urlPositionY)) {
                         paper.translate(urlPositionX, urlPositionY);
                     }
-                    if(!isNaN(urlZoom))
-                    {
+                    if (!isNaN(urlZoom)) {
                         paper.scale(urlZoom, urlZoom);
                     }
 
@@ -1077,17 +1169,15 @@
 
                     jQuery(element).find(".gn-nodeGraphPositionZoomIndicator").css("font-size", defaultFontSize + "px");
                     jQuery(element).find(".gn-nodeGraphShowAllNodes").css("font-size", defaultFontSize + "px");
-                    jQuery(element).find(".gn-nodeGraphToogleMinimap").on("click", function() {
+                    jQuery(element).find(".gn-nodeGraphToogleMinimap").on("click", function () {
                         showMiniMap = !showMiniMap;
-                        if(showMiniMap)
-                        {
+                        if (showMiniMap) {
                             jQuery(element).find(".gn-nodeGraphMiniMap").slideDown(200);
                             jQuery(this).children("i").removeClass("glyphicon-chevron-down");
                             jQuery(this).children("i").addClass("glyphicon-chevron-up");
                             throttledUpdatedMiniMap(element, paper, showMiniMap);
                         }
-                        else
-                        {
+                        else {
                             jQuery(element).find(".gn-nodeGraphMiniMap").slideUp(200);
                             jQuery(this).children("i").removeClass("glyphicon-chevron-up");
                             jQuery(this).children("i").addClass("glyphicon-chevron-down");
@@ -1095,23 +1185,23 @@
                     });
 
                     // Event Handlers
-                    paper.on("link:options", function(linkView) {
+                    paper.on("link:options", function (linkView) {
                         var link = linkView.model;
                         var existingText = "";
                         var existingLabel = link.label(0);
-                        if(existingLabel && existingLabel.attrs && existingLabel.attrs.text && existingLabel.attrs.text.text) {
+                        if (existingLabel && existingLabel.attrs && existingLabel.attrs.text && existingLabel.attrs.text.text) {
                             existingText = existingLabel.attrs.text.text;
                         }
-                        GoNorth.PromptService.openInputPrompt(GoNorth.DefaultNodeShapes.Localization.Links.EnterName, existingText).done(function(label) {
+                        GoNorth.PromptService.openInputPrompt(GoNorth.DefaultNodeShapes.Localization.Links.EnterName, existingText).done(function (label) {
                             link.label(0, { attrs: { text: { text: label } } });
                         });
                     });
 
-                    paper.on("link:hide", function(linkView) {
+                    paper.on("link:hide", function (linkView) {
                         hideChildren(jQuery(element), graph, paper, linkView);
                     });
 
-                    jQuery(element).find(".gn-nodeGraphShowAllNodes").on("click", function() {
+                    jQuery(element).find(".gn-nodeGraphShowAllNodes").on("click", function () {
                         jQuery(element).find(".node-box-hidden").removeClass("node-box-hidden");
                         jQuery(element).find(".node-svg-hidden").removeClass("node-svg-hidden");
                         jQuery(element).find(".node-link-hidden").removeClass("node-link-hidden");
@@ -1120,15 +1210,15 @@
 
                     // Initialize
                     updatePositionZoomDisplay(element, paper);
-                    if(enableNodeGraphPositionZoomUrl) {
+                    if (enableNodeGraphPositionZoomUrl) {
                         debouncedUpdatePositionZoomUrl(paper);
                     }
-                    paper.on("translate", function() {
+                    paper.on("translate", function () {
                         throttledupdatePositionZoomDisplay(element, paper);
                     });
 
                     updateFontSize(paper, element, defaultFontSize);
-                    paper.on("scale", function() {
+                    paper.on("scale", function () {
                         updateFontSize(paper, element, defaultFontSize);
                         throttledupdatePositionZoomDisplay(element, paper);
                     });

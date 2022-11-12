@@ -9329,7 +9329,10 @@
                             "<a class='gn-clickable gn-nodeActionSelectQuest gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
                             "<a class='gn-clickable gn-nodeActionOpenQuest' title='" + DefaultNodeShapes.Localization.Actions.OpenQuestTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>" +
-                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.QuestText + "</div>" +
+                        "<div class='gn-nodeActionText'>" + 
+                            DefaultNodeShapes.Localization.Actions.QuestText + 
+                            "<button class='toggleFullscreen cornerButton' data-target='.gn-nodeActionQuestText' title='" + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + "'><i class='glyphicon glyphicon-resize-full'></i></button>" +
+                        "</div>" +
                         "<textarea class='gn-nodeActionQuestText'></textarea>";
             };
 
@@ -9364,6 +9367,8 @@
                 }
 
                 // Handlers
+                DefaultNodeShapes.Shapes.initFullscreenMode(contentElement);
+
                 var self = this;
                 var selectQuestAction = contentElement.find(".gn-nodeActionSelectQuest");
                 contentElement.find(".gn-nodeActionSelectQuest").on("click", function() {
@@ -14721,7 +14726,8 @@
                         '<div class="node">',
                             '<span class="label"><i class="nodeIcon glyphicon"></i><span class="labelText"></span></span>',
                             '<button class="delete gn-nodeDeleteOnReadonly cornerButton" title="' + GoNorth.DefaultNodeShapes.Localization.DeleteNode + '">x</button>',
-                            '<textarea class="nodeText" placeholder="' + Aika.Localization.TextNode.Text + '" />',
+                            '<button class="toggleFullscreen toggleFullscreenOffset cornerButton" data-target=".nodeText" title="' + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + '"><i class="glyphicon glyphicon-resize-full"></i></button>',
+                            '<textarea class="nodeText" placeholder="' + Aika.Localization.TextNode.Text + '"></textarea>',
                         '</div>',
                     ].join('')
                 });

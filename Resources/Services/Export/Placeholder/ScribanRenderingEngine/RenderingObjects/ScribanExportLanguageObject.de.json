@@ -1,0 +1,4 @@
+{
+    "PlaceholderDesc_Object": "Referenziertes Objekt zu dem die Sprachschlüssel gehören",
+    "PlaceholderDesc_LanguageKeys": "Liste von Sprachschlüsseln die zum referenzierten Objekt gehören. Kann mit <i>for</i> durchlaufen werden. Die Eigenschaften der einzelnen Einträge kann unter cur_key gefunden werden."
+}

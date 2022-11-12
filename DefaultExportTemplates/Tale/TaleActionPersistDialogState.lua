@@ -1,1 +1,2 @@
-BaseDialog_PersistDialogState(this, "{{ if action_node.child_node && action_node.child_node.node_step_function_name_no_flag_set }}{{ action_node.child_node.node_step_function_name_no_flag_set }}{{ end }}")
+BaseDialog_PersistDialogState(this, "{{ if action_node.child_node && action_node.child_node.node_step_function_name }}{{ action_node.child_node.node_step_function_name }}{{ end }}")
+{{~ if !action.end_dialog && action_node.child_node && action_node.child_node.node_step_function_name != "" ~}}{{ action_node.child_node.node_step_function_name }}(this){{~ end ~}}

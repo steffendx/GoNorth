@@ -313,3 +313,5 @@ SkillImages/**
 dbdata/**
 
 xunit.xml
+
+UITests/.cache

@@ -25,5 +25,17 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingOb
         /// </summary>
         [ScribanExportValueLabel]
         public List<ScribanExportLanguageKey> ReferencedLanguageKeys { get; set; }
+        
+        /// <summary>
+        /// Dialog language keys
+        /// </summary>
+        [ScribanExportValueLabel]
+        public List<ScribanExportLanguageKey> DialogLanguageKeys { get; set; }
+
+        /// <summary>
+        /// Language Keys of referenced objects
+        /// </summary>
+        [ScribanExportValueLabel]
+        public List<ScribanExportLanguageObject> DialogReferencedObjects { get; set; }
     }
 }

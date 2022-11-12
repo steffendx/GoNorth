@@ -29,7 +29,10 @@
                             "<a class='gn-actionNodeNpcSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseNpcLabel + "</a>" +
                             "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>" +
-                       "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.FloatingText + "</div>" +
+                       "<div class='gn-nodeActionText'>" + 
+                            DefaultNodeShapes.Localization.Actions.FloatingText + 
+                            "<button class='toggleFullscreen cornerButton' data-target='.gn-nodeActionFloatingText' title='" + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + "'><i class='glyphicon glyphicon-resize-full'></i></button>" +
+                        "</div>" +
                        "<textarea class='gn-nodeActionFloatingText'></textarea>";
             };
 
@@ -67,6 +70,8 @@
                 }
 
                 // Handlers
+                DefaultNodeShapes.Shapes.initFullscreenMode(contentElement);
+                
                 var self = this;
                 var floatingText = contentElement.find(".gn-nodeActionFloatingText");
                 floatingText.on("input", function(e) {

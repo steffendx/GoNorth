@@ -4792,7 +4792,9 @@
                         mode = "ace/mode/lua";
                     }
 
-                    obs._editor = ace.edit(element);
+                    obs._editor = ace.edit(element, {
+                        useWorker: false
+                    });
                     obs._editor.setTheme(theme);
                     obs._editor.session.setMode(mode);
                     obs._editor.setOptions({
@@ -8596,7 +8598,10 @@
                             "<a class='gn-clickable gn-nodeActionSelectQuest gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
                             "<a class='gn-clickable gn-nodeActionOpenQuest' title='" + DefaultNodeShapes.Localization.Actions.OpenQuestTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>" +
-                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.QuestText + "</div>" +
+                        "<div class='gn-nodeActionText'>" + 
+                            DefaultNodeShapes.Localization.Actions.QuestText + 
+                            "<button class='toggleFullscreen cornerButton' data-target='.gn-nodeActionQuestText' title='" + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + "'><i class='glyphicon glyphicon-resize-full'></i></button>" +
+                        "</div>" +
                         "<textarea class='gn-nodeActionQuestText'></textarea>";
             };
 
@@ -8631,6 +8636,8 @@
                 }
 
                 // Handlers
+                DefaultNodeShapes.Shapes.initFullscreenMode(contentElement);
+
                 var self = this;
                 var selectQuestAction = contentElement.find(".gn-nodeActionSelectQuest");
                 contentElement.find(".gn-nodeActionSelectQuest").on("click", function() {
@@ -10187,7 +10194,10 @@
              * @returns {string} HTML Content of the action
              */
             Actions.ShowFloatingTextAboveObjectAction.prototype.getContent = function() {
-                return "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.FloatingText + "</div>" +
+                return "<div class='gn-nodeActionText'>" + 
+                            DefaultNodeShapes.Localization.Actions.FloatingText + 
+                            "<button class='toggleFullscreen cornerButton' data-target='.gn-nodeActionFloatingText' title='" + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + "'><i class='glyphicon glyphicon-resize-full'></i></button>" +
+                        "</div>" +
                        "<textarea class='gn-nodeActionFloatingText'></textarea>";
             };
 
@@ -10204,6 +10214,8 @@
                 this.deserializeData();
 
                 // Handlers
+                DefaultNodeShapes.Shapes.initFullscreenMode(contentElement);
+                
                 var self = this;
                 var floatingText = contentElement.find(".gn-nodeActionFloatingText");
                 floatingText.on("input", function(e) {
@@ -10385,7 +10397,10 @@
                             "<a class='gn-actionNodeNpcSelect gn-clickable'>" + DefaultNodeShapes.Localization.Actions.ChooseNpcLabel + "</a>" +
                             "<a class='gn-clickable gn-nodeActionOpenObject' title='" + DefaultNodeShapes.Localization.Actions.OpenNpcTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>" +
-                       "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.FloatingText + "</div>" +
+                       "<div class='gn-nodeActionText'>" + 
+                            DefaultNodeShapes.Localization.Actions.FloatingText + 
+                            "<button class='toggleFullscreen cornerButton' data-target='.gn-nodeActionFloatingText' title='" + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + "'><i class='glyphicon glyphicon-resize-full'></i></button>" +
+                        "</div>" +
                        "<textarea class='gn-nodeActionFloatingText'></textarea>";
             };
 
@@ -10423,6 +10438,8 @@
                 }
 
                 // Handlers
+                DefaultNodeShapes.Shapes.initFullscreenMode(contentElement);
+                
                 var self = this;
                 var floatingText = contentElement.find(".gn-nodeActionFloatingText");
                 floatingText.on("input", function(e) {

@@ -26,6 +26,14 @@ footer {
     height: 120px !important;
 }
 
+.gn-inputPromptMaxSizeDialog {
+    width: 90%;
+}
+
+.gn-inputPromptMaxSizeDialog textarea {
+    height: 240px !important;
+}
+
 /* Cookie policy */
 #cookieConsent {
     top: 21px;

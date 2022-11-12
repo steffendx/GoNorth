@@ -37,6 +37,7 @@
 
             Localization.Actions.PersistDialogStateLabel = "Dialogzustand speichern";
             Localization.Actions.PersistDialogStateWillContinueOnThisPointNextTalk = "Der Dialog wird an diesem Punkt forgesetzt wenn der Npc das nächste mal angesprochen wird.";
+            Localization.Actions.PersistDialogStateEndDialog = "Dialog beenden";
 
             Localization.Actions.OpenShopLabel = "Handel öffnen";
             Localization.Actions.WillOpenAShopForTheCurrentNpc = "Es wird ein Handel mit dem aktuellen Npc gestartet.";

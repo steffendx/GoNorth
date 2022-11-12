@@ -29,7 +29,10 @@
                             "<a class='gn-clickable gn-nodeActionSelectQuest gn-nodeNonClickableOnReadonly'></a>&nbsp;" +
                             "<a class='gn-clickable gn-nodeActionOpenQuest' title='" + DefaultNodeShapes.Localization.Actions.OpenQuestTooltip + "' style='display: none'><i class='glyphicon glyphicon-eye-open'></i></a>" +
                         "</div>" +
-                        "<div class='gn-nodeActionText'>" + DefaultNodeShapes.Localization.Actions.QuestText + "</div>" +
+                        "<div class='gn-nodeActionText'>" + 
+                            DefaultNodeShapes.Localization.Actions.QuestText + 
+                            "<button class='toggleFullscreen cornerButton' data-target='.gn-nodeActionQuestText' title='" + GoNorth.DefaultNodeShapes.Localization.SwitchToFullscreen + "'><i class='glyphicon glyphicon-resize-full'></i></button>" +
+                        "</div>" +
                         "<textarea class='gn-nodeActionQuestText'></textarea>";
             };
 
@@ -64,6 +67,8 @@
                 }
 
                 // Handlers
+                DefaultNodeShapes.Shapes.initFullscreenMode(contentElement);
+
                 var self = this;
                 var selectQuestAction = contentElement.find(".gn-nodeActionSelectQuest");
                 contentElement.find(".gn-nodeActionSelectQuest").on("click", function() {

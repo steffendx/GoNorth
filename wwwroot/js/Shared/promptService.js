@@ -12,6 +12,7 @@
             this.inputPromptText = new ko.observable("");
             this.inputPromptTextMandatory = new ko.observable(false);
             this.inputPromptIsMultiLine = new ko.observable(false);
+            this.inputPromptMaxSize = new ko.observable(false);
             this.inputPromptDeferred = null;
 
             this.yesNoPromptVisible = new ko.observable(false);
@@ -26,10 +27,11 @@
              * @param {string} title Title of the dialog
              * @param {string} existingText Optional existing text
              * @param {boolean} isTextMandatory true if its mandatory to enter a text, else false
-             * @param {boolena} isMultiLine true if the text must be displayed as a multiline text
+             * @param {boolean} isMultiLine true if the text must be displayed as a multiline text
+             * @param {boolean} maxSize true if the dialog should be scaled to max size
              * @returns {jQuery.Deferred} Promise that will be resolved with the new text
              */
-            PromptService.openInputPrompt = function(title, existingText, isTextMandatory, isMultiLine) {
+            PromptService.openInputPrompt = function(title, existingText, isTextMandatory, isMultiLine, maxSize) {
                 if(!existingText) {
                     existingText = "";
                 }
@@ -39,6 +41,7 @@
                 self.inputPromptVisible(true);
                 self.inputPromptTextMandatory(!!isTextMandatory);
                 self.inputPromptIsMultiLine(!!isMultiLine);
+                self.inputPromptMaxSize(!!maxSize);
                 self.inputPromptDeferred = new jQuery.Deferred();
 
                 GoNorth.Util.setupValidation("#gn-inputPromptForm");

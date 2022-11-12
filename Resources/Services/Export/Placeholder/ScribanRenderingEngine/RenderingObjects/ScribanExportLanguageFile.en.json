@@ -1,5 +1,7 @@
 {
     "PlaceholderDesc_Object": "Object to which the language file belongs.",
     "PlaceholderDesc_LanguageKeys": "List of language keys that are being exported. Can be iterated using <i>for</i>. The property of the entries can be found under cur_key.",
-    "PlaceholderDesc_ReferencedLanguageKeys": "List of language keys that are being referenced by the current object (i.e. if a quest is used in the dialog). Can be iterated using <i>for</i>. The property of the entries can be found under cur_key."
+    "PlaceholderDesc_ReferencedLanguageKeys": "List of language keys that are being referenced by the current object (i.e. if a quest is used in the dialog). Can be iterated using <i>for</i>. The property of the entries can be found under cur_key.",
+    "PlaceholderDesc_DialogLanguageKeys": "List of language keys that are being exported based on the dialog. Can be iterated using <i>for</i>. The property of the entries can be found under cur_key. This property is only filled for npcs.",
+    "PlaceholderDesc_DialogReferencedObjects": "List of objects that are being exported based on the dialog. Can be iterated using <i>for</i>. The property of the entries can be found under cur_obj. This property is only filled for npcs."
 }

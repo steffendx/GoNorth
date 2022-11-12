@@ -160,7 +160,7 @@ namespace GoNorth.Services.Export.Dialog.StepRenderers
                                     new ScribanSkillValueChangeRenderer(defaultTemplateProvider, cachedDbAccess, scribanLanguageKeyGenerator, localizerFactory, false)));
             _actionRenderes.Add(ActionType.PersistDialogState, new ActionRendererDispatcher(TemplateType.TaleActionPersistDialogState, defaultTemplateProvider,
                                     new PersistDialogStateActionRenderer(),
-                                    new ScribanPersistDialogStateActionRenderer(cachedDbAccess)));
+                                    new ScribanPersistDialogStateActionRenderer(cachedDbAccess, localizerFactory)));
             _actionRenderes.Add(ActionType.OpenShop, new ActionRendererDispatcher(TemplateType.TaleActionOpenShop, defaultTemplateProvider,
                                     new OpenShopActionRenderer(),
                                     new ScribanOpenShopActionRenderer(cachedDbAccess)));

@@ -5,7 +5,7 @@
 <div id="gn-promptServiceContainer">
     <!-- Prompt with input -->
     <div class="modal fade" role="dialog" data-bind="modal: inputPromptVisible">
-        <div class="modal-dialog">
+        <div class="modal-dialog" data-bind="css: { 'gn-inputPromptMaxSizeDialog': inputPromptMaxSize }">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -18,7 +18,7 @@
                             <input type="text" class="form-control" id="gn-inputPromptText" placeholder="@Localizer["Text"]" name="inputPromptText" data-bind="value: inputPromptText, enterPressed: confirmInputPrompt, attr: { required: inputPromptTextMandatory() ? 'required' : undefined }"/>
                             <!-- /ko -->
                             <!-- ko if: inputPromptIsMultiLine -->
-                            <textarea type="text" class="form-control gn-nonResizeable gn-inputPromptMultiLine" rowss="6" id="gn-inputPromptTextMultiLine" placeholder="@Localizer["Text"]" name="inputPromptText" data-bind="value: inputPromptText, attr: { required: inputPromptTextMandatory() ? 'required' : undefined }"></textarea>
+                            <textarea type="text" class="form-control gn-nonResizeable gn-inputPromptMultiLine" rows="6" id="gn-inputPromptTextMultiLine" placeholder="@Localizer["Text"]" name="inputPromptText" data-bind="value: inputPromptText, attr: { required: inputPromptTextMandatory() ? 'required' : undefined }"></textarea>
                             <!-- /ko -->
                         </div>
                     </form>

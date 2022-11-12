@@ -23,7 +23,10 @@
              * @returns {string} HTML Content of the action
              */
             Actions.PersistDialogStateAction.prototype.getContent = function() {
-                return  "<div class='gn-nodeActionText'>" + Tale.Localization.Actions.PersistDialogStateWillContinueOnThisPointNextTalk + "</div>";
+                var id = (new Date()).getTime();
+                return  "<div class='gn-nodeActionText'>" + Tale.Localization.Actions.PersistDialogStateWillContinueOnThisPointNextTalk + "</div>" +
+                        "<input class='gn-nodeActionCancelDialog' type='checkbox' id='" + id + "'/>" +
+                        "<label for='" + id + "'>" + Tale.Localization.Actions.PersistDialogStateEndDialog + "</label>";
             };
 
             /**
@@ -34,8 +37,46 @@
              */
             Actions.PersistDialogStateAction.prototype.onInitialized = function(contentElement, actionNode) {
                 this.contentElement = contentElement;
+
+                // Deserialize
+                this.deserializeData();
+                
+                // Handlers
+                var self = this;
+                var cancelDialog = contentElement.find(".gn-nodeActionCancelDialog");
+                cancelDialog.on("change", function(e) {
+                    self.saveData();
+                });
             };
             
+
+            /**
+             * Deserializes the data
+             */
+            Actions.PersistDialogStateAction.prototype.deserializeData = function() {
+                var actionData = this.nodeModel.get("actionData");
+                if(!actionData)
+                {
+                    return "";
+                }
+
+                var data = JSON.parse(actionData);
+                
+                this.contentElement.find(".gn-nodeActionCancelDialog").prop("checked", data.endDialog);
+            }
+            
+            /**
+             * Saves the data
+             */
+            Actions.PersistDialogStateAction.prototype.saveData = function() {
+                var endDialog = this.contentElement.find(".gn-nodeActionCancelDialog").is(":checked");
+                var serializeData = {
+                    endDialog: endDialog
+                };
+
+                this.nodeModel.set("actionData", JSON.stringify(serializeData));
+            }
+
             /**
              * Builds the action
              * 

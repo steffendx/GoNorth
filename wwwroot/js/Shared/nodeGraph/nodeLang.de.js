@@ -20,6 +20,8 @@
 
             // Shared Messages
             Localization.DeleteNode = "Knoten löschen";
+            Localization.SwitchToFullscreen = "In Vollbild bearbeiten";
+            Localization.EditText = "Text bearbeiten";
             Localization.ErrorOccured = "Ein Fehler ist aufgetreten";
 
             // Text Node

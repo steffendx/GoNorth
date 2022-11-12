@@ -1,0 +1,4 @@
+{
+    "PlaceholderDesc_Object": "Referenced object to which the language keys belong",
+    "PlaceholderDesc_LanguageKeys": "List of language keys that are being exported. Can be iterated using <i>for</i>. The property of the entries can be found under cur_key."
+}

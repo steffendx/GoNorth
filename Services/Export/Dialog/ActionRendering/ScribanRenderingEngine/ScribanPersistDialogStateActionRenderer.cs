@@ -4,23 +4,21 @@ using GoNorth.Data.Exporting;
 using GoNorth.Data.FlexFieldDatabase;
 using GoNorth.Data.Project;
 using GoNorth.Services.Export.Data;
+using GoNorth.Services.Export.Dialog.ActionRendering.ConfigObject;
+using GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine.RenderingObjects;
 using GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine.Util;
 using GoNorth.Services.Export.Dialog.StepRenderers.ActionRenderer;
 using GoNorth.Services.Export.Placeholder;
+using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util;
+using Microsoft.Extensions.Localization;
 
 namespace GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine
 {
     /// <summary>
     /// Class for rendering a persist dialog state action renderer
     /// </summary>
-    public class ScribanPersistDialogStateActionRenderer : BaseActionRenderer<ScribanPersistDialogStateActionRenderer.PersistDialogStateActionData>
+    public class ScribanPersistDialogStateActionRenderer : BaseActionRenderer<PersistDialogStateActionData>
     {
-        /// <summary>
-        /// Persist dialog state action data
-        /// </summary>
-        public class PersistDialogStateActionData
-        {
-        }
         
         /// <summary>
         /// Cached database access
@@ -28,12 +26,19 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine
         private readonly IExportCachedDbAccess _cachedDbAccess;
 
         /// <summary>
+        /// String Localizer Factory
+        /// </summary>
+        private readonly IStringLocalizerFactory _localizerFactory;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="cachedDbAccess">Cached db access</param>
-        public ScribanPersistDialogStateActionRenderer(IExportCachedDbAccess cachedDbAccess)
+        /// <param name="localizerFactory">Localizer Factory</param>
+        public ScribanPersistDialogStateActionRenderer(IExportCachedDbAccess cachedDbAccess, IStringLocalizerFactory localizerFactory)
         {
             _cachedDbAccess = cachedDbAccess;
+            _localizerFactory = localizerFactory;
         }
 
         /// <summary>
@@ -49,9 +54,12 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine
         /// <param name="exportSettings">Export Settings</param>
         /// <param name="stepRenderer">Action Step renderer</param>
         /// <returns>Action string</returns>
-        public override async Task<string> BuildActionFromParsedData(ExportTemplate template, ScribanPersistDialogStateActionRenderer.PersistDialogStateActionData parsedData, ExportDialogData data, ExportDialogData nextStep, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, 
+        public override async Task<string> BuildActionFromParsedData(ExportTemplate template, PersistDialogStateActionData parsedData, ExportDialogData data, ExportDialogData nextStep, GoNorthProject project, ExportPlaceholderErrorCollection errorCollection, 
                                                                      FlexFieldObject flexFieldObject, ExportSettings exportSettings, IActionStepRenderer stepRenderer)
         {
+            ScribanPersistDialogStateData persistDialogData = new ScribanPersistDialogStateData();
+            persistDialogData.EndDialog = parsedData != null && parsedData.EndDialog.HasValue ? parsedData.EndDialog.Value : false;
+
             return await ScribanActionRenderingUtil.FillPlaceholders(_cachedDbAccess, errorCollection, template.Code, parsedData, flexFieldObject, data, nextStep, null, stepRenderer);
         }
 
@@ -64,7 +72,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine
         /// <param name="child">Child node</param>
         /// <param name="parent">Parent</param>
         /// <returns>Preview text</returns>
-        public override Task<string> BuildPreviewTextFromParsedData(ScribanPersistDialogStateActionRenderer.PersistDialogStateActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
+        public override Task<string> BuildPreviewTextFromParsedData(PersistDialogStateActionData parsedData, FlexFieldObject flexFieldObject, ExportPlaceholderErrorCollection errorCollection, ExportDialogData child, ExportDialogData parent)
         {
             return Task.FromResult("Persist Dialog State");
         }
@@ -76,7 +84,7 @@ namespace GoNorth.Services.Export.Dialog.ActionRendering.ScribanRenderingEngine
         /// <returns>Export Template Placeholder</returns>
         public override List<ExportTemplatePlaceholder> GetExportTemplatePlaceholdersForType(TemplateType templateType)
         {
-            return new List<ExportTemplatePlaceholder>();
+            return ScribanPlaceholderGenerator.GetPlaceholdersForObject<ScribanPersistDialogStateData>(_localizerFactory, ExportConstants.ScribanActionObjectKey);
         }
     }
 }

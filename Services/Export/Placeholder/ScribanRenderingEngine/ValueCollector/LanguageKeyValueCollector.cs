@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GoNorth.Data.Aika;
 using GoNorth.Data.Exporting;
+using GoNorth.Data.NodeGraph;
 using GoNorth.Data.Project;
+using GoNorth.Data.Tale;
 using GoNorth.Services.Export.Data;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingObjects;
 using GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.Util;
@@ -27,6 +30,11 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
         /// Object key for the current language key entry
         /// </summary>
         private const string LanguageKeyEntryObjectKey = "cur_key";
+        
+        /// <summary>
+        /// Object key for the current language key entry
+        /// </summary>
+        private const string LanguageKeyRefObjectKey = "cur_obj";
 
         /// <summary>
         /// Export cached database access
@@ -104,6 +112,13 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             languageFileData.LanguageKeys = ConvertLanguageKeysToScriban(languageKeys, exportSettings);
             languageFileData.ReferencedLanguageKeys = ConvertLanguageKeysToScriban(referencedLanguageKeys, exportSettings);
 
+            languageFileData.DialogLanguageKeys = new List<ScribanExportLanguageKey>();
+            languageFileData.DialogReferencedObjects = new List<ScribanExportLanguageObject>();
+            if(data.ExportData.ContainsKey(ExportConstants.ExportDataDialog)) 
+            {
+                await CollectReferencedObjects(languageFileData, languageKeys, languageFileData.LanguageKeys, data.ExportData[ExportConstants.ExportDataDialog] as TaleDialog, exportSettings);
+            }
+
             scriptObject.AddOrUpdate(LanguageObjectKey, languageFileData);
         }
 
@@ -126,6 +141,59 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             }
 
             return 2;
+        }
+
+        /// <summary>
+        /// Collects referenced objects
+        /// </summary>
+        /// <param name="languageFileData">Language file data to fill</param>
+        /// <param name="languageKeys">Language keys</param>
+        /// <param name="scribanLanguageKeys">Scriban Language Keys</param>
+        /// <param name="taleDialog">Dialog</param>
+        /// <param name="exportSettings">Export settings</param>
+        /// <returns>Task</returns>
+        private async Task CollectReferencedObjects(ScribanExportLanguageFile languageFileData, List<LanguageKey> languageKeys, List<ScribanExportLanguageKey> scribanLanguageKeys, TaleDialog taleDialog, ExportSettings exportSettings)
+        {
+            if(taleDialog == null)
+            {
+                return;
+            }
+
+            foreach(LanguageKey curKey in languageKeys)
+            {
+                ScribanExportLanguageKey scribanKey = scribanLanguageKeys.FirstOrDefault(s => s.Key == curKey.LangKey);
+                if(scribanKey == null)
+                {
+                    continue;
+                }
+
+                ActionNode targetActionNode = taleDialog.Action.FirstOrDefault(a => a.Id == curKey.LangKeyRef);
+                if(targetActionNode != null && !string.IsNullOrEmpty(targetActionNode.ActionRelatedToObjectId))
+                {
+                    ScribanExportLanguageObject refObj = languageFileData.DialogReferencedObjects.FirstOrDefault(o => o.Object.Id == targetActionNode.ActionRelatedToObjectId);
+                    if(refObj == null)
+                    {
+                        refObj = new ScribanExportLanguageObject();
+                        if(targetActionNode.ActionRelatedToObjectType == "Quest")
+                        {
+                            AikaQuest quest = await _exportCachedDbAccess.GetQuestById(targetActionNode.ActionRelatedToObjectId);
+                            refObj.Object = FlexFieldValueCollectorUtil.ConvertScribanFlexFieldObject(quest, exportSettings, _errorCollection);
+                        }
+                        else
+                        {
+                            languageFileData.DialogLanguageKeys.Add(scribanKey);
+                            continue;
+                        }
+
+                        languageFileData.DialogReferencedObjects.Add(refObj);
+                    }
+
+                    refObj.LanguageKeys.Add(scribanKey);
+                    continue;
+                }
+
+                languageFileData.DialogLanguageKeys.Add(scribanKey);
+            }
         }
 
         /// <summary>
@@ -161,6 +229,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             languagePlaceholders.RemoveAll(p => p.Name.EndsWith(unusedFieldsKey));
 
             languagePlaceholders.AddRange(ScribanPlaceholderGenerator.GetPlaceholdersForObject<ScribanExportLanguageKey>(_localizerFactory, LanguageKeyEntryObjectKey));
+            languagePlaceholders.AddRange(ScribanPlaceholderGenerator.GetPlaceholdersForObject<ScribanExportLanguageObject>(_localizerFactory, LanguageKeyRefObjectKey));
 
             return languagePlaceholders;
         }

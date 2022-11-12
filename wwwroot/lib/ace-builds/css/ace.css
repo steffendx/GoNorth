@@ -1,4 +1,55 @@
-/*ace.js*/
+/*ace_scrollbar.css*/
+.ace_editor>.ace_sb-v div, .ace_editor>.ace_sb-h div{
+position: absolute;
+background: rgba(128, 128, 128, 0.6);
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+border: 1px solid #bbb;
+border-radius: 2px;
+z-index: 8;
+}
+.ace_editor>.ace_sb-v, .ace_editor>.ace_sb-h {
+position: absolute;
+z-index: 6;
+background: none;
+overflow: hidden!important;
+}
+.ace_editor>.ace_sb-v {
+z-index: 6;
+right: 0;
+top: 0;
+width: 12px;
+}
+.ace_editor>.ace_sb-v div {
+z-index: 8;
+right: 0;
+width: 100%;
+}
+.ace_editor>.ace_sb-h {
+bottom: 0;
+left: 0;
+height: 12px;
+}
+.ace_editor>.ace_sb-h div {
+bottom: 0;
+height: 100%;
+}
+.ace_editor>.ace_sb_grabbed {
+z-index: 8;
+background: #000;
+}
+/*ace_editor.css*/
+/*
+styles = []
+for (var i = 1; i < 16; i++) {
+styles.push(".ace_br" + i + "{" + (
+["top-left", "top-right", "bottom-right", "bottom-left"]
+).map(function(x, j) {
+return i & (1<<j) ? "border-" + x + "-radius: 3px;" : "" 
+}).filter(Boolean).join(" ") + "}")
+}
+styles.join("\n")
+*/
 .ace_br1 {border-top-left-radius    : 3px;}
 .ace_br2 {border-top-right-radius   : 3px;}
 .ace_br3 {border-top-left-radius    : 3px; border-top-right-radius:    3px;}
@@ -54,9 +105,6 @@ z-index: 1000;
 }
 .ace_dragging.ace_dark .ace_scroller:before{
 background: rgba(0, 0, 0, 0.01);
-}
-.ace_selecting, .ace_selecting * {
-cursor: text !important;
 }
 .ace_gutter {
 position: absolute;
@@ -154,6 +202,7 @@ contain: strict;
 -moz-user-select: text;
 -webkit-user-select: text;
 user-select: text;
+/*with `pre-line` chrome inserts &nbsp; instead of space*/
 white-space: pre!important;
 }
 .ace_text-input.ace_composition {
@@ -183,11 +232,14 @@ z-index: auto;
 z-index: 1;
 position: absolute;
 overflow: hidden;
+/* workaround for chrome bug https://github.com/ajaxorg/ace/issues/2312*/
 word-wrap: normal;
 white-space: pre;
 height: 100%;
 width: 100%;
 box-sizing: border-box;
+/* setting pointer-events: auto; on node under the mouse, which changes
+during scroll, will break mouse wheel scrolling in Safari */
 pointer-events: none;
 }
 .ace_gutter-layer {
@@ -235,6 +287,7 @@ z-index: 4;
 position: absolute;
 box-sizing: border-box;
 border-left: 2px solid;
+/* workaround for smooth cursor repaintng whole screen in chrome */
 transform: translatez(0);
 }
 .ace_multiselect .ace_cursor {
@@ -383,6 +436,9 @@ border: 1px solid rgba(0, 0, 0, 0.4);
 background-color: rgba(0, 0, 0, 0.05);
 box-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
 }
+/**
+* Dark version for fold widgets
+*/
 .ace_dark .ace_fold-widget {
 background-image: url("./main-12.png");
 }
@@ -486,6 +542,7 @@ white-space: pre;
 opacity: 0.7;
 margin: 0 10px;
 }
+/*ace-tm*/
 .ace-tm .ace_gutter {
 background: #f0f0f0;
 color: #333;
@@ -605,6 +662,10 @@ border: 1px solid rgb(200, 200, 250);
 .ace-tm .ace_indent-guide {
 background: url("./main-15.png") right repeat-y;
 }
+.ace-tm .ace_indent-guide-active {
+background: url("./main-16.png") right repeat-y;
+}
+/*error_marker.css*/
 .error_widget_wrapper {
 background: inherit;
 color: inherit;
@@ -637,7 +698,7 @@ border-right-color: transparent!important;
 border-left-color: transparent!important;
 top: -5px;
 }
-/*ext-code_lens.js*/
+/*codelense.css*/
 .ace_codeLens {
 position: absolute;
 color: #aaa;
@@ -659,7 +720,7 @@ text-decoration: underline;
 .ace_dark > .ace_codeLens > a:hover {
 color: #4e94ce;
 }
-/*ext-emmet.js*/
+/*snippets.css*/
 .ace_snippet-marker {
 -moz-box-sizing: border-box;
 box-sizing: border-box;
@@ -667,7 +728,56 @@ background: rgba(194, 193, 208, 0.09);
 border: 1px dotted rgba(211, 208, 235, 0.62);
 position: absolute;
 }
-/*ext-keybinding_menu.js*/
+/*autocompletion.css*/
+.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
+background-color: #CAD6FA;
+z-index: 1;
+}
+.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
+background-color: #3a674e;
+}
+.ace_editor.ace_autocomplete .ace_line-hover {
+border: 1px solid #abbffe;
+margin-top: -1px;
+background: rgba(233,233,253,0.4);
+position: absolute;
+z-index: 2;
+}
+.ace_dark.ace_editor.ace_autocomplete .ace_line-hover {
+border: 1px solid rgba(109, 150, 13, 0.8);
+background: rgba(58, 103, 78, 0.62);
+}
+.ace_completion-meta {
+opacity: 0.5;
+margin: 0.9em;
+}
+.ace_completion-message {
+color: blue;
+}
+.ace_editor.ace_autocomplete .ace_completion-highlight{
+color: #2d69c7;
+}
+.ace_dark.ace_editor.ace_autocomplete .ace_completion-highlight{
+color: #93ca12;
+}
+.ace_editor.ace_autocomplete {
+width: 300px;
+z-index: 200000;
+border: 1px lightgray solid;
+position: fixed;
+box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+line-height: 1.4;
+background: #fefefe;
+color: #111;
+}
+.ace_dark.ace_editor.ace_autocomplete {
+border: 1px #484747 solid;
+box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.51);
+line-height: 1.4;
+background: #25282c;
+color: #c1c1c1;
+}
+/*settings_menu.css*/
 #ace_settingsmenu, #kbshortcutmenu {
 background-color: #F7F7F7;
 color: black;
@@ -728,57 +838,7 @@ margin: 0px;
 .ace_optionsMenuEntry button:hover{
 background: #f0f0f0;
 }
-/*ext-language_tools.js*/
-.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
-background-color: #CAD6FA;
-z-index: 1;
-}
-.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line {
-background-color: #3a674e;
-}
-.ace_editor.ace_autocomplete .ace_line-hover {
-border: 1px solid #abbffe;
-margin-top: -1px;
-background: rgba(233,233,253,0.4);
-position: absolute;
-z-index: 2;
-}
-.ace_dark.ace_editor.ace_autocomplete .ace_line-hover {
-border: 1px solid rgba(109, 150, 13, 0.8);
-background: rgba(58, 103, 78, 0.62);
-}
-.ace_completion-meta {
-opacity: 0.5;
-margin: 0.9em;
-}
-.ace_completion-message {
-color: blue;
-}
-.ace_editor.ace_autocomplete .ace_completion-highlight{
-color: #2d69c7;
-}
-.ace_dark.ace_editor.ace_autocomplete .ace_completion-highlight{
-color: #93ca12;
-}
-.ace_editor.ace_autocomplete {
-width: 300px;
-z-index: 200000;
-border: 1px lightgray solid;
-position: fixed;
-box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-line-height: 1.4;
-background: #fefefe;
-color: #111;
-}
-.ace_dark.ace_editor.ace_autocomplete {
-border: 1px #484747 solid;
-box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.51);
-line-height: 1.4;
-background: #25282c;
-color: #c1c1c1;
-}
-/*ext-options.js*/
-/*ext-prompt.js*/
+/*promtp.css*/
 .ace_prompt_container {
 max-width: 600px;
 width: 100%;
@@ -788,7 +848,10 @@ background: white;
 border-radius: 2px;
 box-shadow: 0px 2px 3px 0px #555;
 }
-/*ext-searchbox.js*/
+/*ace_searchbox*/
+/* ------------------------------------------------------------------------------------------
+* Editor Search Form
+* --------------------------------------------------------------------------------------- */
 .ace_search {
 background-color: #ddd;
 color: #666;
@@ -880,7 +943,7 @@ transform: rotate(-45deg);
 border-width: 0 2px 2px 0 ;
 }
 .ace_searchbtn_close {
-background: url("./main-16.png") no-repeat 50% 0;
+background: url("./main-17.png") no-repeat 50% 0;
 border-radius: 50%;
 border: 0 none;
 color: #656565;
@@ -939,8 +1002,7 @@ float: left;
 font-family: arial;
 padding: 0 8px;
 }
-/*ext-settings_menu.js*/
-/*keybinding-emacs.js*/
+/*incremental-occur-highlighting*/
 .ace_occur-highlight {
 border-radius: 4px;
 background-color: rgba(87, 255, 8, 0.25);
@@ -953,6 +1015,7 @@ box-shadow: 0 0 4px rgb(91, 255, 50);
 background-color: rgb(80, 140, 85);
 box-shadow: 0 0 4px rgb(60, 120, 70);
 }
+/*incremental-search-highlighting*/
 .ace_marker-layer .ace_isearch-result {
 position: absolute;
 z-index: 6;
@@ -967,6 +1030,7 @@ box-shadow: 0 0 4px rgb(255, 200, 0);
 background-color: rgb(100, 110, 160);
 box-shadow: 0 0 4px rgb(80, 90, 140);
 }
+/*emacsMode*/
 .emacs-mode .ace_cursor{
 border: 1px rgba(50,250,50,0.8) solid!important;
 box-sizing: border-box!important;
@@ -988,7 +1052,7 @@ z-index: 4
 .emacs-mode .ace_cursor-layer {
 z-index: 2
 }
-/*keybinding-vim.js*/
+/*vimMode*/
 .normal-mode .ace_cursor{
 border: none;
 background-color: rgba(255,0,0,0.5);

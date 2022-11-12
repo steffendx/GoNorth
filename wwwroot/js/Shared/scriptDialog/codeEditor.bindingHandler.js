@@ -37,7 +37,9 @@
                         mode = "ace/mode/lua";
                     }
 
-                    obs._editor = ace.edit(element);
+                    obs._editor = ace.edit(element, {
+                        useWorker: false
+                    });
                     obs._editor.setTheme(theme);
                     obs._editor.session.setMode(mode);
                     obs._editor.setOptions({

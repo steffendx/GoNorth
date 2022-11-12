@@ -1,0 +1,3 @@
+{
+    "PlaceholderDesc_EndDialog": "true if the dialog must be stopped after the action, false if the next step must be executed."
+}
