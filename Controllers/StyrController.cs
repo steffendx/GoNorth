@@ -1,5 +1,6 @@
 using GoNorth.Config;
 using GoNorth.Models.FlexFieldDatabaseModels;
+using GoNorth.Models.StyrViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -44,9 +45,10 @@ namespace GoNorth.Controllers
         [HttpGet]
         public IActionResult Item()
         {
-            DetailFormViewModel viewModel = new DetailFormViewModel();
+            ItemViewModel viewModel = new ItemViewModel();
             viewModel.DisableAutoSaving = _config.DisableAutoSaving.HasValue ? _config.DisableAutoSaving.Value : false;
             viewModel.AllowScriptSettingsForAllFieldTypes = _config.AllowScriptSettingsForAllFieldTypes.HasValue ? _config.AllowScriptSettingsForAllFieldTypes.Value : false;
+            viewModel.DisableItemInventory = _config.DisableItemInventory.HasValue ? _config.DisableItemInventory.Value : false;
             return View(viewModel);
         }
 

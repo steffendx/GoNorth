@@ -27,6 +27,8 @@ using GoNorth.Services.Project;
 using GoNorth.Services.Export.ExportSnippets;
 using GoNorth.Data.Evne;
 using GoNorth.Data.StateMachines;
+using Microsoft.Extensions.Options;
+using GoNorth.Config;
 
 namespace GoNorth.Controllers.Api
 {
@@ -163,6 +165,11 @@ namespace GoNorth.Controllers.Api
         private readonly IKortistoNpcTemplateDbAccess _npcTemplateDbAccess;
 
         /// <summary>
+        /// True if item inventory is disabled
+        /// </summary>
+        private readonly bool _disableItemInventory;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="folderDbAccess">Folder Db Access</param>
@@ -195,11 +202,12 @@ namespace GoNorth.Controllers.Api
         /// <param name="xssChecker">Xss Checker</param>
         /// <param name="logger">Logger</param>
         /// <param name="localizerFactory">Localizer Factory</param>
+        /// <param name="configuration">Config Data</param>
         public StyrApiController(IStyrFolderDbAccess folderDbAccess, IStyrItemTemplateDbAccess templateDbAccess, IStyrItemDbAccess itemDbAccess, IStyrItemTagDbAccess tagDbAccess, IExportTemplateDbAccess exportTemplateDbAccess, IStyrImportFieldValuesLogDbAccess importFieldValuesLogDbAccess, 
                                  ILanguageKeyDbAccess languageKeyDbAccess, IExportFunctionIdDbAccess exportFunctionIdDbAccess, IObjectExportSnippetDbAccess objectExportSnippetDbAccess, IObjectExportSnippetSnapshotDbAccess objectExportSnippetSnapshotDbAccess, IExportSnippetRelatedObjectNameResolver exportSnippetRelatedObjectNameResolver, 
                                  IStateMachineDbAccess stateMachineDbAccess, IStyrItemImageAccess imageAccess, IStyrThumbnailService thumbnailService, IAikaQuestDbAccess aikaQuestDbAccess, IEvneSkillDbAccess skillDbAccess, ITaleDbAccess taleDbAccess, IKirjaPageDbAccess kirjaPageDbAccess, IKartaMapDbAccess kartaMapDbAccess, 
                                  IKortistoNpcDbAccess kortistoNpcDbAccess, IKortistoNpcTemplateDbAccess npcTemplateDbAccess, IUserProjectAccess userProjectAccess, ICsvGenerator csvGenerator, ICsvParser csvReader, UserManager<GoNorthUser> userManager, IImplementationStatusComparer implementationStatusComparer, ITimelineService timelineService, 
-                                 IXssChecker xssChecker, ILogger<StyrApiController> logger, IStringLocalizerFactory localizerFactory) 
+                                 IXssChecker xssChecker, ILogger<StyrApiController> logger, IStringLocalizerFactory localizerFactory, IOptions<ConfigurationData> configuration) 
                                   : base(folderDbAccess, templateDbAccess, itemDbAccess, tagDbAccess, exportTemplateDbAccess, importFieldValuesLogDbAccess, languageKeyDbAccess, exportFunctionIdDbAccess, objectExportSnippetDbAccess, objectExportSnippetSnapshotDbAccess, exportSnippetRelatedObjectNameResolver, stateMachineDbAccess, userProjectAccess, imageAccess, 
                                          thumbnailService, csvGenerator, csvReader, userManager, implementationStatusComparer, timelineService, xssChecker, logger, localizerFactory)
         {
@@ -210,6 +218,7 @@ namespace GoNorth.Controllers.Api
             _kartaMapDbAccess = kartaMapDbAccess;
             _kortistoNpcDbAccess = kortistoNpcDbAccess;
             _npcTemplateDbAccess = npcTemplateDbAccess;
+            _disableItemInventory = configuration.Value.Misc.DisableItemInventory.HasValue ? configuration.Value.Misc.DisableItemInventory.Value : false;
         }
 
         /// <summary>
@@ -283,6 +292,20 @@ namespace GoNorth.Controllers.Api
             return await BaseFlexFieldTemplateImageUpload(id);
         }
 
+        /// <summary>
+        /// Strips an object based on the rights of a user
+        /// </summary>
+        /// <param name="flexFieldObject">Flex field object to strip</param>
+        /// <returns>Stripped object</returns>
+        protected override StyrItem StripObject(StyrItem flexFieldObject)
+        {
+            if(_disableItemInventory)
+            {
+                flexFieldObject.Inventory = new List<StyrInventoryItem>();
+            }
+
+            return flexFieldObject;
+        }
 
         /// <summary>
         /// Checks if a object is referenced before a delete
@@ -351,7 +374,30 @@ namespace GoNorth.Controllers.Api
                 return _localizer["CanNotDeleteItemUsedInSkill", referencedInSkillsString].Value;
             }
 
+            if(!_disableItemInventory)
+            {
+                List<StyrItem> referencedInItems = await ((IStyrItemDbAccess)_objectDbAccess).GetItemsByItemInInventory(id);
+                if(referencedInItems.Count > 0)
+                {
+                    string referencedInItemsString = string.Join(", ", referencedInItems.Select(n => n.Name));
+                    return _localizer["CanNotDeleteItemUsedInItemInventory", referencedInItemsString].Value;
+                }
+            }
+
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Returns the items which have an item in their inventory with only the main values
+        /// </summary>
+        /// <param name="itemId">Item id</param>
+        /// <returns>Items</returns>
+        [ProducesResponseType(typeof(List<StyrItem>), StatusCodes.Status200OK)]
+        [HttpGet]
+        public async Task<IActionResult> GetItemsByItemInInventory(string itemId)
+        {
+            List<StyrItem> items = await ((IStyrItemDbAccess)_objectDbAccess).GetItemsByItemInInventory(itemId);
+            return Ok(items);
         }
 
         /// <summary>
@@ -372,6 +418,11 @@ namespace GoNorth.Controllers.Api
         /// <returns>Updated flex field object</returns>
         protected override Task<StyrItem> RunAdditionalUpdates(StyrItem flexFieldObject, StyrItem loadedFlexFieldObject)
         {
+            if(!_disableItemInventory)
+            {
+                loadedFlexFieldObject.Inventory = flexFieldObject.Inventory;
+            }
+
             return Task.FromResult(loadedFlexFieldObject);
         }
 

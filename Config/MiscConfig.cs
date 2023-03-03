@@ -69,5 +69,10 @@ namespace GoNorth.Config
         /// True if all fields can have script settings
         /// </summary>
         public bool? AllowScriptSettingsForAllFieldTypes { get; set; }
+
+        /// <summary>
+        /// True if item inventors must be disabled
+        /// </summary>
+        public bool? DisableItemInventory { get; set; }
     }
 }

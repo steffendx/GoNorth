@@ -21,6 +21,7 @@
     "PropertyNameDontExportToScript": "Nicht in Skript exportieren",
     "PropertyNameQuantity": "Anzahl",
     "PropertyNameIsEquipped": "Ausgerüstet",
+    "PropertyNameRole": "Rolle",
     "PropertyNameText": "Text",
     "PropertyNameIsRepeatable": "Wiederholbar",
     "PropertyNameCondition": "Bedingung",

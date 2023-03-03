@@ -114,7 +114,10 @@
             Localization.Conditions.ChooseItem = "<Item auswählen>";
             Localization.Conditions.ItemOperatorHasAtLeast = "hat mindestens";
             Localization.Conditions.ItemOperatorHasMaximum = "hat maximal";
+            Localization.Conditions.ItemOperatorHasEquipped = "hat ausgerüstet";
+            Localization.Conditions.ItemOperatorHasNotEquipped = "hat nicht ausgerüstet";
             Localization.Conditions.ItemCount = "Anz";
+            Localization.Conditions.ItemEquipped = "Ausge";
 
             Localization.Conditions.CheckChooseNpcSkillValueLabel = "Npc Fähigkeits Wert prüfen";
             Localization.Conditions.NpcSkillPrefix = "Npc ";

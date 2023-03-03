@@ -1,14 +1,15 @@
 (function (GoNorth) {
     "use strict";
-    (function (Kortisto) {
-        (function (Npc) {
+    (function (FlexFieldDatabase) {
+        (function (ObjectForm) {
 
             /**
              * Inventory Form
              * @param {GoNorth.ChooseObjectDialog.ViewModel} objectDialog Object dialog
+             * @param {boolean} useItemRoles true if item roles must be used instead of equipped state
              * @class
              */
-            Npc.InventoryForm = function (objectDialog) {
+            ObjectForm.InventoryForm = function (objectDialog, useItemRoles) {
                 this.objectDialog = objectDialog;
 
                 this.isInventoryExpanded = new ko.observable(false);
@@ -17,9 +18,15 @@
                 this.showConfirmRemoveDialog = new ko.observable(false);
                 this.isLoadingInventory = new ko.observable(false);
                 this.loadingInventoryError = new ko.observable(false);
+                this.useItemRoles = useItemRoles;
+                this.suggestedItemRoles = new ko.observableArray([]);
+                
+                if(useItemRoles) {
+                    this.loadItemRoles();
+                }
             };
 
-            Npc.InventoryForm.prototype = {
+            ObjectForm.InventoryForm.prototype = {
                 /**
                  * Loads the inventory
                  * 
@@ -46,7 +53,8 @@
                                 id: itemNames[curItem].id,
                                 name: itemNames[curItem].name,
                                 quantity: new ko.observable(itemLookup[itemNames[curItem].id].quantity),
-                                isEquipped: new ko.observable(itemLookup[itemNames[curItem].id].isEquipped)
+                                isEquipped: new ko.observable(itemLookup[itemNames[curItem].id].isEquipped),
+                                role: new ko.observable(itemLookup[itemNames[curItem].id].role),
                             });
                         }
 
@@ -65,6 +73,29 @@
                     return inventoryDef.promise();
                 },
 
+                /**
+                 * Loads the item roles
+                 */
+                loadItemRoles: function() {
+                    var def = new jQuery.Deferred();
+
+                    var self = this;
+                    GoNorth.HttpClient.get("/api/ProjectConfigApi/GetJsonConfigByKey?configKey=" + encodeURIComponent(GoNorth.ProjectConfig.ConfigKeys.ItemRoles)).done(function(loadedConfigData) {
+                        if(!loadedConfigData)
+                        {
+                            def.resolve();
+                            return;
+                        }
+                        
+                        var configLines = JSON.parse(loadedConfigData)
+                        self.suggestedItemRoles(configLines);
+                        def.resolve();
+                    }).fail(function() {
+                        def.reject();
+                    })
+
+                    return def.promise();
+                },
 
                 /**
                  * Toggles the inventory visibility
@@ -78,8 +109,8 @@
                  */
                 addItemToInventory: function () {
                     var self = this;
-                    this.objectDialog.openItemSearch(Npc.Localization.AddItemToInventory).then(function (item) {
-                        if (Npc.doesObjectExistInFlexFieldArray(self.inventoryItems, item)) {
+                    this.objectDialog.openItemSearch(FlexFieldDatabase.InventoryFormLocalization.AddItemToInventory).then(function (item) {
+                        if (GoNorth.Util.doesObjectExistInFlexFieldArray(self.inventoryItems, item)) {
                             return;
                         }
 
@@ -87,7 +118,8 @@
                             id: item.id,
                             name: item.name,
                             quantity: new ko.observable(1),
-                            isEquipped: new ko.observable(false)
+                            isEquipped: new ko.observable(false),
+                            role: new ko.observable("")
                         });
 
                         self.inventoryItems.sort(function (item1, item2) {
@@ -142,9 +174,13 @@
 
                         var item = {
                             itemId: inventoryItems[curItem].id,
-                            quantity: quantity,
-                            isEquipped: inventoryItems[curItem].isEquipped(),
-                        };
+                            quantity: quantity
+                        }
+                        if(!this.useItemRoles) {
+                            item.isEquipped = inventoryItems[curItem].isEquipped();
+                        } else {
+                            item.role = inventoryItems[curItem].role();
+                        }
                         inventory.push(item);
                     }
 
@@ -162,6 +198,6 @@
                 }
             };
 
-        }(Kortisto.Npc = Kortisto.Npc || {}));
-    }(GoNorth.Kortisto = GoNorth.Kortisto || {}));
+        }(FlexFieldDatabase.ObjectForm = FlexFieldDatabase.ObjectForm || {}));
+    }(GoNorth.FlexFieldDatabase = GoNorth.FlexFieldDatabase || {}));
 }(window.GoNorth = window.GoNorth || {}));

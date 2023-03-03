@@ -261,13 +261,13 @@
 
                         // Update Html
                         this.model.set("size", { width: choiceWidth, height: choiceMinHeight + choices.length * choiceItemHeight});
-                        var choiceTable = "<table class='gn-taleChoiceTable'>";
+                        var choiceTable = jQuery("<table class='gn-taleChoiceTable'></table>");
                         var self = this;
                         jQuery.each(choices, function(index, choice) {
                             var conditionClasses = "glyphicon glyphicon-question-sign gn-taleEditChoiceCondition gn-taleChoiceIcon";
 
-                            choiceTable += "<tr>";
-                            choiceTable += "<td class='gn-taleChoiceTextCell'>";
+                            var choiceTableRow = "<tr>";
+                            choiceTableRow += "<td class='gn-taleChoiceTextCell'>";
                             if(choice.condition)
                             {
                                 conditionClasses += " gn-taleChoiceHasCondition";
@@ -289,7 +289,7 @@
                                     conditionText = GoNorth.DefaultNodeShapes.Localization.Conditions.ErrorLoadingConditionText;
                                 });
 
-                                choiceTable += "<div class='gn-taleChoiceConditionText' data-choiceid='" + choice.id + "' title='" + conditionText + "'>" + conditionText + "</div>";
+                                choiceTableRow += "<div class='gn-taleChoiceConditionText' data-choiceid='" + choice.id + "' title='" + conditionText + "'>" + conditionText + "</div>";
                             }
 
                             var isRepeatableClasses = "glyphicon glyphicon-repeat gn-taleChoiceToogleIsRepeatable gn-taleChoiceIcon";
@@ -298,16 +298,20 @@
                                 isRepeatableClasses += " gn-taleChoiceIsRepeatable";
                             }                            
 
-                            choiceTable += "<input type='text' class='gn-taleChoiceInput' value='" + choice.text + "' data-choiceid='" + choice.id + "' placeholder='" + GoNorth.Tale.Localization.Choices.ChoiceText + "'/></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-up gn-taleMoveChoiceUp gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveUpToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-down gn-taleMoveChoiceDown gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveDownToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='" + conditionClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.EditConditionToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='" + isRepeatableClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.AllowMultipleSelectionToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-trash gn-taleDeleteChoice gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.DeleteToolTip + "'></i></td>";
-                            choiceTable += "</tr>";
+                            choiceTableRow += "<input type='text' class='gn-taleChoiceInput' data-choiceid='" + choice.id + "' placeholder='" + GoNorth.Tale.Localization.Choices.ChoiceText + "'/></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-up gn-taleMoveChoiceUp gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveUpToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-down gn-taleMoveChoiceDown gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveDownToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='" + conditionClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.EditConditionToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='" + isRepeatableClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.AllowMultipleSelectionToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-trash gn-taleDeleteChoice gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.DeleteToolTip + "'></i></td>";
+                            choiceTableRow += "</tr>";
+                            
+                            var choiceTableJQueryRow = jQuery(choiceTableRow);
+                            choiceTableJQueryRow.find(".gn-taleChoiceInput").val(choice.text);
+
+                            choiceTable.append(choiceTableJQueryRow);
                         });
 
-                        choiceTable += "</table>";
                         if(this.$box.find(".gn-taleChoiceTable").length > 0)
                         {
                             this.$box.find(".gn-taleChoiceTable").replaceWith(choiceTable);

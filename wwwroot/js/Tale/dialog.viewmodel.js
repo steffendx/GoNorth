@@ -2123,6 +2123,25 @@
             return filteredFields;
         }
 
+        /**
+         * Checks if an object exists in a flex field array
+         * 
+         * @param {ko.observableArray} searchArray Array to search
+         * @param {object} objectToSearch Flex Field object to search
+         */
+        Util.doesObjectExistInFlexFieldArray = function(searchArray, objectToSearch) {
+            var searchObjects = searchArray();
+            for(var curObject = 0; curObject < searchObjects.length; ++curObject)
+            {
+                if(searchObjects[curObject].id == objectToSearch.id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
     }(GoNorth.Util = GoNorth.Util || {}));
 }(window.GoNorth = window.GoNorth || {}));
 (function(GoNorth) {
@@ -2409,6 +2428,11 @@
              * Config key for setting the npc state
              */
             ConfigKeys.SetNpcStateAction = "SetNpcStateAction";
+            
+            /**
+             * Config key for setting item roles
+             */
+            ConfigKeys.ItemRoles = "ItemRoles";
 
         }(ProjectConfig.ConfigKeys = ProjectConfig.ConfigKeys || {}));
     }(GoNorth.ProjectConfig = GoNorth.ProjectConfig || {}));
@@ -2831,13 +2855,13 @@
 
                         // Update Html
                         this.model.set("size", { width: choiceWidth, height: choiceMinHeight + choices.length * choiceItemHeight});
-                        var choiceTable = "<table class='gn-taleChoiceTable'>";
+                        var choiceTable = jQuery("<table class='gn-taleChoiceTable'></table>");
                         var self = this;
                         jQuery.each(choices, function(index, choice) {
                             var conditionClasses = "glyphicon glyphicon-question-sign gn-taleEditChoiceCondition gn-taleChoiceIcon";
 
-                            choiceTable += "<tr>";
-                            choiceTable += "<td class='gn-taleChoiceTextCell'>";
+                            var choiceTableRow = "<tr>";
+                            choiceTableRow += "<td class='gn-taleChoiceTextCell'>";
                             if(choice.condition)
                             {
                                 conditionClasses += " gn-taleChoiceHasCondition";
@@ -2859,7 +2883,7 @@
                                     conditionText = GoNorth.DefaultNodeShapes.Localization.Conditions.ErrorLoadingConditionText;
                                 });
 
-                                choiceTable += "<div class='gn-taleChoiceConditionText' data-choiceid='" + choice.id + "' title='" + conditionText + "'>" + conditionText + "</div>";
+                                choiceTableRow += "<div class='gn-taleChoiceConditionText' data-choiceid='" + choice.id + "' title='" + conditionText + "'>" + conditionText + "</div>";
                             }
 
                             var isRepeatableClasses = "glyphicon glyphicon-repeat gn-taleChoiceToogleIsRepeatable gn-taleChoiceIcon";
@@ -2868,16 +2892,20 @@
                                 isRepeatableClasses += " gn-taleChoiceIsRepeatable";
                             }                            
 
-                            choiceTable += "<input type='text' class='gn-taleChoiceInput' value='" + choice.text + "' data-choiceid='" + choice.id + "' placeholder='" + GoNorth.Tale.Localization.Choices.ChoiceText + "'/></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-up gn-taleMoveChoiceUp gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveUpToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-down gn-taleMoveChoiceDown gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveDownToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='" + conditionClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.EditConditionToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='" + isRepeatableClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.AllowMultipleSelectionToolTip + "'></i></td>";
-                            choiceTable += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-trash gn-taleDeleteChoice gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.DeleteToolTip + "'></i></td>";
-                            choiceTable += "</tr>";
+                            choiceTableRow += "<input type='text' class='gn-taleChoiceInput' data-choiceid='" + choice.id + "' placeholder='" + GoNorth.Tale.Localization.Choices.ChoiceText + "'/></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-up gn-taleMoveChoiceUp gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveUpToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-arrow-down gn-taleMoveChoiceDown gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.MoveDownToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='" + conditionClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.EditConditionToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='" + isRepeatableClasses + "' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.AllowMultipleSelectionToolTip + "'></i></td>";
+                            choiceTableRow += "<td class='gn-nodeDeleteOnReadonly'><i class='glyphicon glyphicon-trash gn-taleDeleteChoice gn-taleChoiceIcon' data-choiceid='" + choice.id + "' title='" + Tale.Localization.Choices.DeleteToolTip + "'></i></td>";
+                            choiceTableRow += "</tr>";
+                            
+                            var choiceTableJQueryRow = jQuery(choiceTableRow);
+                            choiceTableJQueryRow.find(".gn-taleChoiceInput").val(choice.text);
+
+                            choiceTable.append(choiceTableJQueryRow);
                         });
 
-                        choiceTable += "</table>";
                         if(this.$box.find(".gn-taleChoiceTable").length > 0)
                         {
                             this.$box.find(".gn-taleChoiceTable").replaceWith(choiceTable);
@@ -13379,6 +13407,12 @@
             /// Operator for the has at maximum operation
             var inventoryOperatorHasAtMaximum = 1;
 
+            /// Operator for the has equipped operation
+            var inventoryOperatorHasEquipped = 2;
+
+            /// Operator for the has not equipped operation
+            var inventoryOperatorHasNotEquipped = 3;
+
             /**
              * Check inventory condition
              * @class
@@ -13444,7 +13478,12 @@
                     selectedItemId: new ko.observable(),
                     selectedItemName: new ko.observable(DefaultNodeShapes.Localization.Conditions.ChooseItem),
                     operator: new ko.observable(),
-                    availableOperators: [ { value: inventoryOperatorHasAtLeast, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasAtLeast }, { value: inventoryOperatorHasAtMaximum, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasMaximum }],
+                    availableOperators: [ 
+                            { value: inventoryOperatorHasAtLeast, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasAtLeast }, 
+                            { value: inventoryOperatorHasAtMaximum, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasMaximum }, 
+                            { value: inventoryOperatorHasEquipped, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasEquipped }, 
+                            { value: inventoryOperatorHasNotEquipped, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasNotEquipped }
+                    ],
                     quantity: new ko.observable(0)
                 };
 
@@ -13529,14 +13568,24 @@
 
                 var self = this;
                 this.getItemName(existingData.itemId).then(function(name) {
-                    var conditionString = self.getInventoryTitle() + " " + DefaultNodeShapes.Localization.Conditions.ItemCount + "(\"" + name + "\") ";
-                    if(existingData.operator == inventoryOperatorHasAtLeast)
+                    var prefix = DefaultNodeShapes.Localization.Conditions.ItemCount;
+                    if(existingData.operator == inventoryOperatorHasEquipped || existingData.operator == inventoryOperatorHasNotEquipped)
+                    {
+                        prefix = DefaultNodeShapes.Localization.Conditions.ItemEquipped;
+                    }
+
+                    var conditionString = self.getInventoryTitle() + " " + prefix + "(\"" + name + "\") ";
+                    if(existingData.operator == inventoryOperatorHasAtLeast || existingData.operator == inventoryOperatorHasEquipped)
                     {
                         conditionString += ">=";
                     }
                     else if(existingData.operator == inventoryOperatorHasAtMaximum)
                     {
                         conditionString += "<=";
+                    }
+                    else if(existingData.operator == inventoryOperatorHasNotEquipped)
+                    {
+                        conditionString += "<";
                     }
                     conditionString += " " + existingData.quantity;
 

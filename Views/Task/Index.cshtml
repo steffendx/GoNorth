@@ -215,7 +215,7 @@
                     </div>
                     <button class="gn-taskCreateTaskButton btn btn-primary" data-bind="visible: isExpanded() && !$root.isReadonly(), click: function(taskGroup) { $root.openCreateNewTaskDialog(taskGroup); }" title="@Localizer["CreateTaskToolTip"]"><i class="glyphicon glyphicon-plus"></i></button>
                     <div class="gn-taskGroupCard gn-taskGroupCardCollapsed" data-bind="visible: !isExpanded(), taskTypeColorBinding: taskTypeId, taskTypes: $root.taskGroupTypes">
-                        <div class="gn-taskTitle"><a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a></div>
+                        <div class="gn-taskTitle gn-taskTitleCollapsed"><a class="gn-clickable" data-bind="text: name, attr: { title: name }, click: function(taskGroup) { $root.openEditTaskGroupDialog(taskGroup); }"></a></div>
                     </div>
                 </div>
                 <!-- ko foreach: statusColumns -->

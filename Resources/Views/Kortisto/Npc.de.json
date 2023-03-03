@@ -43,12 +43,7 @@
     "DropImageHere": "Bild für Npc hier ablegen oder klicken um ein Bild auszuwählen",
     "OpenImageInFullSize": "Bild in voller Größe öffnen",
 
-    "Inventory": "Inventar",
     "AddItemToInventory": "Item hinzufügen",
-    "Quantity": "Anzahl",
-    "Equipped": "Ausgerüstet",
-    "RemoveItemFromInventory": "Item aus dem Inventar entfernen",
-    "AreYouSureYouWantToRemoveTheItem": "Bist du sicher das das Item entfernt werden soll?",
 
     "Skills": "Fähigkeiten",
     "AddSkill": "Fähigkeit hinzufügen",

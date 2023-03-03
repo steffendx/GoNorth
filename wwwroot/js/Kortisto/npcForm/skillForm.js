@@ -91,7 +91,7 @@
                 addSkill: function () {
                     var self = this;
                     this.objectDialog.openSkillSearch(Npc.Localization.AddSkill).then(function (skill) {
-                        if (Npc.doesObjectExistInFlexFieldArray(self.learnedSkills, skill)) {
+                        if (GoNorth.Util.doesObjectExistInFlexFieldArray(self.learnedSkills, skill)) {
                             return;
                         }
 

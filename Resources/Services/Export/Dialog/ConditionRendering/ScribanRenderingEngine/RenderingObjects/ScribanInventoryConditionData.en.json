@@ -2,6 +2,7 @@
     "PlaceholderDesc_Npc": "Npc to which the item belongs",
     "PlaceholderDesc_SelectedItem": "Chosen item that is being checked",
     "PlaceholderDesc_Operator": "Compare operator. Will be loaded using the corresponding templates.",
-    "PlaceholderDesc_OriginalOperator": "Compare operator which will not be loaded using the templates. Can be <i>AtLeast</i> or <i>AtMaximum</i>.",
-    "PlaceholderDesc_Quantity": "Quantity used for comparison."
+    "PlaceholderDesc_OriginalOperator": "Compare operator which will not be loaded using the templates. Can be <i>AtLeast</i>, <i>AtMaximum</i>, <i>HasEquipped</i> or <i>HasNotEquipped</i>.",
+    "PlaceholderDesc_Quantity": "Quantity used for comparison.",
+    "PlaceholderDesc_IsEquippedCheck": "True if the compare operator is related to an equipped item, else false."
 }

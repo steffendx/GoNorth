@@ -85,11 +85,32 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering.ScribanRenderingEngi
 
             conditionData.SelectedItem = FlexFieldValueCollectorUtil.BuildFlexFieldValueObject<ScribanExportItem>(null, null, item, exportSettings, errorCollection);
 
-            conditionData.OriginalOperator = parsedData.Operator == InventoryConditionData.CompareOperator_AtLeast ? "AtLeast" : "AtMaximum";
+            conditionData.OriginalOperator = GetOriginalOperator(parsedData.Operator);
             conditionData.Operator = await ConditionRenderingUtil.GetItemCompareOperatorFromTemplate(_defaultTemplateProvider, project, parsedData.Operator, errorCollection);
             conditionData.Quantity = parsedData.Quantity;
+            conditionData.IsEquippedCheck = (parsedData.Operator == InventoryConditionData.CompareOperator_HasEquipped || parsedData.Operator == InventoryConditionData.CompareOperator_HasNotEquipped);
 
             return conditionData;   
+        }
+
+        /// <summary>
+        /// Returns the original operator as string
+        /// </summary>
+        /// <param name="originalOperator">Original Operator</param>
+        /// <returns>Original operator as string</returns>
+        private string GetOriginalOperator(int originalOperator)
+        {
+            switch(originalOperator)
+            {
+            case InventoryConditionData.CompareOperator_AtLeast:
+                return "AtLeast";
+            case InventoryConditionData.CompareOperator_HasEquipped:
+                return "HasEquipped";
+            case InventoryConditionData.CompareOperator_HasNotEquipped:
+                return "HasNotEquipped";
+            default:
+                return "AtMaximum";
+            }
         }
 
         /// <summary>

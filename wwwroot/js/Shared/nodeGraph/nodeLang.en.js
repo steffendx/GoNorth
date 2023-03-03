@@ -113,8 +113,11 @@
             Localization.Conditions.NpcInventoryLabel = "Npc inventory";
             Localization.Conditions.ChooseItem = "<Choose item>";
             Localization.Conditions.ItemOperatorHasAtLeast = "has at least";
-            Localization.Conditions.ItemOperatorHasMaximum = "hast at maximum";
+            Localization.Conditions.ItemOperatorHasMaximum = "has at maximum";
+            Localization.Conditions.ItemOperatorHasEquipped = "has equipped";
+            Localization.Conditions.ItemOperatorHasNotEquipped = "has not equipped";
             Localization.Conditions.ItemCount = "Cnt";
+            Localization.Conditions.ItemEquipped = "Equip";
 
             Localization.Conditions.CheckChooseNpcSkillValueLabel = "Check npc skill value";
             Localization.Conditions.NpcSkillPrefix = "Npc ";

@@ -21,6 +21,7 @@
     "PropertyNameDontExportToScript": "Do not export to script",
     "PropertyNameQuantity": "Quantity",
     "PropertyNameIsEquipped": "Is equipped",
+    "PropertyNameRole": "Role",
     "PropertyNameText": "Text",
     "PropertyNameIsRepeatable": "Repeatable",
     "PropertyNameCondition": "Condition",

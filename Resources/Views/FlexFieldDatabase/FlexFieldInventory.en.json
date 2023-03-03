@@ -1,0 +1,14 @@
+{
+    "Inventory": "Inventory",
+    "AddItemToInventory": "Add item",
+    "Name": "Name",
+    "Quantity": "Quantity",
+    "Equipped": "Equipped",
+    "Role": "Role",
+    "RemoveItemFromInventory": "Remove item from inventory",
+    "AreYouSure": "Are you sure?",
+    "AreYouSureYouWantToRemoveTheItem": "Are you sure you want to remove the item?",
+    "Yes": "Yes",
+    "No": "No",
+    "ErrorOccured": "An error occured."
+}

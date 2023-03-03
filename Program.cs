@@ -1,4 +1,4 @@
-﻿// GoNorth - Created by Steffen Noertershaeuser
+﻿// GoNorth - Created by Steffen Werhahn, former Noertershaeuser
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using GoNorth.Logging;

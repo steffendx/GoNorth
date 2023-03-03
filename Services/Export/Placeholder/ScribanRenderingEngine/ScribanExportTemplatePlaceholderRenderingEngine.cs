@@ -76,6 +76,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine
                 new SkillExportValueCollector(exportTemplatePlaceholderResolver, exportCachedDbAccess, defaultTemplateProvider, languageKeyGenerator, localizerFactory),
                 new AttributeListValueCollector(exportCachedDbAccess, languageKeyGenerator, localizerFactory),
                 new InventoryValueCollector(exportCachedDbAccess, languageKeyGenerator, localizerFactory),
+                new ItemInventoryValueCollector(exportCachedDbAccess, languageKeyGenerator, localizerFactory),
                 new NpcSkillValueCollector(exportCachedDbAccess, languageKeyGenerator, localizerFactory),
                 new DialogValueCollector(exportTemplatePlaceholderResolver, exportCachedDbAccess, defaultTemplateProvider, taleDbAccess, languageKeyGenerator, dialogParser, dialogFunctionGenerator, dialogRenderer, localizerFactory),
                 new DialogFunctionValueCollector(localizerFactory),

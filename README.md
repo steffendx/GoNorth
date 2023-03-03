@@ -131,7 +131,7 @@ The next steps which I will implement in the future are:
 ## License
 GoNorth is open source and released under the [MIT LICENSE](LICENSE).
 
-Copyright (c) 2018, 2019, 2020 Steffen Noertershaeuser.
+Copyright (c) 2018, 2019, 2020, 2021, 2022, 2023 Steffen Werhahn, former Noertershaeuser.
 
 ## Acknowledgement
 GoNorth uses the following libraries:

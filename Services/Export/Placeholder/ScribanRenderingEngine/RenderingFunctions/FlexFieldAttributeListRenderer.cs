@@ -95,7 +95,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
             ExportPlaceholderFillResult fillResult = await _templatePlaceholderResolver.FillPlaceholders(TemplateType.ObjectAttributeList, attributeListTemplate.Code, objectData, attributeListTemplate.RenderingEngine);
             _errorCollection.Merge(fillResult.Errors);
 
-            return ScribanOutputUtil.IndentMultilineCode(context, fillResult.Code);
+            return fillResult.Code;
         }
 
         /// <summary>

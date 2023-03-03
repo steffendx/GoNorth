@@ -1,5 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 
+@model GoNorth.Models.ProjectConfigViewModel.IndexViewModel
+
 @inject IViewLocalizer Localizer
 
 @{
@@ -20,6 +22,10 @@
     <div data-bind="template: { name: 'gn-projectConfigTextareaSection', data: animationConfigSection }"></div>
     <div data-bind="template: { name: 'gn-projectConfigTextareaSection', data: stateConfigSection }"></div>
     <div data-bind="template: { name: 'gn-projectConfigDayHourMinuteSection', data: dayHourMinuteConfigSection }"></div>
+    @if(!Model.DisableItemInventory)
+    {
+        <div data-bind="template: { name: 'gn-projectConfigTextareaSection', data: itemRolesSection }"></div>
+    }
 </div>
 
 <!-- Textarea section -->
@@ -112,7 +118,10 @@
             "AnimationConfigSectionDescription": "@Localizer["AnimationConfigSectionDescription"]",
 
             "StateConfigSectionHeader": "@Localizer["StateConfigSectionHeader"]",
-            "StateConfigSectionDescription": "@Localizer["StateConfigSectionDescription"]"
+            "StateConfigSectionDescription": "@Localizer["StateConfigSectionDescription"]",
+            
+            "ItemRolesSectionHeader": "@Localizer["ItemRolesSectionHeader"]",
+            "ItemRolesSectionDescription": "@Localizer["ItemRolesSectionDescription"]"
         };
 
         @if(User.IsInRole(RoleNames.Kortisto))

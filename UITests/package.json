@@ -11,17 +11,17 @@
     "uitest",
     "gonorth"
   ],
-  "author": "Steffen Nörtershäuser",
+  "author": "Steffen Werhahn, former Nörtershäuser",
   "license": "MIT",
   "dependencies": {
-    "mocha": "^10.1.0",
-    "mocha-junit-reporter": "^2.1.1",
+    "mocha": "^10.2.0",
+    "mocha-junit-reporter": "^2.2.0",
     "mocha-multi-reporters": "^1.5.1",
-    "puppeteer": "^19.2.2"
+    "puppeteer": "^19.7.2"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-zip": "^5.1.0",
-    "minimist": "^1.2.7"
+    "minimist": "^1.2.8"
   }
 }

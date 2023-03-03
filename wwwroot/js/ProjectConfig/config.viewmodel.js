@@ -12,6 +12,11 @@
              * Config key for setting the npc state
              */
             ConfigKeys.SetNpcStateAction = "SetNpcStateAction";
+            
+            /**
+             * Config key for setting item roles
+             */
+            ConfigKeys.ItemRoles = "ItemRoles";
 
         }(ProjectConfig.ConfigKeys = ProjectConfig.ConfigKeys || {}));
     }(GoNorth.ProjectConfig = GoNorth.ProjectConfig || {}));
@@ -265,6 +270,7 @@
             {
                 this.animationConfigSection = new Config.TextAreaConfigSection(ProjectConfig.ConfigKeys.PlayAnimationAction, Config.Localization.AnimationConfigSectionHeader, Config.Localization.AnimationConfigSectionDescription);
                 this.stateConfigSection = new Config.TextAreaConfigSection(ProjectConfig.ConfigKeys.SetNpcStateAction, Config.Localization.StateConfigSectionHeader, Config.Localization.StateConfigSectionDescription);
+                this.itemRolesSection = new Config.TextAreaConfigSection(ProjectConfig.ConfigKeys.ItemRoles, Config.Localization.ItemRolesSectionHeader, Config.Localization.ItemRolesSectionDescription);
                 this.dayHourMinuteConfigSection = new Config.DayHourMinuteConfigSection();
 
                 this.isReadonly = new ko.observable(false);

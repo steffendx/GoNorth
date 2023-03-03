@@ -14,7 +14,7 @@
                 this.showConfirmRemoveDialog = new ko.observable(false);
 
                 this.objectDialog = new GoNorth.ChooseObjectDialog.ViewModel();
-                this.inventoryForm = new Npc.InventoryForm(this.objectDialog);
+                this.inventoryForm = new GoNorth.FlexFieldDatabase.ObjectForm.InventoryForm(this.objectDialog, false);
                 this.skillForm = new Npc.SkillForm(this.objectDialog);
                 this.dailyRoutinesForm = new Npc.DailyRoutinesForm(this.id, this.objectDialog, this.markedInKartaMaps, this.errorOccured);
 
@@ -125,28 +125,7 @@
                 this.dailyRoutinesForm.setNewEventIds(data.dailyRoutine);
             };
 
-
-            /**
-             * Checks if an object exists in a flex field array
-             * 
-             * @param {ko.observableArray} searchArray Array to search
-             * @param {object} objectToSearch Flex Field object to search
-             */
-            Npc.ViewModel.prototype.doesObjectExistInFlexFieldArray = function(searchArray, objectToSearch)
-            {
-                var searchObjects = searchArray();
-                for(var curObject = 0; curObject < searchObjects.length; ++curObject)
-                {
-                    if(searchObjects[curObject].id == objectToSearch.id)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
             
-
             /**
              * Opens the tale dialog for the npc
              */

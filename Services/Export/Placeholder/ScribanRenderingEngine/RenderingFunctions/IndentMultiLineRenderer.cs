@@ -9,7 +9,7 @@ using Scriban.Syntax;
 namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFunctions
 {
     /// <summary>
-    /// Function to indent multiple lines of text to match the same indentation
+    /// Function to indent multiple lines of text to match the same indentation, Legacy Function, not needed anymore
     /// </summary>
     public class IndentMultiLineRenderer : ScribanBaseStringRenderingFunction<object>
     {
@@ -33,7 +33,8 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.RenderingFu
             }
 
             string indentCode = arguments[0].ToString();
-            return new ValueTask<object>(ScribanOutputUtil.IndentMultilineCode(context, indentCode));
+            indentCode = indentCode.Trim('\n', '\r');
+            return new ValueTask<object>(indentCode);
         }
 
         /// <summary>

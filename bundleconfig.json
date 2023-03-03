@@ -270,6 +270,7 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/exportSnippetManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/inventoryForm.js",
       "wwwroot/js/Shared/nodeGraph/questStates.js",
       "wwwroot/js/Shared/nodeGraph/sharedObjectLoading.js",
       "wwwroot/js/Shared/nodeGraph/baseViewModel.js",
@@ -377,8 +378,6 @@
 
       "wwwroot/js/Shared/nodeGraph/referenceNode.js",
 
-      "wwwroot/js/Kortisto/npcForm/utilFunctions.js",
-      "wwwroot/js/Kortisto/npcForm/inventoryForm.js",
       "wwwroot/js/Kortisto/npcForm/skillForm.js",
       "wwwroot/js/Kortisto/npcForm/dailyRoutinesForm.js",
       "wwwroot/js/Kortisto/npcForm/viewmodel.js"
@@ -537,6 +536,7 @@
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/exportSnippetManager.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/flexFieldHandlingViewmodel.js",
+      "wwwroot/js/FlexFieldDatabase/objectForm/inventoryForm.js",
       "wwwroot/js/FlexFieldDatabase/objectForm/baseViewmodel.js",
       "wwwroot/js/Styr/itemForm/viewmodel.js"
     ],

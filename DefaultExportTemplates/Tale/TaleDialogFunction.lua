@@ -11,6 +11,6 @@ function {{ dialog_function.function_name }}(this)
     {{~ end ~}}{{~ if (dialog_function.code | string.contains "dialogManager") || (dialog_function.code | string.contains "playerNpc") ~}}
     
     {{~ end ~}}
-    {{ dialog_function.code | indent_multiline}}
+    {{ dialog_function.code | indent_multiline }}
 end
 

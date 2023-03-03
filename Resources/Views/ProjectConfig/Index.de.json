@@ -7,6 +7,9 @@
     "StateConfigSectionHeader": "Zustands Konfiguration",
     "StateConfigSectionDescription": "Jede Zeile wird als Zustand in der Zustand festlegen Aktion angezeigt:",
 
+    "ItemRolesSectionHeader": "Item Rollen",
+    "ItemRolesSectionDescription": "Jede Zeile wird als Vorschlag für Item Rollen angezeigt:",
+
     "DayHourMinutesConfig": "Uhrzeit Konfiguration",
     "HoursPerDay": "Stunden pro Tag:",
     "MinutesPerHour": "Minuten pro Stunde:",

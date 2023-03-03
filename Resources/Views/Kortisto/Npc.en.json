@@ -43,12 +43,7 @@
     "DropImageHere": "Drop image for npc here or click to choose an image",
     "OpenImageInFullSize": "Open image in full size",
 
-    "Inventory": "Inventory",
     "AddItemToInventory": "Add item",
-    "Quantity": "Quantity",
-    "Equipped": "Equipped",
-    "RemoveItemFromInventory": "Remove item from inventory",
-    "AreYouSureYouWantToRemoveTheItem": "Are you sure you want to remove the item?",
 
     "Skills": "Skills",
     "AddSkill": "Add skill",

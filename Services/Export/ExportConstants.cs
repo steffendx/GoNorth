@@ -164,9 +164,9 @@ namespace GoNorth.Services.Export
         public const string ScribanNpcObjectKey = "npc";
 
         /// <summary>
-        /// Scriban Npc inventory object key
+        /// Scriban inventory object key
         /// </summary>
-        public const string ScribanNpcInventoryObjectKey = "inventory";
+        public const string ScribanInventoryObjectKey = "inventory";
         
         /// <summary>
         /// Scriban Npc skill object key

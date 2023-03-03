@@ -45,6 +45,8 @@
     
     "ReferencedInNpcInventories": "In npc inventory:",
     
+    "ReferencedInItemInventories": "In item inventory:",
+
     "ReferencedInEvneSkills": "Referenced in skills:",
 
     "ClickHereForDetailedReferences": "The item is referenced in multiple objects. Click here for details.",

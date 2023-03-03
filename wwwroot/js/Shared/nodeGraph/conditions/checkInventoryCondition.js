@@ -9,6 +9,12 @@
             /// Operator for the has at maximum operation
             var inventoryOperatorHasAtMaximum = 1;
 
+            /// Operator for the has equipped operation
+            var inventoryOperatorHasEquipped = 2;
+
+            /// Operator for the has not equipped operation
+            var inventoryOperatorHasNotEquipped = 3;
+
             /**
              * Check inventory condition
              * @class
@@ -74,7 +80,12 @@
                     selectedItemId: new ko.observable(),
                     selectedItemName: new ko.observable(DefaultNodeShapes.Localization.Conditions.ChooseItem),
                     operator: new ko.observable(),
-                    availableOperators: [ { value: inventoryOperatorHasAtLeast, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasAtLeast }, { value: inventoryOperatorHasAtMaximum, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasMaximum }],
+                    availableOperators: [ 
+                            { value: inventoryOperatorHasAtLeast, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasAtLeast }, 
+                            { value: inventoryOperatorHasAtMaximum, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasMaximum }, 
+                            { value: inventoryOperatorHasEquipped, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasEquipped }, 
+                            { value: inventoryOperatorHasNotEquipped, title: DefaultNodeShapes.Localization.Conditions.ItemOperatorHasNotEquipped }
+                    ],
                     quantity: new ko.observable(0)
                 };
 
@@ -159,14 +170,24 @@
 
                 var self = this;
                 this.getItemName(existingData.itemId).then(function(name) {
-                    var conditionString = self.getInventoryTitle() + " " + DefaultNodeShapes.Localization.Conditions.ItemCount + "(\"" + name + "\") ";
-                    if(existingData.operator == inventoryOperatorHasAtLeast)
+                    var prefix = DefaultNodeShapes.Localization.Conditions.ItemCount;
+                    if(existingData.operator == inventoryOperatorHasEquipped || existingData.operator == inventoryOperatorHasNotEquipped)
+                    {
+                        prefix = DefaultNodeShapes.Localization.Conditions.ItemEquipped;
+                    }
+
+                    var conditionString = self.getInventoryTitle() + " " + prefix + "(\"" + name + "\") ";
+                    if(existingData.operator == inventoryOperatorHasAtLeast || existingData.operator == inventoryOperatorHasEquipped)
                     {
                         conditionString += ">=";
                     }
                     else if(existingData.operator == inventoryOperatorHasAtMaximum)
                     {
                         conditionString += "<=";
+                    }
+                    else if(existingData.operator == inventoryOperatorHasNotEquipped)
+                    {
+                        conditionString += "<";
                     }
                     conditionString += " " + existingData.quantity;
 

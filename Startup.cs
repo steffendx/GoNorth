@@ -358,7 +358,7 @@ namespace GoNorth
                         Description = "A portal to build storys for RPGs and other open world games.",
                         Contact = new OpenApiContact
                         {
-                            Name = "Steffen Nörtershäuser"
+                            Name = "Steffen Werhahn, former Nörtershäuser"
                         },
                         License = new OpenApiLicense
                         {

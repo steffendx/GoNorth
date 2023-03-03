@@ -1060,6 +1060,11 @@
              * Config key for setting the npc state
              */
             ConfigKeys.SetNpcStateAction = "SetNpcStateAction";
+            
+            /**
+             * Config key for setting item roles
+             */
+            ConfigKeys.ItemRoles = "ItemRoles";
 
         }(ProjectConfig.ConfigKeys = ProjectConfig.ConfigKeys || {}));
     }(GoNorth.ProjectConfig = GoNorth.ProjectConfig || {}));
@@ -1105,6 +1110,25 @@
             }
 
             return filteredFields;
+        }
+
+        /**
+         * Checks if an object exists in a flex field array
+         * 
+         * @param {ko.observableArray} searchArray Array to search
+         * @param {object} objectToSearch Flex Field object to search
+         */
+        Util.doesObjectExistInFlexFieldArray = function(searchArray, objectToSearch) {
+            var searchObjects = searchArray();
+            for(var curObject = 0; curObject < searchObjects.length; ++curObject)
+            {
+                if(searchObjects[curObject].id == objectToSearch.id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
     }(GoNorth.Util = GoNorth.Util || {}));

@@ -15,6 +15,16 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering.ConfigObject
         /// </summary>
         public const int CompareOperator_AtMaximum = 1;
 
+        /// <summary>
+        /// Compare Operator for equipped
+        /// </summary>
+        public const int CompareOperator_HasEquipped = 2;
+
+        /// <summary>
+        /// Compare Operator for has not equipped
+        /// </summary>
+        public const int CompareOperator_HasNotEquipped = 3;
+
 
         /// <summary>
         /// Item Id

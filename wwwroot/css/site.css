@@ -1079,6 +1079,14 @@ footer {
     }
 }
 
+.gn-flexFieldObjectInventoryItemNameColumn {
+    width: 50%;
+}
+
+.gn-flexFieldObjectTableActionColumn {
+    width: 5%;
+}
+
 /** Flex Field Manage Templates **/
 .gn-flexFieldCreateTemplateButton {
     margin-top: 10px;
@@ -1086,16 +1094,8 @@ footer {
 }
 
 /** Kortisto **/
-.gn-kortistoInventoryItemNameColumn {
-    width: 50%;
-}
-
 .gn-kortistoSkillNameColumn {
     width: 95%;
-}
-
-.gn-kortistoObjectTableActionColumn {
-    width: 5%;
 }
 
 /** Kirja **/
@@ -2143,6 +2143,13 @@ path.leaflet-interactive {
 
 .gn-taskTitle {
     font-size: 14px;
+}
+
+.gn-taskTitleCollapsed {
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .gn-taskSelectLine {

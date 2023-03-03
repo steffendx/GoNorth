@@ -85,9 +85,12 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering.Util
             switch(compareOperator)
             {
             case InventoryConditionData.CompareOperator_AtLeast:
+            case InventoryConditionData.CompareOperator_HasEquipped:
                 return (await defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.GeneralCompareOperatorBiggerOrEqual)).Code;
             case InventoryConditionData.CompareOperator_AtMaximum:
                 return (await defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.GeneralCompareOperatorLessOrEqual)).Code;
+            case InventoryConditionData.CompareOperator_HasNotEquipped:
+                return (await defaultTemplateProvider.GetDefaultTemplateByType(project.Id, TemplateType.GeneralCompareOperatorLess)).Code;
             }
 
             errorCollection.AddDialogUnknownConditionOperator(compareOperator.ToString());

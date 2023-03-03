@@ -7,6 +7,9 @@
     "StateConfigSectionHeader": "Set state config",
     "StateConfigSectionDescription": "Add one line for each state that will be suggested in the set state action:",
 
+    "ItemRolesSectionHeader": "Item roles",
+    "ItemRolesSectionDescription": "Add one line for each item role that will be proposed to the user:",
+
     "DayHourMinutesConfig": "Time config",
     "HoursPerDay": "Hours per day:",
     "MinutesPerHour": "Minutes per hour:",

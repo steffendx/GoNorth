@@ -83,7 +83,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             _languageKeyGenerator.SetErrorCollection(_errorCollection);
             
             List<ScribanExportInventoryItem> items = await LoadInventory(parsedTemplate, inputNpc); 
-            scriptObject.AddOrUpdate(ExportConstants.ScribanNpcInventoryObjectKey, items);
+            scriptObject.AddOrUpdate(ExportConstants.ScribanInventoryObjectKey, items);
             scriptObject.AddOrUpdate(ExportConstants.ScribanLanguageKeyName, _languageKeyGenerator);
         }
 
@@ -142,7 +142,7 @@ namespace GoNorth.Services.Export.Placeholder.ScribanRenderingEngine.ValueCollec
             }
 
             IStringLocalizer stringLocalizer = _localizerFactory.Create(typeof(InventoryValueCollector));
-            exportPlaceholders.Add(new ExportTemplatePlaceholder(ExportConstants.ScribanNpcInventoryObjectKey, stringLocalizer["PlaceholderDesc_Inventory"]));
+            exportPlaceholders.Add(new ExportTemplatePlaceholder(ExportConstants.ScribanInventoryObjectKey, stringLocalizer["PlaceholderDesc_Inventory"]));
 
             List<ExportTemplatePlaceholder> itemPlaceholders = ScribanPlaceholderGenerator.GetPlaceholdersForObject<ScribanExportInventoryItem>(_localizerFactory, ItemPlaceholderDefintionPrefix);
             itemPlaceholders.RemoveAll(p => p.Name == string.Format("{0}.{1}", ItemPlaceholderDefintionPrefix, StandardMemberRenamer.Rename(nameof(ScribanExportItem.UnusedFields))));

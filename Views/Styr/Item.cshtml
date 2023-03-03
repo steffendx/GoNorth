@@ -1,8 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using GoNorth.Models.FlexFieldDatabaseModels
+@using GoNorth.Models.StyrViewModels
 @using GoNorth.Data.Exporting
 
-@model DetailFormViewModel
+@model ItemViewModel
 
 @inject IViewLocalizer Localizer
 
@@ -17,6 +18,18 @@
 
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormContent.cshtml", new ObjectFormViewModel { Localizer = Localizer, ApiControllerName = "StyrApi", ObjectIcon = "glyphicon-apple" } )
 
+    <!-- ko with: objectDialog -->
+        @await Html.PartialAsync("~/Views/Shared/ChooseObjectDialog.cshtml")
+    <!-- /ko -->
+
+    @if(!Model.DisableItemInventory)
+    {
+        <!-- Inventory -->
+        <div data-bind="with: inventoryForm">
+            @await Html.PartialAsync("~/Views/FlexFieldDatabase/FlexFieldInventory.cshtml")
+        </div>
+    }
+
     @await Html.PartialAsync("~/Views/FlexFieldDatabase/ObjectFormTagInput.cshtml", Localizer)
 
     <!-- Related objects -->
@@ -30,6 +43,16 @@
         <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: containedInNpcInventory">
             <li>
                 <a class="gn-clickable" data-bind="text: name, href: $root.buildNpcInventoryUrl" target="_blank"></a>
+            </li>
+        </ul>
+    }
+    
+    @if(!Model.DisableItemInventory)
+    {
+        <h4>@Localizer["ReferencedInItemInventories"] <i class="glyphicon glyphicon-refresh spinning" style="display: none" data-bind="visible: loadingContainedInItemInventory"></i><i class="glyphicon glyphicon-warning-sign text-danger" title="@Localizer["ErrorOccured"]" style="display: none" data-bind="visible: errorLoadingContainedInItemInventory"></i></h4>
+        <ul class="gn-flexFieldObjectFormRelatedList" data-bind="foreach: containedInItemInventory">
+            <li>
+                <a class="gn-clickable" data-bind="text: name, href: $root.buildItemInventoryUrl" target="_blank"></a>
             </li>
         </ul>
     }
@@ -105,6 +128,19 @@
         }
 
         GoNorth.FlexFieldDatabase.ObjectForm.dirtyMessage = "@Localizer["DirtyMessage"]";
+
+        @if(Model.DisableItemInventory)
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.disableItemInventory = true;
+            </text>
+        }
+        else
+        {
+            <text>
+            GoNorth.FlexFieldDatabase.ObjectForm.disableItemInventory = false;
+            </text>
+        }
 
         jQuery(document).ready(function() {
             ko.applyBindings(new GoNorth.Styr.Item.ViewModel(), jQuery("#gn-styrItemContainer")[0]);

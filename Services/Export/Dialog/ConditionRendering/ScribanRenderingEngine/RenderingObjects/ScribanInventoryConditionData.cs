@@ -37,5 +37,11 @@ namespace GoNorth.Services.Export.Dialog.ConditionRendering.ScribanRenderingEngi
         /// </summary>
         [ScribanExportValueLabel]
         public int Quantity { get; set; }
+        
+        /// <summary>
+        /// True if the condition is checking for an equipped item
+        /// </summary>
+        [ScribanExportValueLabel]
+        public bool IsEquippedCheck { get; set; }
     }
 }

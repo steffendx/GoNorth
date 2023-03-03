@@ -1,0 +1,14 @@
+{
+    "Inventory": "Inventar",
+    "AddItemToInventory": "Item hinzufügen",
+    "Name": "Name",
+    "Quantity": "Anzahl",
+    "Equipped": "Ausgerüstet",
+    "Role": "Rolle",
+    "RemoveItemFromInventory": "Item aus dem Inventar entfernen",
+    "AreYouSure": "Bist du sicher?",
+    "AreYouSureYouWantToRemoveTheItem": "Bist du sicher das das Item entfernt werden soll?",
+    "Yes": "Ja",
+    "No": "Nein",
+    "ErrorOccured": "Es ist ein Fehler aufgetreten."
+}
