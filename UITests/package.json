@@ -20,7 +20,7 @@
     "puppeteer": "^19.7.2"
   },
   "devDependencies": {
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
     "gulp-zip": "^5.1.0",
     "minimist": "^1.2.8"
   }
