@@ -72,7 +72,7 @@ namespace GoNorth.Data.Aika
         /// <param name="projectId">Project Id</param>
         /// <param name="searchPattern">Search pattern</param>
         /// <returns>Chapter Detail Queryable</returns>
-        private IMongoQueryable<AikaChapterDetail> BuildChapterDetailSearchQueryable(string projectId, string searchPattern)
+        private IQueryable<AikaChapterDetail> BuildChapterDetailSearchQueryable(string projectId, string searchPattern)
         {
             string regexPattern = ".";
             if(!string.IsNullOrEmpty(searchPattern))

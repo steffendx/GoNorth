@@ -172,7 +172,7 @@ namespace GoNorth
 
             services.AddTransient<IUserProjectAccess, UserProjectAccess>();
 
-            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IEmailSender, MailKitEmailSender>();
             services.AddTransient<IEncryptionService, AesEncryptionService>();
             services.AddTransient<ISecureTokenGenerator, RngSecureTokenGenerator>();
             services.AddTransient<IXssChecker, XssChecker>();

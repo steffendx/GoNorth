@@ -104,7 +104,7 @@ namespace Installer.Services.ProviderBuilder
             serviceCollection.AddSingleton<ILoggerProvider, FileLoggerProvider>();
             
             serviceCollection.AddTransient<IEncryptionService, AesEncryptionService>();
-            serviceCollection.AddTransient<IEmailSender, EmailSender>();
+            serviceCollection.AddTransient<IEmailSender, MailKitEmailSender>();
             serviceCollection.AddTransient<IUserCreator, UserCreator>();
 
             serviceCollection.AddTransient<IProjectDbAccess, ProjectMongoDbAccess>();
