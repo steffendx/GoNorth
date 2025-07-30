@@ -16,7 +16,7 @@
     <PackageReference Include="MongoDB.Bson" Version="3.4.1" />
     <PackageReference Include="MongoDB.Driver" Version="3.4.1" />
     <PackageReference Include="Scriban" Version="6.2.1" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
 
@@ -26,7 +26,7 @@
 
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Copy SourceFiles="MapImages/blank.png" DestinationFolder="$(PublishDir)/MapImages" />
-    <Copy SourceFiles="@(DefaultExportTemplates)" DestinationFiles="@(DefaultExportTemplates->'$(PublishDir)/DefaultExportTemplates/%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="@(DefaultExportTemplates)" DestinationFiles="@(DefaultExportTemplates-&gt;'$(PublishDir)/DefaultExportTemplates/%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <ItemGroup>
