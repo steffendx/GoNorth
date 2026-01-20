@@ -14,7 +14,7 @@
   "author": "Steffen Werhahn, former Nörtershäuser",
   "license": "MIT",
   "dependencies": {
-    "mocha": "^10.2.0",
+    "mocha": "^10.8.2",
     "mocha-junit-reporter": "^2.2.0",
     "mocha-multi-reporters": "^1.5.1",
     "puppeteer": "^19.7.2"
