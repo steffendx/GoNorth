@@ -15,7 +15,7 @@
     <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="MongoDB.Bson" Version="3.4.1" />
     <PackageReference Include="MongoDB.Driver" Version="3.4.1" />
-    <PackageReference Include="Scriban" Version="6.2.1" />
+    <PackageReference Include="Scriban" Version="7.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
