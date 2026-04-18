@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
-    <PackageReference Include="MailKit" Version="4.13.0" />
+    <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="MongoDB.Bson" Version="3.4.1" />
     <PackageReference Include="MongoDB.Driver" Version="3.4.1" />
     <PackageReference Include="Scriban" Version="6.2.1" />
